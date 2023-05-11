@@ -29,8 +29,22 @@
      `(,next . ,(read-all))))
 
 (define (desugar program)
+  (define (desugar-exp exp)
+    (match exp
+     [(? integer? y) `',y]
+     [`(let ([,xs ,es] ...) ,body) 
+       `(let ,(map (lambda (x e) `[,x ,(desugar-exp body)]) xs es) 
+             ,(desugar-exp body))]
+     [`(lambda (,xs ...) ,body)
+       'todo]
+     [`(lambda ,x ,body)
+       'todo]
+     [`(,es ...)
+       (map desugar-exp es)]))
   (define (desugar-define def)
-    def)
+    (match def
+      [`(define ,sig ,body)
+       `(define ,sig ,(desugar-exp body))]))
   (map desugar-define program))
 
 (define (alphatize e)
@@ -94,6 +108,7 @@
                           [else
                            (let ([x (gensym 'a)])
                              `(let ([,x ,anf]) ,(k x)))]))))
+
   (define (normalize-aes es k)
     (if (null? es)
         (k '())
@@ -104,19 +119,19 @@
          [`',dat (k `',dat)]
          [(? symbol? x) (k x)]
          [`(lambda ,xs ,e0)
-          (k `(lambda ,xs ,(anf-convert e0)))]
+          (k `(lambda ,xs ,(normalize e0 (lambda (x) x))))]
          [`(let () ,e0)
           (normalize e0 k)]
          [`(let ([,x ,rhs] . ,rest) ,e0)
-          (k `(let ([,x ,(anf-convert rhs)])
-                ,(anf-convert
-                  `(let ,rest ,e0))))]
+          (k `(let ([,x ,(normalize rhs (lambda (x) x))])
+                ,(normalize
+                  `(let ,rest ,e0) (lambda (x) x))))]
          [`(if ,ec ,et ,ef)
           (normalize-ae ec
                           (lambda (xc)
                             (k `(if ,xc
-                                    ,(anf-convert et)
-                                    ,(anf-convert ef)))))]
+                                    ,(normalize et (lambda (x) x))
+                                    ,(normalize ef (lambda (x) x))))))]
          [`(prim ,op ,es ...)
           (normalize-aes es
                            (lambda (xs)
@@ -125,10 +140,6 @@
           (normalize-ae e0
                           (lambda (x)
                             (k `(apply-prim ,op ,x))))]
-         [`(call/cc ,e0)
-          (normalize-ae e0
-                          (lambda (x)
-                            (k `(call/cc ,x))))]
          [`(apply ,es ...)
           (normalize-aes es
                            (lambda (xs)
