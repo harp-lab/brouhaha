@@ -1,5 +1,8 @@
 #lang racket
 
+; (provide compile desugar alphatize anf-convert cps-convert closure-convert) ;; same as (provide (all-defined-out))
+(provide (all-defined-out))
+
 (define (compile program)
   (define pr0 (desugar program))
   (display "Desugared:\n")
@@ -36,9 +39,9 @@
        `(let ,(map (lambda (x e) `[,x ,(desugar-exp body)]) xs es) 
              ,(desugar-exp body))]
      [`(lambda (,xs ...) ,body)
-       'todo]
+       `(lambda ,xs ,(desugar-exp body))]
      [`(lambda ,x ,body)
-       'todo]
+       `(lambda (,x) ,(desugar-exp body))]
      [`(,es ...)
        (map desugar-exp es)]))
   (define (desugar-define def)
