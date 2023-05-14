@@ -23,23 +23,13 @@
           (reverse exprs)
           (loop (cons next exprs))))))
 
-; (define (read-program program)
-;   (append (with-input-from-file program
-; 	    (lambda () (read-all)))
-; 	  (read-all)))
-
-; (define (read-all)
-;  (define next (read))
-;  (if (eof-object? next)
-;      '()
-;      `(,next . ,(read-all))))
-
 ; Run and compile a program, writing the output to a file
-(define (run-program program filename)
+(define (run-program program filename file-path)
+  (define file-path-string (path->string file-path))
   (define filename-string (path->string filename))
-  (define out-file (string-append filename-string "_output"))
+  (define out-file (string-append file-path-string "_output.out"))
   (displayln (~a "Now running: " filename-string " and outputting to: " out-file))
-  (with-output-to-file (string-append out-file)
+  (with-output-to-file out-file
     (lambda ()
       (print program))))
 
@@ -49,6 +39,6 @@
     (let ([full-path (build-path (current-directory) directory file)])
       (when (and (file-exists? full-path)
                  (regexp-match? #rx"[.]haha$" file))
-        (run-program (read-program full-path) file)))))
+        (run-program (read-program full-path) file full-path)))))
 
 (read-direc "tests/")
