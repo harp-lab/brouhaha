@@ -1,24 +1,25 @@
 #lang racket
 
-; (provide compile desugar alphatize anf-convert cps-convert closure-convert) ;; same as (provide (all-defined-out))
-(provide (all-defined-out))
+(provide compile desugar) ;; same as (provide (all-defined-out))
+; (provide (all-defined-out))
 
 (define (compile program)
   (define pr0 (desugar program))
   (display "Desugared:\n")
   (pretty-print pr0)
-  (define pr1 (alphatize pr0))
-  (display "Alphatized:\n")
-  (pretty-print pr1)
-  (define pr2 (anf-convert pr1))
-  (display "ANF:\n")
-  (pretty-print pr2)
-  (define pr3 (cps-convert pr2))
-  (display "CPS:\n")
-  (pretty-print pr3)
-  (define pr4 (closure-convert pr3))
-  (display "Closure Converted:\n")
-  (pretty-print pr4))
+  ; (define pr1 (alphatize pr0))
+  ; (display "Alphatized:\n")
+  ; (pretty-print pr1)
+  ; (define pr2 (anf-convert pr1))
+  ; (display "ANF:\n")
+  ; (pretty-print pr2)
+  ; (define pr3 (cps-convert pr2))
+  ; (display "CPS:\n")
+  ; (pretty-print pr3)
+  ; (define pr4 (closure-convert pr3))
+  ; (display "Closure Converted:\n")
+  ; (pretty-print pr4)
+  )
 
 (define (read-program)
   (append (with-input-from-file "prelude.haha"
@@ -35,13 +36,16 @@
   (define (desugar-exp exp)
     (match exp
      [(? integer? y) `',y]
+     [(? symbol? x) x]
      [`(let ([,xs ,es] ...) ,body) 
-       `(let ,(map (lambda (x e) `[,x ,(desugar-exp body)]) xs es) 
+       `(let ,(map (lambda (x e) `[,x ,(desugar-exp e)]) xs es) 
              ,(desugar-exp body))]
      [`(lambda (,xs ...) ,body)
        `(lambda ,xs ,(desugar-exp body))]
      [`(lambda ,x ,body)
-       `(lambda (,x) ,(desugar-exp body))]
+       `(lambda ,x ,(desugar-exp body))]
+     [`(if ,guard ,tr ,fl)
+        `(if ,(desugar-exp guard) ,(desugar-exp tr) ,(desugar-exp fl))]
      [`(,es ...)
        (map desugar-exp es)]))
   (define (desugar-define def)
@@ -276,5 +280,5 @@
 	 program))
 
 ; Read from STDIN, write to STDOUT
-(compile (read-program))
+; (compile (read-program))
 

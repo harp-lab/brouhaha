@@ -3,11 +3,12 @@
 ; iterate over them and test them
 (require racket/trace)
 
-; (require "compile.rkt") 
+(require "compile.rkt") 
 ;; uncomment this once compile.rkt is fixed
 
 ; Read all expressions from a file using byte reading
 (define (read-program program)
+  (displayln (~a "The program " program))
   (with-input-from-file program
     (lambda ()
       (let ([bytes (read-bytes (file-size program))])
@@ -17,6 +18,7 @@
 
 ; Helper function to read all expressions from an input port
 (define (read-all in)
+  (displayln (~a "The in: " in))
   (let loop ([exprs '()])
     (let ([next (read in)])
       (if (eof-object? next)
@@ -31,14 +33,19 @@
   (displayln (~a "Now running: " filename-string " and outputting to: " out-file))
   (with-output-to-file out-file
     (lambda ()
-      (print program))))
+      (print (compile program)))
+      #:exists 'replace)) ; change this when needed
 
 ; Read the directory and process all .haha files
 (define (read-direc directory)
+  (displayln (~a "Direc: " directory))
   (for ([file (in-list (directory-list directory))])
     (let ([full-path (build-path (current-directory) directory file)])
       (when (and (file-exists? full-path)
                  (regexp-match? #rx"[.]haha$" file))
         (run-program (read-program full-path) file full-path)))))
 
+
+; (trace read-)
 (read-direc "tests/")
+; (print "yes")
