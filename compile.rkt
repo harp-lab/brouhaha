@@ -1,6 +1,6 @@
 #lang racket
 
-(provide compile desugar) ;; same as (provide (all-defined-out))
+(provide compile desugar read-program read-all) ;; same as (provide (all-defined-out))
 ; (provide (all-defined-out))
 
 (define (compile program)
@@ -21,16 +21,32 @@
   ; (pretty-print pr4)
   )
 
-(define (read-program)
-  (append (with-input-from-file "prelude.haha"
-	    (lambda () (read-all)))
-	  (read-all)))
+(define (read-program filename)
+  (with-input-from-file filename
+    (lambda ()
+      (let ([bytes (read-bytes (file-size filename))])
+        (with-input-from-string (bytes->string/utf-8 bytes)
+          (lambda ()
+            (read-all (current-input-port))))))))
 
-(define (read-all)
- (define next (read))
- (if (eof-object? next)
-     '()
-     `(,next . ,(read-all))))
+(define (read-all in)
+;   (displayln (~a "The in: " in))
+  (let loop ([exprs '()])
+    (let ([next (read in)])
+      (if (eof-object? next)
+          (reverse exprs)
+          (loop (cons next exprs))))))
+
+; (define (read-program)
+;   (append (with-input-from-file "/prelude.haha"
+; 	    (lambda () (read-all)))
+; 	  (read-all)))
+
+; (define (read-all)
+;  (define next (read))
+;  (if (eof-object? next)
+;      '()
+;      `(,next . ,(read-all))))
 
 (define (desugar program)
   (define (desugar-exp exp)
@@ -40,6 +56,8 @@
      [`(let ([,xs ,es] ...) ,body) 
        `(let ,(map (lambda (x e) `[,x ,(desugar-exp e)]) xs es) 
              ,(desugar-exp body))]
+    ;  [`(let ([,xs ,es] ...) ,body)
+    ;    (desugar-exp `((lambda ,xs ,body) ,@es))]
      [`(lambda (,xs ...) ,body)
        `(lambda ,xs ,(desugar-exp body))]
      [`(lambda ,x ,body)
@@ -281,4 +299,3 @@
 
 ; Read from STDIN, write to STDOUT
 ; (compile (read-program))
-

@@ -1,2 +1,2 @@
-(define yes
-    (let ([x 5] [y (let [z 10] z)]) x))
+(define yes 
+    (let ([x 5] [y 6]) x))

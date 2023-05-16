@@ -1,0 +1,7 @@
+(define (= x y)
+    (eq? x y))
+
+(define (foldl fun acc lst) 
+  (if (null? lst)
+      acc
+      (foldl fun (fun (car lst) acc) (cdr lst))))
