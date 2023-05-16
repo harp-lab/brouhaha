@@ -1,2 +1,5 @@
-(define (lam)
-    (lambda (a b . c) c))
+(define (lam x y)
+    ((lambda (a b . c) b) x y))
+
+(define (main)
+    (lam 5 6))

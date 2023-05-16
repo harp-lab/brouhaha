@@ -14,7 +14,7 @@
   (define user-program (read-program file-path))
   (with-output-to-file out-file
     (lambda ()
-      (print (compile (append prelude user-program))))
+      (compile (append prelude user-program)))
       #:exists 'replace)) ; change this when needed
 
 ; Read the directory and process all .haha files
