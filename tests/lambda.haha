@@ -1,0 +1,2 @@
+(define (lam)
+    (lambda (a b . c) c))

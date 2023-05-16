@@ -60,8 +60,19 @@
     ;    (desugar-exp `((lambda ,xs ,body) ,@es))]
      [`(lambda (,xs ...) ,body)
        `(lambda ,xs ,(desugar-exp body))]
-     [`(lambda ,x ,body)
+     [`(lambda ,(? symbol? x) ,body)
        `(lambda ,x ,(desugar-exp body))]
+     [`(lambda ,args ,body)
+       (define (helper args)
+        (match args
+          [(? symbol? x)
+            `(let ([,x vargs]) ,body)]
+          [`(,(? symbol? x) . ,rst) 
+            `(let ([,x (car vargs)] [vargs (cdr vargs)])
+              ,(helper rst))]))
+       (desugar-exp 
+        `(lambda vargs 
+          ,(helper args)))]
      [`(if ,guard ,tr ,fl)
         `(if ,(desugar-exp guard) ,(desugar-exp tr) ,(desugar-exp fl))]
      [`(,es ...)

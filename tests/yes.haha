@@ -1,2 +1,5 @@
-(define yes 
+(define (yes) 
     (let ([x 5] [y 6]) x))
+
+(define (main) 
+    (yes))

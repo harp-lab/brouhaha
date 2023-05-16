@@ -1,5 +1,26 @@
-(define (= x y)
-    (eq? x y))
+(define (car lst) 
+    (prim car lst))
+
+(define (+ . lst) 
+    (apply-prim + lst))
+
+(define (- . lst) 
+    (apply-prim - lst))
+
+(define (* . lst) 
+    (apply-prim * lst))
+
+(define (= . lst) 
+    (apply-prim = lst))
+
+(define (null? x)
+    (prim null? x))
+
+(define (cons a b)
+    (prim cons a b))
+
+(define (cdr lst)
+    (prim cdr lst))
 
 (define (foldl fun acc lst) 
   (if (null? lst)
