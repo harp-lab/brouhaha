@@ -16,9 +16,9 @@
   (define pr2 (anf-convert pr1))
   (display "ANF:\n")
   (pretty-print pr2)
-  ; (define pr3 (cps-convert pr2))
-  ; (display "CPS:\n")
-  ; (pretty-print pr3)
+  (define pr3 (cps-convert pr2))
+  (display "CPS:\n")
+  (pretty-print pr3)
   ; (define pr4 (closure-convert pr3))
   ; (display "Closure Converted:\n")
   ; (pretty-print pr4)
@@ -26,10 +26,10 @@
 
 (define (read-program filename)
   (with-input-from-file filename
-                        (lambda ()
-                          (let ([bytes (read-bytes (file-size filename))])
-                            (with-input-from-string (bytes->string/utf-8 bytes)
-                                                    (lambda () (read-all (current-input-port))))))))
+    (lambda ()
+      (let ([bytes (read-bytes (file-size filename))])
+        (with-input-from-string (bytes->string/utf-8 bytes)
+                                (lambda () (read-all (current-input-port))))))))
 
 (define (read-all in)
   ;   (displayln (~a "The in: " in))
@@ -48,6 +48,13 @@
 ;      `(,next . ,(read-all))))
 
 (define (desugar program)
+  (define (unroll-args args body)
+    (match args
+      [(? symbol? x) 
+        `(let ([,x vargs]) ,body)]
+      [`(,(? symbol? x) . ,rst) 
+        `(let ([,x (car vargs)] [vargs (cdr vargs)]) 
+          ,(unroll-args rst body))]))
   (define (desugar-exp exp)
     (match exp
       [(? integer? y) `',y]
@@ -59,17 +66,18 @@
       [`(lambda (,xs ...) ,body) `(lambda ,xs ,(desugar-exp body))]
       [`(lambda ,(? symbol? x) ,body) `(lambda ,x ,(desugar-exp body))]
       [`(lambda ,args ,body)
-       (define (helper args)
-         (match args
-           [(? symbol? x) `(let ([,x vargs]) ,body)]
-           [`(,(? symbol? x) . ,rst) `(let ([,x (car vargs)] [vargs (cdr vargs)]) ,(helper rst))]))
-       (desugar-exp `(lambda vargs ,(helper args)))]
+        (desugar-exp `(lambda vargs ,(unroll-args args body)))]
       [`(if ,guard ,tr ,fl) `(if ,(desugar-exp guard) ,(desugar-exp tr) ,(desugar-exp fl))]
       [`(apply ,e0 ,e1) `(apply ,(desugar-exp e0) ,(desugar-exp e1))]
       [`(,es ...) (map desugar-exp es)]))
   (define (desugar-define def)
     (match def
-      [`(define ,sig ,body) `(define ,sig ,(desugar-exp body))]))
+      [`(define (,fname ,params ...) ,body) 
+        `(define (,fname ,@params) ,(desugar-exp body))]
+      [`(define (,fname . ,(? symbol? params)) ,body) 
+        `(define (,fname . ,params) ,(desugar-exp body))]
+      [`(define (,fname . ,params) ,body) 
+        `(define (,fname . vargs) ,(desugar-exp (unroll-args params body)))]))
   (map desugar-define program))
 
 (define (alphatize program)
@@ -204,7 +212,13 @@
           ,body)
        (define k (gensym 'kont))
        `(define (,fname ,k ,@params)
-          ,(T body k))]))
+          ,(T body k))]
+      [`(define (,fname . ,(? symbol? params)) ,body)
+       (define k (gensym 'kont))
+       `(define (,fname . ,params)
+          ,(T 
+            `(let ([,k (car ,params)] [,params (cdr ,params)]) ,body) 
+            k))]))
   (map cps-convert-def program))
 
 (define (T-bottom-up e)
