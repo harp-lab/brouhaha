@@ -1,0 +1,3 @@
+(define (test)
+    (let ([f (lambda (x) x)])
+        ((f f) (lambda (y) y))))

@@ -74,7 +74,7 @@
     (match def
       [`(define (,fname ,params ...) ,body) 
         `(define (,fname ,@params) ,(desugar-exp body))]
-      [`(define (,fname . ,(? symbol? params)) ,body) 
+      [`(define (,fname . ,(? symbol? params)) ,body)
         `(define (,fname . ,params) ,(desugar-exp body))]
       [`(define (,fname . ,params) ,body) 
         `(define (,fname . vargs) ,(desugar-exp (unroll-args params body)))]))
