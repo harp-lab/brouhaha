@@ -55,8 +55,9 @@
       lst
       (drop (cdr lst) (- n 1))))
 
+; reverse has a problem whereas the lst2 needs to be an optional variable, we currently do not suppor this
 ;(define (reverse lst lst2 `())
- ;   (if (null? lst) lst2
-  ;      (reverse (cdr lst) (cons (car lst) lst2))))
+;   (if (null? lst) lst2
+;      (reverse (cdr lst) (cons (car lst) lst2))))
 
 
