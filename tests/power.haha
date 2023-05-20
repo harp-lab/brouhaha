@@ -1,0 +1,11 @@
+(define (power x n)
+  (if (= n 0)
+      1
+      (if (= n 1)
+          x
+          (if (even? n)
+              (power (* x x) (/ n 2))
+              (* x (power (* x x) (/ (- n 1) 2)))))))
+
+(define (main)
+    (power 2 10))

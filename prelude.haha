@@ -1,3 +1,4 @@
+; Prelude is used as a way to add functionality to the language and programs as a library
 (define (car lst) 
     (prim car lst))
 

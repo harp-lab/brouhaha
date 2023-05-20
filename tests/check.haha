@@ -1,3 +1,7 @@
 (define (test)
-    (let ([f (lambda (x) x)])
+    ; this is a test program 
+    (let ([f (lambda (x) x)]) 
         ((f f) (lambda (y) y))))
+
+(define (main)
+    (test))

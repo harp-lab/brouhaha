@@ -1,0 +1,13 @@
+(define (helper i count num)
+    (if (> i num)
+        count
+        (helper (+ i 1)
+                (if (= (modulo num i) 0)
+                    (+ count 1)
+                    count) num)))
+
+(define (count-divisors num)
+  (helper 1 0 num))
+
+(define (main)
+    (count-divisors 10))

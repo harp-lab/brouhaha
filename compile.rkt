@@ -25,14 +25,15 @@
 
 (define (read-program filename)
   (with-input-from-file filename
-                        (lambda ()
-                          (let ([bytes (read-bytes (file-size filename))])
-                            (with-input-from-string (bytes->string/utf-8 bytes)
-                                                    (lambda () (read-all (current-input-port))))))))
+    (lambda ()
+      (let ([bytes (read-bytes (file-size filename))])
+        (with-input-from-string (bytes->string/utf-8 bytes)
+          (lambda () (read-all (current-input-port))))))))
 
 (define (read-all in)
   (let loop ([exprs '()])
     (let ([next (read in)]) (if (eof-object? next) (reverse exprs) (loop (cons next exprs))))))
+
 
 (define (desugar program)
   (define (unroll-args args body)
@@ -263,3 +264,12 @@
 
 ; Read from STDIN, write to STDOUT
 ; (compile (read-program))
+
+; De-comment for posterity
+; (define (decomment program) ; this is actually not needed, keeping this here for posterity
+;   (cond 
+;     [(null? program) '()]
+;     [(and (string? (car program)) (string-prefix? ";" (car program)))
+;      (decomment (cdr program))]
+;     [(list? (car program)) (cons (decomment (car program)) (decomment (cdr program)))]
+;     [else (cons (car program) (decomment (cdr program)))]))
