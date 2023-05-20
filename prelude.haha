@@ -55,8 +55,8 @@
       lst
       (drop (cdr lst) (- n 1))))
 
-(define (reverse lst lst2 `())
-    (if (null? lst) lst2
-        (reverse (cdr lst) (cons (car lst) lst2))))
+;(define (reverse lst lst2 `())
+ ;   (if (null? lst) lst2
+  ;      (reverse (cdr lst) (cons (car lst) lst2))))
 
 
