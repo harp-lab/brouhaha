@@ -19,9 +19,9 @@
   (define pr3 (cps-convert pr2))
   (display "CPS:\n")
   (pretty-print pr3)
-  ; (define pr4 (closure-convert pr3))
-  ; (display "Closure Converted:\n")
-  ; (pretty-print pr4)
+  (define pr4 (closure-convert pr3))
+  (display "Closure Converted:\n")
+  (pretty-print pr4)
   )
 
 (define (read-program filename)
