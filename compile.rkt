@@ -21,40 +21,25 @@
   (pretty-print pr3)
   (define pr4 (closure-convert pr3))
   (display "Closure Converted:\n")
-  (pretty-print pr4)
-  )
+  (pretty-print pr4))
 
 (define (read-program filename)
   (with-input-from-file filename
-    (lambda ()
-      (let ([bytes (read-bytes (file-size filename))])
-        (with-input-from-string (bytes->string/utf-8 bytes)
-                                (lambda () (read-all (current-input-port))))))))
+                        (lambda ()
+                          (let ([bytes (read-bytes (file-size filename))])
+                            (with-input-from-string (bytes->string/utf-8 bytes)
+                                                    (lambda () (read-all (current-input-port))))))))
 
 (define (read-all in)
-  ;   (displayln (~a "The in: " in))
   (let loop ([exprs '()])
     (let ([next (read in)]) (if (eof-object? next) (reverse exprs) (loop (cons next exprs))))))
-
-; (define (read-program)
-;   (append (with-input-from-file "/prelude.haha"
-; 	    (lambda () (read-all)))
-; 	  (read-all)))
-
-; (define (read-all)
-;  (define next (read))
-;  (if (eof-object? next)
-;      '()
-;      `(,next . ,(read-all))))
 
 (define (desugar program)
   (define (unroll-args args body)
     (match args
-      [(? symbol? x) 
-        `(let ([,x vargs]) ,body)]
-      [`(,(? symbol? x) . ,rst) 
-        `(let ([,x (car vargs)] [vargs (cdr vargs)]) 
-          ,(unroll-args rst body))]))
+      [(? symbol? x) `(let ([,x vargs]) ,body)]
+      [`(,(? symbol? x) . ,rst)
+       `(let ([,x (car vargs)] [vargs (cdr vargs)]) ,(unroll-args rst body))]))
   (define (desugar-exp exp)
     (match exp
       [(? integer? y) `',y]
@@ -65,19 +50,24 @@
       ;    (desugar-exp `((lambda ,xs ,body) ,@es))]
       [`(lambda (,xs ...) ,body) `(lambda ,xs ,(desugar-exp body))]
       [`(lambda ,(? symbol? x) ,body) `(lambda ,x ,(desugar-exp body))]
-      [`(lambda ,args ,body)
-        (desugar-exp `(lambda vargs ,(unroll-args args body)))]
+      [`(lambda ,args ,body) (desugar-exp `(lambda vargs ,(unroll-args args body)))]
       [`(if ,guard ,tr ,fl) `(if ,(desugar-exp guard) ,(desugar-exp tr) ,(desugar-exp fl))]
       [`(apply ,e0 ,e1) `(apply ,(desugar-exp e0) ,(desugar-exp e1))]
       [`(,es ...) (map desugar-exp es)]))
   (define (desugar-define def)
     (match def
-      [`(define (,fname ,params ...) ,body) 
-        `(define (,fname ,@params) ,(desugar-exp body))]
-      [`(define (,fname . ,(? symbol? params)) ,body)
-        `(define (,fname . ,params) ,(desugar-exp body))]
-      [`(define (,fname . ,params) ,body) 
-        `(define (,fname . vargs) ,(desugar-exp (unroll-args params body)))]))
+      [`(define (,fname ,params ...)
+          ,body)
+       `(define (,fname ,@params)
+          ,(desugar-exp body))]
+      [`(define (,fname . ,(? symbol? params))
+          ,body)
+       `(define (,fname . ,params)
+          ,(desugar-exp body))]
+      [`(define (,fname . ,params)
+          ,body)
+       `(define (,fname . vargs)
+          ,(desugar-exp (unroll-args params body)))]))
   (map desugar-define program))
 
 (define (alphatize program)
@@ -90,27 +80,20 @@
        `(let ,(map list xs+ (map (alpha-rename env) es)) ,((alpha-rename env+) e0))]
       [`(lambda (,xs ...) ,e0)
        (define xs+ (map rename xs))
-       (define env+ 
-        (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
+       (define env+ (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
        `(lambda ,xs+ ,((alpha-rename env+) e0))]
       [`(lambda ,x ,e0)
        (define x+ (rename x))
        (define env+ (hash-set env x x+))
        `(lambda ,x+ ,((alpha-rename env+) e0))]
-      [`(prim ,op ,es ...) 
-        `(prim ,op ,@(map (alpha-rename env) es))]
-      [`(apply-prim ,op ,e0) 
-        `(apply-prim ,op ,((alpha-rename env) e0))]
+      [`(prim ,op ,es ...) `(prim ,op ,@(map (alpha-rename env) es))]
+      [`(apply-prim ,op ,e0) `(apply-prim ,op ,((alpha-rename env) e0))]
       [`(if ,e0 ,e1 ,e2)
        `(if ,((alpha-rename env) e0) ,((alpha-rename env) e1) ,((alpha-rename env) e2))]
-      [`(apply ,e0 ,e1) 
-        `(apply ,((alpha-rename env) e0) ,((alpha-rename env) e1))]
-      [(? symbol? x) 
-        (hash-ref env x)]
-      [`',dat 
-        `',dat]
-      [`(,es ...) 
-        (map (alpha-rename env) es)]))
+      [`(apply ,e0 ,e1) `(apply ,((alpha-rename env) e0) ,((alpha-rename env) e1))]
+      [(? symbol? x) (hash-ref env x)]
+      [`',dat `',dat]
+      [`(,es ...) (map (alpha-rename env) es)]))
   (define ((rename-define env) def)
     (match def
       [`(define (,fname ,params ...)
@@ -121,13 +104,16 @@
           ,body)
        `(define (,fname . ,params)
           ,((alpha-rename (hash-set env params params)) body))]))
-  (define top-env 
-    (foldl (lambda (def env) 
-      (match def
-        [`(define (,fname . ,params) ,body)
-          (when (hash-has-key? env fname) (error "Function name is already defined"))
-          (hash-set env fname fname)])) 
-            (hash) program))
+  (define top-env
+    (foldl (lambda (def env)
+             (match def
+               [`(define (,fname . ,params)
+                   ,body)
+                (when (hash-has-key? env fname)
+                  (error "Function name is already defined"))
+                (hash-set env fname fname)]))
+           (hash)
+           program))
   (map (rename-define top-env) program))
 
 ; Converts to ANF; adapted from Flanagan et al.
@@ -213,7 +199,8 @@
        (define k (gensym 'kont))
        `(define (,fname ,k ,@params)
           ,(T body k))]
-      [`(define (,fname . ,(? symbol? params)) ,body)
+      [`(define (,fname . ,(? symbol? params))
+          ,body)
        (define k (gensym 'kont))
        (define newargs (gensym 'args))
        `(define (,fname . ,params)
@@ -222,11 +209,10 @@
                ; using newarg because during c++ emission shadowing causes problem
                (let ([,newargs (prim cdr ,params)])
                  ,(match body
-                    [`(apply-prim ,op ,ae)
-                     `(apply-prim ,op ,newargs)]
-                    [_ body] ; for when it does not start with "apply-prim" --> should actually not happen tho
-                    )
-                 ))
+                    [`(apply-prim ,op ,ae) `(apply-prim ,op ,newargs)]
+                    [_
+                     body] ; for when it does not start with "apply-prim" --> should actually not happen tho
+                    )))
             k))]))
   (map cps-convert-def program))
 
