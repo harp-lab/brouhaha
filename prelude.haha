@@ -59,5 +59,3 @@
 ;(define (reverse lst lst2 `())
 ;   (if (null? lst) lst2
 ;      (reverse (cdr lst) (cons (car lst) lst2))))
-
-
