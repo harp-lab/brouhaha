@@ -215,9 +215,18 @@
           ,(T body k))]
       [`(define (,fname . ,(? symbol? params)) ,body)
        (define k (gensym 'kont))
+       (define newargs (gensym 'args))
        `(define (,fname . ,params)
-          ,(T 
-            `(let ([,k (car ,params)] [,params (cdr ,params)]) ,body) 
+          ,(T
+            `(let ([,k (prim car ,params)])
+               ; using newarg because during c++ emission shadowing causes problem
+               (let ([,newargs (prim cdr ,params)])
+                 ,(match body
+                    [`(apply-prim ,op ,ae)
+                     `(apply-prim ,op ,newargs)]
+                    [_ body] ;?
+                    )
+                 ))
             k))]))
   (map cps-convert-def program))
 
