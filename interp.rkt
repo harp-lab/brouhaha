@@ -5,9 +5,8 @@
 
 (require "compile.rkt")
 
-(define prelude (read-program "/Users/michaelgathara/Documents/Research/brouhaha/prelude.haha"))
-(define program (read-program "/Users/michaelgathara/Documents/Research/brouhaha/tests/easy.haha"))
-; (desugar (append prelude program))
+(define prelude (read-program (build-path (current-directory) "prelude.haha")))
+(define program (read-program (build-path (current-directory) "tests" "easy.haha")))
 (define desugared_exp (desugar (append prelude program)))
 
 (pretty-print desugared_exp)
