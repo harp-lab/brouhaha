@@ -1,5 +1,5 @@
-(define (call)
+(define (call x)
     (+ 1 2))
 
 (define (main)
-    (call))
+    (call 1))
