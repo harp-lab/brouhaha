@@ -8,12 +8,14 @@
 ;racket imports
 (require racket/trace)
 
+
 (require "compile.rkt")
 
+(define racket-eval eval)
+
 (define prelude (read-program (build-path (current-directory) "prelude.haha")))
-(define program (read-program (build-path (current-directory) "tests" "easy.haha")))
-(define desugared_exp (desugar (append prelude program)))
-(define prims `(+ - / *))
+(define program (read-program (build-path (current-directory) "tests" "count-divisors.haha")))
+(define desugared_exp (cps-convert (anf-convert (alphatize (desugar (append prelude program))))))
 
 ; (displayln (~a desugared_exp))
 
@@ -29,60 +31,54 @@
 
 ; (pretty-print top-env)
 
-(define (interp-desugar exp env)
+(define (interp program (env (hash)))
+  (define (add-top-lvl env)
+    (let loop ([env+ env] [prog+ program])
+       (match prog+
+        [`((define (,name . ,param) ,body) ,rest ...)
+            (loop (hash-set env+ name (first prog+)) (cdr prog+))]
+        [`() env+])))
+
   (define (eval exp env)
     (match exp
-      [(? number?) exp]
-      [`(quote ,x)#:when (number? x) x]
-      [(? boolean?) exp]
+      [`(quote ,(? number? x)) x]
+      [`(quote ,(? boolean? x)) x]
+      [`(quote ,(? symbol? x)) x]
       [(? symbol?) (hash-ref env exp)]
-      [`(,op ,@e0)#:when (member op prims) 
-        (pretty-print e0)
-        (eval (hash-ref env op) (hash-set env op e0))
-        ; (pretty-print env)
-        ] ; rethink this
-      [`(apply-prim ,op ,_) ; rethink this
-    ;    #:when (member op prims)
-    ;    (display (~a "Op: " op "\nArgs: " (hash-ref env op) "\n"))
-       (define args (hash-ref env op))
-       (let* ([eval-args (map (lambda (arg) (eval arg env)) args)]
-              [prim-result (foldl op (car eval-args) (cdr eval-args))])
-         (eval prim-result env))
-      ]
-      [`(lambda (,x) ,eb) `(closure ,exp ,env)]
+      [`(prim ,op ,es ...)
+        (apply (racket-eval op (make-base-namespace)) (map (lambda (e) (eval e env)) es))]
+      [`(apply-prim ,op ,e0) 
+        (apply (racket-eval op (make-base-namespace)) (eval e0 env))]
+      [`(lambda ,_ ,_) 
+        `(closure ,exp ,env)]
       [`(if ,ec ,et ,ef)
        (let ([val (eval ec env)])
          (if val (eval et env) (eval ef env)))]
-      [`(,ef ,ea)
-       (let ([fn-val (eval ef env)]
-             [arg-val (eval ea env)])
-         (apply fn-val arg-val))]
-      [`(define (main) ,@body)
-        (match (car body)
-            [`(,name ,@args)
-                (define next (hash-ref env name)) ; could be cleaner. MVP style
-                (match next
-                    [`(define (,name ,@params) ,@body)
-                        (define new-env 
-                            (foldl (lambda (to-set env)
-                                (match to-set
-                                    [`(,x . ,y)
-                                        (hash-set env x y)]))
-                            env
-                            (map list params args)))                       
-                        (eval next new-env)])])]
-      [`(define (,@name ,@params) ,body)
-        (eval body env)]))
+      [`(let ([,xs ,rhss] ...) ,body)
+        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env))) env xs rhss))]
+      [`(let* ([,xs ,rhss] ...) ,body)
+        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env+))) env xs rhss))]
+      [`(,ef ,eas ...)
+        (let ([fn-val (eval ef env)]
+             [arg-vals 
+                (map (lambda (ea) (eval ea env)) eas)])
+         (appl fn-val arg-vals))]))
 
-    (trace eval)
-
-  (define (apply fn-val arg-val)
+  (define (appl fn-val arg-vals)
     (match fn-val
-      [`(closure (lambda (,x) ,eb) ,env)
-       (eval eb (hash-set env x arg-val))]
-      [(? procedure? fn)
-       (fn arg-val)]))
-  (eval exp env))
+      [`(closure (lambda (,xs ...) ,eb) ,env)
+       (eval eb (foldl (lambda (x val env) (hash-set env x val)) env xs arg-vals))]
+      [`(closure (lambda ,x ,eb) ,env)
+        (eval eb (hash-set env x arg-vals))]
+      [`(define (,name ,params ...) ,body)
+        (eval body (foldl (lambda (x val env) (hash-set env x val)) (add-top-lvl (hash)) params arg-vals))]
+      [`(define (,name . ,(? symbol? params)) ,body)
+        (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]))
+
+    ; synthesize a call site for main
+  (eval `(main) (add-top-lvl env))) ; 'main
+
+(interp desugared_exp)
 
 
 ; (define (ret val kont)
@@ -125,5 +121,3 @@
 ;         (eval eb (hash-set envlam x va) kont)]))
 
 ;   (eval exp env 'halt))
-
-(interp-desugar (hash-ref top-env 'main) top-env)

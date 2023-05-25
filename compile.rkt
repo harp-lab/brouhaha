@@ -2,6 +2,9 @@
 
 (provide compile
          desugar
+         alphatize
+         anf-convert
+         cps-convert
          read-program
          read-all) ;; same as (provide (all-defined-out))
 ; (provide (all-defined-out))
