@@ -15,7 +15,7 @@
 
 (define prelude (read-program (build-path (current-directory) "prelude.haha")))
 (define program (read-program (build-path (current-directory) "tests" "count-divisors.haha")))
-(define desugared_exp (cps-convert (anf-convert (alphatize (desugar (append prelude program))))))
+(define desugared_exp (anf-convert (alphatize (desugar (append prelude program)))))
 
 ; (displayln (~a desugared_exp))
 
