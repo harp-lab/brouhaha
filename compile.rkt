@@ -132,7 +132,7 @@
     (normalize e
                (lambda (anf)
                  (match anf
-                   [`(lambda ,xs ,e0) (k `(lambda ,xs ,e0))]
+                  ;  [`(lambda ,xs ,e0) (k `(lambda ,xs ,e0))]
                    [`',dat (k `',dat)]
                    [(? symbol? x) (k x)]
                    [else (let ([x (gensym 'a)]) `(let ([,x ,anf]) ,(k x)))]))))
@@ -170,11 +170,14 @@
       [(? symbol? x) x]
       [`',dat `',dat]))
   (define (T e cae)
+    (if (not (symbol? cae))
+      (let ([f (gensym 'f)])
+        `(let ([,f ,cae]) ,(T e f)))
     (match e
       ; return (call continuation)
       [(? symbol? x) `(,cae '0 ,x)]
       [`',dat `(,cae '0 ',dat)]
-      [`(lambda . ,rest) `(,cae '0 ,(T-ae e))]
+      ; [`(lambda . ,rest) `(,cae '0 ,(T-ae e))]
       ; prim ops
       [`(prim ,op ,aes ...)
        (define retx (gensym 'retprim))
@@ -195,7 +198,7 @@
       [`(apply ,ae0 ,ae1)
        (define xlst (gensym 'cps-lst))
        `(let ([,xlst (prim cons ,cae ,(T-ae ae1))]) (apply ,(T-ae ae0) ,xlst))]
-      [`(,fae ,args ...) `(,(T-ae fae) ,cae ,@(map T-ae args))]))
+      [`(,fae ,args ...) `(,(T-ae fae) ,cae ,@(map T-ae args))])))
   (define (cps-convert-def def)
     (match def
       [`(define (,fname ,params ...)
