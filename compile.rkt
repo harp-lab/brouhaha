@@ -280,7 +280,7 @@
            (match def
              [`(define ,sig ,body)
               (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body))
-              `(,@pr+ ,@procs+ (proc () ,sig ,body+))]))
+              `(,@pr+ ,@procs+ (proc ,sig ,body+))]))
          '()
          program))
 
