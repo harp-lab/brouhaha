@@ -8,7 +8,7 @@
 
 (define prelude (read-program (build-path (current-directory) "prelude.haha")))
 (define program (read-program (build-path (current-directory) "tests" "foldl-style.haha")))
-(define program_exp (cps-convert (anf-convert (alphatize (desugar (append prelude program))))))
+(define program_exp (anf-convert (alphatize (desugar (append prelude program)))))
 
 
 (define (interp program (env (hash)))
@@ -82,6 +82,6 @@
         (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]
       ))
 
-  (eval `(main halt) (add-top-lvl env)))
+  (eval `(main) (add-top-lvl env)))
 
 (interp program_exp)
