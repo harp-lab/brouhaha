@@ -8,7 +8,13 @@
 (define (run-program program filename file-path prelude-path)
   (define file-path-string (path->string file-path))
   (define filename-string (path->string filename))
-  (define out-file (string-append file-path-string "_output.out"))
+  (define filename-noext (regexp-replace #rx"[.]haha$" filename-string ""))
+    (define out-dir (string-append (path->string (build-path (current-directory) "tests")) "/" filename-noext))
+    
+  (unless (directory-exists? out-dir)
+    (make-directory out-dir))
+  
+  (define out-file (string-append out-dir "/" filename-string "_output.out"))
   (displayln (~a "Now running: " filename-string " and outputting to: " out-file))
   (define prelude (read-program prelude-path))
   (define user-program (read-program file-path))

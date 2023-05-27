@@ -5,6 +5,9 @@
 (define (+ . lst) 
     (apply-prim + lst))
 
+(define (halt lst) 
+    (apply-prim halt lst))
+
 (define (- . lst) 
     (apply-prim - lst))
 
