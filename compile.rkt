@@ -5,6 +5,7 @@
          alphatize
          anf-convert
          cps-convert
+         closure-convert
          read-program
          read-all) ;; same as (provide (all-defined-out))
 ; (provide (all-defined-out))

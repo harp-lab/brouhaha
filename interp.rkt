@@ -4,11 +4,11 @@
 (require racket/trace)
 (require "compile.rkt")
 (define racket-eval eval)
-(provide interp)
+; (provide interp)
 
-(define prelude (read-program (build-path (current-directory) "prelude.haha")))
-(define program (read-program (build-path (current-directory) "tests" "foldl-style.haha")))
-(define program_exp (anf-convert (alphatize (desugar (append prelude program)))))
+; (define prelude (read-program (build-path (current-directory) "prelude.haha")))
+; (define program (read-program (build-path (current-directory) "tests" "foldl-style.haha")))
+; (define program_exp (anf-convert (alphatize (desugar (append prelude program)))))
 
 
 (define (interp program (env (hash)))
@@ -84,4 +84,4 @@
 
   (eval `(main) (add-top-lvl env)))
 
-(interp program_exp)
+; (interp program_exp)
