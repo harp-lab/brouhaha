@@ -12,6 +12,16 @@
 
 
 (define (interp program (env (hash)))
+  (define (ae-eval exp env)
+    (match exp
+      [`(lambda ,args ,body)
+      `(clo ,exp ,env)]
+      [(? symbol? x)
+      (hash-ref env x
+                (lambda () (raise `(error ,(format "Undefined variable: ~a" x)))))]
+      [(or (? number?) (? boolean?) (? string?)) exp]
+    ))
+  
   (define (add-top-lvl env)
     (let loop ([env+ env] [prog+ program])
        (match prog+
@@ -33,9 +43,10 @@
       [`(apply-prim halt ,lst)
         (hash-ref env lst)]
       [`(apply-prim ,op ,e0) 
-        (displayln (~a "\n\nApply-prim op e0: " exp "\n and env: " (pretty-print env)))
+        ; (displayln (~a "\n\nApply-prim op e0: " exp "\n and env: " (pretty-print env)))
         (apply (racket-eval op (make-base-namespace)) (eval e0 env))]
       [`(lambda ,_ ,_) 
+        (displayln (~a "Lambda Case: " exp))
         `(closure ,exp ,env)]
       [`(if ,ec ,et ,ef)
        (let ([val (eval ec env)])
