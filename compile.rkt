@@ -201,16 +201,16 @@
        `(let ([,xlst (prim cons ,cae ,(T-ae ae1))]) (apply ,(T-ae ae0) ,xlst))]
       [`(,fae ,args ...) `(,(T-ae fae) ,cae ,@(map T-ae args))])))
   (define (cps-convert-def def)
-    (define k 'halt)
+    ; (define k 'halt)
     (match def
       [`(define (,fname ,params ...)
           ,body)
-      ;  (define k (gensym 'kont))
+       (define k (gensym 'kont))
        `(define (,fname ,k ,@params)
           ,(T body k))]
       [`(define (,fname . ,(? symbol? params))
           ,body)
-      ;  (define k (gensym 'kont))
+       (define k (gensym 'kont))
        (define newargs (gensym 'args))
        `(define (,fname . ,params)
           ,(T
@@ -285,15 +285,3 @@
               `(,@pr+ ,@procs+ (proc ,sig ,body+))]))
          '()
          program))
-
-; Read from STDIN, write to STDOUT
-; (compile (read-program))
-
-; De-comment for posterity
-; (define (decomment program) ; this is actually not needed, keeping this here for posterity
-;   (cond 
-;     [(null? program) '()]
-;     [(and (string? (car program)) (string-prefix? ";" (car program)))
-;      (decomment (cdr program))]
-;     [(list? (car program)) (cons (decomment (car program)) (decomment (cdr program)))]
-;     [else (cons (car program) (decomment (cdr program)))]))
