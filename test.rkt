@@ -5,6 +5,7 @@
 (require "compile.rkt")
 (require "interp-anf.rkt")
 (require "interp-cps.rkt")
+(require "interp-closure.rkt")
 
 (define (write-to file content)
   (with-output-to-file file
@@ -13,9 +14,9 @@
     #:exists 'replace))
 
 ;What's better, this or tail-recursively?
-(define (verify-correctness file desugar alphatize anf cps)
+(define (verify-correctness file desugar alphatize anf cps closure)
   (cond 
-    [(and (equal? desugar alphatize) (equal? alphatize anf) (equal? anf cps))
+    [(and (equal? desugar alphatize) (equal? alphatize anf) (equal? anf cps) (equal? cps closure))
       (displayln (~a "Each output stage matched!\n"))]
     [else 
       (displayln (~a "Your outputs did not match for " file "\n"))]))
@@ -35,7 +36,7 @@
   (define out-file-alphatize (string-append out-dir "/" filename-noext "_alphatize.out"))
   (define out-file-anf (string-append out-dir "/" filename-noext "_anf.out"))
   (define out-file-cps (string-append out-dir "/" filename-noext "_cps.out"))
-  ;(define out-file-closure (string-append out-dir "/" filename-noext "_closure.out"))
+  (define out-file-closure (string-append out-dir "/" filename-noext "_closure.out"))
   (displayln (~a "Now running: " filename-string " and outputting to: " out-file-compile))
 
   (define prelude (read-program prelude-path))
@@ -45,7 +46,7 @@
   (define interp-alphatize (interp (alphatize (desugar program))))
   (define interp-anf (interp (anf-convert (alphatize (desugar program)))))
   (define interp-cps-out (interp-cps (cps-convert (anf-convert (alphatize (desugar program))))))
-  ; (define interp-closure-out (interp-closure (closure-convert (cps-convert (anf-convert (alphatize (desugar program)))))))
+  (define interp-closure-out (interp-closure (closure-convert (cps-convert (anf-convert (alphatize (desugar program)))))))
 
   (with-output-to-file out-file-compile ; why does the above function not work?
     (lambda () 
@@ -55,8 +56,8 @@
   (write-to out-file-alphatize interp-alphatize)
   (write-to out-file-anf interp-anf)
   (write-to out-file-cps interp-cps-out)
-  ; (write-to out-file-closure interp-closure-out)
-  (verify-correctness filename-string interp-desugar interp-alphatize interp-anf interp-cps-out)
+  (write-to out-file-closure interp-closure-out)
+  (verify-correctness filename-string interp-desugar interp-alphatize interp-anf interp-cps-out interp-closure-out)
   ) 
 
 ; Read the directory and process all .haha files

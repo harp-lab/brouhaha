@@ -5,9 +5,6 @@
 (define (+ . lst) 
     (apply-prim + lst))
 
-(define (halt lst) 
-    (apply-prim halt lst))
-
 (define (- . lst) 
     (apply-prim - lst))
 
@@ -28,6 +25,7 @@
 
 (define (cdr lst)
     (prim cdr lst))
+    
 
 (define (even? x)
     (prim even? x))

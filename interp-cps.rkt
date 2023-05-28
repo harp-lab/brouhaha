@@ -6,8 +6,8 @@
 (provide interp-cps)
 
 ; (define prelude (read-program (build-path (current-directory) "prelude.haha")))
-; (define program (read-program (build-path (current-directory) "tests" "fact.haha")))
-; (define program_exp (closure-convert (cps-convert (anf-convert (alphatize (desugar (append prelude program)))))))
+; (define program (read-program (build-path (current-directory) "tests" "easy.haha")))
+; (define program_exp (cps-convert (anf-convert (alphatize (desugar (append prelude program))))))
 
 (define (interp-cps program (env (hash)))
   (define (add-top-lvl env)
@@ -19,17 +19,14 @@
 
   (define (eval exp env)
     (match exp
-      [(? number?) exp]
-      [`() exp]
-      [`(,(? number? x) ,(? number? y)) y]
       [`(quote ,(? number? x)) x]
       [`(quote ,(? boolean? x)) x]
       [`(quote ,(? symbol? x)) x]
       [(? symbol?) (hash-ref env exp)]
+      [`(prim halt ,lst)
+        (hash-ref env lst)]
       [`(prim ,op ,es ...)
         (apply (racket-eval op (make-base-namespace)) (map (lambda (e) (eval e env)) es))]
-      [`(apply-prim halt ,lst)
-        (hash-ref env lst)]
       [`(apply-prim ,op ,e0) 
         (apply (racket-eval op (make-base-namespace)) (eval e0 env))]
       [`(lambda ,_ ,_) 
@@ -49,7 +46,6 @@
 
   (define (appl fn-val arg-vals)
     (match fn-val
-      [(? number? x) (eval arg-vals (hash))]
       [`(closure (lambda (,xs ...) ,eb) ,env)
        (eval eb (foldl (lambda (x val env) (hash-set env x val)) env xs arg-vals))]
       [`(closure (lambda ,x ,eb) ,env)
@@ -59,6 +55,6 @@
       [`(define (,name . ,(? symbol? params)) ,body)
         (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]))
 
-  (eval `(main halt) (add-top-lvl env)))
+  (eval `(let ([halt (lambda (lst) (prim halt lst))]) (main halt)) (add-top-lvl env)))
 
 ; (interp-cps program_exp)
