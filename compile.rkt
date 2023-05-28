@@ -7,8 +7,7 @@
          cps-convert
          closure-convert
          read-program
-         read-all) ;; same as (provide (all-defined-out))
-; (provide (all-defined-out))
+         read-all)
 
 (define (compile program)
   (define pr0 (desugar program))
@@ -29,15 +28,14 @@
 
 (define (read-program filename)
   (with-input-from-file filename
-    (lambda ()
-      (let ([bytes (read-bytes (file-size filename))])
-        (with-input-from-string (bytes->string/utf-8 bytes)
-          (lambda () (read-all (current-input-port))))))))
+                        (lambda ()
+                          (let ([bytes (read-bytes (file-size filename))])
+                            (with-input-from-string (bytes->string/utf-8 bytes)
+                                                    (lambda () (read-all (current-input-port))))))))
 
 (define (read-all in)
   (let loop ([exprs '()])
     (let ([next (read in)]) (if (eof-object? next) (reverse exprs) (loop (cons next exprs))))))
-
 
 (define (desugar program)
   (define (unroll-args args body)
@@ -51,8 +49,6 @@
       [(? symbol? x) x]
       [`(let ([,xs ,es] ...) ,body)
        `(let ,(map (lambda (x e) `[,x ,(desugar-exp e)]) xs es) ,(desugar-exp body))]
-      ;  [`(let ([,xs ,es] ...) ,body)
-      ;    (desugar-exp `((lambda ,xs ,body) ,@es))]
       [`(lambda (,xs ...) ,body) `(lambda ,xs ,(desugar-exp body))]
       [`(lambda ,(? symbol? x) ,body) `(lambda ,x ,(desugar-exp body))]
       [`(lambda ,args ,body) (desugar-exp `(lambda vargs ,(unroll-args args body)))]
@@ -128,23 +124,20 @@
       [`(define ,sig ,body) `(define ,sig ,(normalize-anf body))]))
   (map anf-convert-define program))
 
-(define (normalize-anf e) 
-    (define e+ (normalize e (lambda (x) x)))
-    (match e+
-      [(? symbol? x) x]
-      [`(let ([,x ,rhs]) ,e0)
-        e+]
-      [_ 
-        (define x+ (gensym 'x))
-        `(let ([,x+ ,e+]) ,x+)]))
+(define (normalize-anf e)
+  (define e+ (normalize e (lambda (x) x)))
+  (match e+
+    [(? symbol? x) x]
+    [`(let ([,x ,rhs]) ,e0) e+]
+    [_
+     (define x+ (gensym 'x))
+     `(let ([,x+ ,e+]) ,x+)]))
 
 (define (normalize e k)
   (define (normalize-ae e k)
     (normalize e
                (lambda (anf)
                  (match anf
-                  ;  [`(lambda ,xs ,e0) (k `(lambda ,xs ,e0))]
-                  ;  [`',dat (k `',dat)]
                    [(? symbol? x) (k x)]
                    [else (let ([x (gensym 'a)]) `(let ([,x ,anf]) ,(k x)))]))))
 
@@ -153,40 +146,17 @@
         (k '())
         (normalize-ae (car es) (lambda (x) (normalize-aes (cdr es) (lambda (xs) (k `(,x . ,xs))))))))
   (match e
-    ; [`',dat (normalize-ae `',dat k)]
     [`',dat (k `',dat)]
     [(? symbol? x) (k x)]
     [`(lambda ,xs ,e0) (k `(lambda ,xs ,(normalize e0 (lambda (x) x))))]
     [`(let () ,e0) (normalize e0 k)]
-    ; [`(let ([,x ,rhs] . ,rest) ,e0)
-    ;  (k `(let ([,x ,(normalize rhs (lambda (x) x))]) ,(normalize `(let ,rest ,e0) (lambda (x) x))))]
-    ; [`(let ([,x ,rhs] . ,rest) ,e0)
-    ;   `(let ([,x ,(normalize rhs (lambda (x) x))])
-    ;     )]
     [`(let ([,x ,rhs] . ,rest) ,e0)
-     `(let ([,x ,(normalize rhs (lambda (x) x))]) 
-        ,(normalize `(let ,rest ,e0) k))]
-
-    ; [`(let ([,xs ,rhs] . ,rest) ,body)
-    ;    (normalize rhs (lambda (param)
-    ;                       `(let ([,xs ,param])
-    ;                          ,(normalize `(let (,@rest) ,body) k))))]
+     `(let ([,x ,(normalize rhs (lambda (x) x))]) ,(normalize `(let ,rest ,e0) k))]
     [`(if ,ec ,et ,ef)
-     (normalize-ae
-      ec
-      (lambda (xc) (k `(if ,xc ,(normalize-anf et) ,(normalize-anf ef)))))]
+     (normalize-ae ec (lambda (xc) (k `(if ,xc ,(normalize-anf et) ,(normalize-anf ef)))))]
     [`(prim ,op ,es ...) (normalize-aes es (lambda (xs) (k `(prim ,op . ,xs))))]
     [`(apply-prim ,op ,e0) (normalize-ae e0 (lambda (x) (k `(apply-prim ,op ,x))))]
     [`(apply ,es ...) (normalize-aes es (lambda (xs) (k `(apply . ,xs))))]
-    ; [`(prim ,op ,es ...) 
-    ;   (normalize-aes es 
-    ;     (lambda (xs) (normalize-ae `(prim ,op . ,xs) k)))]
-    ; [`(apply-prim ,op ,e0) 
-    ;   (normalize-ae e0 
-    ;     (lambda (x) (normalize-ae `(apply-prim ,op ,x) k)))]
-    ; [`(apply ,es ...) 
-    ;   (normalize-aes es 
-    ;     (lambda (xs) (normalize-ae `(apply . ,xs) k)))]
     [`(,es ...) (normalize-aes es k)]))
 
 (define (cps-convert program)
@@ -203,57 +173,40 @@
       [`',dat `',dat]))
   (define (T e cae)
     (if (not (symbol? cae))
-      (let ([f (gensym 'f)])
-        `(let ([,f ,cae]) ,(T e f)))
-      (match e
-        ; return (call continuation)
-        [(? symbol? x) `(,cae ,x)]
-        ; [`',dat `(,cae ',dat)]
-        ; [`(lambda . ,rest) `(,cae '0 ,(T-ae e))]
-        ; prim ops
-        [`(prim ,op ,aes ...)
-          (define retx (gensym 'retprim))
-          (T `(let ([,retx (prim ,op ,@aes)]) ,retx) cae)]
-        [`(apply-prim ,op ,ae)
-          (define retx (gensym 'retprim))
-          (T `(let ([,retx (apply-prim ,op ,ae)]) ,retx) cae)]
-        [`(let ([,x (apply-prim ,op ,ae)]) ,e0) 
-          `(let ([,x (apply-prim ,op ,(T-ae ae))]) ,(T e0 cae))]
-        [`(let ([,x (prim ,op ,aes ...)]) ,e0) 
-          `(let ([,x (prim ,op ,@(map T-ae aes))]) ,(T e0 cae))]
-        [`(let ([,x (lambda ,xs ,elam)]) ,e0) 
-          `(let ([,x ,(T-ae `(lambda ,xs ,elam))]) ,(T e0 cae))]
-        [`(let ([,x ',dat]) ,e0) 
-          `(let ([,x ',dat]) ,(T e0 cae))]
-        ; let -> continuation
-        [`(let ([,x ,rhs]) ,e0)
-          ; (define _x (gensym '_))
-          (T rhs `(lambda (,x) ,(T e0 cae)))]
-        ; walk if, desugar call/cc, apply function
-        [`(if ,ae ,e0 ,e1) 
-          `(if ,(T-ae ae) ,(T e0 cae) ,(T e1 cae))]
-        [`(apply ,ae0 ,ae1)
-          (define xlst (gensym 'cps-lst))
-          `(let ([,xlst (prim cons ,cae ,(T-ae ae1))]) (apply ,(T-ae ae0) ,xlst))]
-        [`(,fae ,args ...) 
-          `(,(T-ae fae) ,cae ,@(map T-ae args))])))
+        (let ([f (gensym 'f)]) `(let ([,f ,cae]) ,(T e f)))
+        (match e
+          [(? symbol? x) `(,cae ,x)]
+          [`(prim ,op ,aes ...)
+           (define retx (gensym 'retprim))
+           (T `(let ([,retx (prim ,op ,@aes)]) ,retx) cae)]
+          [`(apply-prim ,op ,ae)
+           (define retx (gensym 'retprim))
+           (T `(let ([,retx (apply-prim ,op ,ae)]) ,retx) cae)]
+          [`(let ([,x (apply-prim ,op ,ae)]) ,e0)
+           `(let ([,x (apply-prim ,op ,(T-ae ae))]) ,(T e0 cae))]
+          [`(let ([,x (prim ,op ,aes ...)]) ,e0)
+           `(let ([,x (prim ,op ,@(map T-ae aes))]) ,(T e0 cae))]
+          [`(let ([,x (lambda ,xs ,elam)]) ,e0) `(let ([,x ,(T-ae `(lambda ,xs ,elam))]) ,(T e0 cae))]
+          [`(let ([,x ',dat]) ,e0) `(let ([,x ',dat]) ,(T e0 cae))]
+          [`(let ([,x ,rhs]) ,e0) (T rhs `(lambda (,x) ,(T e0 cae)))]
+          [`(if ,ae ,e0 ,e1) `(if ,(T-ae ae) ,(T e0 cae) ,(T e1 cae))]
+          [`(apply ,ae0 ,ae1)
+           (define xlst (gensym 'cps-lst))
+           `(let ([,xlst (prim cons ,cae ,(T-ae ae1))]) (apply ,(T-ae ae0) ,xlst))]
+          [`(,fae ,args ...) `(,(T-ae fae) ,cae ,@(map T-ae args))])))
   (define (cps-convert-def def)
-    ; (define k 'halt)
     (match def
       [`(define (,fname ,params ...)
           ,body)
        (define k (gensym 'kont))
        `(define (,fname ,k ,@params)
           ,(T body k))]
-      [`(define (,fname . ,(? symbol? params)) ,body)
+      [`(define (,fname . ,(? symbol? params))
+          ,body)
        (define k (gensym 'kont))
        (define newargs (gensym 'args))
        `(define (,fname . ,params)
-          ,(T
-            `(let ([,k (prim car ,params)])
-               (let ([,params (prim cdr ,params)])
-                 ,body))
-            k))]))
+          ,(T `(let ([,k (prim car ,params)]) (let ([,params (prim cdr ,params)]) ,body)) k))]))
   (map cps-convert-def program))
 
 (define (T-bottom-up e)
@@ -313,10 +266,10 @@
 (define (closure-convert program)
   (foldl (lambda (def pr+)
            (match def
-             [`(define (,fx . ,xs) ,body)
+             [`(define (,fx . ,xs)
+                 ,body)
               (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body))
               (define envx (gensym '_))
               `(,@pr+ ,@procs+ (proc (,fx ,envx . ,xs) ,body+))]))
          '()
          program))
-
