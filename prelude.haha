@@ -32,8 +32,8 @@
 (define (even? x)
     (prim even? x))
 
-(define (eq? x)
-    (prim eq? x))
+(define (eq? x y)
+    (prim eq? x y))
 
 (define (> . lst) 
     (apply-prim > lst))
@@ -48,20 +48,3 @@
   (if (null? lst)
       acc
       (foldl fun (fun (car lst) acc) (cdr lst))))
-
-(define (filter guard lst)
-    (if (null? lst) 
-        '()
-        (if (guard (car lst)) 
-            (cons (car lst) (filter guard (cdr lst)))
-            (filter guard (cdr lst)))))
-
-(define (drop lst n)
-  (if (= n 0) 
-      lst
-      (drop (cdr lst) (- n 1))))
-
-; reverse has a problem whereas the lst2 needs to be an optional variable, we currently do not suppor this
-;(define (reverse lst lst2 `())
-;   (if (null? lst) lst2
-;      (reverse (cdr lst) (cons (car lst) lst2))))

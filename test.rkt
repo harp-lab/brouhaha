@@ -4,6 +4,7 @@
 (require racket/trace)
 (require "compile.rkt")
 (require "interp-anf.rkt")
+(require "interp-cps.rkt")
 
 (define (write-to file content)
   (with-output-to-file file
@@ -15,7 +16,7 @@
 (define (verify-correctness file desugar alphatize anf cps)
   (cond 
     [(and (equal? desugar alphatize) (equal? alphatize anf) (equal? anf cps))
-      (displayln (~a "Each output stage matched!"))]
+      (displayln (~a "Each output stage matched!\n"))]
     [else 
       (displayln (~a "Your outputs did not match for " file "\n"))]))
 
@@ -24,7 +25,7 @@
   (define file-path-string (path->string file-path))
   (define filename-string (path->string filename))
   (define filename-noext (regexp-replace #rx"[.]haha$" filename-string ""))
-    (define out-dir (string-append (path->string (build-path (current-directory) "tests")) "/" filename-noext))
+  (define out-dir (string-append (path->string (build-path (current-directory) "tests")) "/" filename-noext))
     
   (unless (directory-exists? out-dir)
     (make-directory out-dir))
@@ -43,9 +44,8 @@
   (define interp-desugar (interp (desugar program)))
   (define interp-alphatize (interp (alphatize (desugar program))))
   (define interp-anf (interp (anf-convert (alphatize (desugar program)))))
-
-  (define interp-cps (interp (cps-convert (anf-convert (alphatize (desugar program))))))
-  ; (define interp-closure (interp (closure-convert (cps-convert (anf-convert (alphatize (desugar program)))))))
+  (define interp-cps-out (interp-cps (cps-convert (anf-convert (alphatize (desugar program))))))
+  ; (define interp-closure-out (interp-closure (closure-convert (cps-convert (anf-convert (alphatize (desugar program)))))))
 
   (with-output-to-file out-file-compile ; why does the above function not work?
     (lambda () 
@@ -54,9 +54,9 @@
   (write-to out-file-desugar interp-desugar)
   (write-to out-file-alphatize interp-alphatize)
   (write-to out-file-anf interp-anf)
-  (write-to out-file-cps interp-cps)
-  ; (write-to out-file-closure interp-closure)
-  (verify-correctness filename-string interp-desugar interp-alphatize interp-anf interp-cps)
+  (write-to out-file-cps interp-cps-out)
+  ; (write-to out-file-closure interp-closure-out)
+  (verify-correctness filename-string interp-desugar interp-alphatize interp-anf interp-cps-out)
   ) 
 
 ; Read the directory and process all .haha files
