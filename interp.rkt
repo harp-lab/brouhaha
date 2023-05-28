@@ -11,7 +11,7 @@
 (define racket-eval eval)
 
 (define prelude (read-program (build-path (current-directory) "prelude.haha")))
-(define program (read-program (build-path (current-directory) "tests" "power.haha")))
+(define program (read-program (build-path (current-directory) "tests" "foldl-style.haha")))
 (define program_exp (cps-convert (anf-convert (alphatize (desugar (append prelude program))))))
 
 (define (interp program (env (hash)))
@@ -51,7 +51,7 @@
       [`(,ef ,eas ...)
         (let ([fn-val (eval ef env)]
               [arg-vals 
-                (map (lambda (ea) (eval ea env)) eas)])
+               (map (lambda (ea) (eval ea env)) eas)])
           (appl fn-val arg-vals))]))
 
   (define (appl fn-val arg-vals)
@@ -66,6 +66,7 @@
       [`(define (,name ,params ...) ,body)
         (eval body (foldl (lambda (x val env) (hash-set env x val)) (add-top-lvl (hash)) params arg-vals))]
       [`(define (,name . ,(? symbol? params)) ,body)
+        (pretty-print `(appl ,(second arg-vals)))
         (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]))
 
   (eval `(main halt) (add-top-lvl env)))
