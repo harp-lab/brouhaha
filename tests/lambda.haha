@@ -1,5 +1,5 @@
 (define (lam x y)
-    ((lambda (a b . c) b) x y))
+    ((lambda (a b) b) x y))
 
 (define (main)
     (lam 5 6))
