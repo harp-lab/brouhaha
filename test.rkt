@@ -12,9 +12,9 @@
     #:exists 'replace))
 
 ;What's better, this or tail-recursively?
-(define (verify-correctness file desugar alphatize anf cps closure)
+(define (verify-correctness file desugar alphatize anf cps)
   (cond 
-    [(equal? (equal? (equal? (equal? closure cps) anf) alphatize) desugar)
+    [(and (equal? desugar alphatize) (equal? alphatize anf) (equal? anf cps))
       (displayln (~a "Each output stage matched!"))]
     [else 
       (displayln (~a "Your outputs did not match for " file "\n"))]))
@@ -34,7 +34,7 @@
   (define out-file-alphatize (string-append out-dir "/" filename-noext "_alphatize.out"))
   (define out-file-anf (string-append out-dir "/" filename-noext "_anf.out"))
   (define out-file-cps (string-append out-dir "/" filename-noext "_cps.out"))
-  (define out-file-closure (string-append out-dir "/" filename-noext "_closure.out"))
+  ;(define out-file-closure (string-append out-dir "/" filename-noext "_closure.out"))
   (displayln (~a "Now running: " filename-string " and outputting to: " out-file-compile))
 
   (define prelude (read-program prelude-path))
@@ -43,7 +43,8 @@
   (define interp-desugar (interp (desugar program)))
   (define interp-alphatize (interp (alphatize (desugar program))))
   (define interp-anf (interp (anf-convert (alphatize (desugar program)))))
-  ; (define interp-cps (interp (cps-convert (anf-convert (alphatize (desugar program))))))
+
+  (define interp-cps (interp (cps-convert (anf-convert (alphatize (desugar program))))))
   ; (define interp-closure (interp (closure-convert (cps-convert (anf-convert (alphatize (desugar program)))))))
 
   (with-output-to-file out-file-compile ; why does the above function not work?
@@ -53,9 +54,9 @@
   (write-to out-file-desugar interp-desugar)
   (write-to out-file-alphatize interp-alphatize)
   (write-to out-file-anf interp-anf)
-  ; (write-to out-file-cps interp-cps)
+  (write-to out-file-cps interp-cps)
   ; (write-to out-file-closure interp-closure)
-  (verify-correctness filename-string interp-desugar interp-alphatize interp-anf 0 0)
+  (verify-correctness filename-string interp-desugar interp-alphatize interp-anf interp-cps)
   ) 
 
 ; Read the directory and process all .haha files
