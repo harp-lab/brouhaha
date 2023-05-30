@@ -7,5 +7,5 @@
               (power (* x x) (/ n 2))
               (* x (power (* x x) (/ (- n 1) 2)))))))
 
-(define (main)
+(define (brouhaha_main)
     (power 2 10))

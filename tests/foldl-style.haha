@@ -1,5 +1,5 @@
 (define (call-foldl lst)
     (foldl + 0 lst))
 
-(define (main)
+(define (brouhaha_main)
     (call-foldl (list 1 2 3 4)))

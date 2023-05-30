@@ -3,5 +3,5 @@
         1
         2))
 
-(define (main)
+(define (brouhaha_main)
     (eq-test 1 1))

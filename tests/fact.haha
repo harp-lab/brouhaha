@@ -3,5 +3,5 @@
       1
       (* n (fact (- n 1)))))
 
-(define (main)
+(define (brouhaha_main)
   (fact 5))

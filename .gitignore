@@ -3,3 +3,6 @@ tests/*/
 yes.out
 *~*
 *#*
+compiled
+.idea/
+.vscode/
