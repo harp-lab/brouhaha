@@ -12,7 +12,7 @@ using namespace std;
  * @return This macro masks off the three least significant bits of the input value by
  * performing a bitwise AND operation with the complement of a 7 - bit mask.
  */
-#define MASK(val) ((val) & ~(7ULL))
+#define MASK(val) (((u64)(val)) & ~(7ULL))
 
 #define NULL_VALUE 0
 #define ENV_ARRAY 1
@@ -79,14 +79,14 @@ extern "C"
       return (((u64)(v)) | CONS);
    }
 
-   u64 *decode_clo(u64 v)
+   void **decode_clo(void *v)
    {
-      return ((u64 *)MASK(v));
+      return ((void **)MASK(v));
    }
 
-   u64 encode_clo(u64 *v)
+   void *encode_clo(void **v)
    {
-      return (((u64)(v)) | CLO);
+      return reinterpret_cast<void *>(((u64)(v)) | CLO);
    }
 
    u64 *decode_env_arr(u64 v)
@@ -883,6 +883,15 @@ extern "C"
       return reinterpret_cast<void *>(encode_clo(obj));
    }
 
+   void **alloc_clo(void *fptr, int num)
+   {
+      void **obj = (void **)(malloc((num + 1) * sizeof(void *)));
+
+      obj[0] = fptr;
+
+      return obj;
+   }
+
    /**
     * This function sets up the environment part of a closure instance
     * @param arr is the environment array
@@ -999,18 +1008,19 @@ extern "C"
    }
 
    void *halt;
-   vector<void *> arg_buffer;
+   // vector<void *> arg_buffer;
+   void *arg_buffer[999];
    int arg_num;
-
 
    void print_arg_buffer()
    {
-      cout<<"buffer size: " <<arg_buffer.size() <<endl;
+      cout << "buffer size: " << arg_buffer.size() << endl;
       for (int i = 0; i < arg_num; ++i)
       {
          cout << reinterpret_cast<u64>(arg_buffer[i]) << " ";
       }
-      cout<<endl<<endl;
+      cout << endl
+           << endl;
    }
 
    /**

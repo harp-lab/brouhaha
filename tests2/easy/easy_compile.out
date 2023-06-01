@@ -5,7 +5,7 @@
        (let ((x4914 (apply-prim + lst))) (clo-app kont4918 x4914)))))
   (proc
    (call _4926 kont4920)
-   (let ((a4915 '1)) (let ((a4916 '2)) (clo-app + kont4920 a4915 a4916))))
+   (let ((a4915 '10)) (let ((a4916 '12)) (clo-app + kont4920 a4915 a4916))))
   (proc
    (lam4927 env4928 x4917)
    (let ((kont4921 (env-ref env4928 1))) (clo-app kont4921 x4917)))

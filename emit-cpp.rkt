@@ -66,23 +66,26 @@
        (append-line filepath "\n//creating new closure instance")
 
        (define ptrName (gensym 'ptr))
+       (define cloName (gensym 'clo))
 
-       (append-line filepath (format "auto ~a = reinterpret_cast<void (*)()>(&~a);" ptrName ptr))
+       (append-line filepath (format "auto ~a = reinterpret_cast<void (*)()>(&~a_fptr);" ptrName ptr))
 
-       (append-line filepath (format "~a = allocate_env_space(encode_int((s32)~a));" proc_env arglength))
 
-       (append-line
-        filepath
-        (format "void* ~a = make_closure(reinterpret_cast<void *>(~a), ~a);" (get-c-string lhs) ptrName proc_env))
+       (append-line filepath (format "void** ~a = alloc_clo(~a, ~a);" cloName (get-c-string ptr) arglength))
 
        (when (> (+ arglength 1) 1) (append-line filepath "\n//setting env list"))
+
+       ; void** raw_clo = alloc_clo(f);
+       ; raw_clo[1] = y;
+       ; raw_clo[2] = z;  // one line per env variable
+       ; void* clo = encode_clo(raw_clo);
 
        (for ([i (in-range 1 (+ arglength 1))]
              [item args])
 
-         (append-line
-          filepath
-          (format "set_env(~a, encode_int((s32)~a), ~a);" proc_env i (get-c-string item))))
+         (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item))))
+
+       (append-line filepath (format "void* ~a = encode_clo(~a);" (get-c-string lhs) cloName))
 
        ;  (when (> (+ arglength 1) 1) (append-line filepath "\n"))
        (append-line filepath "\n")
@@ -107,7 +110,7 @@
        (convert-proc-body proc_env proc_arg letbody)]
 
       [`(let ([,lhs (env-ref ,env ,idx)]) ,letbody)
-       (append-line filepath (format "void* ~a = get_env_value(~a, encode_int((s32)~a));" (get-c-string lhs) env idx))
+       (append-line filepath (format "void* ~a = ~a[~a];" (get-c-string lhs) env idx))
 
        (convert-proc-body proc_env proc_arg letbody)]
 
@@ -125,25 +128,20 @@
 
       [`(clo-app ,func ,args ...)
        (append-line filepath "\n//clo-app")
-       (append-line filepath "arg_buffer.clear();")
+       ;  (append-line filepath "arg_buffer.clear();")
 
-       (append-line filepath (format "arg_buffer.push_back(reinterpret_cast<void *>(~a));" proc_env))
+       (append-line filepath (format "arg_buffer[1]=~a;" (get-c-string  func)))
+       (for ([i (in-range 1 (+ (length args) 1))]
+             [item args])
+         (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
+       (append-line filepath (format "arg_buffer[0] = ~a;" (+ (length args) 1)))
 
-       (for ([item args])
-         (append-line
-          filepath
-          (format "arg_buffer.push_back(reinterpret_cast<void *>(~a));" item)))
-
-       (if (hash-has-key? top_level_procs (get-c-string func))
-           (append-line
-            filepath
-            (format "auto function_ptr = reinterpret_cast<void (*)()>(~a);" (get-c-string func)))
-           (append-line
-            filepath
-            (format "auto function_ptr = reinterpret_cast<void (*)()>(get_closure_ptr(~a));" (get-c-string func))))
+       (append-line
+        filepath
+        (format "auto function_ptr = reinterpret_cast<void (*)()>(((void**)~a)[0]);" (get-c-string func)))
 
        (append-line filepath "//assign buffer size to arg_num")
-       (append-line filepath "arg_num = arg_buffer.size();")
+       ;  (append-line filepath "arg_num = arg_buffer.size();")
        (append-line filepath "// call next proc using a function pointer")
        (append-line filepath "function_ptr();")
        (append-line filepath "return nullptr;")
@@ -154,7 +152,7 @@
     ; (pretty-print proc)
     (match proc
       [`(proc (,ptr ,env ,args ...) ,body)
-       (define func_name (format "void* ~a() // ~a ~a" (get-c-string ptr) ptr "\n{"))
+       (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
        (append-line filepath func_name)
@@ -163,19 +161,33 @@
        ;  (append-line filepath (format "cout<<\"In ~a\"<<endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
+       (append-line filepath "//reading number of args")
+       (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
        (append-line filepath "//reading env")
-       (append-line filepath (format "void* ~a = arg_buffer[~a];" (get-c-string env) 0))
+       (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
 
-       (append-line filepath "//reading other params")
-       (for ([i (in-range 1 (+ (length args) 1))]
+
+       (append-line filepath "//reading env and args")
+       (for ([i (in-range 2 (+ (length args) 2))]
              [item args])
 
          (append-line
           filepath
           (format "void* ~a = arg_buffer[~a];" (get-c-string item) i)))
 
+       ;  (append-line filepath "//setting other params")
+       ;  (for ([i (in-range 2 (+ (length args) 1))]
+       ;        [item args])
+
+       ;    (append-line
+       ;     filepath
+       ;     (format "void* ~a = arg_buffer[~a];" (get-c-string item) i)))
+
        (convert-proc-body (get-c-string env) args body)
+
        (append-line filepath "}\n")
+
+       (append-line filepath (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" (get-c-string ptr) (get-c-string ptr) 0))
 
        ]
       [`(proc (,ptr ,env . ,arg) ,body)
@@ -188,13 +200,15 @@
        ;  (append-line filepath (format "cout<<\"In ~a\"<<endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
+       (append-line filepath "//reading number of args")
+       (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
 
-       (append-line filepath "//reading env")
-       (append-line filepath (format "void* ~a = arg_buffer[~a];" (get-c-string env) 0))
+       (append-line filepath "//reading dummy variable")
+       (append-line filepath (format "void* ~a = arg_buffer[~a];" (get-c-string env) 1))
 
 
        (append-line filepath "//building cons cell\n")
-       
+
        (append-line filepath (format "void* ~a = encode_null();" arg))
        (append-line filepath (format "for(int i = arg_num - 1; i >=1; --i)\n{"))
        (append-line filepath (format "~a = prim_cons(arg_buffer[i], ~a);" arg arg))
@@ -219,18 +233,25 @@
   (define tempEnv (gensym '_))
   (define tempClo (gensym 'clo))
 
-  (append-line filepath (format "auto ~a = reinterpret_cast<void (*)()>(&fhalt);" tempPtr))
-  (append-line filepath (format "void* ~a = allocate_env_space(encode_int((s32)0));" tempEnv))
-  (append-line filepath (format "void* ~a = make_closure(reinterpret_cast<void *>(~a), ~a);" tempClo tempPtr tempEnv))
 
-  (append-line filepath (format "arg_buffer.push_back(reinterpret_cast<void *>(0));"));
-  (append-line filepath (format "arg_buffer.push_back(reinterpret_cast<void *>(~a));" tempClo));
+  ; void** raw_clo = alloc_clo(f);
+  ; raw_clo[1] = y;
+  ; raw_clo[2] = z;  // one line per env variable
+  ; void* clo = encode_clo(raw_clo);
+
+  (append-line filepath (format "void** ~a = alloc_clo(&fhalt, 0);" tempClo))
+  (append-line filepath (format "void* ~a = encode_clo(~a);" tempPtr tempClo))
+
+  ; (append-line filepath (format "arg_buffer.push_back(reinterpret_cast<void *>(0));"));
+  ; (append-line filepath (format "arg_buffer.push_back(reinterpret_cast<void *>(~a));" tempClo));
 
   (append-line filepath "//making a call to the brouhaha main function to kick off our c++ emission.");
   (append-line filepath "auto function_ptr = reinterpret_cast<void (*)()>(brouhaha_main);")
-  (append-line filepath "arg_num = arg_buffer.size();")
+  ; (append-line filepath "arg_num = arg_buffer.size();")
+  (append-line filepath "arg_buffer[0]=0;")
   (append-line filepath "function_ptr();")
-  (append-line filepath "arg_buffer.clear();")
+
+  ; (append-line filepath "arg_buffer.clear();")
   (append-line filepath "return 0;")
 
   (append-line filepath "}\n")
