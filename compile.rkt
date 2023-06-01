@@ -28,10 +28,10 @@
 
 (define (read-program filename)
   (with-input-from-file filename
-                        (lambda ()
-                          (let ([bytes (read-bytes (file-size filename))])
-                            (with-input-from-string (bytes->string/utf-8 bytes)
-                                                    (lambda () (read-all (current-input-port))))))))
+    (lambda ()
+      (let ([bytes (read-bytes (file-size filename))])
+        (with-input-from-string (bytes->string/utf-8 bytes)
+          (lambda () (read-all (current-input-port))))))))
 
 (define (read-all in)
   (let loop ([exprs '()])

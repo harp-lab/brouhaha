@@ -1,11 +1,11 @@
 #lang racket
 ; open test folder
 ; iterate over them and test them
-(require racket/trace)
 (require "compile.rkt")
 (require "interp-anf.rkt")
 (require "interp-cps.rkt")
 (require "interp-closure.rkt")
+(require "emit-cpp.rkt")
 
 (define (write-to file content)
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
@@ -23,11 +23,12 @@
   (define filename-string (path->string filename))
   (define filename-noext (regexp-replace #rx"[.]haha$" filename-string ""))
   (define out-dir
-    (string-append (path->string (build-path (current-directory) "tests")) "/" filename-noext))
+    (string-append (path->string (build-path (current-directory) "tests2")) "/" filename-noext))
 
   (unless (directory-exists? out-dir)
     (make-directory out-dir))
 
+  (define out-file-cpp (string-append out-dir "/" filename-noext "_cpp_program.cpp"))
   (define out-file-compile (string-append out-dir "/" filename-noext "_compile.out"))
   (define out-file-desugar (string-append out-dir "/" filename-noext "_desugar.out"))
   (define out-file-alphatize (string-append out-dir "/" filename-noext "_alphatize.out"))
@@ -39,16 +40,29 @@
   (define prelude (read-program prelude-path))
   (define user-program (read-program file-path))
   (define program (append prelude user-program))
-  (define interp-desugar (interp (desugar program)))
-  (define interp-alphatize (interp (alphatize (desugar program))))
-  (define interp-anf (interp (anf-convert (alphatize (desugar program)))))
-  (define interp-cps-out (interp-cps (cps-convert (anf-convert (alphatize (desugar program))))))
-  (define interp-closure-out
-    (interp-closure (closure-convert (cps-convert (anf-convert (alphatize (desugar program)))))))
+
+  (define desugar_prg (desugar program))
+  (define alphatize_prg (alphatize desugar_prg))
+  (define anf_prg (anf-convert alphatize_prg))
+  (define cps_prg (cps-convert anf_prg))
+  (define clo_conv_prg (closure-convert cps_prg))
+
+  (define interp-desugar (interp desugar_prg))
+  (define interp-alphatize (interp alphatize_prg))
+  (define interp-anf (interp anf_prg))
+  (define interp-cps-out (interp-cps cps_prg))
+  (define interp-closure-out (interp-closure clo_conv_prg))
+
+
+  (emit-cpp clo_conv_prg out-file-cpp)
+  (displayln (~a "Emitting C++ for: " filename-string " and outputting to: " out-file-cpp))
 
   (with-output-to-file out-file-compile ; why does the above function not work?
-                       (lambda () (compile program))
-                       #:exists 'replace)
+    ; (lambda () (compile program))
+    (lambda () (pretty-print clo_conv_prg))
+    #:exists 'replace)
+
+
   (write-to out-file-desugar interp-desugar)
   (write-to out-file-alphatize interp-alphatize)
   (write-to out-file-anf interp-anf)
@@ -71,4 +85,4 @@
                      full-path
                      (build-path (current-directory) "prelude.haha"))))))
 
-(read-direc "tests/")
+(read-direc "tests2/")

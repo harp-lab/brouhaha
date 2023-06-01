@@ -48,4 +48,4 @@
           ,body)
        (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]))
 
-  (eval `(let ([halt (lambda (lst) (prim halt lst))]) (main halt)) (add-top-lvl env)))
+  (eval `(let ([halt (lambda (lst) (prim halt lst))]) (brouhaha_main halt)) (add-top-lvl env)))

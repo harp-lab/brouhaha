@@ -47,4 +47,4 @@
           ,body)
        (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]))
 
-  (eval `(main) (add-top-lvl env)))
+  (eval `(brouhaha_main) (add-top-lvl env)))

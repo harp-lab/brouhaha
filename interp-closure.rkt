@@ -13,6 +13,7 @@
         [`() env+])))
 
   (define (eval exp env)
+    ; (displayln (~a "exp: " exp "\n env: " env "\n----"))
     (match exp
       [`(quote ,(? number? x)) x]
       [`(quote ,(? boolean? x)) x]
@@ -50,5 +51,5 @@
       [`(closure (proc (,fx ,envx . ,args) ,eb) ,fr-lst ...)
        (eval eb (hash-set (hash-set (add-top-lvl env) envx fn-val) args arg-vals))]))
 
-  (eval `(let ([halt (make-closure halt)]) (main halt))
+  (eval `(let ([halt (make-closure halt)]) (brouhaha_main halt))
         (add-top-lvl (hash-set env 'halt `(closure (proc (halt _env x) (prim halt x)))))))

@@ -9,5 +9,5 @@
 (define (count-divisors num)
   (helper 1 0 num))
 
-(define (main)
+(define (brouhaha_main)
     (count-divisors 10))
