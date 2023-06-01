@@ -58,8 +58,8 @@
   (displayln (~a "Emitting C++ for: " filename-string " and outputting to: " out-file-cpp))
 
   (with-output-to-file out-file-compile ; why does the above function not work?
-    ; (lambda () (compile program))
-    (lambda () (pretty-print clo_conv_prg))
+    (lambda () (compile program))
+    ; (lambda () (pretty-print clo_conv_prg))
     #:exists 'replace)
 
 

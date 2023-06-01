@@ -1,2 +1,2 @@
-(define (call x y z) (+ x y z))
+(define (call x y . z) (+ x y z))
 (define (brouhaha_main) (call 1 2 3))
