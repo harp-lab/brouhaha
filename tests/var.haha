@@ -1,0 +1,2 @@
+(define (call x y z) (+ x y z))
+(define (main) (call 1 2 3))

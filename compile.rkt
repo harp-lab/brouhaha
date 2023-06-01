@@ -42,7 +42,8 @@
     (match args
       [(? symbol? x) `(let ([,x vargs]) ,body)]
       [`(,(? symbol? x) . ,rst)
-       `(let ([,x (car vargs)] [vargs (cdr vargs)]) ,(unroll-args rst body))]))
+       `(let ([,x (car vargs)] [vargs (cdr vargs)]) ,(unroll-args rst body))]
+      [_ body]))
   (define (desugar-exp exp)
     (match exp
       [(? integer? y) `',y]

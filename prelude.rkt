@@ -1,0 +1,67 @@
+; Prelude is used as a way to add functionality to the language and programs as a library
+(define (car lst) 
+    (prim car lst))
+
+(define (+ . lst) 
+    (apply-prim + lst))
+
+(define (halt lst) 
+    (apply-prim halt lst))
+
+(define (- . lst) 
+    (apply-prim - lst))
+
+(define (* . lst) 
+    (apply-prim * lst))
+
+(define (= . lst) 
+    (apply-prim = lst))
+
+(define (/ . lst) 
+    (apply-prim / lst))
+
+(define (null? x)
+    (prim null? x))
+
+(define (cons a b)
+    (prim cons a b))
+
+(define (cdr lst)
+    (prim cdr lst))
+
+(define (even? x)
+    (prim even? x))
+
+(define (eq? x)
+    (prim eq? x))
+
+(define (> . lst) 
+    (apply-prim > lst))
+
+(define (modulo a b)
+    (prim modulo a b))
+
+(define (list . x) 
+    x)
+
+(define (foldl fun acc lst) 
+  (if (null? lst)
+      acc
+      (foldl fun (fun (car lst) acc) (cdr lst))))
+
+(define (filter guard lst)
+    (if (null? lst) 
+        '()
+        (if (guard (car lst)) 
+            (cons (car lst) (filter guard (cdr lst)))
+            (filter guard (cdr lst)))))
+
+(define (drop lst n)
+  (if (= n 0) 
+      lst          
+      (drop (cdr lst) (- n 1))))
+
+; reverse has a problem whereas the lst2 needs to be an optional variable, we currently do not suppor this
+;(define (reverse lst lst2 `())
+;   (if (null? lst) lst2
+;      (reverse (cdr lst) (cons (car lst) lst2))))

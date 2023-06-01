@@ -3,3 +3,5 @@ tests/*/
 yes.out
 *~*
 *#*
+emit-cpp.rkt
+cpp_program.cpp
