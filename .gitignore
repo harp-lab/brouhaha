@@ -1,5 +1,7 @@
 tests/*/*.out
 tests/*/
+tests2/*/*.out
+tests2/*/
 yes.out
 *~*
 *#*

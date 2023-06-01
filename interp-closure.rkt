@@ -13,6 +13,7 @@
         [`() env+])))
 
   (define (eval exp env)
+    ; (displayln (~a "exp: " exp "\n env: " env "\n----"))
     (match exp
       [`(quote ,(? number? x)) x]
       [`(quote ,(? boolean? x)) x]
@@ -52,19 +53,3 @@
 
   (eval `(let ([halt (make-closure halt)]) (brouhaha_main halt))
         (add-top-lvl (hash-set env 'halt `(closure (proc (halt _env x) (prim halt x)))))))
-
-; (interp-closure '((proc
-;                    (+ _4921 . lst)
-;                    (let ((kont4916 (prim car lst)))
-;                      (let ((lst (prim cdr lst)))
-;                        (let ((x4912 (apply-prim + lst))) (clo-app kont4916 x4912)))))
-;                   (proc
-;                    (call _4924 kont4918)
-;                    (let ((a4913 '1)) (let ((a4914 '2)) (clo-app + kont4918 a4913 a4914))))
-;                   (proc
-;                    (lam4925 env4926 x4915)
-;                    (let ((kont4919 (env-ref env4926 1))) (clo-app kont4919 x4915)))
-;                   (proc
-;                    (brouhaha_main _4927 kont4919)
-;                    (let ((f4920 (make-closure lam4925 kont4919))) (clo-app call f4920))))
-;                 )

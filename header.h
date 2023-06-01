@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cstdint>
 #include <string>
+#include <vector>
+#include <functional>
 
 using namespace std;
 
@@ -836,7 +838,7 @@ extern "C"
    }
 
    /**
-    * This function allocates space the environment
+    * This function allocates space for the environment
     * @param envlength space length.
     * @return the encoded env array.
     */
@@ -886,12 +888,11 @@ extern "C"
     * @param arr is the environment array
     * @param idx the index where we will assign the value
     * @param val the value we will assign
-    * @return null pointer
+    * @return null value to avoid warning
     */
    void *set_env(void *arr, u64 idx, void *val)
    {
       // cout << "position: " << idx << " val: " << val << endl;
-
       u64 env_arr = reinterpret_cast<u64>(arr);
 
       assert((env_arr & 7) == ENV,
@@ -899,17 +900,15 @@ extern "C"
 
       u64 value = reinterpret_cast<u64>(val);
 
-      u64 idx_val = decode_int(idx) + 1;
+      u64 idx_val = decode_int(idx);
 
-      // using a pointer to access the element and set its value
-      u64 *elem_ptr = &(decode_env_arr(env_arr))[idx_val];
-      *elem_ptr = value;
+      decode_env_arr(env_arr)[idx_val] = value;
 
       return reinterpret_cast<void *>(NULL_VALUE);
    }
 
    /**
-    * This function creates a closure instance (ptr + env)
+    * This function returns value from the environment of a closure
     * @param env environment of closure instance
     * @param idx specific index value that we will return
     * @return the actual value that was assignemnt to the index
@@ -921,9 +920,7 @@ extern "C"
       assert((env_arr & 7) == ENV,
              "Error in get_env_value: runtime error expected an env array!");
 
-      u64 idx_val = decode_int(idx) + 1;
-
-      // cout<<"ArrLen: "<<sizeof(decode_env_arr(env_arr))/sizeof(decode_env_arr(env_arr)[0]) <<endl;
+      u64 idx_val = decode_int(idx);
 
       u64 val = decode_env_arr(env_arr)[idx_val];
 
@@ -978,7 +975,8 @@ extern "C"
          else
             return reinterpret_cast<void *>(1);
       }
-      else return reinterpret_cast<void *>(1);
+      else
+         return reinterpret_cast<void *>(1);
    }
 
    /**
@@ -1000,49 +998,37 @@ extern "C"
       exit(0);
    }
 
-   // void *halt;
+   void *halt;
+   vector<void *> arg_buffer;
+   int arg_num;
+
+
+   void print_arg_buffer()
+   {
+      cout<<"buffer size: " <<arg_buffer.size() <<endl;
+      for (int i = 0; i < arg_num; ++i)
+      {
+         cout << reinterpret_cast<u64>(arg_buffer[i]) << " ";
+      }
+      cout<<endl<<endl;
+   }
 
    /**
-    * This function is no longer needed!
     * The function should be called as the last function in our program
     * @param env environment we don't care about
     * @param arglist final output list
-    * @return prints the (car (cdr arglist)) and exits out of the program
+    * @return prints the arg_buffer[1] as final answer and exits out of the program
     */
-   void fhalt(void *env, void *arglist)
+   void *fhalt()
    {
-      cout << "in fhalt";
-      print_val(arglist);
+      // cout << "in fhalt" << endl;
+      // print_arg_buffer();
 
       cout << "Final return value: ";
-      print_val(prim_car(prim_cdr(arglist)));
+      // print_val(prim_car(prim_cdr(arglist)));
+      print_val(arg_buffer[1]);
 
+      arg_buffer.clear();
       exit(1);
    }
-   /* int main() {
-     int value = 1001;
-     void* encodedInt = encodeInt(value);
-     int decodedInt = decodeInt(encodedInt);
-     cout << "Encoded int value: " << encodedInt << endl;
-     cout << "Decoded int value: " << decodedInt << endl;
-
-     bool bvalue = true;
-     void* encodedBool = encodeBool(bvalue);
-     bool decodedBool = decodeBool(encodedBool);
-     cout << "Encoded boolean value: " << encodedBool << endl;
-     cout << "Decoded boolean value: " << decodedBool << endl;
-
-     string svalue = "is this working?";
-
-     void* encodedString = encodeString(svalue);
-     string decodedString = decodeString(encodedString);
-     cout << "Encoded string value: " << encodedString << endl;
-     cout << "Decoded string value: " << decodedString << endl;
-
-     float fvalue = 42.203;
-     void* encodedFloat = encodeFloat(fvalue);
-     float decodedFloat = decodeFloat(encodedFloat);
-     cout << "Encoded float value: " << encodedFloat << endl;
-     cout << "Decoded float value: " << decodedFloat << endl;
-   } */
 }

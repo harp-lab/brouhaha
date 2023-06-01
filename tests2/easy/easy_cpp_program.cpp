@@ -3,70 +3,115 @@
 #include "../../header.h"
 using namespace std;
 
-void *_u43(void *_4921, void *lst) // +
+void *_u43() // +
 {
-    void *kont4916 = prim_car(lst);
-    void *lst = prim_cdr(lst);
-    void *x4912 = apply_prim__u43(lst);
+    // reading env
+    void *_4923 = arg_buffer[0];
+    // building cons cell
+
+    void *lst = encode_null();
+    for (int i = arg_num - 1; i >= 1; --i)
+    {
+        lst = prim_cons(arg_buffer[i], lst);
+    }
+
+    void *kont4918 = prim_car(lst);
+    void *lst2 = prim_cdr(lst);
+    void *x4914 = apply_prim__u43(lst2);
 
     // clo-app
-    void *cloPtr5432 = get_closure_ptr(kont4916);
-    void *procEnv5433 = get_env(kont4916);
-
-    // calling next proc using a function pointer
-    auto function_ptr = reinterpret_cast<void (*)(void *, void *)>(cloPtr5432);
-    function_ptr(procEnv5433, x4912);
+    arg_buffer.clear();
+    arg_buffer.push_back(reinterpret_cast<void *>(_4923));
+    arg_buffer.push_back(reinterpret_cast<void *>(x4914));
+    auto function_ptr = reinterpret_cast<void (*)()>(get_closure_ptr(kont4918));
+    // assign buffer size to arg_num
+    arg_num = arg_buffer.size();
+    // call next proc using a function pointer
+    function_ptr();
+    return nullptr;
 }
 
-void *call(void *_4924, void *kont4918) // call
+void *call() // call
 {
-    void *a4913 = reinterpret_cast<void *>(encode_int((s32)1));
-    void *a4914 = reinterpret_cast<void *>(encode_int((s32)2));
+    // reading env
+    void *_4926 = arg_buffer[0];
+    // reading other params
+    void *kont4920 = arg_buffer[1];
+    void *a4915 = reinterpret_cast<void *>(encode_int((s32)1));
+    void *a4916 = reinterpret_cast<void *>(encode_int((s32)2));
 
     // clo-app
-    void *cloPtr5434 = get_closure_ptr(_u43);
-    void *procEnv5435 = get_env(_u43);
-
-    // calling next proc using a function pointer
-    auto function_ptr = reinterpret_cast<void (*)(void *, void *, void *, void *)>(cloPtr5434);
-    function_ptr(procEnv5435, kont4918, a4913, a4914);
+    arg_buffer.clear();
+    arg_buffer.push_back(reinterpret_cast<void *>(_4926));
+    arg_buffer.push_back(reinterpret_cast<void *>(kont4920));
+    arg_buffer.push_back(reinterpret_cast<void *>(a4915));
+    arg_buffer.push_back(reinterpret_cast<void *>(a4916));
+    auto function_ptr = reinterpret_cast<void (*)()>(_u43);
+    // assign buffer size to arg_num
+    arg_num = arg_buffer.size();
+    // call next proc using a function pointer
+    function_ptr();
+    return nullptr;
 }
 
-void *lam4925(void *env4926, void *x4915) // lam4925
+void *lam4927() // lam4927
 {
-    void *kont4919 = get_env_value(env4926, encode_int((s32)1));
+    // reading env
+    void *env4928 = arg_buffer[0];
+    // reading other params
+    void *x4917 = arg_buffer[1];
+    void *kont4921 = get_env_value(env4928, encode_int((s32)1));
 
     // clo-app
-    void *cloPtr5436 = get_closure_ptr(kont4919);
-    void *procEnv5437 = get_env(kont4919);
-
-    // calling next proc using a function pointer
-    auto function_ptr = reinterpret_cast<void (*)(void *, void *)>(cloPtr5436);
-    function_ptr(procEnv5437, x4915);
+    arg_buffer.clear();
+    arg_buffer.push_back(reinterpret_cast<void *>(env4928));
+    arg_buffer.push_back(reinterpret_cast<void *>(x4917));
+    auto function_ptr = reinterpret_cast<void (*)()>(get_closure_ptr(kont4921));
+    // assign buffer size to arg_num
+    arg_num = arg_buffer.size();
+    // call next proc using a function pointer
+    function_ptr();
+    return nullptr;
 }
 
-void *brouhaha_main(void *_4927, void *kont4919) // brouhaha_main
+void *brouhaha_main() // brouhaha_main
 {
+    // reading env
+    void *_4929 = arg_buffer[0];
+    // reading other params
+    void *kont4921 = arg_buffer[1];
 
     // creating new closure instance
-    auto ptr5438 = reinterpret_cast<void (*)(void *, void *)>(&lam4925);
-    _4927 = allocate_env_space(encode_int((s32)1));
-    void *f4920 = make_closure(reinterpret_cast<void *>(ptr5438), _4927);
+    auto ptr5434 = reinterpret_cast<void (*)()>(&lam4927);
+    _4929 = allocate_env_space(encode_int((s32)1));
+    void *f4922 = make_closure(reinterpret_cast<void *>(ptr5434), _4929);
 
     // setting env list
-    set_env(_4927, encode_int((s32)1), kont4919);
+    set_env(_4929, encode_int((s32)1), kont4921);
 
     // clo-app
-    void *cloPtr5439 = get_closure_ptr(call);
-    void *procEnv5440 = get_env(call);
-
-    // calling next proc using a function pointer
-    auto function_ptr = reinterpret_cast<void (*)(void *, void *)>(cloPtr5439);
-    function_ptr(procEnv5440, f4920);
+    arg_buffer.clear();
+    arg_buffer.push_back(reinterpret_cast<void *>(_4929));
+    arg_buffer.push_back(reinterpret_cast<void *>(f4922));
+    auto function_ptr = reinterpret_cast<void (*)()>(call);
+    // assign buffer size to arg_num
+    arg_num = arg_buffer.size();
+    // call next proc using a function pointer
+    function_ptr();
+    return nullptr;
 }
 
 int main(int argc, char **argv)
 {
+    auto ptr5435 = reinterpret_cast<void (*)()>(&fhalt);
+    void *_5436 = allocate_env_space(encode_int((s32)0));
+    void *clo5437 = make_closure(reinterpret_cast<void *>(ptr5435), _5436);
+    arg_buffer.push_back(reinterpret_cast<void *>(0));
+    arg_buffer.push_back(reinterpret_cast<void *>(clo5437));
     // making a call to the brouhaha main function to kick off our c++ emission.
-    brouhaha_main(0, 0);
+    auto function_ptr = reinterpret_cast<void (*)()>(brouhaha_main);
+    arg_num = arg_buffer.size();
+    function_ptr();
+    arg_buffer.clear();
+    return 0;
 }

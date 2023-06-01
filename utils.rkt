@@ -1,8 +1,8 @@
 #lang racket
 
-(provide append-line convert-id-to-c)
+(provide append-line get-c-string convert-id-to-c)
 
-(define filename "cpp/cpp_program.cpp")
+ (define (get-c-string s) (string->symbol (convert-id-to-c s)))
 
 ; appends a line in the program, default mode is append, if not specified
 (define (append-line filename line [mode 'append])
