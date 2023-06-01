@@ -23,7 +23,7 @@
   (define filename-string (path->string filename))
   (define filename-noext (regexp-replace #rx"[.]haha$" filename-string ""))
   (define out-dir
-    (string-append (path->string (build-path (current-directory) "tests2")) "/" filename-noext))
+    (string-append (path->string (build-path (current-directory) "tests")) "/" filename-noext))
 
   (unless (directory-exists? out-dir)
     (make-directory out-dir))
@@ -85,4 +85,4 @@
                      full-path
                      (build-path (current-directory) "prelude.haha"))))))
 
-(read-direc "tests2/")
+(read-direc "tests/")

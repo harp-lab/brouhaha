@@ -1,47 +1,47 @@
 ; Prelude is used as a way to add functionality to the language and programs as a library
-; (define (car lst) 
-;     (prim car lst))
+(define (car lst) 
+    (prim car lst))
 
 (define (+ . lst) (apply-prim + lst))
 
-; (define (- . lst) 
-;     (apply-prim - lst))
+(define (- . lst) 
+    (apply-prim - lst))
 
-; (define (* . lst) 
-;     (apply-prim * lst))
+(define (* . lst) 
+    (apply-prim * lst))
 
-; (define (= . lst) 
-;     (apply-prim = lst))
+(define (= . lst) 
+    (apply-prim = lst))
 
-; (define (/ . lst) 
-;     (apply-prim / lst))
+(define (/ . lst) 
+    (apply-prim / lst))
 
-; (define (null? x)
-;     (prim null? x))
+(define (null? x)
+    (prim null? x))
 
-; (define (cons a b)
-;     (prim cons a b))
+(define (cons a b)
+    (prim cons a b))
 
-; (define (cdr lst)
-;     (prim cdr lst))
+(define (cdr lst)
+    (prim cdr lst))
     
 
-; (define (even? x)
-;     (prim even? x))
+(define (even? x)
+    (prim even? x))
 
-; (define (eq? x y)
-;     (prim eq? x y))
+(define (eq? x y)
+    (prim eq? x y))
 
-; (define (> . lst) 
-;     (apply-prim > lst))
+(define (> . lst) 
+    (apply-prim > lst))
 
-; (define (modulo a b)
-;     (prim modulo a b))
+(define (modulo a b)
+    (prim modulo a b))
 
-; (define (list . x) 
-;     x)
+(define (list . x) 
+    x)
 
-; (define (foldl fun acc lst) 
-;   (if (null? lst)
-;       acc
-;       (foldl fun (fun (car lst) acc) (cdr lst))))
+(define (foldl fun acc lst) 
+  (if (null? lst)
+      acc
+      (foldl fun (fun (car lst) acc) (cdr lst))))
