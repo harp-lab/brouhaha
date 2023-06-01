@@ -1014,7 +1014,7 @@ extern "C"
 
    void print_arg_buffer()
    {
-      cout << "buffer size: " << arg_buffer.size() << endl;
+      // cout << "buffer size: " << arg_buffer.size() << endl;
       for (int i = 0; i < arg_num; ++i)
       {
          cout << reinterpret_cast<u64>(arg_buffer[i]) << " ";
@@ -1038,7 +1038,6 @@ extern "C"
       // print_val(prim_car(prim_cdr(arglist)));
       print_val(arg_buffer[1]);
 
-      arg_buffer.clear();
       exit(1);
    }
 }

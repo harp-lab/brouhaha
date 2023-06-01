@@ -45,8 +45,7 @@
   (define alphatize_prg (alphatize desugar_prg))
   (define anf_prg (anf-convert alphatize_prg))
   (define cps_prg (cps-convert anf_prg))
-  (define anf_after_cps (anf-convert cps_prg))
-  (define clo_conv_prg (closure-convert anf_after_cps))
+  (define clo_conv_prg (closure-convert cps_prg))
 
   (define interp-desugar (interp desugar_prg))
   (define interp-alphatize (interp alphatize_prg))
@@ -59,8 +58,8 @@
   (displayln (~a "Emitting C++ for: " filename-string " and outputting to: " out-file-cpp))
 
   (with-output-to-file out-file-compile ; why does the above function not work?
-    ; (lambda () (compile program))
-    (lambda () (pretty-print clo_conv_prg))
+    (lambda () (compile program))
+    ; (lambda () (pretty-print clo_conv_prg))
     #:exists 'replace)
 
 
