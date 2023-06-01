@@ -17,8 +17,8 @@ lst = prim_cons(arg_buffer[i], lst);
 }
 
 void* kont4971 = prim_car(lst);
-void* lst = prim_cdr(lst);
-void* x4967 = apply_prim__u43(lst);
+void* lst2 = prim_cdr(lst);
+void* x4967 = apply_prim__u43(lst2);
 
 //clo-app
 arg_buffer.clear();

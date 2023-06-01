@@ -2,6 +2,7 @@ tests/*/*.out
 tests/*/
 tests2/*/*.out
 tests2/*/
+**/*.a
 yes.out
 *~*
 *#*
@@ -10,3 +11,4 @@ cpp_program.cpp
 compiled
 .idea/
 .vscode/
+

@@ -85,4 +85,4 @@
                      full-path
                      (build-path (current-directory) "prelude.haha"))))))
 
-(read-direc "tests/")
+(read-direc "tests2/")
