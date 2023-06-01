@@ -45,7 +45,8 @@
   (define alphatize_prg (alphatize desugar_prg))
   (define anf_prg (anf-convert alphatize_prg))
   (define cps_prg (cps-convert anf_prg))
-  (define clo_conv_prg (closure-convert cps_prg))
+  (define cps_after_anf (alphatize cps_prg))
+  (define clo_conv_prg (closure-convert cps_after_anf))
 
   (define interp-desugar (interp desugar_prg))
   (define interp-alphatize (interp alphatize_prg))
