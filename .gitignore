@@ -11,4 +11,5 @@ cpp_program.cpp
 compiled
 .idea/
 .vscode/
+build/
 
