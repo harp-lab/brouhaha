@@ -3,8 +3,9 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <bits/stdc++.h>
 
-using namespace std;
+// using namespace std;
 
 /**
  *
@@ -41,6 +42,11 @@ extern "C"
       return ((s32)((u32)(MASK(v) >> 32)));
    }
 
+   s32 decode_int_new(void *v)
+   {
+      return ((s32)((u32)(MASK(v) >> 32)));
+   }
+
    u64 encode_int(s32 v)
    {
       return ((((u64)((u32)(v))) << 32) | INT);
@@ -56,27 +62,31 @@ extern "C"
       return ((((u64)((u32)(v))) << 32) | BOOLEAN);
    }
 
-   string decode_string(u64 v)
+   std::string decode_string(u64 v)
    {
-      string *decoded = reinterpret_cast<string *>(MASK(v));
-      string str = *decoded;
+      std::string *decoded = reinterpret_cast<std::string *>(MASK(v));
+      std::string str = *decoded;
       delete decoded;
       return str;
    }
 
-   u64 encode_string(const string *v)
+   u64 encode_string(const std::string *v)
    {
       return (((u64)(v)) | STRING);
    }
 
-   u64 *decode_cons(u64 v)
+   u64* decode_cons(u64 v)
    {
-      return ((u64 *)MASK(v));
+      return ((u64*)MASK(v));
+   }
+   void* decode_cons_new(void* v)
+   {
+      return reinterpret_cast<void*>(MASK(v));
    }
 
-   u64 encode_cons(u64 *v)
+   void *encode_cons(void *v)
    {
-      return (((u64)(v)) | CONS);
+      return reinterpret_cast<void *>(((u64)(v)) | CONS);
    }
 
    void **decode_clo(void *v)
@@ -102,16 +112,16 @@ extern "C"
    /**
     * This function takes a bool flag which is either 0 and 1 and
     * decides weather to continue running the program or exit the program
-    *    if 0, the assertion is failed and we exit out of the program
+    *    if 0, the assert_localion is failed and we exit out of the program
     *    otherwise, we do nothing!
     * @param cond condition, either 0 or 1
     * @return void
     */
-   void assert(bool cond, const char *msg)
+   void assert_local(bool cond, const char *msg)
    {
       if (!cond)
       {
-         cout << "Assertion failed-> " << msg << endl;
+         std::cout << "assert_localion failed-> " << msg << std::endl;
          exit(1);
       }
    }
@@ -126,40 +136,40 @@ extern "C"
       switch (val & 7)
       {
       case NULL_VALUE:
-         cout << "'()";
+         std::cout << "'()";
          break;
       case INT:
-         cout << decode_int(val);
+         std::cout << decode_int(val);
          break;
       case BOOLEAN:
       {
          if (decode_bool(val) == 1)
-            cout << "#t";
+            std::cout << "#t";
          else
-            cout << "#f";
+            std::cout << "#f";
 
          break;
       }
       case STRING:
-         cout << decode_string(val);
+         std::cout << decode_string(val);
          break;
       case CLO:
-         cout << "#<procedure>";
+         std::cout << "#<procedure>";
          break;
       case CONS:
       {
          u64 *cell = decode_cons(val);
 
-         cout << "(cons ";
+         std::cout << "(cons ";
          recursive_prim_print(cell[0]);
-         cout << " ";
+         std::cout << " ";
          recursive_prim_print(cell[1]);
-         cout << ")";
+         std::cout << ")";
 
          break;
       }
       default:
-         cout << "Error in recursive_prim_print: unknown prim value: " << val << endl;
+         std::cout << "Error in recursive_prim_print: unknown prim value: " << val << std::endl;
       }
    }
 
@@ -171,9 +181,9 @@ extern "C"
    void print_val(void *val)
    {
       u64 value = reinterpret_cast<u64>(val);
-      cout << endl;
+      std::cout << std::endl;
       recursive_prim_print(value);
-      cout << endl;
+      std::cout << std::endl;
    }
 
    /**
@@ -192,6 +202,8 @@ extern "C"
     */
    void *prim_cons(void *arg1, void *arg2)
    {
+      // check if arg two is a cons cell
+
       u64 car = reinterpret_cast<u64>(arg1);
       u64 cdr = reinterpret_cast<u64>(arg2);
 
@@ -214,10 +226,10 @@ extern "C"
       // cout << "tag: " << (ptr & 7) << endl;
       // cout << "first chk: " << ((ptr & 7) == CONS) << endl;
 
-      assert((ptr & 7) == CONS,
+      assert_local((ptr & 7) == CONS,
              "Error in prim_car: expected a cons cell!");
 
-      u64 *cell = decode_cons(ptr);
+      u64 *cell = reinterpret_cast<u64*>(decode_cons_new(val));
       return reinterpret_cast<void *>(cell[0]);
    }
 
@@ -230,7 +242,7 @@ extern "C"
    {
       u64 ptr = reinterpret_cast<u64>(val);
 
-      assert((ptr & 7) == CONS,
+      assert_local((ptr & 7) == CONS,
              "Error in prim_cdr: expected a cons cell!");
 
       u64 *cell = decode_cons(ptr);
@@ -247,7 +259,7 @@ extern "C"
       void *val1 = prim_car(lst);
       void *val2 = prim_car(prim_cdr(lst));
 
-      assert(prim_cdr(prim_cdr(lst)) == NULL_VALUE,
+      assert_local(prim_cdr(prim_cdr(lst)) == NULL_VALUE,
              "Error in apply_prim_cons: argument length is greater than 2!");
 
       return prim_cons(val1, val2);
@@ -300,7 +312,7 @@ extern "C"
    {
       u64 temp_lst = reinterpret_cast<u64>(lst);
 
-      assert((temp_lst & 7) == CONS,
+      assert_local((temp_lst & 7) == CONS,
              "Error in apply_prim_car: expected a cons cell!");
 
       u64 *cell = decode_cons(temp_lst);
@@ -316,7 +328,7 @@ extern "C"
    {
       u64 temp_lst = reinterpret_cast<u64>(lst);
 
-      assert((temp_lst & 7) == CONS,
+      assert_local((temp_lst & 7) == CONS,
              "Error in apply_prim_cdr: expected a cons cell!");
 
       u64 *cell = decode_cons(temp_lst);
@@ -332,7 +344,7 @@ extern "C"
    {
       u64 temp_lst = reinterpret_cast<u64>(lst);
 
-      assert((temp_lst & 7) == CONS,
+      assert_local((temp_lst & 7) == CONS,
              "Error in apply_prim_cdar: expected a cons cell!");
 
       u64 *cell = decode_cons(temp_lst);
@@ -347,7 +359,7 @@ extern "C"
     */
    void *apply_comparison_op(void *lst, bool (*cmp_op)(u64, u64))
    {
-      assert(prim_cdr(prim_cdr(lst)) == NULL_VALUE,
+      assert_local(prim_cdr(prim_cdr(lst)) == NULL_VALUE,
              "Error in apply_comparison_op: argument length is greater than 2!");
 
       void *val1 = prim_car(lst);
@@ -374,7 +386,7 @@ extern "C"
       void *val2 = prim_cdr(lst);
 
       if (prim_cdr(lst) != NULL_VALUE)
-         cout << "Error in apply_opr: argument length is greater than 1.";
+         std::cout << "Error in apply_opr: argument length is greater than 1.";
 
       u64 car = reinterpret_cast<u64>(val1);
 
@@ -392,10 +404,10 @@ extern "C"
     */
    bool cmp_op_ge(u64 x, u64 y)
    {
-      assert((x & 7) == INT,
+      assert_local((x & 7) == INT,
              "Error in cmp_op_ge: expected Integer values!");
 
-      assert((y & 7) == INT,
+      assert_local((y & 7) == INT,
              "Error in cmp_op_ge: expected Integer values!");
 
       return x >= y;
@@ -409,10 +421,10 @@ extern "C"
     */
    bool cmp_op_le(u64 x, u64 y)
    {
-      assert((x & 7) == INT,
+      assert_local((x & 7) == INT,
              "Error in cmp_op_le: expected Integer values!");
 
-      assert((y & 7) == INT,
+      assert_local((y & 7) == INT,
              "Error in cmp_op_le: expected Integer values!");
 
       return x <= y;
@@ -426,10 +438,10 @@ extern "C"
     */
    bool cmp_op_less(u64 x, u64 y)
    {
-      assert((x & 7) == INT,
+      assert_local((x & 7) == INT,
              "Error in cmp_op_less: expected Integer values!");
 
-      assert((y & 7) == INT,
+      assert_local((y & 7) == INT,
              "Error in cmp_op_less: expected Integer values!");
 
       return x < y;
@@ -443,10 +455,10 @@ extern "C"
     */
    bool cmp_op_greater(u64 x, u64 y)
    {
-      assert((x & 7) == INT,
+      assert_local((x & 7) == INT,
              "Error in cmp_op_greater: expected Integer values!");
 
-      assert((y & 7) == INT,
+      assert_local((y & 7) == INT,
              "Error in cmp_op_greater: expected Integer values!");
 
       return x > y;
@@ -460,10 +472,10 @@ extern "C"
     */
    bool cmp_op_equal(u64 x, u64 y)
    {
-      assert((x & 7) == INT,
+      assert_local((x & 7) == INT,
              "Error in cmp_op_equal: expected Integer values!");
 
-      assert((y & 7) == INT,
+      assert_local((y & 7) == INT,
              "Error in cmp_op_equal: expected Integer values!");
 
       return x == y;
@@ -476,7 +488,7 @@ extern "C"
     *  */
    bool apply_op_odd(u64 x)
    {
-      assert((x & 7) == INT,
+      assert_local((x & 7) == INT,
              "Error in apply_op_odd: expected an Integer value!");
 
       return decode_int(x) % 2 != 0;
@@ -489,7 +501,7 @@ extern "C"
     *  */
    bool apply_op_even(u64 x)
    {
-      assert((x & 7) == INT,
+      assert_local((x & 7) == INT,
              "Error in apply_op_even: expected an Integer value!");
 
       return decode_int(x) % 2 == 0;
@@ -502,7 +514,7 @@ extern "C"
     *  */
    bool apply_op_positive(u64 x)
    {
-      assert((x & 7) == INT,
+      assert_local((x & 7) == INT,
              "Error in apply_op_positive: expected an Integer value!");
 
       return decode_int(x) > 0 ? 1 : 0;
@@ -515,7 +527,7 @@ extern "C"
     *  */
    bool apply_op_negative(u64 x)
    {
-      assert((x & 7) == INT,
+      assert_local((x & 7) == INT,
              "Error in apply_op_negative: expected an Integer value!");
 
       return decode_int(x) < 0 ? 1 : 0;
@@ -530,7 +542,7 @@ extern "C"
    {
       u64 temp_lst = reinterpret_cast<u64>(lst);
 
-      assert((temp_lst & 7) == CONS,
+      assert_local((temp_lst & 7) == CONS,
              "Error in apply_prim_null_u63: expected a cons cell!");
 
       u64 *cell = decode_cons(temp_lst);
@@ -549,7 +561,7 @@ extern "C"
     *  */
    void *prim_eq_u63(void *lst)
    {
-      assert(prim_cdr(prim_cdr(lst)) == NULL_VALUE,
+      assert_local(prim_cdr(prim_cdr(lst)) == NULL_VALUE,
              "Error in apply_prim_eq_u63: argument length is greater than 2!");
 
       void *val1 = prim_car(lst);
@@ -581,7 +593,7 @@ extern "C"
     *  */
    void *apply_prim_equal_u63(void *lst)
    {
-      assert(prim_cdr(prim_cdr(lst)) == NULL_VALUE,
+      assert_local(prim_cdr(prim_cdr(lst)) == NULL_VALUE,
              "Error in apply_prim_equal_u63: argument length is greater than 2!");
 
       void *val1 = prim_car(lst);
@@ -703,20 +715,25 @@ extern "C"
     */
    void *apply_prim__u43(void *val)
    {
-      u64 ptr = reinterpret_cast<u64>(val);
       u64 sum = 0;
-
-      while ((ptr & 7) == CONS)
+      u64 ptr = (u64)val;
+      while (((ptr) & 7) == CONS)
       {
-         u64 *cell = decode_cons(ptr);
-
-         u64 temp_val = reinterpret_cast<u64>(cell[0]);
-
-         assert((temp_val & 7) == INT,
-                "Error in apply_prim_equal_u63: argument is not an Integer!");
+         void *void_cell = decode_cons_new(reinterpret_cast<void*>(ptr));
+         u64* cell = reinterpret_cast<u64*>(void_cell);
+         u64 temp_val = cell[0];
+         ptr = cell[1];
+         std::string s = std::bitset<64>(temp_val).to_string();
+         std::string decoded_s = std::bitset<64>(decode_int(temp_val)).to_string();
+         std::cout << "undecoded int" << s << std::endl;
+         std::cout << "decoded int" << decoded_s << std::endl;
+         // u64 temp_val = reinterpret_cast<u64>(((u64*)cell)[0]);
+         std::cout << temp_val << std::endl;
+         assert_local((temp_val & 7) == INT,
+                "Error in apply_prim_equal_u43: argument is not an Integer!");
 
          sum += decode_int(temp_val);
-         ptr = cell[1];
+         // ptr = reinterpret_cast<void*>(((u64*)cell)[1]);
       }
 
       return reinterpret_cast<void *>(encode_int((s32)sum));
@@ -739,7 +756,7 @@ extern "C"
       {
          u64 temp_val = reinterpret_cast<u64>(cell[0]);
 
-         assert((temp_val & 7) == INT,
+         assert_local((temp_val & 7) == INT,
                 "Error in apply_prim__u42: argument is not an Integer!");
 
          u64 res = decode_int(temp_val); // get car value
@@ -758,7 +775,7 @@ extern "C"
 
                temp_val = reinterpret_cast<u64>(temp_cell[0]);
 
-               assert((temp_val & 7) == INT,
+               assert_local((temp_val & 7) == INT,
                       "Error in apply_prim__u42: argument is not an Integer!");
 
                temp_res *= decode_int(temp_val);
@@ -782,7 +799,7 @@ extern "C"
       u64 *cell = decode_cons(ptr);
       u64 temp_val = reinterpret_cast<u64>(cell[0]);
 
-      assert((temp_val & 7) == INT,
+      assert_local((temp_val & 7) == INT,
              "Error in apply_prim__u45: argument is not an Integer!");
 
       u64 cdr = cell[1];
@@ -803,7 +820,7 @@ extern "C"
 
          temp_val = reinterpret_cast<u64>(temp_cell[0]);
 
-         assert((temp_val & 7) == INT,
+         assert_local((temp_val & 7) == INT,
                 "Error in apply_prim__u45: argument is not an Integer!");
 
          result -= decode_int(temp_val);
@@ -866,28 +883,29 @@ extern "C"
     * @param env is assigned to index 1
     * @return the encoded closure object.
     */
-   void *make_closure(void *fptr, void *env)
-   {
-      // assgning closure pointer
-      u64 *obj = (u64 *)(malloc(2 * sizeof(u64))); // new u64[2];
+   // void *make_closure(void *fptr, void *env)
+   // {
+   //    // assgning closure pointer
+   //    u64 *obj = (u64 *)(malloc(2 * sizeof(u64))); // new u64[2];
 
-      u64 ptr = reinterpret_cast<u64>(fptr);
-      u64 temp_env = reinterpret_cast<u64>(env);
+   //    u64 ptr = reinterpret_cast<u64>(fptr);
+   //    u64 temp_env = reinterpret_cast<u64>(env);
 
-      assert((temp_env & 7) == ENV,
-             "Error in make_closure: runtime error expected an env array!");
+   //    assert_local((temp_env & 7) == ENV,
+   //           "Error in make_closure: runtime error expected an env array!");
 
-      obj[0] = ptr;
-      obj[1] = temp_env;
+   //    obj[0] = ptr;
+   //    obj[1] = temp_env;
 
-      return reinterpret_cast<void *>(encode_clo(obj));
-   }
+   //    return reinterpret_cast<void *>(encode_clo(obj));
+   // }
 
-   void **alloc_clo(void *fptr, int num)
+   // void **alloc_clo(void *fptr, int num)
+   void **alloc_clo(void *(*fptr)(), int num)
    {
       void **obj = (void **)(malloc((num + 1) * sizeof(void *)));
 
-      obj[0] = fptr;
+      obj[0] = reinterpret_cast<void *>(fptr);
 
       return obj;
    }
@@ -904,7 +922,7 @@ extern "C"
       // cout << "position: " << idx << " val: " << val << endl;
       u64 env_arr = reinterpret_cast<u64>(arr);
 
-      assert((env_arr & 7) == ENV,
+      assert_local((env_arr & 7) == ENV,
              "Error in set_env: runtime error expected an env array!");
 
       u64 value = reinterpret_cast<u64>(val);
@@ -926,7 +944,7 @@ extern "C"
    {
       u64 env_arr = reinterpret_cast<u64>(env);
 
-      assert((env_arr & 7) == ENV,
+      assert_local((env_arr & 7) == ENV,
              "Error in get_env_value: runtime error expected an env array!");
 
       u64 idx_val = decode_int(idx);
@@ -941,33 +959,33 @@ extern "C"
     * @param val is the closure pointer
     * @return the environment of a closure instance
     */
-   void *get_env(void *val)
-   {
-      u64 temp_val = reinterpret_cast<u64>(val);
+   // void *get_env(void *val)
+   // {
+   //    u64 temp_val = reinterpret_cast<u64>(val);
 
-      assert((temp_val & 7) == CLO,
-             "Error in get_env: expected a cons cell!");
+   //    assert_local((temp_val & 7) == CLO,
+   //           "Error in get_env: expected a cons cell!");
 
-      u64 *env = decode_clo(temp_val);
-      return reinterpret_cast<void *>(env[1]);
-   }
+   //    u64 *env = decode_clo(temp_val);
+   //    return reinterpret_cast<void *>(env[1]);
+   // }
 
    /**
     *
     * @param val is the closure object
     * @return the pointer of a closure instance
     */
-   void *get_closure_ptr(void *val)
-   {
-      u64 obj = reinterpret_cast<u64>(val);
+   // void *get_closure_ptr(void *val)
+   // {
+   //    u64 obj = reinterpret_cast<u64>(val);
 
-      assert((obj & 7) == CLO,
-             "Error in get_closure_ptr: expected a cons cell!");
+   //    assert_local((obj & 7) == CLO,
+   //           "Error in get_closure_ptr: expected a cons cell!");
 
-      u64 *clo_obj = decode_clo(obj);
+   //    u64 *clo_obj = decode_clo(obj);
 
-      return reinterpret_cast<void *>(clo_obj[0]);
-   }
+   //    return reinterpret_cast<void *>(clo_obj[0]);
+   // }
 
    /**
     * @param val the value we are going to check
@@ -1010,17 +1028,17 @@ extern "C"
    void *halt;
    // vector<void *> arg_buffer;
    void *arg_buffer[999];
-   int arg_num;
+   int numArgs;
 
    void print_arg_buffer()
    {
       // cout << "buffer size: " << arg_buffer.size() << endl;
-      for (int i = 0; i < arg_num; ++i)
+      for (int i = 0; i < numArgs; ++i)
       {
-         cout << reinterpret_cast<u64>(arg_buffer[i]) << " ";
+         std::cout << reinterpret_cast<u64>(arg_buffer[i]) << " ";
       }
-      cout << endl
-           << endl;
+      std::cout << std::endl
+           << std::endl;
    }
 
    /**
@@ -1031,12 +1049,12 @@ extern "C"
     */
    void *fhalt()
    {
-      // cout << "in fhalt" << endl;
-      // print_arg_buffer();
+      std::cout << "in fhalt" << std::endl;
 
-      cout << "Final return value: ";
+      // std::cout << "Final return value: " <<  << std::endl;
       // print_val(prim_car(prim_cdr(arglist)));
-      print_val(arg_buffer[1]);
+      print_val(arg_buffer[2]);
+      // print_arg_buffer();
 
       exit(1);
    }
