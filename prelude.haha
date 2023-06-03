@@ -1,12 +1,13 @@
 ; Prelude is used as a way to add functionality to the language and programs as a library
-;(define (car lst) 
+; (define (car lst) 
 ;    (prim car lst))
 
 (define (+ . lst) (apply-prim + lst))
 
 ; (define (- . lst) 
 ;    (apply-prim - lst))
-; ;
+; To add a length function here
+
 ; (define (* . lst) 
 ;    (apply-prim * lst))
 
@@ -19,28 +20,28 @@
 ; (define (null? x)
 ;    (prim null? x))
 ; ; ;
-;(define (cons a b)
+; (define (cons a b)
 ;    (prim cons a b))
-;
-;(define (cdr lst)
+
+; (define (cdr lst)
 ;    (prim cdr lst))
-;    
-;
-;(define (even? x)
+   
+
+; (define (even? x)
 ;    (prim even? x))
-;
-;(define (eq? x y)
+
+; (define (eq? x y)
 ;    (prim eq? x y))
-;
-;(define (> . lst) 
+
+; (define (> . lst) 
 ;    (apply-prim > lst))
-;
-;(define (modulo a b)
+
+; (define (modulo a b)
 ;    (prim modulo a b))
-;
-;(define (list . x) 
+
+; (define (list . x) 
 ;    x)
-;
+
 ; (define (foldl fun acc lst) 
 ;  (if (null? lst)
 ;      acc
