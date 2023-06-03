@@ -10,21 +10,15 @@
          read-all)
 
 (define (compile program)
-  (define pr0 (desugar program))
-  (display "Desugared:\n")
-  (pretty-print pr0)
-  (define pr1 (alphatize pr0))
-  (display "Alphatized:\n")
-  (pretty-print pr1)
-  (define pr2 (anf-convert pr1))
-  (display "ANF:\n")
-  (pretty-print pr2)
-  (define pr3 (cps-convert pr2))
-  (display "CPS:\n")
-  (pretty-print pr3)
-  (define pr4 (closure-convert pr3))
-  (display "Closure Converted:\n")
-  (pretty-print pr4))
+  (let* ([pr0 (desugar program)]
+         [pr1 (alphatize pr0)]
+         [pr2 (anf-convert pr1)]
+         [pr3 (cps-convert pr2)]
+         [pr4 (closure-convert pr3)]
+         [pr5 (alphatize pr3)])
+
+    (list pr0 pr1 pr2 pr3 pr4 pr5)))
+
 
 (define (read-program filename)
   (with-input-from-file filename

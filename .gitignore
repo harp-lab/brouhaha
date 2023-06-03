@@ -12,4 +12,4 @@ compiled
 .idea/
 .vscode/
 build/
-
+dependencies/
