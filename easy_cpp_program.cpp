@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include <string.h>
-#include "../../header.h"
+// #include <string.h>
+#include "prelude.h"
+#include "gmp_func.h"
 using namespace std;
 
 void *_u43_fptr() // +
@@ -44,8 +45,15 @@ void *call_fptr() // call
     // reading env and args
     void *kont4921 = arg_buffer[2];
     // Dummy comment
-    void *a49164927 = reinterpret_cast<void *>(encode_int((s32)10));
-    void *a49174928 = reinterpret_cast<void *>(encode_int((s32)12));
+    mpz_t* temp1 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init_set_str(*temp1, "12", 10);
+    mpz_t* temp2 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init_set_str(*(reinterpret_cast<mpz_t *>(temp2)), "12", 10);
+
+    void *a49164927 = reinterpret_cast<void *>(encode_mpz(temp1));
+    // void *a49164927 = 0;
+    void *a49174928 = reinterpret_cast<void *>(encode_mpz(temp2));
+    // void *a49174928 = 0;
 
     // clo-app
     arg_buffer[1] = reinterpret_cast<void *>(_u43);
@@ -119,6 +127,9 @@ void *brouhaha_main = encode_clo(alloc_clo(brouhaha_main_fptr, 0));
 
 int main(int argc, char **argv)
 {
+    mp_set_memory_functions(&allocate_function,
+                            &reallocate_function,
+                            &deallocate_function);
     // making a call to the brouhaha main function to kick off our c++ emission.
     void *fhalt_clo = encode_clo(alloc_clo(fhalt, 0));
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(brouhaha_main))[0]);
