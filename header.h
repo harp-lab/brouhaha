@@ -715,28 +715,28 @@ extern "C"
     */
    void *apply_prim__u43(void *val)
    {
-      u64 sum = 0;
-      u64 ptr = (u64)val;
-      while (((ptr) & 7) == CONS)
+      u64 result = 0;
+      u64 ptr = reinterpret_cast<u64>(val);
+      while ((ptr & 7) == CONS)
       {
          void *void_cell = decode_cons_new(reinterpret_cast<void*>(ptr));
          u64* cell = reinterpret_cast<u64*>(void_cell);
          u64 temp_val = cell[0];
          ptr = cell[1];
-         std::string s = std::bitset<64>(temp_val).to_string();
-         std::string decoded_s = std::bitset<64>(decode_int(temp_val)).to_string();
-         std::cout << "undecoded int" << s << std::endl;
-         std::cout << "decoded int" << decoded_s << std::endl;
+         // std::string s = std::bitset<64>(temp_val).to_string();
+         // std::string decoded_s = std::bitset<64>(decode_int(temp_val)).to_string();
+         // std::cout << "undecoded int" << s << std::endl;
+         // std::cout << "decoded int" << decoded_s << std::endl;
          // u64 temp_val = reinterpret_cast<u64>(((u64*)cell)[0]);
-         std::cout << temp_val << std::endl;
+         // std::cout << temp_val << std::endl;
          assert_local((temp_val & 7) == INT,
                 "Error in apply_prim_equal_u43: argument is not an Integer!");
 
-         sum += decode_int(temp_val);
+         result += decode_int(temp_val);
          // ptr = reinterpret_cast<void*>(((u64*)cell)[1]);
       }
 
-      return reinterpret_cast<void *>(encode_int((s32)sum));
+      return reinterpret_cast<void *>(encode_int((s32)result));
    }
 
    /**
@@ -795,6 +795,11 @@ extern "C"
    void *apply_prim__u45(void *val)
    {
       u64 ptr = reinterpret_cast<u64>(val);
+      // u64 result = 0;
+
+      while((ptr & 7) == CONS){
+         void* void_cell = decode_cons_new(reinterpret_cast<void*>(ptr));
+      }
 
       u64 *cell = decode_cons(ptr);
       u64 temp_val = reinterpret_cast<u64>(cell[0]);
