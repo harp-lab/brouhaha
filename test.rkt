@@ -36,8 +36,7 @@
                         (interp anf_prg)
                         (interp-cps cps_prg)
                         (interp-closure clo_conv_prg))])
-    (displayln
-     (~a "Now running: " filename-string " and outputting to: " (generate-filepath "_compile.out")))
+    (displayln (~a "Now running: " filename-string))
     (emit-cpp clo_conv_prg (generate-filepath "_cpp_program.cpp"))
     (displayln (~a "Emitting C++ for: "
                    filename-string
@@ -47,7 +46,13 @@
      write-to
      (map generate-filepath
           (list "_compile.out" "_desugar.out" "_alphatize.out" "_anf.out" "_cps.out" "_closure.out"))
-     (cons compiled-program results))
+     compiled-program)
+    (for-each
+     write-to
+     (map
+      generate-filepath
+      (list "_desugar_res.out" "_alphatize_res.out" "_anf_res.out" "_cps_res.out" "_closure_res.out"))
+     results)
     (apply verify-correctness (cons filename-string results))))
 
 (define (read-direc directory)
