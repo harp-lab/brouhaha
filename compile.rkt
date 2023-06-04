@@ -14,8 +14,8 @@
          [pr1 (alphatize pr0)]
          [pr2 (anf-convert pr1)]
          [pr3 (cps-convert pr2)]
-         [pr4 (closure-convert pr3)]
-         [pr5 (alphatize pr3)])
+         [pr4 (alphatize pr3)]
+         [pr5 (closure-convert pr4)])
 
     (list pr0 pr1 pr2 pr3 pr4 pr5)))
 

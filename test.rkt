@@ -28,8 +28,8 @@
          [alphatize_prg (list-ref compiled-program 1)]
          [anf_prg (list-ref compiled-program 2)]
          [cps_prg (list-ref compiled-program 3)]
-         [clo_conv_prg (list-ref compiled-program 4)]
-         [cps_after_anf (list-ref compiled-program 5)]
+         [cps_after_anf (list-ref compiled-program 4)]
+         [clo_conv_prg (list-ref compiled-program 5)]
          [results (list (interp desugar_prg)
                         (interp alphatize_prg)
                         (interp anf_prg)
