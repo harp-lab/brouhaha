@@ -38,7 +38,7 @@ include_directories(${DEPENDENCIES_DIR} ${BDWGC_INCLUDE_DIR} ${GMP_INCLUDE_DIR} 
 link_directories(${DEPENDENCIES_DIR} ${BDWGC_LIBRARY_DIR} ${GMP_LIBRARY_DIR} ${VALGRIND_LIBRARY_DIR})
 
 # Add executable
-add_executable(bourhaha tests2/easy/easy.haha_cpp_program.cpp)
+add_executable(bourhaha tests2/easy/easy_cpp_program.cpp)
 # add_executable(bourhaha easy_cpp_program.cpp)
 # add_executable(bourhaha dummy.cpp)
 # add_executable(bourhaha tests2/minus/minus_cpp_program.cpp)

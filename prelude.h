@@ -162,7 +162,6 @@ void **decode_cons(void *val)
 }
 void **decode_clo(void *val)
 {
-    std::cout << val << std::endl;
     assert_type((get_tag(val) == CLO), "Type error: Not CLO");
     return reinterpret_cast<void **>(MASK(val));
 }
@@ -241,7 +240,6 @@ void *apply_prim__u43(void *lst) //+ shoudl work
 
         lst = cons_lst[1];
     }
-    std::cout << mpz_get_str(nullptr, 10, *result) << std::endl;
 
     return encode_mpz(result);
 }
