@@ -9,7 +9,8 @@
   ; replace the old cpp file, if exists
   (append-line filepath "#include<stdio.h>" 'replace)
   (append-line filepath "#include<string.h>" )
-  (append-line filepath (string-append "#include " "\"../../header.h\""))
+  (append-line filepath "#include \"gmp_func.h\"" )
+  (append-line filepath (string-append "#include " "\"../../prelude.h\""))
   (append-line filepath "using namespace std;\n" )
 
   (define top-lvl-procs
@@ -29,7 +30,11 @@
 
        (match val
          [(? number? )
-          (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_int((s32)~a));" (get-c-string lhs) val))
+          (define mpzVar (gensym 'mpzvar))
+
+          (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" mpzVar))
+          (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);;" mpzVar val))
+          (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_mpz(~a));" (get-c-string lhs) mpzVar))
           (convert-proc-body proc_env proc_arg letbody)]
 
          [(? boolean? )
@@ -231,16 +236,10 @@
   (define tempClo (gensym 'clo))
 
 
-  ; void** raw_clo = alloc_clo(f);
-  ; raw_clo[1] = y;
-  ; raw_clo[2] = z;  // one line per env variable
-  ; void* clo = encode_clo(raw_clo);
-
-  ; (append-line filepath (format "void** ~a = alloc_clo(&fhalt, 0);" tempClo))
-  ; (append-line filepath (format "void* ~a = encode_clo(~a);" tempPtr tempClo))
-
-  ; (append-line filepath (format "arg_buffer.push_back(reinterpret_cast<void *>(0));"));
-  ; (append-line filepath (format "arg_buffer.push_back(reinterpret_cast<void *>(~a));" tempClo));
+  (append-line filepath "mp_set_memory_functions(&allocate_function,
+                            &reallocate_function,
+                            &deallocate_function);");
+  
 
   (append-line filepath "//making a call to the brouhaha main function to kick off our c++ emission.");
   (append-line filepath "void *fhalt_clo = encode_clo(alloc_clo(fhalt,0));")
