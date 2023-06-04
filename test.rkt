@@ -16,8 +16,9 @@
     [else (displayln (~a "Your outputs did not match for " file "\n"))]))
 
 (define (run-program directory program filename file-path prelude-path)
-  (define filename-string (path->string filename))
-  (define out-dir (string-append directory "/" (regexp-replace #rx"[.]haha$" filename-string "")))
+  (define filename-string-ext (path->string filename))
+  (define filename-string (regexp-replace #rx"[.]haha$" filename-string-ext ""))
+  (define out-dir (string-append directory "/" filename-string))
 
   (unless (directory-exists? out-dir)
     (make-directory out-dir))
