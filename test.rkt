@@ -1,4 +1,5 @@
 #lang racket
+
 (require "compile.rkt")
 (require "interp-anf.rkt")
 (require "interp-cps.rkt")
@@ -59,4 +60,19 @@
                                (build-path (current-directory) "prelude.haha")))))
             (directory-list directory)))
 
-(read-direc "tests2/")
+(define (main args)
+  (cond
+    [(= (vector-length args) 0) (read-direc "tests2/")]
+    [(and (= (vector-length args) 1) (directory-exists? (vector-ref args 0)))
+     (read-direc (vector-ref args 0))]
+    ; below is for individual files, not currently working
+    [(and (= (vector-length args) 1) (file-exists? (vector-ref args 0)))
+     (let ([path-string (vector-ref args 0)])
+       (run-program (path->string (path->directory-path (string->path path-string)))
+                    (read-program path-string)
+                    (regexp-replace #rx".*/" path-string "")
+                    path-string
+                    (build-path (current-directory) "prelude.haha")))]
+    [else (error "Invalid command line arguments. Please provide either a file or a directory.")]))
+
+(main (current-command-line-arguments))
