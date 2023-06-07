@@ -1,18 +1,3 @@
-// The bloody new header file
-// Importing GMP and GC stuff to use with cons cells and others
-
-// To do?
-/*
-    - change the headers
-    - complete the addition and multiply for mpz_t
-    - decode_clo and encode_clo and alloc_clo
-    - make the encode_null
-    - write an assert function
-    - check how to make the arg_buffer work
-    - encoding mpz_t and mpz_f
-    - create the fhalt function
-    - check prim_cons, car, cdr
-*/
 #include <iostream>
 #include <cstdint>
 #include <string>
@@ -180,51 +165,89 @@ void **alloc_clo(void *(*fptr)(), int num)
 #pragma endregion
 
 #pragma region ArithOpFunctions
-/*
- Arithmetic Operations
- Writing these to be used by other functions, and handling differences between types in these
- functions, say multiplication mpz_t should be directed to that call, but multiplication b/w
- mpz_f goes to someplace else, so we take in two void* pointers and check the type and do the
- appropriate thing for each type and operation.
-*/
-// Only supports taking mpz_t's
 
-// void *apply_prim_u42(void *lst) // * doesn't work yet
-// {
-//     // decode the args, cast them to u64 for now and return the multplication
-//     bool type_check = (get_tag(arg1) == MPT) & (get_tag(arg2) == MPT);
-//     assert_type(type_check, "Error in multiply: one or both of Passed in variables are not MPT's")
-//         mpz_t *result;
-//     mpz_init(*result);
-//     mpz_t *opd1 = reinterpret_cast<mpz_t *>(decode_val(arg1, MPT));
-//     mpz_t *opd2 = reinterpret_cast<mpz_t *>(decode_val(arg2, MPT));
+bool is_true(void *val)
+{
+    return decode_boolean(val);
+}
 
-//     mpz_mul(*result, *opd1, *opd2);
+void *prim_modulo(void *arg1, void *arg2)
+{
+    mpz_t *remainder = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*remainder);
+    bool type_arg1 = get_tag(arg1) == MPZ;
+    assert_type(type_arg1, "Argument 1 passed to prim_equal__u63 is not a MPZ");
+    bool type_arg2 = get_tag(arg2) == MPZ;
+    assert_type(type_arg2, "Argument 2 passed to prim_equal__u63 is not a MPZ");
 
-//     return reinterpret_cast<void *>(result);
-// }
+    mpz_t *arg1_mpz = decode_mpz(arg1);
+    mpz_t *arg2_mpz = decode_mpz(arg2);
+    mpz_mod(*remainder, *arg1_mpz, *arg2_mpz);
+
+    return encode_mpz(remainder);
+}
+
+void *prim_equal_u63(void *arg1, void *arg2)
+{
+    // check if both the arguments are of same type
+    // just doing it for mpz_t's now
+    bool type_arg1 = get_tag(arg1) == MPZ;
+    assert_type(type_arg1, "Argument 1 passed to prim_equal__u63 is not a MPZ");
+    bool type_arg2 = get_tag(arg2) == MPZ;
+    assert_type(type_arg2, "Argument 2 passed to prim_equal__u63 is not a MPZ");
+
+    mpz_t *arg1_mpz = decode_mpz(arg1);
+    mpz_t *arg2_mpz = decode_mpz(arg2);
+
+    if (mpz_cmp(*arg1_mpz, *arg2_mpz) == 0)
+    {
+        return encode_bool(true);
+    }
+    return encode_bool(false);
+}
+
+void *prim_eq_u63(void *arg1, void *arg2)
+{
+    // check if both the arguments are of same type
+    // just doing it for mpz_t's now
+    bool type_arg1 = get_tag(arg1) == MPZ;
+    assert_type(type_arg1, "Argument 1 passed to prim_equal__u63 is not a MPZ");
+    bool type_arg2 = get_tag(arg2) == MPZ;
+    assert_type(type_arg2, "Argument 2 passed to prim_equal__u63 is not a MPZ");
+    //??
+    mpz_t *arg1_mpz = decode_mpz(arg1);
+    mpz_t *arg2_mpz = decode_mpz(arg2);
+
+    if (arg1_mpz == arg2_mpz)
+    {
+        return encode_bool(true);
+    }
+    return encode_bool(false);
+}
+
+// cons?
 void *prim_cons_u63(void *lst)
 {
     if (get_tag(lst) == CONS)
     {
-        return reinterpret_cast<void *>(TRUE_VALUE);
+        return encode_bool(true);
     }
-    return reinterpret_cast<void *>(FALSE_VALUE);
+    return encode_bool(false);
 }
 
+// null?
 void *prim_null_u63(void *lst)
 {
     if (lst == 0x0)
     {
-        return reinterpret_cast<void *>(TRUE_VALUE);
+        return encode_bool(true);
     }
-    return reinterpret_cast<void *>(FALSE_VALUE);
+    return encode_bool(false);
 }
 
-void *apply_prim__u43(void *lst) //+ shoudl work
+void *apply_prim__u43(void *lst) //+
 {
     mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    // mpz_init_set_str(*temp1, "12", 10);
     mpz_init(*result);
     while (is_cons(lst))
     {
@@ -233,7 +256,6 @@ void *apply_prim__u43(void *lst) //+ shoudl work
 
         assert_type(type_check, "Error in addition: values in the lst are not MPT");
 
-        // mpz_t *opd1 = reinterpret_cast<mpz_t *>(decode_mpz(cons_lst[0]));
         mpz_t *opd1 = decode_mpz(cons_lst[0]);
 
         mpz_add(*result, *result, *opd1);
@@ -244,37 +266,175 @@ void *apply_prim__u43(void *lst) //+ shoudl work
     return encode_mpz(result);
 }
 
+void *apply_prim__u45(void *lst) // -
+{
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+    long counter = 0;
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        bool type_check = (get_tag(cons_lst[0]) == MPZ);
+
+        assert_type(type_check, "Error in apply_prim_u43: values in the lst are not MPT");
+
+        mpz_t *opd1 = decode_mpz(cons_lst[0]);
+
+        if (counter == 0)
+        {
+            mpz_set(*result, *opd1);
+            lst = cons_lst[1];
+            counter++;
+            continue;
+        }
+
+        mpz_sub(*result, *result, *opd1);
+
+        lst = cons_lst[1];
+        counter++;
+    }
+
+    return encode_mpz(result);
+}
+
+void *apply_prim__u42(void *lst) // *
+{
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init_set_ui(*result, 1);
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        bool type_check = (get_tag(cons_lst[0]) == MPZ);
+
+        assert_type(type_check, "Error in apply_prim_u42: values in the lst are not MPT");
+
+        mpz_t *opd1 = decode_mpz(cons_lst[0]);
+
+        mpz_mul(*result, *result, *opd1);
+
+        lst = cons_lst[1];
+    }
+
+    return encode_mpz(result);
+}
+
+bool less_equal_zero(long cmp)
+{
+    if (cmp <= 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool great_equal_zero(long cmp)
+{
+    if (cmp >= 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool great_zero(long cmp)
+{
+    if (cmp > 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool less_zero(long cmp)
+{
+    if (cmp < 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool equal_zero(long cmp)
+{
+    if (cmp == 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+void *compare_lst(void *lst, bool (*cmp_op)(long))
+{
+    int cmp_result = 0;
+    long counter = 0;
+    mpz_t *temp_store;
+    mpz_init(*temp_store);
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        bool type_check = (get_tag(cons_lst[0]) == MPZ);
+
+        assert_type(type_check, "Error in apply_prim__u62: values in the lst are not MPT");
+        mpz_t *opd1 = decode_mpz(cons_lst[0]);
+        if (counter == 0)
+        {
+            mpz_set(*temp_store, *opd1);
+            lst = cons_lst[1];
+            counter++;
+            continue;
+        }
+
+        cmp_result = mpz_cmp(*temp_store, *opd1);
+        if (cmp_op(cmp_result))
+        {
+            mpz_set(*temp_store, *opd1);
+            lst = cons_lst[1];
+            counter++;
+            continue;
+        }
+        return encode_bool(false);
+    }
+    if (counter <= 1)
+    {
+        assert_type(false, "Less than two numbers to compare in the list");
+    }
+    return encode_bool(true);
+}
+
+// Checks if the list is strictly decreasing
+void *apply_prim__u62(void *lst) // >
+{
+    return compare_lst(lst, *great_zero);
+}
+
+// checks if a list is strictly increasing
+void *apply_prim__u60(void *lst) // <
+{
+    return compare_lst(lst, *less_zero);
+}
+
+// checks if a list is equal
+void *apply_prim__u61(void *lst) // =
+{
+    return compare_lst(lst, *equal_zero);
+}
+
+// checks if elements are decreasing >=
+void *apply_prim__u62_u61(void *lst)
+{
+    return compare_lst(lst, *great_equal_zero);
+}
+
+// checks if elements are increasing <=
+void *apply_prim__u60_u61(void *lst)
+{
+    return compare_lst(lst, *less_equal_zero);
+}
+
 #pragma endregion
 
-#pragma region ConsClass
-/*
- Assuming that one cons cell can have different types of data and making it use void* for that reason
- This class is basically a linked list of void* pointing to other stuff.
- Interface:
-    - I need a function that takes a element and void* and return a void* to a cons cell with the
-    element attached to its front.
-    - Functions for prim_car and prim_cdr
-    - Functions to encode and decode the cons cell
-    - ??Function to print the cons cell
-    - Function taking a lst of elements/which can be cons cells as well, and returning cons structure
-        * What is the apply_prim_list taking in, is it taking nested cons cell lists and appedning them
-    - [Optional] cdar function
-    - [Not sure, How to] Iterator function, that returns the next value in the cons cell
-    - Function to check if cons cell
-    - Function to d Tagset the length
- Assumptions:
-    - Will hold values of two different types
-        - Any val type and cons type or two val type
-    - Runs only on 64 bit systems and the pointers are aligned by 8
- Functions to be made:
-    - ??apply_prim_cons
-    - ??apply_prim_list
-    - apply_prim_cdar
-    - prim_null_u63 - null?
-    - prim_eq_uu63 - eq?
-    - prim_equal_u63 - equal?, ... odd?, even?, negative?
-    - comparison ops >, <, =, <=, >=
-*/
+#pragma region ConsMethods
+
 static void *prim_cons(void *arg1, void *arg2)
 {
     void **cell = (void **)GC_MALLOC(2 * sizeof(void *));
@@ -298,6 +458,20 @@ void *prim_cdr(void *val)
 }
 #pragma endregion
 
+void print_val(void *val)
+{
+    switch (get_tag(val))
+    {
+    case SPL:
+        std::cout << decode_boolean(val) << std::endl;
+        break;
+    case MPZ:
+        mpz_t *final_mpz = decode_mpz(val);
+        std::cout << mpz_get_str(nullptr, 10, *final_mpz) << std::endl;
+        break;
+    }
+}
+
 void *halt;
 void *arg_buffer[999];
 long numArgs;
@@ -305,10 +479,6 @@ long numArgs;
 void *fhalt()
 {
     std::cout << "In fhalt" << std::endl;
-    mpz_t *final_result = decode_mpz(arg_buffer[2]);
-    std::cout << mpz_get_str(nullptr, 10, *final_result) << std::endl;
+    print_val(arg_buffer[2]);
     exit(1);
 }
-
-// have to initialize the mpz_t nums and pass the nums from program as strings
-// call encode_mpz instead of encode_int

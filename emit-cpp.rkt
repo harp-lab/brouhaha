@@ -124,8 +124,8 @@
        (append-line filepath "\n//if-clause")
        (define guard (gensym 'if_guard))
 
-       (append-line filepath (format "u64 ~a = reinterpret_cast<u64>(is_true(~a));" guard grd))
-       (append-line filepath (format "if(~a == 1)\n{" guard))
+       (append-line filepath (format "bool ~a = is_true(~a);" guard grd))
+       (append-line filepath (format "if(~a)\n{" guard))
        (convert-proc-body proc_env proc_arg texp)
        (append-line filepath "}\nelse\n{")
        (convert-proc-body proc_env proc_arg fexp)

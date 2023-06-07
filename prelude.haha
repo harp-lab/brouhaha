@@ -1,46 +1,61 @@
 ; Prelude is used as a way to add functionality to the language and programs as a library
-; (define (car lst) 
-;    (prim car lst))
 
 (define (+ . lst) (apply-prim + lst))
 
-; (define (- . lst) 
-;    (apply-prim - lst))
+(define (- . lst) 
+   (apply-prim - lst))
 ; To add a length function here
 
-; (define (* . lst) 
-;    (apply-prim * lst))
+(define (* . lst) 
+   (apply-prim * lst))
 
-; (define (= . lst) 
-;    (apply-prim = lst))
+(define (modulo a b)
+   (prim modulo a b))
 
 ; (define (/ . lst) 
 ;    (apply-prim / lst))
 
-; (define (null? x)
-;    (prim null? x))
-; ; ;
-; (define (cons a b)
-;    (prim cons a b))
+(define (= . lst) 
+   (apply-prim = lst))
 
-; (define (cdr lst)
-;    (prim cdr lst))
-   
+(define (> . lst) 
+   (apply-prim > lst))
 
-; (define (even? x)
-;    (prim even? x))
+(define (< . lst) 
+   (apply-prim < lst))
 
-; (define (eq? x y)
-;    (prim eq? x y))
+(define (<= . lst) 
+   (apply-prim <= lst))
 
-; (define (> . lst) 
-;    (apply-prim > lst))
+(define (>= . lst) 
+   (apply-prim >= lst))
 
-; (define (modulo a b)
-;    (prim modulo a b))
+(define (null? x)
+   (prim null? x))
 
-; (define (list . x) 
-;    x)
+(define (equal? x y)
+   (prim equal? x y))
+
+(define (eq? x y)
+   (prim eq? x y))
+
+(define (cons a b)
+   (prim cons a b))
+
+(define (car lst)
+   (prim car lst))   
+
+(define (cdr lst)
+   (prim cdr lst))
+
+(define (even? x)
+   (equal? 0 (modulo x 2)))
+
+(define (odd? x)
+   (equal? 1 (modulo x 2)))
+
+(define (list . x) 
+   x)
 
 ; (define (foldl fun acc lst) 
 ;  (if (null? lst)
