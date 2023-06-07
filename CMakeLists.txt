@@ -42,6 +42,7 @@ add_executable(bourhaha tests2/easy/easy_cpp_program.cpp)
 # add_executable(bourhaha easy_cpp_program.cpp)
 # add_executable(bourhaha dummy.cpp)
 # add_executable(bourhaha tests2/minus/minus_cpp_program.cpp)
+# add_executable(bourhaha tests2/foldl/foldl_cpp_program.cpp)
 
 # ../dependencies/valgrind/bin/valgrind --leak-check=full ./bdwgc-gmp_test 
 

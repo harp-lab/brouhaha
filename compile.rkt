@@ -234,7 +234,7 @@
                    envlist)))
      (list (set-remove (set-union envvars freevars) x)
            `(let ([,x (make-closure ,fx ,@envlist)]) ,e0+)
-           `((proc (,fx ,envx ,@xs) ,body++) ,@procs0+ ,@procs1+))]
+           `(,@procs0+ ,@procs1+ (proc (,fx ,envx ,@xs) ,body++) ))]
     [`(let ([,x (lambda ,arg ,body)]) ,e0)
      (match-define `(,freevars ,e0+ ,procs0+) (T-bottom-up e0))
      (match-define `(,freelambda ,body+ ,procs1+) (T-bottom-up body))
@@ -250,7 +250,7 @@
                    envlist)))
      (list (set-remove (set-union envvars freevars) x)
            `(let ([,x ((make-closure ,fx) ,@envlist)]) ,e0+)
-           `((proc (,fx ,envx . ,arg) ,body++) ,@procs0+ ,@procs1+))]
+           `(,@procs0+ ,@procs1+ (proc (,fx ,envx . ,arg) ,body++)))]
     [`(if ,x ,e0 ,e1)
      (match-define `(,freevars0 ,e0+ ,procs0+) (T-bottom-up e0))
      (match-define `(,freevars1 ,e1+ ,procs1+) (T-bottom-up e1))
