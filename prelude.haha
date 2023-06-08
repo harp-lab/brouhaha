@@ -77,12 +77,12 @@
 (define (map proc lst lst2)
   (if (null? lst) lst2 (cons (proc (car lst)) (map proc (cdr lst)))))
 
-(define (filter guard lst lst2)
+(define (filter op lst)
   (if (null? lst)
-      lst2
-      (if (guard (car lst))
-          (cons (car lst) (filter guard (cdr lst) lst2))
-          (filter guard (cdr lst) lst2))))
+      (list)
+      (if (op (car lst))
+          (cons (car lst) (filter op (cdr lst)))
+          (filter op (cdr lst)))))
 
 (define (drop lst n)
   (if (= n 0) lst (drop (cdr lst) (- n 1))))
