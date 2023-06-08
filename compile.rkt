@@ -42,6 +42,7 @@
     (match exp
       [(? integer? y) `',y]
       [(? symbol? x) x]
+      [(? boolean? x) `',x]
       [`(let ([,xs ,es] ...) ,body)
        `(let ,(map (lambda (x e) `[,x ,(desugar-exp e)]) xs es) ,(desugar-exp body))]
       [`(lambda (,xs ...) ,body) `(lambda ,xs ,(desugar-exp body))]
