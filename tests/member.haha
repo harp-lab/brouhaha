@@ -1,0 +1,7 @@
+(define (call op lst)
+    (if (member? op lst)
+        1
+        2))
+
+(define (brouhaha_main)
+    (call 1 (list 1 2 3 4)))

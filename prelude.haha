@@ -13,8 +13,8 @@
 (define (modulo a b)
   (prim modulo a b))
 
-; (define (/ . lst)
-;    (apply-prim / lst))
+(define (/ . lst)
+   (apply-prim / lst))
 
 (define (= . lst)
   (apply-prim = lst))
@@ -57,6 +57,10 @@
 
 (define (list . x)
   x)
+
+
+(define (member? x lst)
+  (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
 
 (define (foldl fun acc lst)
   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
