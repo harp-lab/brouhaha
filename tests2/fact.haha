@@ -1,0 +1,7 @@
+(define (fact n)
+  (if (= 0 n)
+      1
+      (* n (fact (- n 1)))))
+
+(define (brouhaha_main)
+  (fact 5))

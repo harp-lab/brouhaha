@@ -4,7 +4,7 @@
 
 (provide emit-cpp)
 
-(define (emit-cpp proc_list filepath [env (hash)])
+(define (emit-cpp proc_list filepath)
   ; defining cpp header files
   ; replace the old cpp file, if exists
   (append-line filepath "#include<stdio.h>" 'replace)
@@ -13,15 +13,15 @@
   (append-line filepath (string-append "#include " "\"../../prelude.h\""))
   (append-line filepath "using namespace std;\n" )
 
-  (define top-lvl-procs
-    (let loop ([env+ env] [prog+ proc_list])
-      (match prog+
-        [`((proc (,name . ,param) ,body) ,rest ...)
-         (loop (hash-set env+ (get-c-string name) (get-c-string name)) (cdr prog+))]
-        [`() env+])))
+  ; (define top-lvl-procs
+  ;   (let loop ([env+ env] [prog+ proc_list])
+  ;     (match prog+
+  ;       [`((proc (,name . ,param) ,body) ,rest ...)
+  ;        (loop (hash-set env+ (get-c-string name) (get-c-string name)) (cdr prog+))]
+  ;       [`() env+])))
 
 
-  (define (convert-proc-body proc_env proc_arg body [top_level_procs top-lvl-procs])
+  (define (convert-proc-body proc_name proc_env proc_arg body)
     ;(displayln (~a "cpb: " body))
     (define (true? x) (if x #t #f))
 
@@ -35,30 +35,30 @@
           (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" mpzVar))
           (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);;" mpzVar val))
           (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_mpz(~a));" (get-c-string lhs) mpzVar))
-          (convert-proc-body proc_env proc_arg letbody)]
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [(? boolean? )
           (cond [(true? val)
                  (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_bool((s32)~a));" (get-c-string lhs) 1))
-                 (convert-proc-body proc_env proc_arg letbody)]
+                 (convert-proc-body proc_name proc_env proc_arg letbody)]
                 [else
                  (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_bool((s32)~a));" (get-c-string lhs) 0))
-                 (convert-proc-body proc_env proc_arg letbody)
+                 (convert-proc-body proc_name proc_env proc_arg letbody)
                  ])]
 
          [(? null? )
           (append-line filepath (format "void* ~a = encode_null();" (get-c-string lhs)))
-          (convert-proc-body proc_env proc_arg letbody)]
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [(? symbol?)
           (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_string(new string(\"~a\")));"
                                         (get-c-string lhs) val))
-          (convert-proc-body proc_env proc_arg letbody)]
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [(? string? )
           (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_string(new string(\"~a\")));"
                                         (get-c-string lhs) val))
-          (convert-proc-body proc_env proc_arg letbody)]
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [_ (raise (format "Unknown datatype! ~a" val))]
          )
@@ -88,6 +88,9 @@
        (for ([i (in-range 1 (+ arglength 1))]
              [item args])
 
+         (when (eq? (get-c-string item) proc_name)
+            (append-line filepath (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" proc_name proc_name 0)))
+
          (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item))))
 
        (append-line filepath (format "void* ~a = encode_clo(~a);" (get-c-string lhs) cloName))
@@ -95,7 +98,7 @@
        ;  (when (> (+ arglength 1) 1) (append-line filepath "\n"))
        (append-line filepath "\n")
 
-       (convert-proc-body proc_env proc_arg letbody)]
+       (convert-proc-body proc_name proc_env proc_arg letbody)]
 
       [`(let ([,lhs (prim ,op ,args ...)]) ,letbody)
        (define line (format "void* ~a = prim_~a(~a);" (get-c-string lhs) (get-c-string op)
@@ -105,20 +108,20 @@
 
        (append-line filepath line)
 
-       (convert-proc-body proc_env proc_arg letbody)]
+       (convert-proc-body proc_name proc_env proc_arg letbody)]
 
       [`(let ([,lhs (apply-prim ,op ,arg)]) ,letbody)
        (define line (format "void* ~a = apply_prim_~a(~a);" (get-c-string lhs) (get-c-string op) (get-c-string arg)))
 
        (append-line filepath line)
 
-       (convert-proc-body proc_env proc_arg letbody)]
+       (convert-proc-body proc_name proc_env proc_arg letbody)]
 
       [`(let ([,lhs (env-ref ,env ,idx)]) ,letbody)
        (append-line filepath "//not do dummy comment")
        (append-line filepath (format "void* ~a = (decode_clo(~a))[~a];" (get-c-string lhs) env idx))
 
-       (convert-proc-body proc_env proc_arg letbody)]
+       (convert-proc-body proc_name proc_env proc_arg letbody)]
 
       [`(if ,grd ,texp ,fexp)
        (append-line filepath "\n//if-clause")
@@ -126,9 +129,9 @@
 
        (append-line filepath (format "bool ~a = is_true(~a);" guard grd))
        (append-line filepath (format "if(~a)\n{" guard))
-       (convert-proc-body proc_env proc_arg texp)
+       (convert-proc-body proc_name proc_env proc_arg texp)
        (append-line filepath "}\nelse\n{")
-       (convert-proc-body proc_env proc_arg fexp)
+       (convert-proc-body proc_name proc_env proc_arg fexp)
        (append-line filepath "}\n")
        ]
 
@@ -183,7 +186,7 @@
           (format "void* ~a = arg_buffer[~a];" (get-c-string item) i)))
 
        (append-line filepath "//Dummy comment")
-       (convert-proc-body (get-c-string env) args body)
+       (convert-proc-body (get-c-string ptr) (get-c-string env) args body)
 
        (append-line filepath "}\n")
 
@@ -216,7 +219,7 @@
        (append-line filepath (format "~a = prim_cons(arg_buffer[i], ~a);" arg arg))
        (append-line filepath (format "\n}\n"))
 
-       (convert-proc-body (get-c-string env) arg body)
+       (convert-proc-body (get-c-string ptr) (get-c-string env) arg body)
        (append-line filepath "}\n")
        (append-line filepath (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" (get-c-string ptr) (get-c-string ptr) 0))
        ])

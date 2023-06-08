@@ -57,7 +57,7 @@
 (define (list . x) 
    x)
 
-; (define (foldl fun acc lst) 
-;  (if (null? lst)
-;      acc
-;      (foldl fun (fun (car lst) acc) (cdr lst))))
+(define (foldl fun acc lst) 
+ (if (null? lst)
+     acc
+     (foldl fun (fun (car lst) acc) (cdr lst))))
