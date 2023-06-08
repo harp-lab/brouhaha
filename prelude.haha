@@ -48,8 +48,8 @@
 (define (odd? x)
   (equal? 1 (modulo x 2)))
 
-(define (member? x lst)
-  (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
+; (define (member? x lst)
+;   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
 
 ; List functions
 (define (cons a b)
@@ -78,7 +78,7 @@
   (if (null? lst) 0 (+ 1 (length (cdr lst)))))
 
 (define (map proc lst lst2)
-  (if (null? lst) lst2 (cons (proc (car lst)) (map proc (rest lst)))))
+  (if (null? lst) lst2 (cons (proc (car lst)) (map proc (cdr lst)))))
 
 (define (filter guard lst lst2)
   (if (null? lst)
@@ -91,7 +91,7 @@
   (if (= n 0) lst (drop (cdr lst) (- n 1))))
 
 (define (foldr-loop proc acc lst)
-  (if (null? lst) acc (foldr-loop (car lst) (foldr-loop proc acc (rest lst)))))
+  (if (null? lst) acc (foldr-loop (car lst) (foldr-loop proc acc (cdr lst)))))
 
 (define (foldr proc acc lst)
   (foldr-loop proc acc lst))
