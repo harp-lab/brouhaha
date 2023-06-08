@@ -10,15 +10,18 @@
                ...))
   (define (write-exp exp)
     (match exp
-           [`(lambda (,(? symbol? xs) ...) ,body)
-            (foldr string-append "" `("(lambda (fixedparam [" ,@(map sym->qstr xs) "]) " ,(write-exp body) ")"))]
-           [(? symbol? x) 
+           [(? symbol? x)
             (format "(ref \"~a\")" x)]
            [(? boolean? x)
             (if x
              "(bool \"t\")"
              "(bool \"f\")")]
            [(? number?)
-            (format "(const \"~a\")")]))
+            (format "(const \"~a\")")]
+           [`(lambda (,(? symbol? xs) ...) ,body)
+            (foldr string-append "" `("(lambda (fixedparam [" ,@(map sym->qstr xs) "]) " ,(write-exp body) ")"))]
+           [`(if ,grd ,tExp ,fExp)
+            (foldr string-append "" `("(if " ,(write-exp grd) " " ,(write-exp tExp) " " ,(write-exp fExp) ")"))]
+           ))
   (display (foldr string-append (map write-def program)))
   (void))
