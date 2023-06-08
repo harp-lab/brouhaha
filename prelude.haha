@@ -1,63 +1,92 @@
 ; Prelude is used as a way to add functionality to the language and programs as a library
 
-(define (+ . lst) (apply-prim + lst))
+(define (+ . lst)
+  (apply-prim + lst))
 
-(define (- . lst) 
-   (apply-prim - lst))
-; To add a length function here
+(define (- . lst)
+  (apply-prim - lst))
 
-(define (* . lst) 
-   (apply-prim * lst))
+(define (* . lst)
+  (apply-prim * lst))
 
 (define (modulo a b)
-   (prim modulo a b))
+  (prim modulo a b))
 
-; (define (/ . lst) 
+; (define (/ . lst)
 ;    (apply-prim / lst))
 
-(define (= . lst) 
-   (apply-prim = lst))
+(define (= . lst)
+  (apply-prim = lst))
 
-(define (> . lst) 
-   (apply-prim > lst))
+(define (> . lst)
+  (apply-prim > lst))
 
-(define (< . lst) 
-   (apply-prim < lst))
+(define (< . lst)
+  (apply-prim < lst))
 
-(define (<= . lst) 
-   (apply-prim <= lst))
+(define (<= . lst)
+  (apply-prim <= lst))
 
-(define (>= . lst) 
-   (apply-prim >= lst))
+(define (>= . lst)
+  (apply-prim >= lst))
 
 (define (null? x)
-   (prim null? x))
+  (prim null? x))
 
 (define (equal? x y)
-   (prim equal? x y))
+  (prim equal? x y))
 
 (define (eq? x y)
-   (prim eq? x y))
+  (prim eq? x y))
 
 (define (cons a b)
-   (prim cons a b))
+  (prim cons a b))
 
 (define (car lst)
-   (prim car lst))   
+  (prim car lst))
 
 (define (cdr lst)
-   (prim cdr lst))
+  (prim cdr lst))
 
 (define (even? x)
-   (equal? 0 (modulo x 2)))
+  (equal? 0 (modulo x 2)))
 
 (define (odd? x)
-   (equal? 1 (modulo x 2)))
+  (equal? 1 (modulo x 2)))
 
-(define (list . x) 
-   x)
+(define (list . x)
+  x)
 
-(define (foldl fun acc lst) 
- (if (null? lst)
-     acc
-     (foldl fun (fun (car lst) acc) (cdr lst))))
+(define (foldl fun acc lst)
+  (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
+
+(define (reverse lst lst2)
+  (if (null? lst) lst2 (reverse (cdr lst) (cons (car lst) lst2))))
+
+(define (take lst n lst2)
+  (if (= n 0) lst2 (cons (car lst) (take (cdr lst) (- n 1) lst2))))
+
+(define (member? x lst)
+  (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
+
+(define (length lst)
+  (if (null? lst) 0 (+ 1 (length (cdr lst)))))
+
+(define (map proc lst lst2)
+  (if (null? lst) lst2 (cons (proc (car lst)) (map proc (rest lst)))))
+
+(define (filter guard lst lst2)
+  (if (null? lst)
+      lst2
+      (if (guard (car lst))
+          (cons (car lst) (filter guard (cdr lst) lst2))
+          (filter guard (cdr lst) lst2))))
+
+(define (drop lst n)
+  (if (= n 0) lst (drop (cdr lst) (- n 1))))
+
+(define (foldr-loop proc acc lst)
+  (if (null? lst) acc (foldr-loop (car lst) (foldr-loop proc acc (rest lst)))))
+
+(define (foldr2 proc acc lst)
+  (foldr-loop proc acc lst))

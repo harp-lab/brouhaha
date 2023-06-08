@@ -1,0 +1,6 @@
+; strictly decreasing
+(define (call)
+    (> 100 20 10 5 1))
+
+(define (brouhaha_main)
+    (call))

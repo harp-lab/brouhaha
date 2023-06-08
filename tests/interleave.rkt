@@ -1,0 +1,9 @@
+(define (interleave-direct lst1 lst2)
+  (if (null? lst1)
+      lst2
+      (if (null? lst2)
+          lst1
+          (cons (car lst1) (cons (car lst2) (interleave-direct (cdr lst1) (cdr lst2)))))))
+
+(define (main)
+    (interleave-direct (list 1 2 3 4 5 6) (list 7 8 9 10)))
