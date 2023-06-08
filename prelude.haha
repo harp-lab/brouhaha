@@ -1,5 +1,6 @@
 ; Prelude is used as a way to add functionality to the language and programs as a library
 
+; Primitives
 (define (+ . lst)
   (apply-prim + lst))
 
@@ -15,6 +16,7 @@
 ; (define (/ . lst)
 ;    (apply-prim / lst))
 
+; Comparisons
 (define (= . lst)
   (apply-prim = lst))
 
@@ -30,6 +32,7 @@
 (define (>= . lst)
   (apply-prim >= lst))
 
+; ?-Clauses
 (define (null? x)
   (prim null? x))
 
@@ -39,6 +42,13 @@
 (define (eq? x y)
   (prim eq? x y))
 
+(define (even? x)
+  (equal? 0 (modulo x 2)))
+
+(define (odd? x)
+  (equal? 1 (modulo x 2)))
+
+; List functions
 (define (cons a b)
   (prim cons a b))
 
@@ -48,15 +58,10 @@
 (define (cdr lst)
   (prim cdr lst))
 
-(define (even? x)
-  (equal? 0 (modulo x 2)))
-
-(define (odd? x)
-  (equal? 1 (modulo x 2)))
-
 (define (list . x)
   x)
 
+; Higher order functions
 (define (foldl fun acc lst)
   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
 
@@ -88,5 +93,5 @@
 (define (foldr-loop proc acc lst)
   (if (null? lst) acc (foldr-loop (car lst) (foldr-loop proc acc (rest lst)))))
 
-(define (foldr2 proc acc lst)
+(define (foldr proc acc lst)
   (foldr-loop proc acc lst))
