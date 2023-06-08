@@ -29,21 +29,21 @@
 ; (prims op ["+" "-" "*" "/"])
 
 (U (lam "x" (app (ref "x") (ref "x"))))
-(Y (app {U} 
-    (lam "y" 
-        (lam "f" 
-            (app (ref "f") (lam "x" 
-                (app (app (app {U} (ref "y")) (ref "f")) (ref "x"))))))))
+; (Y (app {U} 
+;     (lam "y" 
+;         (lam "f" 
+;             (app (ref "f") (lam "x" 
+;                 (app (app (app {U} (ref "y")) (ref "f")) (ref "x"))))))))
 
-(eval   (app {Y} 
-            (lam "z" 
-                (lam "c" 
-                    (if {== (ref "c") (const 0)}
-                        (const 1) 
-                        (app (mult (ref "c") 
-                             (app (ref "z") 
-                                (app (minus (ref "c") (const 1)))
-                                    )))))) (const 5))))
+; (eval   (app {Y} 
+;             (lam "z" 
+;                 (lam "c" 
+;                     (if {== (ref "c") (const 0)}
+;                         (const 1) 
+;                         (app (mult (ref "c") 
+;                              (app (ref "z") 
+;                                 (app (minus (ref "c") (const 1)))
+;                                     )))))) (const 5))))
 
 ;(eval (app {U} {U}))
 ;(eval {Y})
@@ -127,8 +127,11 @@
  -->
  (env-map ?(env-set env x _) y {env-map env y})]
 
-;PROGRAM HANDLING
-[(program func args body)]
+
 
 
 (eval (program (def (func "call") (args []) (plus (const 32) (const 98)))))
+
+(define "+" (varparam "lst") (apply-prim "+" (ref "lst")))
+(define "call" (fixedparam []) (app (ref "+") [(quote (const "32"))(quote (const "98"))]))
+(define "brouhaha_main" (fixedparam []) (app (ref "call") []))
