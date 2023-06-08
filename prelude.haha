@@ -83,8 +83,6 @@
 (define (drop lst n)
   (if (= n 0) lst (drop (cdr lst) (- n 1))))
 
-(define (foldr-loop proc acc lst)
-  (if (null? lst) acc (foldr-loop (car lst) (foldr-loop proc acc (cdr lst)))))
-
 (define (foldr proc acc lst)
-  (foldr-loop proc acc lst))
+  (if (null? lst) acc
+      (proc (car lst) (foldr proc acc (rest lst)))))
