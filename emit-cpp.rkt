@@ -89,7 +89,7 @@
              [item args])
 
          (when (eq? (get-c-string item) proc_name)
-            (append-line filepath (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" proc_name proc_name 0)))
+           (append-line filepath (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" proc_name proc_name 0)))
 
          (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item))))
 
@@ -135,6 +135,23 @@
        (append-line filepath "}\n")
        ]
 
+      [`(clo-apply ,func ,args)
+       (append-line filepath "\n//clo-apply")
+       ;  (append-line filepath "arg_buffer.clear();")
+
+       (append-line filepath (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string  func)))
+       (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
+       (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
+
+       (append-line
+        filepath
+        (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" (get-c-string func)))
+
+       (append-line filepath "// call next proc using a function pointer")
+       (append-line filepath "function_ptr();")
+       (append-line filepath "return nullptr;")
+       ]
+
       [`(clo-app ,func ,args ...)
        (append-line filepath "\n//clo-app")
        ;  (append-line filepath "arg_buffer.clear();")
@@ -149,8 +166,6 @@
         filepath
         (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" (get-c-string func)))
 
-       (append-line filepath "//assign buffer size to numArgs")
-       ;  (append-line filepath "arg_num = arg_buffer.size();")
        (append-line filepath "// call next proc using a function pointer")
        (append-line filepath "function_ptr();")
        (append-line filepath "return nullptr;")
@@ -167,7 +182,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "cout<<\"In ~a\"<<endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -200,7 +215,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "cout<<\"In ~a\"<<endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -212,12 +227,20 @@
        (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
 
 
-       (append-line filepath "//building cons cell\n")
+       (append-line filepath (format "void* ~a;" arg))
 
-       (append-line filepath (format "void* ~a = encode_null();" arg))
+       (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
+       (append-line filepath "//(apply e0 e0) case")
+       (append-line filepath (format "~a = arg_buffer[2];" arg))
+       (append-line filepath "}\nelse\n{")
+
+       (append-line filepath "//building cons cell")
+       (append-line filepath (format "~a = encode_null();" arg))
        (append-line filepath (format "for(int i = numArgs; i >= 2; i--)\n{"))
        (append-line filepath (format "~a = prim_cons(arg_buffer[i], ~a);" arg arg))
        (append-line filepath (format "\n}\n"))
+
+       (append-line filepath "}\n")
 
        (convert-proc-body (get-c-string ptr) (get-c-string env) arg body)
        (append-line filepath "}\n")
@@ -242,7 +265,7 @@
   (append-line filepath "mp_set_memory_functions(&allocate_function,
                             &reallocate_function,
                             &deallocate_function);");
-  
+
 
   (append-line filepath "//making a call to the brouhaha main function to kick off our c++ emission.");
   (append-line filepath "void *fhalt_clo = encode_clo(alloc_clo(fhalt,0));")

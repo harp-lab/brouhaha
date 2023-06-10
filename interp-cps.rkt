@@ -31,6 +31,7 @@
        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env))) env xs rhss))]
       [`(let* ([,xs ,rhss] ...) ,body)
        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env+))) env xs rhss))]
+      [`(apply ,e0 ,e1) (appl (eval e0 env) (eval e1 env))]
       [`(,ef ,eas ...)
        (let ([fn-val (eval ef env)] [arg-vals (map (lambda (ea) (eval ea env)) eas)])
          (appl fn-val arg-vals))]))

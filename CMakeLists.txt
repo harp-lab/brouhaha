@@ -42,8 +42,10 @@ link_directories(${DEPENDENCIES_DIR} ${BDWGC_LIBRARY_DIR} ${GMP_LIBRARY_DIR} ${V
 # add_executable(bourhaha easy_cpp_program.cpp)
 # add_executable(bourhaha dummy.cpp)
 # add_executable(bourhaha tests2/minus/minus_cpp_program.cpp)
-add_executable(bourhaha tests2/foldl/foldl_cpp_program.cpp)
+# add_executable(bourhaha tests2/filter/filter_cpp_program.cpp)
+add_executable(bourhaha tests2/apply/apply_cpp_program.cpp)
 # add_executable(bourhaha tests2/fact/fact_cpp_program.cpp)
+# add_executable(bourhaha tests2/foldl/foldl_cpp_program.cpp)
 
 # ../dependencies/valgrind/bin/valgrind --leak-check=full ./bdwgc-gmp_test 
 
