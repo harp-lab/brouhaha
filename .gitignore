@@ -2,6 +2,7 @@ tests/*/*.out
 tests/*/
 tests2/*/*.out
 tests2/*/
+tests3/
 **/*.a
 yes.out
 *~*

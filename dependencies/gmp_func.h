@@ -9,5 +9,5 @@ void* reallocate_function (void *ptr, size_t old_size, size_t new_size) {
 }
 // // Does it work without this.
 void deallocate_function (void *ptr, size_t size) {
-    GC_free(ptr);
+    // GC_free(ptr);
 }

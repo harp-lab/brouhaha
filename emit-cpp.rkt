@@ -11,7 +11,7 @@
   (append-line filepath "#include<string.h>" )
   (append-line filepath "#include \"gmp_func.h\"" )
   (append-line filepath (string-append "#include " "\"../../prelude.h\""))
-  (append-line filepath "using namespace std;\n" )
+  ; (append-line filepath "using namespace std;\n" )
 
   ; (define top-lvl-procs
   ;   (let loop ([env+ env] [prog+ proc_list])
@@ -33,7 +33,7 @@
           (define mpzVar (gensym 'mpzvar))
 
           (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" mpzVar))
-          (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);;" mpzVar val))
+          (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" mpzVar val))
           (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_mpz(~a));" (get-c-string lhs) mpzVar))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
@@ -166,7 +166,9 @@
         filepath
         (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" (get-c-string func)))
 
-       (append-line filepath "// call next proc using a function pointer")
+       (append-line filepath "//assign buffer size to numArgs")
+       ;  (append-line filepath "arg_num = arg_buffer.size();")
+       (append-line filepath "//call next proc using a function pointer")
        (append-line filepath "function_ptr();")
        (append-line filepath "return nullptr;")
        ]
