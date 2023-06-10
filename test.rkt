@@ -16,6 +16,7 @@
     [else (displayln (~a "Your outputs did not match for " file "\n"))]))
 
 (define (run-program directory program filename file-path prelude-path)
+  (pretty-print (list directory program filename file-path prelude-path))
   (define filename-string-ext (path->string filename))
   (define filename-string (regexp-replace #rx"[.]haha$" filename-string-ext ""))
   (define out-dir (string-append directory "/" filename-string))
@@ -66,6 +67,17 @@
                                (build-path (current-directory) "prelude.haha")))))
             (directory-list directory)))
 
+(define (test-file user-file)
+  ; (displayln (~a "File: " user-file))
+  (define direc (regexp-replace #rx"[A-Za-z0-9]+\\.haha$" user-file ""))
+  (let ([full-path (build-path (current-directory) user-file)])
+      (run-program  direc
+                    (read-program full-path)
+                    (resolve-path user-file)
+                    ; (regexp-replace #rx".*/" user-file "")
+                    full-path
+                    (build-path (current-directory) "prelude.haha"))))
+
 (define (main args)
   (cond
     [(= (vector-length args) 0) (read-direc "tests2/")]
@@ -73,12 +85,7 @@
      (read-direc (vector-ref args 0))]
     ; below is for individual files, not currently working
     [(and (= (vector-length args) 1) (file-exists? (vector-ref args 0)))
-     (let ([path-string (vector-ref args 0)])
-       (run-program (path->string (path->directory-path (string->path path-string)))
-                    (read-program path-string)
-                    (regexp-replace #rx".*/" path-string "")
-                    path-string
-                    (build-path (current-directory) "prelude.haha")))]
+     (test-file (vector-ref args 0))]
     [else (error "Invalid command line arguments. Please provide either a file or a directory.")]))
 
 (main (current-command-line-arguments))
