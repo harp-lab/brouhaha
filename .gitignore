@@ -14,3 +14,5 @@ compiled
 .vscode/
 build/
 trial.rkt
+tests3/
+dummy.cpp

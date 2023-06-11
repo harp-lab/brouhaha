@@ -15,6 +15,7 @@
   (define (eval exp env)
     ; (displayln (~a "exp: " exp "\n env: " env "\n----"))
     (match exp
+      [(? string? y) y]
       [`(quote ,(? number? x)) x]
       [`(quote ,(? boolean? x)) x]
       [`(quote ,(? symbol? x)) x]
