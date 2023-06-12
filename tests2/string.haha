@@ -1,5 +1,5 @@
 (define (call)
-     (list "random"))
-            
-    
-(define (brouhaha_main) (call))
+  "random")
+
+(define (brouhaha_main)
+  (call))

@@ -85,17 +85,16 @@
 (define (filter op lst)
   (if (null? lst)
       (list)
-      (if (op (car lst))
-          (cons (car lst) (filter op (cdr lst)))
-          (filter op (cdr lst)))))
+      (if (op (car lst)) (cons (car lst) (filter op (cdr lst))) (filter op (cdr lst)))))
 
 (define (drop lst n)
   (if (= n 0) lst (drop (cdr lst) (- n 1))))
 
 (define (foldr proc acc lst)
-  (if (null? lst) acc
-      (proc (car lst) (foldr proc acc (cdr lst)))))
+  (if (null? lst) acc (proc (car lst) (foldr proc acc (cdr lst)))))
 
+(define (append lst1 lst2)
+  (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
 
 ; hash-prims to support
 ; (prim hash) // takes in a list of key and value pairs (hash k1 v1 k2 v2 ...) and makes a hash
@@ -107,10 +106,10 @@
 ; interfaces expected defined on https://docs.racket-lang.org/reference/hashtables.html#
 
 (define (hash . lst)
-   (apply-prim hash lst))
+  (apply-prim hash lst))
 
 (define (hash-ref h k)
-   (prim hash-ref h k))
+  (prim hash-ref h k))
 
 ; (define (hash-set h k v)
 ;    (prim hash-set h k v))
