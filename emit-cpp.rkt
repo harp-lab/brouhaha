@@ -3,7 +3,7 @@
 (require "utils.rkt")
 
 (provide emit-cpp)
-
+(require print-debug/print-dbg)
 (define (emit-cpp proc_list filepath)
   ; defining cpp header files
   ; replace the old cpp file, if exists
@@ -22,47 +22,11 @@
 
 
   (define (convert-proc-body proc_name proc_env proc_arg body)
-    ;(displayln (~a "cpb: " body))
+    ; (displayln (~a "cpb: " body))
     (define (true? x) (if x #t #f))
 
     (match body
-      [`(let ([,lhs ',val]) ,letbody)
-
-       (match val
-         [(? number? )
-          (define mpzVar (gensym 'mpzvar))
-
-          (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" mpzVar))
-          (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" mpzVar val))
-          (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_mpz(~a));" (get-c-string lhs) mpzVar))
-          (convert-proc-body proc_name proc_env proc_arg letbody)]
-
-         [(? boolean? )
-          (cond [(true? val)
-                 (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_bool((s32)~a));" (get-c-string lhs) 1))
-                 (convert-proc-body proc_name proc_env proc_arg letbody)]
-                [else
-                 (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_bool((s32)~a));" (get-c-string lhs) 0))
-                 (convert-proc-body proc_name proc_env proc_arg letbody)
-                 ])]
-
-         [(? null? )
-          (append-line filepath (format "void* ~a = encode_null();" (get-c-string lhs)))
-          (convert-proc-body proc_name proc_env proc_arg letbody)]
-
-         [(? symbol?)
-          (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_string(new string(\"~a\")));"
-                                        (get-c-string lhs) val))
-          (convert-proc-body proc_name proc_env proc_arg letbody)]
-
-         [(? string? )
-          (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_string(new string(\"~a\")));"
-                                        (get-c-string lhs) val))
-          (convert-proc-body proc_name proc_env proc_arg letbody)]
-
-         [_ (raise (format "Unknown datatype! ~a" val))]
-         )
-       ]
+      
 
       [`(let ([,lhs (make-closure ,ptr ,args ...)]) ,letbody)
        (define arglength (length args))
@@ -123,6 +87,46 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
+      [`(let ([,lhs ,val]) ,letbody)
+
+       (match (p-dbg val)
+         [`(quote ,(? number? val) )
+          (define mpzVar (gensym 'mpzvar))
+
+          (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" mpzVar))
+          (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" mpzVar val))
+          (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_mpz(~a));" (get-c-string lhs) mpzVar))
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
+
+         [(? boolean? )
+          (cond [(true? val)
+                 (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_bool(true));" (get-c-string lhs)))
+                 (convert-proc-body proc_name proc_env proc_arg letbody)]
+                [else
+                 (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_bool(false));" (get-c-string lhs)))
+                 (convert-proc-body proc_name proc_env proc_arg letbody)
+                 ])]
+
+         [(? null? )
+          (append-line filepath (format "void* ~a = encode_null();" (get-c-string lhs)))
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
+
+
+         [(? string? )
+
+          ; (define strName (gensym 'str))
+          (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_str(new std::string(\"~a\")));"
+                                        (get-c-string lhs) val))
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
+         [(? symbol?)
+          (pretty-print (~a "cpb: " val))
+          (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_str(new string(\"~a\")));"
+                                        (get-c-string lhs) val))
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
+
+         [_ (raise (format "Unknown datatype! ~a" val))]
+         )
+       ]
       [`(if ,grd ,texp ,fexp)
        (append-line filepath "\n//if-clause")
        (define guard (gensym 'if_guard))

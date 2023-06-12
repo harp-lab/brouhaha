@@ -19,7 +19,7 @@
 
     (list pr0 pr1 pr2 pr3 pr4 pr5)))
 
-
+; (require print-debug/print-dbg)
 (define (read-program filename)
   (with-input-from-file filename
     (lambda ()
@@ -49,6 +49,13 @@
       [`(lambda (,xs ...) ,body) `(lambda ,xs ,(desugar-exp body))]
       [`(lambda ,(? symbol? x) ,body) `(lambda ,x ,(desugar-exp body))]
       [`(lambda ,args ,body) (desugar-exp `(lambda vargs ,(unroll-args args body)))]
+      [`(and)`',#t]
+      [`(and ,e0) (desugar-exp e0)]
+      [`(and ,e0 ,eas ...) `(if ,(desugar-exp e0) ,(desugar-exp `(and ,@eas)) '#f)]
+      [`(or)`',#f]
+      [`(or ,e0) (desugar-exp e0)]
+      [`(or ,e0 ,eas ...) `(if ,(desugar-exp e0) ,(desugar-exp e0) ,(desugar-exp `(or ,@eas)))]
+      [`(not ,e0) `(if ,(desugar-exp e0) '#f '#t)]
       [`(if ,guard ,tr ,fl) `(if ,(desugar-exp guard) ,(desugar-exp tr) ,(desugar-exp fl))]
       [`(apply ,e0 ,e1) `(apply ,(desugar-exp e0) ,(desugar-exp e1))]
       [`(,es ...) (map desugar-exp es)]))
@@ -169,10 +176,12 @@
        (define x+ (gensym x))
        `(lambda ,x+ (let ([,cx (prim car ,x+)]) (let ([,x (prim cdr ,x+)]) ,(T e0 cx))))]
       [(? symbol? x) x]
-      [`',dat `',dat]))
+      [`',dat `',dat]
+      ))
   (define (T e cae)
     (if (not (symbol? cae))
         (let ([f (gensym 'f)]) `(let ([,f ,cae]) ,(T e f)))
+        ; (match (p-dbg e)
         (match e
           [(? string? x) `(,cae ,x)]
           [(? symbol? x) `(,cae ,x)]
@@ -188,6 +197,9 @@
            `(let ([,x (prim ,op ,@(map T-ae aes))]) ,(T e0 cae))]
           [`(let ([,x (lambda ,xs ,elam)]) ,e0) `(let ([,x ,(T-ae `(lambda ,xs ,elam))]) ,(T e0 cae))]
           [`(let ([,x ',dat]) ,e0) `(let ([,x ',dat]) ,(T e0 cae))]
+          ; [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,(p-dbg dat)]) ,(T e0 cae))]
+          [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,dat]) ,(T e0 cae))]
+          ; [`(let ([,x ,rhs]) ,e0) (T (p-dbg rhs) `(lambda (,x) ,(T e0 cae)))]
           [`(let ([,x ,rhs]) ,e0) (T rhs `(lambda (,x) ,(T e0 cae)))]
           [`(if ,ae ,e0 ,e1) `(if ,(T-ae ae) ,(T e0 cae) ,(T e1 cae))]
           [`(apply ,ae0 ,ae1)
@@ -216,6 +228,10 @@
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
      (define dx (gensym 'd))
      (list (set-remove freevars x) `(let ([,x ',dat]) ,e0+) procs+)]
+    [`(let ([,x ,(? string? str)]) ,e0)
+     (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
+     (define dx (gensym 'd))
+     (list (set-remove freevars x) `(let ([,x ,str]) ,e0+) procs+)]
     [`(let ([,x (prim ,op ,xs ...)]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
      (list (set-remove (set-union (list->set xs) freevars) x)

@@ -69,7 +69,10 @@ void *encode_str(std::string *val)
     return reinterpret_cast<void *>(((u64)val) | STRING);
 }
 
-void *encode_clo(void **v) { return reinterpret_cast<void *>(((u64)(v)) | CLO); }
+void *encode_clo(void **val)
+{
+    return reinterpret_cast<void *>(((u64)(val)) | CLO);
+}
 
 void *encode_bool(bool val)
 {
@@ -79,14 +82,14 @@ void *encode_bool(bool val)
     }
     return reinterpret_cast<void *>(FALSE_VALUE);
 }
-void *encode_cons(void **cons)
+void *encode_cons(void **val)
 {
-    return reinterpret_cast<void *>(((u64)(cons)) | CONS);
+    return reinterpret_cast<void *>(((u64)(val)) | CONS);
 }
 
-void *encode_hash(const hamt<hash_struct, hash_struct> *h)
+void *encode_hash(const hamt<hash_struct, hash_struct> *val)
 {
-    return reinterpret_cast<void *>(((u64)(h)) | HASH);
+    return reinterpret_cast<void *>(((u64)(val)) | HASH);
 }
 
 void *encode_null() { return NULL_VALUE; }
@@ -115,7 +118,7 @@ mpz_t *decode_mpz(void *val)
     assert_type((get_tag(val) == MPZ), "Type error: Not MPZ");
     return reinterpret_cast<mpz_t *>(MASK(val));
 }
-void *decode_mpf(void *val)
+mpf_t *decode_mpf(void *val)
 {
     // MASK does the casting to u64
     assert_type((get_tag(val) == MPF), "Type error: Not MPF");
@@ -127,7 +130,7 @@ void *decode_str(void *val)
     assert_type((get_tag(val) == STRING), "Type error: Not STRING");
     return reinterpret_cast<std::string *>(MASK(val));
 }
-bool decode_boolean(void *val)
+bool decode_bool(void *val)
 {
     // MASK does the casting to u64
     assert_type(((get_tag(val)) == SPL), "Type error : Not BOOLEAN");
@@ -165,7 +168,6 @@ const hamt<hash_struct, hash_struct> *decode_hash(void *val)
 // Closure Allocation, alloc_clo
 void **alloc_clo(void *(*fptr)(), int num)
 {
-    // ?? Does the allocation look right
     void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
 
     obj[0] = reinterpret_cast<void *>(fptr);
@@ -179,7 +181,7 @@ void **alloc_clo(void *(*fptr)(), int num)
 
 bool is_true(void *val)
 {
-    return decode_boolean(val);
+    return decode_bool(val);
 }
 
 void *prim_modulo(void *arg1, void *arg2)
@@ -219,21 +221,21 @@ void *prim_equal_u63(void *arg1, void *arg2)
 
 void *prim_eq_u63(void *arg1, void *arg2)
 {
-    // check if both the arguments are of same type
-    // just doing it for mpz_t's now
-    bool type_arg1 = get_tag(arg1) == MPZ;
-    assert_type(type_arg1, "Argument 1 passed to prim_equal__u63 is not a MPZ");
-    bool type_arg2 = get_tag(arg2) == MPZ;
-    assert_type(type_arg2, "Argument 2 passed to prim_equal__u63 is not a MPZ");
-    //??
-    mpz_t *arg1_mpz = decode_mpz(arg1);
-    mpz_t *arg2_mpz = decode_mpz(arg2);
+    // // check if both the arguments are of same type
+    // // just doing it for mpz_t's now
+    // bool type_arg1 = get_tag(arg1) == MPZ;
+    // assert_type(type_arg1, "Argument 1 passed to prim_equal__u63 is not a MPZ");
+    // bool type_arg2 = get_tag(arg2) == MPZ;
+    // assert_type(type_arg2, "Argument 2 passed to prim_equal__u63 is not a MPZ");
+    // //??
+    // mpz_t* arg1_mpz = decode_mpz(arg1);
+    // mpz_t* arg2_mpz = decode_mpz(arg2);
 
-    if (arg1_mpz == arg2_mpz)
-    {
-        return encode_bool(true);
-    }
-    return encode_bool(false);
+    // if (arg1_mpz == arg2_mpz) {
+    //     return encode_bool(true);
+    // }
+    // return encode_bool(false);
+    return prim_equal_u63(arg1, arg2);
 }
 
 // cons?
@@ -329,6 +331,42 @@ void *apply_prim__u42(void *lst) // *
     }
 
     return encode_mpz(result);
+}
+
+void *apply_prim_and(void *lst)
+{
+    bool result = false;
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        // decoding a boolean run the required assertions, so directly decoding and assigninh
+
+        if (decode_bool(cons_lst[0]))
+        {
+            lst = cons_lst[1];
+            result = true;
+            continue;
+        }
+        return encode_bool(false);
+    }
+    return encode_bool(result);
+}
+void *apply_prim_or(void *lst)
+{
+    bool result = false;
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        // decoding a boolean run the required assertions, so directly decoding and assigninh
+
+        if (!decode_bool(cons_lst[0]))
+        {
+            lst = cons_lst[1];
+            continue;
+        }
+        return encode_bool(true);
+    }
+    return encode_bool(result);
 }
 
 bool less_equal_zero(long cmp)
@@ -486,11 +524,53 @@ struct hash_struct
     u64 hash() const
     {
         u64 h = 0xcbf29ce484222325;
-        u64 limb_cnt = mpz_size(*(decode_mpz(this->val)));
+        u64 limb_cnt = 0;
+        int is_negative = 0; // < 0 if negative, = 0 if zero and > 0 if_positive
+        const mp_limb_t *limb_ptr = nullptr;
+        switch (get_tag(this->val))
+        {
+        case MPZ:
+        {
+            mpz_t *val_mpz = decode_mpz(this->val);
+            limb_cnt = mpz_size(*val_mpz);
+            limb_ptr = mpz_limbs_read(*val_mpz);
+            // the mpz_sgn is a macro in gmp that just looks at _mp_size for sign info
+            is_negative = mpz_sgn(*val_mpz);
+            break;
+        }
+        case MPF:
+        {
+            mpf_t *val_mpf = decode_mpf(this->val);
+            // limb_cnt = abs((*val_mpf)->_mp_size);
+            limb_cnt = mpf_size(*val_mpf);
+            limb_ptr = (*val_mpf)->_mp_d; // accessing the internals
+            is_negative = mpf_sgn(*val_mpf);
+            break;
+        }
+        default:
+            assert_type(false, "Passed value to the hash function is not MPZ or MPF");
+            break;
+        }
+
+        if (is_negative < 0)
+        {
+            h = h ^ 0x00000000000000ff;
+            h = h * 0x100000001b3;
+        }
+        else
+        {
+            h = h ^ 0x0000000000000000; // this doesn't do anything, not sure what XOR it with for change
+            h = h * 0x100000001b3;
+        }
+
         for (u32 i = 0; i < limb_cnt; i++)
         {
-            h = h ^ mpz_getlimbn(*(decode_mpz(this->val)), i);
-            h = h * 0x100000001b3;
+            u64 limb = limb_ptr[i];
+            for (u32 j = 0; j < 8; j++)
+            {
+                h = h ^ ((limb >> j * 8) & 0x00000000000000ff);
+                h = h * 0x100000001b3;
+            }
         }
 
         return h;
@@ -523,23 +603,29 @@ void *apply_prim_hash(void *lst)
     while (is_cons(lst))
     {
         void **cons_lst = decode_cons(lst);
-        bool type_check = (get_tag(cons_lst[0]) == MPZ);
+        int elem_tag = get_tag(cons_lst[0]);
+        bool type_check = (elem_tag == MPZ) || (elem_tag == MPF);
 
         if (!is_cons(cons_lst[1]))
         {
             assert_type(false, "Value isn't there");
         }
         void **cdr_cons_lst = decode_cons(cons_lst[1]);
-        bool cdr_type_check = (get_tag(cons_lst[0]) == MPZ);
+        // commenting these lines coz, don't need to check what the value is, as the hash won't be called on it.
+        // and the value will be a void* as the cons is void** // I think
+        // int cdr_elem_tag = get_tag(cdr_cons_lst[0]);
+        // bool cdr_type_check = (cdr_elem_tag == MPZ) || (cdr_elem_tag == MPF);
 
-        const hash_struct *const k = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(cons_lst[0]);
-        const hash_struct *const v = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(cdr_cons_lst[0]);
-
-        if (type_check & cdr_type_check)
+        if (type_check)
         {
+            const hash_struct *const k = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(cons_lst[0]);
+            // hash_struct for value is not required, have to ask and remove.
+            const hash_struct *const v = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(cdr_cons_lst[0]);
             h = h->insert(k, v);
+            lst = cdr_cons_lst[1];
+            continue;
         }
-        lst = cdr_cons_lst[1];
+        assert_type(false, "either key or value is not one of MPZ or MPF");
     }
     return encode_hash(h);
 }
@@ -555,14 +641,13 @@ void *prim_hash_u45ref(void *h, void *k)
     {
         assert_type(false, "in the hash-ref function hash is not passed");
     }
-    bool type_check_key = get_tag(k) == MPZ;
+    int elem_tag = get_tag(k);
+    bool type_check_key = (elem_tag == MPZ) || (elem_tag == MPF);
     if (!type_check_key)
     {
-        assert_type(false, "in the hash-ref function mpz_t is not passed");
+        assert_type(false, "in the hash-ref function mpz_t/mpf_t is not passed");
     }
-
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
-
     const hash_struct *const key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(k);
     const hash_struct *const t = h_hamt->get(key);
     return t->val;
@@ -578,17 +663,23 @@ void *prim_hash_u45set(void *h, void *k, void *v)
     {
         assert_type(false, "in the hash-set  hash is not passed");
     }
-    bool type_check_key = get_tag(k) == MPZ;
+    int key_tag = get_tag(k);
+    bool type_check_key = (key_tag == MPZ) || (key_tag == MPF);
     if (!type_check_key)
     {
-        assert_type(false, "in the hash-set function mpz_t is not passed");
+        assert_type(false, "in the hash-set function mpz_t/mpf_t for key is not passed");
     }
+    // bool type_check_value = get_tag(v) == MPZ;
+    // if (!type_check_value) {
+    //     assert_type(false, "in the hash-set function mpz_t for value is not passed");
+    // }
+    const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
+    const hash_struct *const key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(k);
+    // hash_struct for value is not required, have to ask and remove.
+    const hash_struct *const value = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(v);
+    h_hamt = h_hamt->insert(key, value);
 
-    bool type_check_value = get_tag(v) == MPZ;
-    if (!type_check_value)
-    {
-        assert_type(false, "in the hash-set function mpz_t is not passed");
-    }
+    return encode_hash(h_hamt);
 }
 #pragma endregion
 
@@ -599,7 +690,14 @@ void print_val(void *val)
     {
     case SPL:
         std::cout << "This is a boolean" << std::endl;
-        std::cout << decode_boolean(val) << std::endl;
+        if (decode_bool(val))
+        {
+            std::cout << "#t" << std::endl;
+        }
+        else
+        {
+            std::cout << "#f" << std::endl;
+        }
         break;
     case HASH:
     {
