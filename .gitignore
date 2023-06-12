@@ -3,6 +3,7 @@ tests/*/
 tests2/*/*.out
 tests2/*/
 tests3/
+tests4/
 **/*.a
 yes.out
 *~*
@@ -16,3 +17,4 @@ build/
 trial.rkt
 tests3/
 dummy.cpp
+todo.md

@@ -58,11 +58,11 @@
 (define (list . x)
   x)
 
-(define (and . lst)
-  (apply-prim and lst))
+; (define (and . lst)
+;   (apply-prim and lst))
 
-(define (or . lst)
-  (apply-prim or lst))
+; (define (or . lst)
+;   (apply-prim or lst))
 
 (define (member? x lst)
   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
@@ -112,14 +112,11 @@
 (define (hash-ref h k)
    (prim hash-ref h k))
 
-(define (hash-set h k v)
-   (prim hash-set h k v))
+; (define (hash-set h k v)
+;    (prim hash-set h k v))
 
-(define (hash-keys h)
-   (prim hash-keys h))
+; (define (hash-keys h)
+;    (prim hash-keys h))
 
-(define (hash-has-key? h k)
-   (prim hash-has-key? h k))
-  (if (null? lst) 
-      acc
-      (proc (car lst) (foldr proc acc (cdr lst)))))
+; (define (hash-has-key? h k)
+;    (prim hash-has-key? h k))
