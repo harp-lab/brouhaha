@@ -1,5 +1,7 @@
 #lang racket
 
+(provide write-program-for-slog)
+
 ;; This program will take in a brouhaha input and convert it to a slog-compatible database
 
 (define (write-program-for-slog program)
