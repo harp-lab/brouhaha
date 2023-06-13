@@ -1,5 +1,0 @@
-(define (call)
-     (and (equal? 1 1) (even? 2) (odd? 2)))
-            
-    
-(define (brouhaha_main) (call))

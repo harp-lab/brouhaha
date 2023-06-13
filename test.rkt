@@ -4,7 +4,8 @@
 (require "interp-anf.rkt")
 (require "interp-cps.rkt")
 (require "interp-closure.rkt")
-(require "emit-cpp.rkt")
+; (require "emit-cpp.rkt")
+(require "emit-slog.rkt")
 
 (define (write-to file content)
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
@@ -22,7 +23,7 @@
   (define out-dir (string-append directory "/" filename-string))
 
   (unless (directory-exists? out-dir)
-    (pretty-print out-dir)
+    ; (pretty-print out-dir)
     (make-directory out-dir))
 
   (let* ([generate-filepath (lambda (suffix) (string-append out-dir "/" filename-string suffix))]
@@ -39,11 +40,20 @@
                         (interp-cps cps_prg)
                         (interp-closure clo_conv_prg))])
     (displayln (~a "Now running: " filename-string))
-    (emit-cpp clo_conv_prg (generate-filepath "_cpp_program.cpp"))
-    (displayln (~a "Emitting C++ for: "
+
+    ; (displayln (~a "Emitting C++ for: "
+    ;                filename-string
+    ;                " and outputting to: "
+    ;                (generate-filepath "_cpp_program.cpp")))
+    ; (emit-cpp clo_conv_prg (generate-filepath "_cpp_program.cpp"))
+    
+    (displayln (~a "Emitting Slog for: "
                    filename-string
                    " and outputting to: "
-                   (generate-filepath "_cpp_program.cpp")))
+                   (generate-filepath "_slog.slog")))
+    ; (write-to (generate-filepath "_slog.slog") (write-program-for-slog desugar_prg))
+    (with-output-to-file (generate-filepath "_slog.slog") (lambda () (pretty-print (write-program-for-slog desugar_prg))) #:exists 'replace)
+    
     (for-each
      write-to
      (map generate-filepath
@@ -72,12 +82,12 @@
   ; (displayln (~a "File: " user-file))
   (define direc (regexp-replace #rx"[A-Za-z0-9]+\\.haha$" user-file ""))
   (let ([full-path (build-path (current-directory) user-file)])
-      (run-program  direc
-                    (read-program full-path)
-                    (resolve-path user-file)
-                    ; (regexp-replace #rx".*/" user-file "")
-                    full-path
-                    (build-path (current-directory) "prelude.haha"))))
+    (run-program direc
+                 (read-program full-path)
+                 (resolve-path user-file)
+                 ; (regexp-replace #rx".*/" user-file "")
+                 full-path
+                 (build-path (current-directory) "prelude.haha"))))
 
 (define (main args)
   (cond
