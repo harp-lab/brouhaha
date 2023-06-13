@@ -3,7 +3,7 @@
 (require "utils.rkt")
 
 (provide emit-cpp)
-(require print-debug/print-dbg)
+; (require print-debug/print-dbg)
 (define (emit-cpp proc_list filepath)
   ; defining cpp header files
   ; replace the old cpp file, if exists
@@ -89,7 +89,8 @@
 
       [`(let ([,lhs ,val]) ,letbody)
 
-       (match (p-dbg val)
+      ;  (match (p-dbg val)
+       (match val 
          [`(quote ,(? number? val) )
           (define mpzVar (gensym 'mpzvar))
 
