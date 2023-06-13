@@ -22,6 +22,7 @@
   (define out-dir (string-append directory "/" filename-string))
 
   (unless (directory-exists? out-dir)
+    (pretty-print out-dir)
     (make-directory out-dir))
 
   (let* ([generate-filepath (lambda (suffix) (string-append out-dir "/" filename-string suffix))]
