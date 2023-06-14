@@ -4,7 +4,7 @@
 (require "interp-anf.rkt")
 (require "interp-cps.rkt")
 (require "interp-closure.rkt")
-; (require "emit-cpp.rkt")
+(require "emit-cpp.rkt")
 (require "emit-slog.rkt")
 
 (define (write-to file content)
