@@ -1,5 +1,5 @@
 (define (call) 
-    1)
+    (take (list 1 2 3 4) 2))
 
 (define (brouhaha_main) 
     (call))

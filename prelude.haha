@@ -13,8 +13,8 @@
 (define (modulo a b)
   (prim modulo a b))
 
-; (define (/ . lst)
-;    (apply-prim / lst))
+(define (/ . lst)
+  (apply-prim / lst))
 
 (define (= . lst)
   (apply-prim = lst))
@@ -70,11 +70,17 @@
 (define (foldl fun acc lst)
   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
 
-(define (reverse lst lst2)
-  (if (null? lst) lst2 (reverse (cdr lst) (cons (car lst) lst2))))
+(define (reverse-helper lst lst2)
+  (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
 
-(define (take lst n lst2)
-  (if (= n 0) lst2 (cons (car lst) (take (cdr lst) (- n 1) lst2))))
+(define (reverse lst)
+  (reverse-helper lst (list)))
+
+(define (take-helper lst n lst2)
+  (if (= n 0) (reverse lst2) (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
+
+(define (take lst n)
+  (take-helper lst n '()))
 
 (define (length lst)
   (if (null? lst) 0 (+ 1 (length (cdr lst)))))

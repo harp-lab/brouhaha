@@ -1,5 +1,5 @@
 (define (call lst)
-    (reverse lst (list)))
+    (reverse lst))
 
 (define (brouhaha_main)
     (call (list 1 2 3 4)))
