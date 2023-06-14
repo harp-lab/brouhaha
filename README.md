@@ -53,17 +53,8 @@ In addition to these, the output file also includes results from the interpreted
 
 To run the C++ part of Brouhaha:
 
-    Compile: Compile the C++ file using Clang++. Ensure you compile it alongside prelude.h:
+Compile: Compile the C++ file using Clang++ or G++. Ensure you compile it alongside prelude.h. This is already done for you in the CMake. We are still in testing phases 
 
-```bash
-
-clang++ -o out <filename>.cpp 
-```
-Run: After successfully compiling, you can run the executable:
-
-```bash
-./out
-```
 
 By following these steps, you can easily start using Brouhaha and make the most of its functionalities. If you encounter any issues or need further assistance, feel free to raise an issue on our GitHub repository.
 
