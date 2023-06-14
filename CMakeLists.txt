@@ -14,7 +14,7 @@
 
 
 cmake_minimum_required(VERSION 3.0.0)
-project(bourhaha VERSION 0.1.0)
+project(brouhaha VERSION 0.1.0)
 
 include(CTest)
 enable_testing()
@@ -43,7 +43,7 @@ link_directories(${DEPENDENCIES_DIR} ${BDWGC_LIBRARY_DIR} ${GMP_LIBRARY_DIR} ${V
 # add_executable(bourhaha dummy.cpp)
 # add_executable(bourhaha tests2/minus/minus_cpp_program.cpp)
 # add_executable(bourhaha tests2/filter/filter_cpp_program.cpp)
-add_executable(bourhaha tests2/apply/apply_cpp_program.cpp)
+add_executable(brouhaha tests2/apply/apply_cpp_program.cpp)
 # add_executable(bourhaha tests2/fact/fact_cpp_program.cpp)
 # add_executable(bourhaha tests2/foldl/foldl_cpp_program.cpp)
 
@@ -51,7 +51,7 @@ add_executable(bourhaha tests2/apply/apply_cpp_program.cpp)
 
 
 # Link libraries
-target_link_libraries(bourhaha PRIVATE gmpxx gmp gc)
+target_link_libraries(brouhaha PRIVATE gmpxx gmp gc)
 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
