@@ -9,9 +9,9 @@
   (define (write-def def)
     (match def 
       [`(define (,fname ,(? symbol? xs) ...) ,body)
-       (format "(define \"~a\" (fixedparam [~a]) ~a)\n" fname (foldr string-append "" (map sym->qstr xs)) (write-exp body))] 
+       (format "(store (addr \"~a\") (define \"~a\" (fixedparam [~a]) ~a))\n" fname fname (foldr string-append "" (map sym->qstr xs)) (write-exp body))] 
       [`(define (,fname . ,(? symbol? params)) ,body)
-       (format "(define \"~a\" (varparam ~a) ~a)\n" fname (sym->qstr params) (write-exp body))]
+       (format "(store (addr \"~a\") (define \"~a\" (varparam ~a) ~a))\n" fname fname (sym->qstr params) (write-exp body))]
     )
   )
   (define (write-exp exp)
@@ -27,6 +27,8 @@
             (format "(const \"~a\")" x)]
            [`(lambda (,(? symbol? xs) ...) ,body)
             (foldr string-append "" `("(lambda (fixedparam [" ,@(map sym->qstr xs) "]) " ,(write-exp body) ")"))]
+           [`(lambda ,(? symbol? x) ,body)
+            (foldr string-append "" `("(lambda (varparam [" ,(sym->qstr x) "]) " ,(write-exp body) ")"))]
            [`(let ([,xs ,es] ...) ,body)
             (foldr string-append "" `("let [" ,@(foldr (lambda (x e acc) (cons `(binding ,x ,e) acc)) `() xs es) "] " ,(write-exp body) ")"))]
            [`(if ,grd ,tExp ,fExp)
@@ -36,20 +38,34 @@
            [`(prim ,op ,es ...)
             (foldr string-append "" `("(prim \"" ,(~a op) "\" [" ,@(map write-exp es) "])"))]
            [`(apply ,e0 ,e1)
-            (foldr string-append "" `("(apply " ,(write-exp e0) " " ,(write-exp e1) ")"))]
+            (foldr string-append "" `("(appl " ,(write-exp e0) " " ,(write-exp e1) ")"))]
            [`(,ef ,eas ...)
             (foldr string-append "" `("(app " ,(write-exp ef) " [" ,@(map write-exp eas) "])"))]
     )
   )
+  (define (emit-top-level-env program)
+    (format "(top-level-env ~a)"
+      (foldr 
+      (lambda (def code) 
+                (match def
+                  [`(define (,fname . ,_) ,_)
+                    (format "(env-set ~a \"~a\" (addr \"~a\"))"
+                    code
+                    fname
+                    fname)]))
+      "(empty)"
+      program)))
 
-  (display (foldr string-append "" (map write-def program)))
+  (display (foldr string-append (emit-top-level-env program) (map write-def program)))
   (void))
 
 
-;   (write-program-for-slog '((define (+ . lst) (apply-prim + lst))
-;   (define (call)
-;     (+
-;      '32
-;      '98))
-;   (define (brouhaha_main) (call)))
-; )
+
+
+   (write-program-for-slog '((define (+ . lst) (apply-prim + lst))
+   (define (call)
+     (+
+      '32
+      '98))
+   (define (brouhaha_main) (call)))
+ )

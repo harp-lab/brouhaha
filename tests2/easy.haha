@@ -1,5 +1,5 @@
 (define (call)
-    (+ 10 2 3 4 5 6))
+    "hello world")
 
 (define (brouhaha_main)
     (call))

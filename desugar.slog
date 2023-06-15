@@ -66,6 +66,9 @@
 
 
 
+;ADD-TOP-LEVEL-DEFINE
+
+
 
 
 ;EVAL CASES
@@ -78,14 +81,6 @@
 [(eval (const x) env kont)
  -->
  (ret (const x) kont)]
-
-[(eval (mult (const x) (const y)) env kont)
- -->
- (ret (const {* x y}) kont)] ; (const 9)
-
-[(eval (minus (const x) (const y)) env kont)
- -->
- (ret (const {- x y}) kont)]
 
 ;boolean
 [(eval (bool x) env kont)
@@ -101,11 +96,15 @@
  -->
  (ret {store {env-map env x}} kont)]
 
-[(eval (lam x eb) env kont)
+[(eval (lambda (fixedparam [xs ...]) eb) env kont)
  -->
- (ret (clo (lam x eb) env) kont)]
+ (ret (clo (lambda (fixedparam [xs ...]) eb) env) kont)]
 
-[(eval (app ef ea) env kont)
+[(eval (app ef [eas ...]) env knot)
+ -->
+ (eval ef env (appk [] [eas ...] env kont))]
+
+[(eval (appl ef ea) env kont)
  -->
  (eval ef env (ar ea env kont))]
 
@@ -114,6 +113,14 @@
 
 
 ;RET CASES
+[(ret v (appk [vs ...] [ea0 ea-rest ...] env kont))
+ -->
+ (eval ea0 env (appk [vs ... v] [ea-rest ...] env kont))]
+
+[(ret v (appk [vf vs ...] [] env kont))
+ -->
+ (apply vf [vs ...] kont)]
+
 [(ret vf (ar ea env kont))
  -->
  (eval ea env (fn vf kont))]
@@ -146,6 +153,19 @@
  (store (kaddr eb) kont)
  (eval eb (env-set envlam x (addr x)) (kaddr eb))]
 
+[(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
+ --> 
+ (store (kaddr eb) kont)
+ (eval eb {ext-all !(do-ext-all env xs vs)} (kaddr eb))]
+
+
+ ;DO-EXT-ALL
+ [(do-ext-all env [x x-rest ...] [v v-rest ...])
+ -->
+ (store (addr x) v)
+ (do-ext-all (env-set env x (addr x)) x-rest v-rest)]
+ 
+ (ext-all ?(do-ext-all env [] []) env)
 
 
 
