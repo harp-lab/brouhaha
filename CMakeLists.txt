@@ -63,6 +63,7 @@ link_directories(${DEPENDENCIES_DIR} ${BDWGC_LIBRARY_DIR} ${GMP_LIBRARY_DIR} ${V
 # add_executable(brouhaha tests2/hash-has-key/hash-has-key_cpp_program.cpp)
 # add_executable(brouhaha tests2/hash-count/hash-count_cpp_program.cpp)
 add_executable(brouhaha tests2/divison/divison_cpp_program.cpp)
+# add_executable(brouhaha tests2/float/float_cpp_program.cpp)
 # add_executable(brouhaha easy_cpp_program.cpp)
 # add_executable(brouhaha dummy.cpp)
 # add_executable(brouhaha strings_trails.cpp)
