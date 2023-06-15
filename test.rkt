@@ -41,18 +41,18 @@
                         (interp-closure clo_conv_prg))])
     (displayln (~a "Now running: " filename-string))
 
-    ; (displayln (~a "Emitting C++ for: "
-    ;                filename-string
-    ;                " and outputting to: "
-    ;                (generate-filepath "_cpp_program.cpp")))
-    ; (emit-cpp clo_conv_prg (generate-filepath "_cpp_program.cpp"))
-    
-    (displayln (~a "Emitting Slog for: "
+    (displayln (~a "Emitting C++ for: "
                    filename-string
                    " and outputting to: "
-                   (generate-filepath "_slog.slog")))
-    ; (write-to (generate-filepath "_slog.slog") (write-program-for-slog desugar_prg))
-    (with-output-to-file (generate-filepath "_slog.slog") (lambda () (pretty-print (write-program-for-slog desugar_prg))) #:exists 'replace)
+                   (generate-filepath "_cpp_program.cpp")))
+    (emit-cpp clo_conv_prg (generate-filepath "_cpp_program.cpp"))
+    
+    ; (displayln (~a "Emitting Slog for: "
+    ;                filename-string
+    ;                " and outputting to: "
+    ;                (generate-filepath "_slog.slog")))
+    ; ; (write-to (generate-filepath "_slog.slog") (write-program-for-slog desugar_prg))
+    ; (with-output-to-file (generate-filepath "_slog.slog") (lambda () (pretty-print (write-program-for-slog desugar_prg))) #:exists 'replace)
     
     (for-each
      write-to
@@ -91,7 +91,7 @@
 
 (define (main args)
   (cond
-    [(= (vector-length args) 0) (read-direc "tests2/")]
+    [(= (vector-length args) 0) (read-direc "tests3/")]
     [(and (= (vector-length args) 1) (directory-exists? (vector-ref args 0)))
      (read-direc (vector-ref args 0))]
     ; below is for individual files, not currently working

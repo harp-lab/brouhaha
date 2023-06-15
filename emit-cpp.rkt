@@ -99,7 +99,7 @@
           (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_mpz(~a));" (get-c-string lhs) mpzVar))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-         [(? boolean? )
+         [`(quote ,(? boolean? val) )
           (cond [(true? val)
                  (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_bool(true));" (get-c-string lhs)))
                  (convert-proc-body proc_name proc_env proc_arg letbody)]
@@ -108,7 +108,7 @@
                  (convert-proc-body proc_name proc_env proc_arg letbody)
                  ])]
 
-         [(? null? )
+         [`(quote ,(? null? ))
           (append-line filepath (format "void* ~a = encode_null();" (get-c-string lhs)))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 

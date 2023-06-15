@@ -1,5 +1,0 @@
-(define (call) 
-    1)
-
-(define (brouhaha_main) 
-    (call))

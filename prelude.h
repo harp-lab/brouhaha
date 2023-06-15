@@ -720,7 +720,7 @@ void print_val(void *val)
 }
 
 void *halt;
-void *arg_buffer[999];
+void *arg_buffer[1000999];
 long numArgs;
 
 void *fhalt()
