@@ -1,0 +1,5 @@
+(define (call)
+    (hash-ref (hash "work" 80 10 "lmao") 10))
+
+(define (brouhaha_main)
+    (call))

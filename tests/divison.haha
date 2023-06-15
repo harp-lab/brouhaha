@@ -1,0 +1,5 @@
+(define (call)
+    (/ 100 2 12))
+
+(define (brouhaha_main)
+    (call))
