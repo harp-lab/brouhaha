@@ -8,7 +8,7 @@ void* _u43_fptr() // +
 // This is the second type of the functions
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57305 = arg_buffer[1];
+void* _55329 = arg_buffer[1];
 void* lst;
 if(is_cons(arg_buffer[2]))
 {
@@ -27,15 +27,15 @@ lst = prim_cons(arg_buffer[i], lst);
 
 }
 
-void* kont5704357143 = prim_car(lst);
-void* lst57144 = prim_cdr(lst);
-void* x5695457145 = apply_prim__u43(lst57144);
+void* kont5506755167 = prim_car(lst);
+void* lst55168 = prim_cdr(lst);
+void* x5497855169 = apply_prim__u43(lst55168);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont5704357143);
-arg_buffer[2] = x5695457145;
+arg_buffer[1]=reinterpret_cast<void*>(kont5506755167);
+arg_buffer[2] = x5497855169;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5704357143))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5506755167))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -50,7 +50,7 @@ void* _u45_fptr() // -
 // This is the second type of the functions
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57306 = arg_buffer[1];
+void* _55330 = arg_buffer[1];
 void* lst;
 if(is_cons(arg_buffer[2]))
 {
@@ -69,15 +69,15 @@ lst = prim_cons(arg_buffer[i], lst);
 
 }
 
-void* kont5704557146 = prim_car(lst);
-void* lst57147 = prim_cdr(lst);
-void* x5695557148 = apply_prim__u45(lst57147);
+void* kont5506955170 = prim_car(lst);
+void* lst55171 = prim_cdr(lst);
+void* x5497955172 = apply_prim__u45(lst55171);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont5704557146);
-arg_buffer[2] = x5695557148;
+arg_buffer[1]=reinterpret_cast<void*>(kont5506955170);
+arg_buffer[2] = x5497955172;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5704557146))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5506955170))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -92,7 +92,7 @@ void* _u42_fptr() // *
 // This is the second type of the functions
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57307 = arg_buffer[1];
+void* _55331 = arg_buffer[1];
 void* lst;
 if(is_cons(arg_buffer[2]))
 {
@@ -111,15 +111,15 @@ lst = prim_cons(arg_buffer[i], lst);
 
 }
 
-void* kont5704757149 = prim_car(lst);
-void* lst57150 = prim_cdr(lst);
-void* x5695657151 = apply_prim__u42(lst57150);
+void* kont5507155173 = prim_car(lst);
+void* lst55174 = prim_cdr(lst);
+void* x5498055175 = apply_prim__u42(lst55174);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont5704757149);
-arg_buffer[2] = x5695657151;
+arg_buffer[1]=reinterpret_cast<void*>(kont5507155173);
+arg_buffer[2] = x5498055175;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5704757149))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5507155173))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -133,19 +133,19 @@ void* modulo_fptr() // modulo
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57308 = arg_buffer[1];
+void* _55332 = arg_buffer[1];
 //reading env and args
-void* kont57049 = arg_buffer[2];
+void* kont55073 = arg_buffer[2];
 void* a = arg_buffer[3];
 void* b = arg_buffer[4];
 //Dummy comment
-void* x5695757152 = prim_modulo(a, b);
+void* x5498155176 = prim_modulo(a, b);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57049);
-arg_buffer[2] = x5695757152;
+arg_buffer[1]=reinterpret_cast<void*>(kont55073);
+arg_buffer[2] = x5498155176;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57049))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55073))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -160,7 +160,7 @@ void* _u47_fptr() // /
 // This is the second type of the functions
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57309 = arg_buffer[1];
+void* _55333 = arg_buffer[1];
 void* lst;
 if(is_cons(arg_buffer[2]))
 {
@@ -179,15 +179,15 @@ lst = prim_cons(arg_buffer[i], lst);
 
 }
 
-void* kont5705057153 = prim_car(lst);
-void* lst57154 = prim_cdr(lst);
-void* x5695857155 = apply_prim__u47(lst57154);
+void* kont5507455177 = prim_car(lst);
+void* lst55178 = prim_cdr(lst);
+void* x5498255179 = apply_prim__u47(lst55178);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont5705057153);
-arg_buffer[2] = x5695857155;
+arg_buffer[1]=reinterpret_cast<void*>(kont5507455177);
+arg_buffer[2] = x5498255179;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5705057153))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5507455177))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -202,7 +202,7 @@ void* _u61_fptr() // =
 // This is the second type of the functions
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57310 = arg_buffer[1];
+void* _55334 = arg_buffer[1];
 void* lst;
 if(is_cons(arg_buffer[2]))
 {
@@ -221,15 +221,15 @@ lst = prim_cons(arg_buffer[i], lst);
 
 }
 
-void* kont5705257156 = prim_car(lst);
-void* lst57157 = prim_cdr(lst);
-void* x5695957158 = apply_prim__u61(lst57157);
+void* kont5507655180 = prim_car(lst);
+void* lst55181 = prim_cdr(lst);
+void* x5498355182 = apply_prim__u61(lst55181);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont5705257156);
-arg_buffer[2] = x5695957158;
+arg_buffer[1]=reinterpret_cast<void*>(kont5507655180);
+arg_buffer[2] = x5498355182;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5705257156))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5507655180))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -244,7 +244,7 @@ void* _u62_fptr() // >
 // This is the second type of the functions
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57311 = arg_buffer[1];
+void* _55335 = arg_buffer[1];
 void* lst;
 if(is_cons(arg_buffer[2]))
 {
@@ -263,15 +263,15 @@ lst = prim_cons(arg_buffer[i], lst);
 
 }
 
-void* kont5705457159 = prim_car(lst);
-void* lst57160 = prim_cdr(lst);
-void* x5696057161 = apply_prim__u62(lst57160);
+void* kont5507855183 = prim_car(lst);
+void* lst55184 = prim_cdr(lst);
+void* x5498455185 = apply_prim__u62(lst55184);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont5705457159);
-arg_buffer[2] = x5696057161;
+arg_buffer[1]=reinterpret_cast<void*>(kont5507855183);
+arg_buffer[2] = x5498455185;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5705457159))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5507855183))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -286,7 +286,7 @@ void* _u60_fptr() // <
 // This is the second type of the functions
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57312 = arg_buffer[1];
+void* _55336 = arg_buffer[1];
 void* lst;
 if(is_cons(arg_buffer[2]))
 {
@@ -305,15 +305,15 @@ lst = prim_cons(arg_buffer[i], lst);
 
 }
 
-void* kont5705657162 = prim_car(lst);
-void* lst57163 = prim_cdr(lst);
-void* x5696157164 = apply_prim__u60(lst57163);
+void* kont5508055186 = prim_car(lst);
+void* lst55187 = prim_cdr(lst);
+void* x5498555188 = apply_prim__u60(lst55187);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont5705657162);
-arg_buffer[2] = x5696157164;
+arg_buffer[1]=reinterpret_cast<void*>(kont5508055186);
+arg_buffer[2] = x5498555188;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5705657162))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5508055186))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -328,7 +328,7 @@ void* _u60_u61_fptr() // <=
 // This is the second type of the functions
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57313 = arg_buffer[1];
+void* _55337 = arg_buffer[1];
 void* lst;
 if(is_cons(arg_buffer[2]))
 {
@@ -347,15 +347,15 @@ lst = prim_cons(arg_buffer[i], lst);
 
 }
 
-void* kont5705857165 = prim_car(lst);
-void* lst57166 = prim_cdr(lst);
-void* x5696257167 = apply_prim__u60_u61(lst57166);
+void* kont5508255189 = prim_car(lst);
+void* lst55190 = prim_cdr(lst);
+void* x5498655191 = apply_prim__u60_u61(lst55190);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont5705857165);
-arg_buffer[2] = x5696257167;
+arg_buffer[1]=reinterpret_cast<void*>(kont5508255189);
+arg_buffer[2] = x5498655191;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5705857165))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5508255189))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -370,7 +370,7 @@ void* _u62_u61_fptr() // >=
 // This is the second type of the functions
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57314 = arg_buffer[1];
+void* _55338 = arg_buffer[1];
 void* lst;
 if(is_cons(arg_buffer[2]))
 {
@@ -389,15 +389,15 @@ lst = prim_cons(arg_buffer[i], lst);
 
 }
 
-void* kont5706057168 = prim_car(lst);
-void* lst57169 = prim_cdr(lst);
-void* x5696357170 = apply_prim__u62_u61(lst57169);
+void* kont5508455192 = prim_car(lst);
+void* lst55193 = prim_cdr(lst);
+void* x5498755194 = apply_prim__u62_u61(lst55193);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont5706057168);
-arg_buffer[2] = x5696357170;
+arg_buffer[1]=reinterpret_cast<void*>(kont5508455192);
+arg_buffer[2] = x5498755194;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5706057168))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5508455192))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -411,18 +411,18 @@ void* null_u63_fptr() // null?
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57315 = arg_buffer[1];
+void* _55339 = arg_buffer[1];
 //reading env and args
-void* kont57062 = arg_buffer[2];
+void* kont55086 = arg_buffer[2];
 void* x = arg_buffer[3];
 //Dummy comment
-void* x5696457171 = prim_null_u63(x);
+void* x5498855195 = prim_null_u63(x);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57062);
-arg_buffer[2] = x5696457171;
+arg_buffer[1]=reinterpret_cast<void*>(kont55086);
+arg_buffer[2] = x5498855195;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57062))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55086))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -436,19 +436,19 @@ void* equal_u63_fptr() // equal?
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57316 = arg_buffer[1];
+void* _55340 = arg_buffer[1];
 //reading env and args
-void* kont57063 = arg_buffer[2];
+void* kont55087 = arg_buffer[2];
 void* x = arg_buffer[3];
 void* y = arg_buffer[4];
 //Dummy comment
-void* x5696557172 = prim_equal_u63(x, y);
+void* x5498955196 = prim_equal_u63(x, y);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57063);
-arg_buffer[2] = x5696557172;
+arg_buffer[1]=reinterpret_cast<void*>(kont55087);
+arg_buffer[2] = x5498955196;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57063))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55087))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -462,19 +462,19 @@ void* eq_u63_fptr() // eq?
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57317 = arg_buffer[1];
+void* _55341 = arg_buffer[1];
 //reading env and args
-void* kont57064 = arg_buffer[2];
+void* kont55088 = arg_buffer[2];
 void* x = arg_buffer[3];
 void* y = arg_buffer[4];
 //Dummy comment
-void* x5696657173 = prim_eq_u63(x, y);
+void* x5499055197 = prim_eq_u63(x, y);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57064);
-arg_buffer[2] = x5696657173;
+arg_buffer[1]=reinterpret_cast<void*>(kont55088);
+arg_buffer[2] = x5499055197;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57064))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55088))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -488,19 +488,19 @@ void* cons_fptr() // cons
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57318 = arg_buffer[1];
+void* _55342 = arg_buffer[1];
 //reading env and args
-void* kont57065 = arg_buffer[2];
+void* kont55089 = arg_buffer[2];
 void* a = arg_buffer[3];
 void* b = arg_buffer[4];
 //Dummy comment
-void* x5696757174 = prim_cons(a, b);
+void* x5499155198 = prim_cons(a, b);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57065);
-arg_buffer[2] = x5696757174;
+arg_buffer[1]=reinterpret_cast<void*>(kont55089);
+arg_buffer[2] = x5499155198;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57065))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55089))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -514,18 +514,18 @@ void* car_fptr() // car
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57319 = arg_buffer[1];
+void* _55343 = arg_buffer[1];
 //reading env and args
-void* kont57066 = arg_buffer[2];
+void* kont55090 = arg_buffer[2];
 void* lst = arg_buffer[3];
 //Dummy comment
-void* x5696857175 = prim_car(lst);
+void* x5499255199 = prim_car(lst);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57066);
-arg_buffer[2] = x5696857175;
+arg_buffer[1]=reinterpret_cast<void*>(kont55090);
+arg_buffer[2] = x5499255199;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57066))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55090))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -539,18 +539,18 @@ void* cdr_fptr() // cdr
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57320 = arg_buffer[1];
+void* _55344 = arg_buffer[1];
 //reading env and args
-void* kont57067 = arg_buffer[2];
+void* kont55091 = arg_buffer[2];
 void* lst = arg_buffer[3];
 //Dummy comment
-void* x5696957176 = prim_cdr(lst);
+void* x5499355200 = prim_cdr(lst);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57067);
-arg_buffer[2] = x5696957176;
+arg_buffer[1]=reinterpret_cast<void*>(kont55091);
+arg_buffer[2] = x5499355200;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57067))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55091))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -559,27 +559,27 @@ return nullptr;
 
 void* cdr = encode_clo(alloc_clo(cdr_fptr, 0));
 
-void* lam57321_fptr() // lam57321 
+void* lam55345_fptr() // lam55345 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57322 = arg_buffer[1];
+void* env55346 = arg_buffer[1];
 //reading env and args
-void* a5697257180 = arg_buffer[2];
+void* a5499655204 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57068 = (decode_clo(env57322))[3];
+void* a5499455201 = (decode_clo(env55346))[3];
 //not do dummy comment
-void* a5697057177 = (decode_clo(env57322))[2];
+void* kont55092 = (decode_clo(env55346))[2];
 //not do dummy comment
-void* equal_u63 = (decode_clo(env57322))[1];
+void* equal_u63 = (decode_clo(env55346))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(equal_u63);
-arg_buffer[2] = kont57068;
-arg_buffer[3] = a5697057177;
-arg_buffer[4] = a5697257180;
+arg_buffer[2] = kont55092;
+arg_buffer[3] = a5499455201;
+arg_buffer[4] = a5499655204;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(equal_u63))[0]);
 //assign buffer size to numArgs
@@ -588,41 +588,41 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57321 = encode_clo(alloc_clo(lam57321_fptr, 0));
+void* lam55345 = encode_clo(alloc_clo(lam55345_fptr, 0));
 
 void* even_u63_fptr() // even? 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57325 = arg_buffer[1];
+void* _55349 = arg_buffer[1];
 //reading env and args
-void* kont57068 = arg_buffer[2];
+void* kont55092 = arg_buffer[2];
 void* x = arg_buffer[3];
 //Dummy comment
-mpz_t* mpzvar58002 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58002, "0", 10);
-void* a5697057177 = encode_mpz(mpzvar58002);
-mpz_t* mpzvar58003 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58003, "2", 10);
-void* a5697157178 = encode_mpz(mpzvar58003);
+mpz_t* mpzvar55990 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar55990, "0", 10);
+void* a5499455201 = encode_mpz(mpzvar55990);
+mpz_t* mpzvar55991 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar55991, "2", 10);
+void* a5499555202 = encode_mpz(mpzvar55991);
 
 //creating new closure instance
-void** clo58005 = alloc_clo(lam57321_fptr, 3);
+void** clo55993 = alloc_clo(lam55345_fptr, 3);
 
 //setting env list
-clo58005[1] = equal_u63;
-clo58005[2] = a5697057177;
-clo58005[3] = kont57068;
-void* f5706957179 = encode_clo(clo58005);
+clo55993[1] = equal_u63;
+clo55993[2] = kont55092;
+clo55993[3] = a5499455201;
+void* f5509355203 = encode_clo(clo55993);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(modulo);
-arg_buffer[2] = f5706957179;
+arg_buffer[2] = f5509355203;
 arg_buffer[3] = x;
-arg_buffer[4] = a5697157178;
+arg_buffer[4] = a5499555202;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(modulo))[0]);
 //assign buffer size to numArgs
@@ -633,27 +633,27 @@ return nullptr;
 
 void* even_u63 = encode_clo(alloc_clo(even_u63_fptr, 0));
 
-void* lam57326_fptr() // lam57326 
+void* lam55350_fptr() // lam55350 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57327 = arg_buffer[1];
+void* env55351 = arg_buffer[1];
 //reading env and args
-void* a5697557184 = arg_buffer[2];
+void* a5499955208 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* equal_u63 = (decode_clo(env57327))[3];
+void* equal_u63 = (decode_clo(env55351))[3];
 //not do dummy comment
-void* a5697357181 = (decode_clo(env57327))[2];
+void* a5499755205 = (decode_clo(env55351))[2];
 //not do dummy comment
-void* kont57070 = (decode_clo(env57327))[1];
+void* kont55094 = (decode_clo(env55351))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(equal_u63);
-arg_buffer[2] = kont57070;
-arg_buffer[3] = a5697357181;
-arg_buffer[4] = a5697557184;
+arg_buffer[2] = kont55094;
+arg_buffer[3] = a5499755205;
+arg_buffer[4] = a5499955208;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(equal_u63))[0]);
 //assign buffer size to numArgs
@@ -662,41 +662,41 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57326 = encode_clo(alloc_clo(lam57326_fptr, 0));
+void* lam55350 = encode_clo(alloc_clo(lam55350_fptr, 0));
 
 void* odd_u63_fptr() // odd? 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57330 = arg_buffer[1];
+void* _55354 = arg_buffer[1];
 //reading env and args
-void* kont57070 = arg_buffer[2];
+void* kont55094 = arg_buffer[2];
 void* x = arg_buffer[3];
 //Dummy comment
-mpz_t* mpzvar58006 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58006, "1", 10);
-void* a5697357181 = encode_mpz(mpzvar58006);
-mpz_t* mpzvar58007 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58007, "2", 10);
-void* a5697457182 = encode_mpz(mpzvar58007);
+mpz_t* mpzvar55994 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar55994, "1", 10);
+void* a5499755205 = encode_mpz(mpzvar55994);
+mpz_t* mpzvar55995 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar55995, "2", 10);
+void* a5499855206 = encode_mpz(mpzvar55995);
 
 //creating new closure instance
-void** clo58009 = alloc_clo(lam57326_fptr, 3);
+void** clo55997 = alloc_clo(lam55350_fptr, 3);
 
 //setting env list
-clo58009[1] = kont57070;
-clo58009[2] = a5697357181;
-clo58009[3] = equal_u63;
-void* f5707157183 = encode_clo(clo58009);
+clo55997[1] = kont55094;
+clo55997[2] = a5499755205;
+clo55997[3] = equal_u63;
+void* f5509555207 = encode_clo(clo55997);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(modulo);
-arg_buffer[2] = f5707157183;
+arg_buffer[2] = f5509555207;
 arg_buffer[3] = x;
-arg_buffer[4] = a5697457182;
+arg_buffer[4] = a5499855206;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(modulo))[0]);
 //assign buffer size to numArgs
@@ -713,7 +713,7 @@ void* list_fptr() // list
 // This is the second type of the functions
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57331 = arg_buffer[1];
+void* _55355 = arg_buffer[1];
 void* x;
 if(is_cons(arg_buffer[2]))
 {
@@ -732,14 +732,14 @@ x = prim_cons(arg_buffer[i], x);
 
 }
 
-void* kont5707257185 = prim_car(x);
-void* x57186 = prim_cdr(x);
+void* kont5509655209 = prim_car(x);
+void* x55210 = prim_cdr(x);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont5707257185);
-arg_buffer[2] = x57186;
+arg_buffer[1]=reinterpret_cast<void*>(kont5509655209);
+arg_buffer[2] = x55210;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5707257185))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5509655209))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -748,27 +748,27 @@ return nullptr;
 
 void* list = encode_clo(alloc_clo(list_fptr, 0));
 
-void* lam57334_fptr() // lam57334 
+void* lam55358_fptr() // lam55358 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57335 = arg_buffer[1];
+void* env55359 = arg_buffer[1];
 //reading env and args
-void* a5698157196 = arg_buffer[2];
+void* a5500555220 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57074 = (decode_clo(env57335))[3];
+void* x = (decode_clo(env55359))[3];
 //not do dummy comment
-void* x = (decode_clo(env57335))[2];
+void* kont55098 = (decode_clo(env55359))[2];
 //not do dummy comment
-void* member_u63 = (decode_clo(env57335))[1];
+void* member_u63 = (decode_clo(env55359))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(member_u63);
-arg_buffer[2] = kont57074;
+arg_buffer[2] = kont55098;
 arg_buffer[3] = x;
-arg_buffer[4] = a5698157196;
+arg_buffer[4] = a5500555220;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(member_u63))[0]);
 //assign buffer size to numArgs
@@ -777,39 +777,39 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57334 = encode_clo(alloc_clo(lam57334_fptr, 0));
+void* lam55358 = encode_clo(alloc_clo(lam55358_fptr, 0));
 
-void* lam57336_fptr() // lam57336 
+void* lam55360_fptr() // lam55360 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57337 = arg_buffer[1];
+void* env55361 = arg_buffer[1];
 //reading env and args
-void* a5697957193 = arg_buffer[2];
+void* a5500355217 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57337))[5];
+void* cdr = (decode_clo(env55361))[5];
 //not do dummy comment
-void* kont57074 = (decode_clo(env57337))[4];
+void* lst = (decode_clo(env55361))[4];
 //not do dummy comment
-void* lst = (decode_clo(env57337))[3];
+void* x = (decode_clo(env55361))[3];
 //not do dummy comment
-void* x = (decode_clo(env57337))[2];
+void* kont55098 = (decode_clo(env55361))[2];
 //not do dummy comment
-void* member_u63 = (decode_clo(env57337))[1];
+void* member_u63 = (decode_clo(env55361))[1];
 
 //if-clause
-bool if_guard58010 = is_true(a5697957193);
-if(if_guard58010)
+bool if_guard55998 = is_true(a5500355217);
+if(if_guard55998)
 {
-void* x5698057194 = encode_bool(true);
+void* x5500455218 = encode_bool(true);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57074);
-arg_buffer[2] = x5698057194;
+arg_buffer[1]=reinterpret_cast<void*>(kont55098);
+arg_buffer[2] = x5500455218;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57074))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55098))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -819,19 +819,19 @@ else
 {
 
 //creating new closure instance
-void** clo58012 = alloc_clo(lam57334_fptr, 3);
+void** clo56000 = alloc_clo(lam55358_fptr, 3);
 
 //setting env list
-clo58012[1] = member_u63;
-clo58012[2] = x;
-clo58012[3] = kont57074;
-void* f5707557195 = encode_clo(clo58012);
+clo56000[1] = member_u63;
+clo56000[2] = kont55098;
+clo56000[3] = x;
+void* f5509955219 = encode_clo(clo56000);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cdr);
-arg_buffer[2] = f5707557195;
+arg_buffer[2] = f5509955219;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cdr))[0]);
@@ -843,47 +843,47 @@ return nullptr;
 
 }
 
-void* lam57336 = encode_clo(alloc_clo(lam57336_fptr, 0));
+void* lam55360 = encode_clo(alloc_clo(lam55360_fptr, 0));
 
-void* lam57338_fptr() // lam57338 
+void* lam55362_fptr() // lam55362 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57339 = arg_buffer[1];
+void* env55363 = arg_buffer[1];
 //reading env and args
-void* a5697857191 = arg_buffer[2];
+void* a5500255215 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57339))[6];
+void* cdr = (decode_clo(env55363))[6];
 //not do dummy comment
-void* kont57074 = (decode_clo(env57339))[5];
+void* lst = (decode_clo(env55363))[5];
 //not do dummy comment
-void* lst = (decode_clo(env57339))[4];
+void* equal_u63 = (decode_clo(env55363))[4];
 //not do dummy comment
-void* equal_u63 = (decode_clo(env57339))[3];
+void* x = (decode_clo(env55363))[3];
 //not do dummy comment
-void* x = (decode_clo(env57339))[2];
+void* kont55098 = (decode_clo(env55363))[2];
 //not do dummy comment
-void* member_u63 = (decode_clo(env57339))[1];
+void* member_u63 = (decode_clo(env55363))[1];
 
 //creating new closure instance
-void** clo58014 = alloc_clo(lam57336_fptr, 5);
+void** clo56002 = alloc_clo(lam55360_fptr, 5);
 
 //setting env list
-clo58014[1] = member_u63;
-clo58014[2] = x;
-clo58014[3] = lst;
-clo58014[4] = kont57074;
-clo58014[5] = cdr;
-void* f5707657192 = encode_clo(clo58014);
+clo56002[1] = member_u63;
+clo56002[2] = kont55098;
+clo56002[3] = x;
+clo56002[4] = lst;
+clo56002[5] = cdr;
+void* f5510055216 = encode_clo(clo56002);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(equal_u63);
-arg_buffer[2] = f5707657192;
-arg_buffer[3] = a5697857191;
+arg_buffer[2] = f5510055216;
+arg_buffer[3] = a5500255215;
 arg_buffer[4] = x;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(equal_u63))[0]);
@@ -893,43 +893,43 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57338 = encode_clo(alloc_clo(lam57338_fptr, 0));
+void* lam55362 = encode_clo(alloc_clo(lam55362_fptr, 0));
 
-void* lam57340_fptr() // lam57340 
+void* lam55364_fptr() // lam55364 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57341 = arg_buffer[1];
+void* env55365 = arg_buffer[1];
 //reading env and args
-void* a5697657188 = arg_buffer[2];
+void* a5500055212 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57341))[7];
+void* cdr = (decode_clo(env55365))[7];
 //not do dummy comment
-void* kont57074 = (decode_clo(env57341))[6];
+void* lst = (decode_clo(env55365))[6];
 //not do dummy comment
-void* lst = (decode_clo(env57341))[5];
+void* equal_u63 = (decode_clo(env55365))[5];
 //not do dummy comment
-void* equal_u63 = (decode_clo(env57341))[4];
+void* x = (decode_clo(env55365))[4];
 //not do dummy comment
-void* x = (decode_clo(env57341))[3];
+void* car = (decode_clo(env55365))[3];
 //not do dummy comment
-void* car = (decode_clo(env57341))[2];
+void* kont55098 = (decode_clo(env55365))[2];
 //not do dummy comment
-void* member_u63 = (decode_clo(env57341))[1];
+void* member_u63 = (decode_clo(env55365))[1];
 
 //if-clause
-bool if_guard58015 = is_true(a5697657188);
-if(if_guard58015)
+bool if_guard56003 = is_true(a5500055212);
+if(if_guard56003)
 {
-void* x5697757189 = encode_bool(false);
+void* x5500155213 = encode_bool(false);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57074);
-arg_buffer[2] = x5697757189;
+arg_buffer[1]=reinterpret_cast<void*>(kont55098);
+arg_buffer[2] = x5500155213;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57074))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55098))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -939,22 +939,22 @@ else
 {
 
 //creating new closure instance
-void** clo58017 = alloc_clo(lam57338_fptr, 6);
+void** clo56005 = alloc_clo(lam55362_fptr, 6);
 
 //setting env list
-clo58017[1] = member_u63;
-clo58017[2] = x;
-clo58017[3] = equal_u63;
-clo58017[4] = lst;
-clo58017[5] = kont57074;
-clo58017[6] = cdr;
-void* f5707757190 = encode_clo(clo58017);
+clo56005[1] = member_u63;
+clo56005[2] = kont55098;
+clo56005[3] = x;
+clo56005[4] = equal_u63;
+clo56005[5] = lst;
+clo56005[6] = cdr;
+void* f5510155214 = encode_clo(clo56005);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(car);
-arg_buffer[2] = f5707757190;
+arg_buffer[2] = f5510155214;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(car))[0]);
@@ -966,40 +966,40 @@ return nullptr;
 
 }
 
-void* lam57340 = encode_clo(alloc_clo(lam57340_fptr, 0));
+void* lam55364 = encode_clo(alloc_clo(lam55364_fptr, 0));
 
 void* member_u63_fptr() // member? 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57342 = arg_buffer[1];
+void* _55366 = arg_buffer[1];
 //reading env and args
-void* kont57074 = arg_buffer[2];
+void* kont55098 = arg_buffer[2];
 void* x = arg_buffer[3];
 void* lst = arg_buffer[4];
 //Dummy comment
 
 //creating new closure instance
-void** clo58019 = alloc_clo(lam57340_fptr, 7);
+void** clo56007 = alloc_clo(lam55364_fptr, 7);
 
 //setting env list
 void* member_u63 = encode_clo(alloc_clo(member_u63_fptr, 0));
 
-clo58019[1] = member_u63;
-clo58019[2] = car;
-clo58019[3] = x;
-clo58019[4] = equal_u63;
-clo58019[5] = lst;
-clo58019[6] = kont57074;
-clo58019[7] = cdr;
-void* f5707857187 = encode_clo(clo58019);
+clo56007[1] = member_u63;
+clo56007[2] = kont55098;
+clo56007[3] = car;
+clo56007[4] = x;
+clo56007[5] = equal_u63;
+clo56007[6] = lst;
+clo56007[7] = cdr;
+void* f5510255211 = encode_clo(clo56007);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(null_u63);
-arg_buffer[2] = f5707857187;
+arg_buffer[2] = f5510255211;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(null_u63))[0]);
@@ -1011,30 +1011,30 @@ return nullptr;
 
 void* member_u63 = encode_clo(alloc_clo(member_u63_fptr, 0));
 
-void* lam57343_fptr() // lam57343 
+void* lam55367_fptr() // lam55367 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57344 = arg_buffer[1];
+void* env55368 = arg_buffer[1];
 //reading env and args
-void* a5698557204 = arg_buffer[2];
+void* a5500955228 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* a5698457202 = (decode_clo(env57344))[4];
+void* kont55103 = (decode_clo(env55368))[4];
 //not do dummy comment
-void* kont57079 = (decode_clo(env57344))[3];
+void* fun = (decode_clo(env55368))[3];
 //not do dummy comment
-void* fun = (decode_clo(env57344))[2];
+void* a5500855226 = (decode_clo(env55368))[2];
 //not do dummy comment
-void* foldl = (decode_clo(env57344))[1];
+void* foldl = (decode_clo(env55368))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(foldl);
-arg_buffer[2] = kont57079;
+arg_buffer[2] = kont55103;
 arg_buffer[3] = fun;
-arg_buffer[4] = a5698457202;
-arg_buffer[5] = a5698557204;
+arg_buffer[4] = a5500855226;
+arg_buffer[5] = a5500955228;
 arg_buffer[0] = reinterpret_cast<void*>(5);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(foldl))[0]);
 //assign buffer size to numArgs
@@ -1043,43 +1043,43 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57343 = encode_clo(alloc_clo(lam57343_fptr, 0));
+void* lam55367 = encode_clo(alloc_clo(lam55367_fptr, 0));
 
-void* lam57345_fptr() // lam57345 
+void* lam55369_fptr() // lam55369 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57346 = arg_buffer[1];
+void* env55370 = arg_buffer[1];
 //reading env and args
-void* a5698457202 = arg_buffer[2];
+void* a5500855226 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57346))[5];
+void* cdr = (decode_clo(env55370))[5];
 //not do dummy comment
-void* lst = (decode_clo(env57346))[4];
+void* kont55103 = (decode_clo(env55370))[4];
 //not do dummy comment
-void* kont57079 = (decode_clo(env57346))[3];
+void* lst = (decode_clo(env55370))[3];
 //not do dummy comment
-void* fun = (decode_clo(env57346))[2];
+void* fun = (decode_clo(env55370))[2];
 //not do dummy comment
-void* foldl = (decode_clo(env57346))[1];
+void* foldl = (decode_clo(env55370))[1];
 
 //creating new closure instance
-void** clo58021 = alloc_clo(lam57343_fptr, 4);
+void** clo56009 = alloc_clo(lam55367_fptr, 4);
 
 //setting env list
-clo58021[1] = foldl;
-clo58021[2] = fun;
-clo58021[3] = kont57079;
-clo58021[4] = a5698457202;
-void* f5708057203 = encode_clo(clo58021);
+clo56009[1] = foldl;
+clo56009[2] = a5500855226;
+clo56009[3] = fun;
+clo56009[4] = kont55103;
+void* f5510455227 = encode_clo(clo56009);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cdr);
-arg_buffer[2] = f5708057203;
+arg_buffer[2] = f5510455227;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cdr))[0]);
@@ -1089,47 +1089,47 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57345 = encode_clo(alloc_clo(lam57345_fptr, 0));
+void* lam55369 = encode_clo(alloc_clo(lam55369_fptr, 0));
 
-void* lam57347_fptr() // lam57347 
+void* lam55371_fptr() // lam55371 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57348 = arg_buffer[1];
+void* env55372 = arg_buffer[1];
 //reading env and args
-void* a5698357200 = arg_buffer[2];
+void* a5500755224 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57348))[6];
+void* cdr = (decode_clo(env55372))[6];
 //not do dummy comment
-void* lst = (decode_clo(env57348))[5];
+void* kont55103 = (decode_clo(env55372))[5];
 //not do dummy comment
-void* kont57079 = (decode_clo(env57348))[4];
+void* lst = (decode_clo(env55372))[4];
 //not do dummy comment
-void* fun = (decode_clo(env57348))[3];
+void* fun = (decode_clo(env55372))[3];
 //not do dummy comment
-void* acc = (decode_clo(env57348))[2];
+void* acc = (decode_clo(env55372))[2];
 //not do dummy comment
-void* foldl = (decode_clo(env57348))[1];
+void* foldl = (decode_clo(env55372))[1];
 
 //creating new closure instance
-void** clo58023 = alloc_clo(lam57345_fptr, 5);
+void** clo56011 = alloc_clo(lam55369_fptr, 5);
 
 //setting env list
-clo58023[1] = foldl;
-clo58023[2] = fun;
-clo58023[3] = kont57079;
-clo58023[4] = lst;
-clo58023[5] = cdr;
-void* f5708157201 = encode_clo(clo58023);
+clo56011[1] = foldl;
+clo56011[2] = fun;
+clo56011[3] = lst;
+clo56011[4] = kont55103;
+clo56011[5] = cdr;
+void* f5510555225 = encode_clo(clo56011);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(fun);
-arg_buffer[2] = f5708157201;
-arg_buffer[3] = a5698357200;
+arg_buffer[2] = f5510555225;
+arg_buffer[3] = a5500755224;
 arg_buffer[4] = acc;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(fun))[0]);
@@ -1139,42 +1139,42 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57347 = encode_clo(alloc_clo(lam57347_fptr, 0));
+void* lam55371 = encode_clo(alloc_clo(lam55371_fptr, 0));
 
-void* lam57349_fptr() // lam57349 
+void* lam55373_fptr() // lam55373 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57350 = arg_buffer[1];
+void* env55374 = arg_buffer[1];
 //reading env and args
-void* a5698257198 = arg_buffer[2];
+void* a5500655222 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57350))[7];
+void* cdr = (decode_clo(env55374))[7];
 //not do dummy comment
-void* lst = (decode_clo(env57350))[6];
+void* kont55103 = (decode_clo(env55374))[6];
 //not do dummy comment
-void* kont57079 = (decode_clo(env57350))[5];
+void* lst = (decode_clo(env55374))[5];
 //not do dummy comment
-void* fun = (decode_clo(env57350))[4];
+void* fun = (decode_clo(env55374))[4];
 //not do dummy comment
-void* acc = (decode_clo(env57350))[3];
+void* acc = (decode_clo(env55374))[3];
 //not do dummy comment
-void* car = (decode_clo(env57350))[2];
+void* car = (decode_clo(env55374))[2];
 //not do dummy comment
-void* foldl = (decode_clo(env57350))[1];
+void* foldl = (decode_clo(env55374))[1];
 
 //if-clause
-bool if_guard58024 = is_true(a5698257198);
-if(if_guard58024)
+bool if_guard56012 = is_true(a5500655222);
+if(if_guard56012)
 {
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57079);
+arg_buffer[1]=reinterpret_cast<void*>(kont55103);
 arg_buffer[2] = acc;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57079))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55103))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -1184,22 +1184,22 @@ else
 {
 
 //creating new closure instance
-void** clo58026 = alloc_clo(lam57347_fptr, 6);
+void** clo56014 = alloc_clo(lam55371_fptr, 6);
 
 //setting env list
-clo58026[1] = foldl;
-clo58026[2] = acc;
-clo58026[3] = fun;
-clo58026[4] = kont57079;
-clo58026[5] = lst;
-clo58026[6] = cdr;
-void* f5708257199 = encode_clo(clo58026);
+clo56014[1] = foldl;
+clo56014[2] = acc;
+clo56014[3] = fun;
+clo56014[4] = lst;
+clo56014[5] = kont55103;
+clo56014[6] = cdr;
+void* f5510655223 = encode_clo(clo56014);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(car);
-arg_buffer[2] = f5708257199;
+arg_buffer[2] = f5510655223;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(car))[0]);
@@ -1211,41 +1211,41 @@ return nullptr;
 
 }
 
-void* lam57349 = encode_clo(alloc_clo(lam57349_fptr, 0));
+void* lam55373 = encode_clo(alloc_clo(lam55373_fptr, 0));
 
 void* foldl_fptr() // foldl 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57351 = arg_buffer[1];
+void* _55375 = arg_buffer[1];
 //reading env and args
-void* kont57079 = arg_buffer[2];
+void* kont55103 = arg_buffer[2];
 void* fun = arg_buffer[3];
 void* acc = arg_buffer[4];
 void* lst = arg_buffer[5];
 //Dummy comment
 
 //creating new closure instance
-void** clo58028 = alloc_clo(lam57349_fptr, 7);
+void** clo56016 = alloc_clo(lam55373_fptr, 7);
 
 //setting env list
 void* foldl = encode_clo(alloc_clo(foldl_fptr, 0));
 
-clo58028[1] = foldl;
-clo58028[2] = car;
-clo58028[3] = acc;
-clo58028[4] = fun;
-clo58028[5] = kont57079;
-clo58028[6] = lst;
-clo58028[7] = cdr;
-void* f5708357197 = encode_clo(clo58028);
+clo56016[1] = foldl;
+clo56016[2] = car;
+clo56016[3] = acc;
+clo56016[4] = fun;
+clo56016[5] = lst;
+clo56016[6] = kont55103;
+clo56016[7] = cdr;
+void* f5510755221 = encode_clo(clo56016);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(null_u63);
-arg_buffer[2] = f5708357197;
+arg_buffer[2] = f5510755221;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(null_u63))[0]);
@@ -1257,27 +1257,27 @@ return nullptr;
 
 void* foldl = encode_clo(alloc_clo(foldl_fptr, 0));
 
-void* lam57352_fptr() // lam57352 
+void* lam55376_fptr() // lam55376 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57353 = arg_buffer[1];
+void* env55377 = arg_buffer[1];
 //reading env and args
-void* a5698957212 = arg_buffer[2];
+void* a5501355236 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57084 = (decode_clo(env57353))[3];
+void* a5501155232 = (decode_clo(env55377))[3];
 //not do dummy comment
-void* reverse_u45helper = (decode_clo(env57353))[2];
+void* reverse_u45helper = (decode_clo(env55377))[2];
 //not do dummy comment
-void* a5698757208 = (decode_clo(env57353))[1];
+void* kont55108 = (decode_clo(env55377))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(reverse_u45helper);
-arg_buffer[2] = kont57084;
-arg_buffer[3] = a5698757208;
-arg_buffer[4] = a5698957212;
+arg_buffer[2] = kont55108;
+arg_buffer[3] = a5501155232;
+arg_buffer[4] = a5501355236;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(reverse_u45helper))[0]);
 //assign buffer size to numArgs
@@ -1286,43 +1286,43 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57352 = encode_clo(alloc_clo(lam57352_fptr, 0));
+void* lam55376 = encode_clo(alloc_clo(lam55376_fptr, 0));
 
-void* lam57354_fptr() // lam57354 
+void* lam55378_fptr() // lam55378 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57355 = arg_buffer[1];
+void* env55379 = arg_buffer[1];
 //reading env and args
-void* a5698857210 = arg_buffer[2];
+void* a5501255234 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57084 = (decode_clo(env57355))[5];
+void* a5501155232 = (decode_clo(env55379))[5];
 //not do dummy comment
-void* lst2 = (decode_clo(env57355))[4];
+void* reverse_u45helper = (decode_clo(env55379))[4];
 //not do dummy comment
-void* cons = (decode_clo(env57355))[3];
+void* kont55108 = (decode_clo(env55379))[3];
 //not do dummy comment
-void* reverse_u45helper = (decode_clo(env57355))[2];
+void* lst2 = (decode_clo(env55379))[2];
 //not do dummy comment
-void* a5698757208 = (decode_clo(env57355))[1];
+void* cons = (decode_clo(env55379))[1];
 
 //creating new closure instance
-void** clo58030 = alloc_clo(lam57352_fptr, 3);
+void** clo56018 = alloc_clo(lam55376_fptr, 3);
 
 //setting env list
-clo58030[1] = a5698757208;
-clo58030[2] = reverse_u45helper;
-clo58030[3] = kont57084;
-void* f5708557211 = encode_clo(clo58030);
+clo56018[1] = kont55108;
+clo56018[2] = reverse_u45helper;
+clo56018[3] = a5501155232;
+void* f5510955235 = encode_clo(clo56018);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cons);
-arg_buffer[2] = f5708557211;
-arg_buffer[3] = a5698857210;
+arg_buffer[2] = f5510955235;
+arg_buffer[3] = a5501255234;
 arg_buffer[4] = lst2;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cons))[0]);
@@ -1332,46 +1332,46 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57354 = encode_clo(alloc_clo(lam57354_fptr, 0));
+void* lam55378 = encode_clo(alloc_clo(lam55378_fptr, 0));
 
-void* lam57356_fptr() // lam57356 
+void* lam55380_fptr() // lam55380 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57357 = arg_buffer[1];
+void* env55381 = arg_buffer[1];
 //reading env and args
-void* a5698757208 = arg_buffer[2];
+void* a5501155232 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* lst = (decode_clo(env57357))[6];
+void* lst = (decode_clo(env55381))[6];
 //not do dummy comment
-void* reverse_u45helper = (decode_clo(env57357))[5];
+void* reverse_u45helper = (decode_clo(env55381))[5];
 //not do dummy comment
-void* kont57084 = (decode_clo(env57357))[4];
+void* kont55108 = (decode_clo(env55381))[4];
 //not do dummy comment
-void* lst2 = (decode_clo(env57357))[3];
+void* lst2 = (decode_clo(env55381))[3];
 //not do dummy comment
-void* car = (decode_clo(env57357))[2];
+void* car = (decode_clo(env55381))[2];
 //not do dummy comment
-void* cons = (decode_clo(env57357))[1];
+void* cons = (decode_clo(env55381))[1];
 
 //creating new closure instance
-void** clo58032 = alloc_clo(lam57354_fptr, 5);
+void** clo56020 = alloc_clo(lam55378_fptr, 5);
 
 //setting env list
-clo58032[1] = a5698757208;
-clo58032[2] = reverse_u45helper;
-clo58032[3] = cons;
-clo58032[4] = lst2;
-clo58032[5] = kont57084;
-void* f5708657209 = encode_clo(clo58032);
+clo56020[1] = cons;
+clo56020[2] = lst2;
+clo56020[3] = kont55108;
+clo56020[4] = reverse_u45helper;
+clo56020[5] = a5501155232;
+void* f5511055233 = encode_clo(clo56020);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(car);
-arg_buffer[2] = f5708657209;
+arg_buffer[2] = f5511055233;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(car))[0]);
@@ -1381,42 +1381,42 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57356 = encode_clo(alloc_clo(lam57356_fptr, 0));
+void* lam55380 = encode_clo(alloc_clo(lam55380_fptr, 0));
 
-void* lam57358_fptr() // lam57358 
+void* lam55382_fptr() // lam55382 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57359 = arg_buffer[1];
+void* env55383 = arg_buffer[1];
 //reading env and args
-void* a5698657206 = arg_buffer[2];
+void* a5501055230 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57359))[7];
+void* cdr = (decode_clo(env55383))[7];
 //not do dummy comment
-void* lst = (decode_clo(env57359))[6];
+void* lst = (decode_clo(env55383))[6];
 //not do dummy comment
-void* reverse_u45helper = (decode_clo(env57359))[5];
+void* reverse_u45helper = (decode_clo(env55383))[5];
 //not do dummy comment
-void* kont57084 = (decode_clo(env57359))[4];
+void* kont55108 = (decode_clo(env55383))[4];
 //not do dummy comment
-void* lst2 = (decode_clo(env57359))[3];
+void* lst2 = (decode_clo(env55383))[3];
 //not do dummy comment
-void* car = (decode_clo(env57359))[2];
+void* car = (decode_clo(env55383))[2];
 //not do dummy comment
-void* cons = (decode_clo(env57359))[1];
+void* cons = (decode_clo(env55383))[1];
 
 //if-clause
-bool if_guard58033 = is_true(a5698657206);
-if(if_guard58033)
+bool if_guard56021 = is_true(a5501055230);
+if(if_guard56021)
 {
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57084);
+arg_buffer[1]=reinterpret_cast<void*>(kont55108);
 arg_buffer[2] = lst2;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57084))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55108))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -1426,22 +1426,22 @@ else
 {
 
 //creating new closure instance
-void** clo58035 = alloc_clo(lam57356_fptr, 6);
+void** clo56023 = alloc_clo(lam55380_fptr, 6);
 
 //setting env list
-clo58035[1] = cons;
-clo58035[2] = car;
-clo58035[3] = lst2;
-clo58035[4] = kont57084;
-clo58035[5] = reverse_u45helper;
-clo58035[6] = lst;
-void* f5708757207 = encode_clo(clo58035);
+clo56023[1] = cons;
+clo56023[2] = car;
+clo56023[3] = lst2;
+clo56023[4] = kont55108;
+clo56023[5] = reverse_u45helper;
+clo56023[6] = lst;
+void* f5511155231 = encode_clo(clo56023);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cdr);
-arg_buffer[2] = f5708757207;
+arg_buffer[2] = f5511155231;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cdr))[0]);
@@ -1453,40 +1453,40 @@ return nullptr;
 
 }
 
-void* lam57358 = encode_clo(alloc_clo(lam57358_fptr, 0));
+void* lam55382 = encode_clo(alloc_clo(lam55382_fptr, 0));
 
 void* reverse_u45helper_fptr() // reverse-helper 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57360 = arg_buffer[1];
+void* _55384 = arg_buffer[1];
 //reading env and args
-void* kont57084 = arg_buffer[2];
+void* kont55108 = arg_buffer[2];
 void* lst = arg_buffer[3];
 void* lst2 = arg_buffer[4];
 //Dummy comment
 
 //creating new closure instance
-void** clo58037 = alloc_clo(lam57358_fptr, 7);
+void** clo56025 = alloc_clo(lam55382_fptr, 7);
 
 //setting env list
-clo58037[1] = cons;
-clo58037[2] = car;
-clo58037[3] = lst2;
-clo58037[4] = kont57084;
+clo56025[1] = cons;
+clo56025[2] = car;
+clo56025[3] = lst2;
+clo56025[4] = kont55108;
 void* reverse_u45helper = encode_clo(alloc_clo(reverse_u45helper_fptr, 0));
 
-clo58037[5] = reverse_u45helper;
-clo58037[6] = lst;
-clo58037[7] = cdr;
-void* f5708857205 = encode_clo(clo58037);
+clo56025[5] = reverse_u45helper;
+clo56025[6] = lst;
+clo56025[7] = cdr;
+void* f5511255229 = encode_clo(clo56025);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(null_u63);
-arg_buffer[2] = f5708857205;
+arg_buffer[2] = f5511255229;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(null_u63))[0]);
@@ -1498,27 +1498,27 @@ return nullptr;
 
 void* reverse_u45helper = encode_clo(alloc_clo(reverse_u45helper_fptr, 0));
 
-void* lam57361_fptr() // lam57361 
+void* lam55385_fptr() // lam55385 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57362 = arg_buffer[1];
+void* env55386 = arg_buffer[1];
 //reading env and args
-void* a5699057214 = arg_buffer[2];
+void* a5501455238 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57089 = (decode_clo(env57362))[3];
+void* lst = (decode_clo(env55386))[3];
 //not do dummy comment
-void* lst = (decode_clo(env57362))[2];
+void* reverse_u45helper = (decode_clo(env55386))[2];
 //not do dummy comment
-void* reverse_u45helper = (decode_clo(env57362))[1];
+void* kont55113 = (decode_clo(env55386))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(reverse_u45helper);
-arg_buffer[2] = kont57089;
+arg_buffer[2] = kont55113;
 arg_buffer[3] = lst;
-arg_buffer[4] = a5699057214;
+arg_buffer[4] = a5501455238;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(reverse_u45helper))[0]);
 //assign buffer size to numArgs
@@ -1527,33 +1527,33 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57361 = encode_clo(alloc_clo(lam57361_fptr, 0));
+void* lam55385 = encode_clo(alloc_clo(lam55385_fptr, 0));
 
 void* reverse_fptr() // reverse 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57363 = arg_buffer[1];
+void* _55387 = arg_buffer[1];
 //reading env and args
-void* kont57089 = arg_buffer[2];
+void* kont55113 = arg_buffer[2];
 void* lst = arg_buffer[3];
 //Dummy comment
 
 //creating new closure instance
-void** clo58039 = alloc_clo(lam57361_fptr, 3);
+void** clo56027 = alloc_clo(lam55385_fptr, 3);
 
 //setting env list
-clo58039[1] = reverse_u45helper;
-clo58039[2] = lst;
-clo58039[3] = kont57089;
-void* f5709057213 = encode_clo(clo58039);
+clo56027[1] = kont55113;
+clo56027[2] = reverse_u45helper;
+clo56027[3] = lst;
+void* f5511455237 = encode_clo(clo56027);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(list);
-arg_buffer[2] = f5709057213;
+arg_buffer[2] = f5511455237;
 arg_buffer[0] = reinterpret_cast<void*>(2);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(list))[0]);
 //assign buffer size to numArgs
@@ -1564,55 +1564,55 @@ return nullptr;
 
 void* reverse = encode_clo(alloc_clo(reverse_fptr, 0));
 
-void* lam57364_fptr() // lam57364 
+void* lam55388_fptr() // lam55388 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57365 = arg_buffer[1];
+void* env55389 = arg_buffer[1];
 //reading env and args
-void* x5699357219 = arg_buffer[2];
+void* x5501755243 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57091 = (decode_clo(env57365))[1];
+void* kont55115 = (decode_clo(env55389))[1];
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57091);
-arg_buffer[2] = x5699357219;
+arg_buffer[1]=reinterpret_cast<void*>(kont55115);
+arg_buffer[2] = x5501755243;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57091))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55115))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
 return nullptr;
 }
 
-void* lam57364 = encode_clo(alloc_clo(lam57364_fptr, 0));
+void* lam55388 = encode_clo(alloc_clo(lam55388_fptr, 0));
 
-void* lam57366_fptr() // lam57366 
+void* lam55390_fptr() // lam55390 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57367 = arg_buffer[1];
+void* env55391 = arg_buffer[1];
 //reading env and args
-void* a5699857228 = arg_buffer[2];
+void* a5502255252 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57091 = (decode_clo(env57367))[4];
+void* a5501855245 = (decode_clo(env55391))[4];
 //not do dummy comment
-void* a5699457221 = (decode_clo(env57367))[3];
+void* a5502055248 = (decode_clo(env55391))[3];
 //not do dummy comment
-void* a5699657224 = (decode_clo(env57367))[2];
+void* take_u45helper = (decode_clo(env55391))[2];
 //not do dummy comment
-void* take_u45helper = (decode_clo(env57367))[1];
+void* kont55115 = (decode_clo(env55391))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(take_u45helper);
-arg_buffer[2] = kont57091;
-arg_buffer[3] = a5699457221;
-arg_buffer[4] = a5699657224;
-arg_buffer[5] = a5699857228;
+arg_buffer[2] = kont55115;
+arg_buffer[3] = a5501855245;
+arg_buffer[4] = a5502055248;
+arg_buffer[5] = a5502255252;
 arg_buffer[0] = reinterpret_cast<void*>(5);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(take_u45helper))[0]);
 //assign buffer size to numArgs
@@ -1621,46 +1621,46 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57366 = encode_clo(alloc_clo(lam57366_fptr, 0));
+void* lam55390 = encode_clo(alloc_clo(lam55390_fptr, 0));
 
-void* lam57368_fptr() // lam57368 
+void* lam55392_fptr() // lam55392 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57369 = arg_buffer[1];
+void* env55393 = arg_buffer[1];
 //reading env and args
-void* a5699757226 = arg_buffer[2];
+void* a5502155250 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57091 = (decode_clo(env57369))[6];
+void* a5501855245 = (decode_clo(env55393))[6];
 //not do dummy comment
-void* a5699457221 = (decode_clo(env57369))[5];
+void* a5502055248 = (decode_clo(env55393))[5];
 //not do dummy comment
-void* a5699657224 = (decode_clo(env57369))[4];
+void* cons = (decode_clo(env55393))[4];
 //not do dummy comment
-void* cons = (decode_clo(env57369))[3];
+void* kont55115 = (decode_clo(env55393))[3];
 //not do dummy comment
-void* take_u45helper = (decode_clo(env57369))[2];
+void* take_u45helper = (decode_clo(env55393))[2];
 //not do dummy comment
-void* lst2 = (decode_clo(env57369))[1];
+void* lst2 = (decode_clo(env55393))[1];
 
 //creating new closure instance
-void** clo58041 = alloc_clo(lam57366_fptr, 4);
+void** clo56029 = alloc_clo(lam55390_fptr, 4);
 
 //setting env list
-clo58041[1] = take_u45helper;
-clo58041[2] = a5699657224;
-clo58041[3] = a5699457221;
-clo58041[4] = kont57091;
-void* f5709357227 = encode_clo(clo58041);
+clo56029[1] = kont55115;
+clo56029[2] = take_u45helper;
+clo56029[3] = a5502055248;
+clo56029[4] = a5501855245;
+void* f5511755251 = encode_clo(clo56029);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cons);
-arg_buffer[2] = f5709357227;
-arg_buffer[3] = a5699757226;
+arg_buffer[2] = f5511755251;
+arg_buffer[3] = a5502155250;
 arg_buffer[4] = lst2;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cons))[0]);
@@ -1670,49 +1670,49 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57368 = encode_clo(alloc_clo(lam57368_fptr, 0));
+void* lam55392 = encode_clo(alloc_clo(lam55392_fptr, 0));
 
-void* lam57370_fptr() // lam57370 
+void* lam55394_fptr() // lam55394 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57371 = arg_buffer[1];
+void* env55395 = arg_buffer[1];
 //reading env and args
-void* a5699657224 = arg_buffer[2];
+void* a5502055248 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57091 = (decode_clo(env57371))[7];
+void* a5501855245 = (decode_clo(env55395))[7];
 //not do dummy comment
-void* car = (decode_clo(env57371))[6];
+void* lst = (decode_clo(env55395))[6];
 //not do dummy comment
-void* cons = (decode_clo(env57371))[5];
+void* car = (decode_clo(env55395))[5];
 //not do dummy comment
-void* lst = (decode_clo(env57371))[4];
+void* cons = (decode_clo(env55395))[4];
 //not do dummy comment
-void* a5699457221 = (decode_clo(env57371))[3];
+void* kont55115 = (decode_clo(env55395))[3];
 //not do dummy comment
-void* take_u45helper = (decode_clo(env57371))[2];
+void* take_u45helper = (decode_clo(env55395))[2];
 //not do dummy comment
-void* lst2 = (decode_clo(env57371))[1];
+void* lst2 = (decode_clo(env55395))[1];
 
 //creating new closure instance
-void** clo58043 = alloc_clo(lam57368_fptr, 6);
+void** clo56031 = alloc_clo(lam55392_fptr, 6);
 
 //setting env list
-clo58043[1] = lst2;
-clo58043[2] = take_u45helper;
-clo58043[3] = cons;
-clo58043[4] = a5699657224;
-clo58043[5] = a5699457221;
-clo58043[6] = kont57091;
-void* f5709457225 = encode_clo(clo58043);
+clo56031[1] = lst2;
+clo56031[2] = take_u45helper;
+clo56031[3] = kont55115;
+clo56031[4] = cons;
+clo56031[5] = a5502055248;
+clo56031[6] = a5501855245;
+void* f5511855249 = encode_clo(clo56031);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(car);
-arg_buffer[2] = f5709457225;
+arg_buffer[2] = f5511855249;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(car))[0]);
@@ -1722,57 +1722,57 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57370 = encode_clo(alloc_clo(lam57370_fptr, 0));
+void* lam55394 = encode_clo(alloc_clo(lam55394_fptr, 0));
 
-void* lam57373_fptr() // lam57373 
+void* lam55397_fptr() // lam55397 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57374 = arg_buffer[1];
+void* env55398 = arg_buffer[1];
 //reading env and args
-void* a5699457221 = arg_buffer[2];
+void* a5501855245 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57091 = (decode_clo(env57374))[8];
+void* lst = (decode_clo(env55398))[8];
 //not do dummy comment
-void* lst = (decode_clo(env57374))[7];
+void* cons = (decode_clo(env55398))[7];
 //not do dummy comment
-void* cons = (decode_clo(env57374))[6];
+void* take_u45helper = (decode_clo(env55398))[6];
 //not do dummy comment
-void* _u45 = (decode_clo(env57374))[5];
+void* lst2 = (decode_clo(env55398))[5];
 //not do dummy comment
-void* take_u45helper = (decode_clo(env57374))[4];
+void* n = (decode_clo(env55398))[4];
 //not do dummy comment
-void* lst2 = (decode_clo(env57374))[3];
+void* car = (decode_clo(env55398))[3];
 //not do dummy comment
-void* n = (decode_clo(env57374))[2];
+void* kont55115 = (decode_clo(env55398))[2];
 //not do dummy comment
-void* car = (decode_clo(env57374))[1];
-mpz_t* mpzvar58044 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58044, "1", 10);
-void* a5699557222 = encode_mpz(mpzvar58044);
+void* _u45 = (decode_clo(env55398))[1];
+mpz_t* mpzvar56032 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar56032, "1", 10);
+void* a5501955246 = encode_mpz(mpzvar56032);
 
 //creating new closure instance
-void** clo58046 = alloc_clo(lam57370_fptr, 7);
+void** clo56034 = alloc_clo(lam55394_fptr, 7);
 
 //setting env list
-clo58046[1] = lst2;
-clo58046[2] = take_u45helper;
-clo58046[3] = a5699457221;
-clo58046[4] = lst;
-clo58046[5] = cons;
-clo58046[6] = car;
-clo58046[7] = kont57091;
-void* f5709557223 = encode_clo(clo58046);
+clo56034[1] = lst2;
+clo56034[2] = take_u45helper;
+clo56034[3] = kont55115;
+clo56034[4] = cons;
+clo56034[5] = car;
+clo56034[6] = lst;
+clo56034[7] = a5501855245;
+void* f5511955247 = encode_clo(clo56034);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(_u45);
-arg_buffer[2] = f5709557223;
+arg_buffer[2] = f5511955247;
 arg_buffer[3] = n;
-arg_buffer[4] = a5699557222;
+arg_buffer[4] = a5501955246;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(_u45))[0]);
 //assign buffer size to numArgs
@@ -1781,55 +1781,55 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57373 = encode_clo(alloc_clo(lam57373_fptr, 0));
+void* lam55397 = encode_clo(alloc_clo(lam55397_fptr, 0));
 
-void* lam57375_fptr() // lam57375 
+void* lam55399_fptr() // lam55399 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57376 = arg_buffer[1];
+void* env55400 = arg_buffer[1];
 //reading env and args
-void* a5699257217 = arg_buffer[2];
+void* a5501655241 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57376))[10];
+void* cdr = (decode_clo(env55400))[10];
 //not do dummy comment
-void* kont57091 = (decode_clo(env57376))[9];
+void* lst = (decode_clo(env55400))[9];
 //not do dummy comment
-void* lst = (decode_clo(env57376))[8];
+void* reverse = (decode_clo(env55400))[8];
 //not do dummy comment
-void* reverse = (decode_clo(env57376))[7];
+void* cons = (decode_clo(env55400))[7];
 //not do dummy comment
-void* cons = (decode_clo(env57376))[6];
+void* take_u45helper = (decode_clo(env55400))[6];
 //not do dummy comment
-void* _u45 = (decode_clo(env57376))[5];
+void* lst2 = (decode_clo(env55400))[5];
 //not do dummy comment
-void* take_u45helper = (decode_clo(env57376))[4];
+void* n = (decode_clo(env55400))[4];
 //not do dummy comment
-void* lst2 = (decode_clo(env57376))[3];
+void* car = (decode_clo(env55400))[3];
 //not do dummy comment
-void* n = (decode_clo(env57376))[2];
+void* kont55115 = (decode_clo(env55400))[2];
 //not do dummy comment
-void* car = (decode_clo(env57376))[1];
+void* _u45 = (decode_clo(env55400))[1];
 
 //if-clause
-bool if_guard58047 = is_true(a5699257217);
-if(if_guard58047)
+bool if_guard56035 = is_true(a5501655241);
+if(if_guard56035)
 {
 
 //creating new closure instance
-void** clo58049 = alloc_clo(lam57364_fptr, 1);
+void** clo56037 = alloc_clo(lam55388_fptr, 1);
 
 //setting env list
-clo58049[1] = kont57091;
-void* f5709257218 = encode_clo(clo58049);
+clo56037[1] = kont55115;
+void* f5511655242 = encode_clo(clo56037);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(reverse);
-arg_buffer[2] = f5709257218;
+arg_buffer[2] = f5511655242;
 arg_buffer[3] = lst2;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(reverse))[0]);
@@ -1842,24 +1842,24 @@ else
 {
 
 //creating new closure instance
-void** clo58051 = alloc_clo(lam57373_fptr, 8);
+void** clo56039 = alloc_clo(lam55397_fptr, 8);
 
 //setting env list
-clo58051[1] = car;
-clo58051[2] = n;
-clo58051[3] = lst2;
-clo58051[4] = take_u45helper;
-clo58051[5] = _u45;
-clo58051[6] = cons;
-clo58051[7] = lst;
-clo58051[8] = kont57091;
-void* f5709657220 = encode_clo(clo58051);
+clo56039[1] = _u45;
+clo56039[2] = kont55115;
+clo56039[3] = car;
+clo56039[4] = n;
+clo56039[5] = lst2;
+clo56039[6] = take_u45helper;
+clo56039[7] = cons;
+clo56039[8] = lst;
+void* f5512055244 = encode_clo(clo56039);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cdr);
-arg_buffer[2] = f5709657220;
+arg_buffer[2] = f5512055244;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cdr))[0]);
@@ -1871,49 +1871,49 @@ return nullptr;
 
 }
 
-void* lam57375 = encode_clo(alloc_clo(lam57375_fptr, 0));
+void* lam55399 = encode_clo(alloc_clo(lam55399_fptr, 0));
 
 void* take_u45helper_fptr() // take-helper 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57378 = arg_buffer[1];
+void* _55402 = arg_buffer[1];
 //reading env and args
-void* kont57091 = arg_buffer[2];
+void* kont55115 = arg_buffer[2];
 void* lst = arg_buffer[3];
 void* n = arg_buffer[4];
 void* lst2 = arg_buffer[5];
 //Dummy comment
-mpz_t* mpzvar58052 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58052, "0", 10);
-void* a5699157215 = encode_mpz(mpzvar58052);
+mpz_t* mpzvar56040 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar56040, "0", 10);
+void* a5501555239 = encode_mpz(mpzvar56040);
 
 //creating new closure instance
-void** clo58054 = alloc_clo(lam57375_fptr, 10);
+void** clo56042 = alloc_clo(lam55399_fptr, 10);
 
 //setting env list
-clo58054[1] = car;
-clo58054[2] = n;
-clo58054[3] = lst2;
+clo56042[1] = _u45;
+clo56042[2] = kont55115;
+clo56042[3] = car;
+clo56042[4] = n;
+clo56042[5] = lst2;
 void* take_u45helper = encode_clo(alloc_clo(take_u45helper_fptr, 0));
 
-clo58054[4] = take_u45helper;
-clo58054[5] = _u45;
-clo58054[6] = cons;
-clo58054[7] = reverse;
-clo58054[8] = lst;
-clo58054[9] = kont57091;
-clo58054[10] = cdr;
-void* f5709757216 = encode_clo(clo58054);
+clo56042[6] = take_u45helper;
+clo56042[7] = cons;
+clo56042[8] = reverse;
+clo56042[9] = lst;
+clo56042[10] = cdr;
+void* f5512155240 = encode_clo(clo56042);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(_u61);
-arg_buffer[2] = f5709757216;
+arg_buffer[2] = f5512155240;
 arg_buffer[3] = n;
-arg_buffer[4] = a5699157215;
+arg_buffer[4] = a5501555239;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(_u61))[0]);
 //assign buffer size to numArgs
@@ -1924,30 +1924,30 @@ return nullptr;
 
 void* take_u45helper = encode_clo(alloc_clo(take_u45helper_fptr, 0));
 
-void* lam57379_fptr() // lam57379 
+void* lam55403_fptr() // lam55403 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57380 = arg_buffer[1];
+void* env55404 = arg_buffer[1];
 //reading env and args
-void* a5699957230 = arg_buffer[2];
+void* a5502355254 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* lst = (decode_clo(env57380))[4];
+void* lst = (decode_clo(env55404))[4];
 //not do dummy comment
-void* kont57098 = (decode_clo(env57380))[3];
+void* kont55122 = (decode_clo(env55404))[3];
 //not do dummy comment
-void* take_u45helper = (decode_clo(env57380))[2];
+void* take_u45helper = (decode_clo(env55404))[2];
 //not do dummy comment
-void* n = (decode_clo(env57380))[1];
+void* n = (decode_clo(env55404))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(take_u45helper);
-arg_buffer[2] = kont57098;
+arg_buffer[2] = kont55122;
 arg_buffer[3] = lst;
 arg_buffer[4] = n;
-arg_buffer[5] = a5699957230;
+arg_buffer[5] = a5502355254;
 arg_buffer[0] = reinterpret_cast<void*>(5);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(take_u45helper))[0]);
 //assign buffer size to numArgs
@@ -1956,35 +1956,35 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57379 = encode_clo(alloc_clo(lam57379_fptr, 0));
+void* lam55403 = encode_clo(alloc_clo(lam55403_fptr, 0));
 
 void* take_fptr() // take 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57381 = arg_buffer[1];
+void* _55405 = arg_buffer[1];
 //reading env and args
-void* kont57098 = arg_buffer[2];
+void* kont55122 = arg_buffer[2];
 void* lst = arg_buffer[3];
 void* n = arg_buffer[4];
 //Dummy comment
 
 //creating new closure instance
-void** clo58056 = alloc_clo(lam57379_fptr, 4);
+void** clo56044 = alloc_clo(lam55403_fptr, 4);
 
 //setting env list
-clo58056[1] = n;
-clo58056[2] = take_u45helper;
-clo58056[3] = kont57098;
-clo58056[4] = lst;
-void* f5709957229 = encode_clo(clo58056);
+clo56044[1] = n;
+clo56044[2] = take_u45helper;
+clo56044[3] = kont55122;
+clo56044[4] = lst;
+void* f5512355253 = encode_clo(clo56044);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(list);
-arg_buffer[2] = f5709957229;
+arg_buffer[2] = f5512355253;
 arg_buffer[0] = reinterpret_cast<void*>(2);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(list))[0]);
 //assign buffer size to numArgs
@@ -1995,27 +1995,27 @@ return nullptr;
 
 void* take = encode_clo(alloc_clo(take_fptr, 0));
 
-void* lam57383_fptr() // lam57383 
+void* lam55407_fptr() // lam55407 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57384 = arg_buffer[1];
+void* env55408 = arg_buffer[1];
 //reading env and args
-void* a5700457238 = arg_buffer[2];
+void* a5502855262 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* a5700257234 = (decode_clo(env57384))[3];
+void* kont55124 = (decode_clo(env55408))[3];
 //not do dummy comment
-void* _u43 = (decode_clo(env57384))[2];
+void* _u43 = (decode_clo(env55408))[2];
 //not do dummy comment
-void* kont57100 = (decode_clo(env57384))[1];
+void* a5502655258 = (decode_clo(env55408))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(_u43);
-arg_buffer[2] = kont57100;
-arg_buffer[3] = a5700257234;
-arg_buffer[4] = a5700457238;
+arg_buffer[2] = kont55124;
+arg_buffer[3] = a5502655258;
+arg_buffer[4] = a5502855262;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(_u43))[0]);
 //assign buffer size to numArgs
@@ -2024,41 +2024,41 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57383 = encode_clo(alloc_clo(lam57383_fptr, 0));
+void* lam55407 = encode_clo(alloc_clo(lam55407_fptr, 0));
 
-void* lam57385_fptr() // lam57385 
+void* lam55409_fptr() // lam55409 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57386 = arg_buffer[1];
+void* env55410 = arg_buffer[1];
 //reading env and args
-void* a5700357236 = arg_buffer[2];
+void* a5502755260 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* a5700257234 = (decode_clo(env57386))[4];
+void* length = (decode_clo(env55410))[4];
 //not do dummy comment
-void* length = (decode_clo(env57386))[3];
+void* kont55124 = (decode_clo(env55410))[3];
 //not do dummy comment
-void* _u43 = (decode_clo(env57386))[2];
+void* _u43 = (decode_clo(env55410))[2];
 //not do dummy comment
-void* kont57100 = (decode_clo(env57386))[1];
+void* a5502655258 = (decode_clo(env55410))[1];
 
 //creating new closure instance
-void** clo58058 = alloc_clo(lam57383_fptr, 3);
+void** clo56046 = alloc_clo(lam55407_fptr, 3);
 
 //setting env list
-clo58058[1] = kont57100;
-clo58058[2] = _u43;
-clo58058[3] = a5700257234;
-void* f5710157237 = encode_clo(clo58058);
+clo56046[1] = a5502655258;
+clo56046[2] = _u43;
+clo56046[3] = kont55124;
+void* f5512555261 = encode_clo(clo56046);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(length);
-arg_buffer[2] = f5710157237;
-arg_buffer[3] = a5700357236;
+arg_buffer[2] = f5512555261;
+arg_buffer[3] = a5502755260;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(length))[0]);
 //assign buffer size to numArgs
@@ -2067,41 +2067,41 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57385 = encode_clo(alloc_clo(lam57385_fptr, 0));
+void* lam55409 = encode_clo(alloc_clo(lam55409_fptr, 0));
 
-void* lam57388_fptr() // lam57388 
+void* lam55412_fptr() // lam55412 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57389 = arg_buffer[1];
+void* env55413 = arg_buffer[1];
 //reading env and args
-void* a5700057232 = arg_buffer[2];
+void* a5502455256 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57389))[5];
+void* cdr = (decode_clo(env55413))[5];
 //not do dummy comment
-void* lst = (decode_clo(env57389))[4];
+void* lst = (decode_clo(env55413))[4];
 //not do dummy comment
-void* length = (decode_clo(env57389))[3];
+void* length = (decode_clo(env55413))[3];
 //not do dummy comment
-void* _u43 = (decode_clo(env57389))[2];
+void* kont55124 = (decode_clo(env55413))[2];
 //not do dummy comment
-void* kont57100 = (decode_clo(env57389))[1];
+void* _u43 = (decode_clo(env55413))[1];
 
 //if-clause
-bool if_guard58059 = is_true(a5700057232);
-if(if_guard58059)
+bool if_guard56047 = is_true(a5502455256);
+if(if_guard56047)
 {
-mpz_t* mpzvar58060 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58060, "0", 10);
-void* x5700157233 = encode_mpz(mpzvar58060);
+mpz_t* mpzvar56048 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar56048, "0", 10);
+void* x5502555257 = encode_mpz(mpzvar56048);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57100);
-arg_buffer[2] = x5700157233;
+arg_buffer[1]=reinterpret_cast<void*>(kont55124);
+arg_buffer[2] = x5502555257;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57100))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55124))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -2109,25 +2109,25 @@ return nullptr;
 }
 else
 {
-mpz_t* mpzvar58061 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58061, "1", 10);
-void* a5700257234 = encode_mpz(mpzvar58061);
+mpz_t* mpzvar56049 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar56049, "1", 10);
+void* a5502655258 = encode_mpz(mpzvar56049);
 
 //creating new closure instance
-void** clo58063 = alloc_clo(lam57385_fptr, 4);
+void** clo56051 = alloc_clo(lam55409_fptr, 4);
 
 //setting env list
-clo58063[1] = kont57100;
-clo58063[2] = _u43;
-clo58063[3] = length;
-clo58063[4] = a5700257234;
-void* f5710257235 = encode_clo(clo58063);
+clo56051[1] = a5502655258;
+clo56051[2] = _u43;
+clo56051[3] = kont55124;
+clo56051[4] = length;
+void* f5512655259 = encode_clo(clo56051);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cdr);
-arg_buffer[2] = f5710257235;
+arg_buffer[2] = f5512655259;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cdr))[0]);
@@ -2139,37 +2139,37 @@ return nullptr;
 
 }
 
-void* lam57388 = encode_clo(alloc_clo(lam57388_fptr, 0));
+void* lam55412 = encode_clo(alloc_clo(lam55412_fptr, 0));
 
 void* length_fptr() // length 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57390 = arg_buffer[1];
+void* _55414 = arg_buffer[1];
 //reading env and args
-void* kont57100 = arg_buffer[2];
+void* kont55124 = arg_buffer[2];
 void* lst = arg_buffer[3];
 //Dummy comment
 
 //creating new closure instance
-void** clo58065 = alloc_clo(lam57388_fptr, 5);
+void** clo56053 = alloc_clo(lam55412_fptr, 5);
 
 //setting env list
-clo58065[1] = kont57100;
-clo58065[2] = _u43;
+clo56053[1] = _u43;
+clo56053[2] = kont55124;
 void* length = encode_clo(alloc_clo(length_fptr, 0));
 
-clo58065[3] = length;
-clo58065[4] = lst;
-clo58065[5] = cdr;
-void* f5710357231 = encode_clo(clo58065);
+clo56053[3] = length;
+clo56053[4] = lst;
+clo56053[5] = cdr;
+void* f5512755255 = encode_clo(clo56053);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(null_u63);
-arg_buffer[2] = f5710357231;
+arg_buffer[2] = f5512755255;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(null_u63))[0]);
@@ -2181,52 +2181,52 @@ return nullptr;
 
 void* length = encode_clo(alloc_clo(length_fptr, 0));
 
-void* lam57391_fptr() // lam57391 
+void* lam55415_fptr() // lam55415 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57392 = arg_buffer[1];
+void* env55416 = arg_buffer[1];
 //reading env and args
-void* x5700657242 = arg_buffer[2];
+void* x5503055266 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57104 = (decode_clo(env57392))[1];
+void* kont55128 = (decode_clo(env55416))[1];
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57104);
-arg_buffer[2] = x5700657242;
+arg_buffer[1]=reinterpret_cast<void*>(kont55128);
+arg_buffer[2] = x5503055266;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57104))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55128))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
 return nullptr;
 }
 
-void* lam57391 = encode_clo(alloc_clo(lam57391_fptr, 0));
+void* lam55415 = encode_clo(alloc_clo(lam55415_fptr, 0));
 
-void* lam57393_fptr() // lam57393 
+void* lam55417_fptr() // lam55417 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57394 = arg_buffer[1];
+void* env55418 = arg_buffer[1];
 //reading env and args
-void* a5701057250 = arg_buffer[2];
+void* a5503455274 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* a5700857246 = (decode_clo(env57394))[3];
+void* a5503255270 = (decode_clo(env55418))[3];
 //not do dummy comment
-void* cons = (decode_clo(env57394))[2];
+void* kont55128 = (decode_clo(env55418))[2];
 //not do dummy comment
-void* kont57104 = (decode_clo(env57394))[1];
+void* cons = (decode_clo(env55418))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cons);
-arg_buffer[2] = kont57104;
-arg_buffer[3] = a5700857246;
-arg_buffer[4] = a5701057250;
+arg_buffer[2] = kont55128;
+arg_buffer[3] = a5503255270;
+arg_buffer[4] = a5503455274;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cons))[0]);
 //assign buffer size to numArgs
@@ -2235,44 +2235,44 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57393 = encode_clo(alloc_clo(lam57393_fptr, 0));
+void* lam55417 = encode_clo(alloc_clo(lam55417_fptr, 0));
 
-void* lam57395_fptr() // lam57395 
+void* lam55419_fptr() // lam55419 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57396 = arg_buffer[1];
+void* env55420 = arg_buffer[1];
 //reading env and args
-void* a5700957248 = arg_buffer[2];
+void* a5503355272 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* map = (decode_clo(env57396))[5];
+void* map = (decode_clo(env55420))[5];
 //not do dummy comment
-void* proc = (decode_clo(env57396))[4];
+void* a5503255270 = (decode_clo(env55420))[4];
 //not do dummy comment
-void* a5700857246 = (decode_clo(env57396))[3];
+void* proc = (decode_clo(env55420))[3];
 //not do dummy comment
-void* cons = (decode_clo(env57396))[2];
+void* kont55128 = (decode_clo(env55420))[2];
 //not do dummy comment
-void* kont57104 = (decode_clo(env57396))[1];
+void* cons = (decode_clo(env55420))[1];
 
 //creating new closure instance
-void** clo58067 = alloc_clo(lam57393_fptr, 3);
+void** clo56055 = alloc_clo(lam55417_fptr, 3);
 
 //setting env list
-clo58067[1] = kont57104;
-clo58067[2] = cons;
-clo58067[3] = a5700857246;
-void* f5710657249 = encode_clo(clo58067);
+clo56055[1] = cons;
+clo56055[2] = kont55128;
+clo56055[3] = a5503255270;
+void* f5513055273 = encode_clo(clo56055);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(map);
-arg_buffer[2] = f5710657249;
+arg_buffer[2] = f5513055273;
 arg_buffer[3] = proc;
-arg_buffer[4] = a5700957248;
+arg_buffer[4] = a5503355272;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(map))[0]);
 //assign buffer size to numArgs
@@ -2281,46 +2281,46 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57395 = encode_clo(alloc_clo(lam57395_fptr, 0));
+void* lam55419 = encode_clo(alloc_clo(lam55419_fptr, 0));
 
-void* lam57397_fptr() // lam57397 
+void* lam55421_fptr() // lam55421 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57398 = arg_buffer[1];
+void* env55422 = arg_buffer[1];
 //reading env and args
-void* a5700857246 = arg_buffer[2];
+void* a5503255270 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57398))[6];
+void* cdr = (decode_clo(env55422))[6];
 //not do dummy comment
-void* lst = (decode_clo(env57398))[5];
+void* lst = (decode_clo(env55422))[5];
 //not do dummy comment
-void* map = (decode_clo(env57398))[4];
+void* map = (decode_clo(env55422))[4];
 //not do dummy comment
-void* proc = (decode_clo(env57398))[3];
+void* proc = (decode_clo(env55422))[3];
 //not do dummy comment
-void* cons = (decode_clo(env57398))[2];
+void* kont55128 = (decode_clo(env55422))[2];
 //not do dummy comment
-void* kont57104 = (decode_clo(env57398))[1];
+void* cons = (decode_clo(env55422))[1];
 
 //creating new closure instance
-void** clo58069 = alloc_clo(lam57395_fptr, 5);
+void** clo56057 = alloc_clo(lam55419_fptr, 5);
 
 //setting env list
-clo58069[1] = kont57104;
-clo58069[2] = cons;
-clo58069[3] = a5700857246;
-clo58069[4] = proc;
-clo58069[5] = map;
-void* f5710757247 = encode_clo(clo58069);
+clo56057[1] = cons;
+clo56057[2] = kont55128;
+clo56057[3] = proc;
+clo56057[4] = a5503255270;
+clo56057[5] = map;
+void* f5513155271 = encode_clo(clo56057);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cdr);
-arg_buffer[2] = f5710757247;
+arg_buffer[2] = f5513155271;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cdr))[0]);
@@ -2330,48 +2330,48 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57397 = encode_clo(alloc_clo(lam57397_fptr, 0));
+void* lam55421 = encode_clo(alloc_clo(lam55421_fptr, 0));
 
-void* lam57399_fptr() // lam57399 
+void* lam55423_fptr() // lam55423 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57400 = arg_buffer[1];
+void* env55424 = arg_buffer[1];
 //reading env and args
-void* a5700757244 = arg_buffer[2];
+void* a5503155268 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57400))[6];
+void* cdr = (decode_clo(env55424))[6];
 //not do dummy comment
-void* lst = (decode_clo(env57400))[5];
+void* lst = (decode_clo(env55424))[5];
 //not do dummy comment
-void* map = (decode_clo(env57400))[4];
+void* map = (decode_clo(env55424))[4];
 //not do dummy comment
-void* proc = (decode_clo(env57400))[3];
+void* proc = (decode_clo(env55424))[3];
 //not do dummy comment
-void* cons = (decode_clo(env57400))[2];
+void* kont55128 = (decode_clo(env55424))[2];
 //not do dummy comment
-void* kont57104 = (decode_clo(env57400))[1];
+void* cons = (decode_clo(env55424))[1];
 
 //creating new closure instance
-void** clo58071 = alloc_clo(lam57397_fptr, 6);
+void** clo56059 = alloc_clo(lam55421_fptr, 6);
 
 //setting env list
-clo58071[1] = kont57104;
-clo58071[2] = cons;
-clo58071[3] = proc;
-clo58071[4] = map;
-clo58071[5] = lst;
-clo58071[6] = cdr;
-void* f5710857245 = encode_clo(clo58071);
+clo56059[1] = cons;
+clo56059[2] = kont55128;
+clo56059[3] = proc;
+clo56059[4] = map;
+clo56059[5] = lst;
+clo56059[6] = cdr;
+void* f5513255269 = encode_clo(clo56059);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(proc);
-arg_buffer[2] = f5710857245;
-arg_buffer[3] = a5700757244;
+arg_buffer[2] = f5513255269;
+arg_buffer[3] = a5503155268;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(proc))[0]);
 //assign buffer size to numArgs
@@ -2380,51 +2380,51 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57399 = encode_clo(alloc_clo(lam57399_fptr, 0));
+void* lam55423 = encode_clo(alloc_clo(lam55423_fptr, 0));
 
-void* lam57401_fptr() // lam57401 
+void* lam55425_fptr() // lam55425 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57402 = arg_buffer[1];
+void* env55426 = arg_buffer[1];
 //reading env and args
-void* a5700557240 = arg_buffer[2];
+void* a5502955264 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* lst = (decode_clo(env57402))[8];
+void* lst = (decode_clo(env55426))[8];
 //not do dummy comment
-void* map = (decode_clo(env57402))[7];
+void* map = (decode_clo(env55426))[7];
 //not do dummy comment
-void* proc = (decode_clo(env57402))[6];
+void* proc = (decode_clo(env55426))[6];
 //not do dummy comment
-void* car = (decode_clo(env57402))[5];
+void* kont55128 = (decode_clo(env55426))[5];
 //not do dummy comment
-void* cons = (decode_clo(env57402))[4];
+void* car = (decode_clo(env55426))[4];
 //not do dummy comment
-void* kont57104 = (decode_clo(env57402))[3];
+void* cons = (decode_clo(env55426))[3];
 //not do dummy comment
-void* list = (decode_clo(env57402))[2];
+void* list = (decode_clo(env55426))[2];
 //not do dummy comment
-void* cdr = (decode_clo(env57402))[1];
+void* cdr = (decode_clo(env55426))[1];
 
 //if-clause
-bool if_guard58072 = is_true(a5700557240);
-if(if_guard58072)
+bool if_guard56060 = is_true(a5502955264);
+if(if_guard56060)
 {
 
 //creating new closure instance
-void** clo58074 = alloc_clo(lam57391_fptr, 1);
+void** clo56062 = alloc_clo(lam55415_fptr, 1);
 
 //setting env list
-clo58074[1] = kont57104;
-void* f5710557241 = encode_clo(clo58074);
+clo56062[1] = kont55128;
+void* f5512955265 = encode_clo(clo56062);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(list);
-arg_buffer[2] = f5710557241;
+arg_buffer[2] = f5512955265;
 arg_buffer[0] = reinterpret_cast<void*>(2);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(list))[0]);
 //assign buffer size to numArgs
@@ -2436,22 +2436,22 @@ else
 {
 
 //creating new closure instance
-void** clo58076 = alloc_clo(lam57399_fptr, 6);
+void** clo56064 = alloc_clo(lam55423_fptr, 6);
 
 //setting env list
-clo58076[1] = kont57104;
-clo58076[2] = cons;
-clo58076[3] = proc;
-clo58076[4] = map;
-clo58076[5] = lst;
-clo58076[6] = cdr;
-void* f5710957243 = encode_clo(clo58076);
+clo56064[1] = cons;
+clo56064[2] = kont55128;
+clo56064[3] = proc;
+clo56064[4] = map;
+clo56064[5] = lst;
+clo56064[6] = cdr;
+void* f5513355267 = encode_clo(clo56064);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(car);
-arg_buffer[2] = f5710957243;
+arg_buffer[2] = f5513355267;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(car))[0]);
@@ -2463,41 +2463,41 @@ return nullptr;
 
 }
 
-void* lam57401 = encode_clo(alloc_clo(lam57401_fptr, 0));
+void* lam55425 = encode_clo(alloc_clo(lam55425_fptr, 0));
 
 void* map_fptr() // map 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57403 = arg_buffer[1];
+void* _55427 = arg_buffer[1];
 //reading env and args
-void* kont57104 = arg_buffer[2];
+void* kont55128 = arg_buffer[2];
 void* proc = arg_buffer[3];
 void* lst = arg_buffer[4];
 //Dummy comment
 
 //creating new closure instance
-void** clo58078 = alloc_clo(lam57401_fptr, 8);
+void** clo56066 = alloc_clo(lam55425_fptr, 8);
 
 //setting env list
-clo58078[1] = cdr;
-clo58078[2] = list;
-clo58078[3] = kont57104;
-clo58078[4] = cons;
-clo58078[5] = car;
-clo58078[6] = proc;
+clo56066[1] = cdr;
+clo56066[2] = list;
+clo56066[3] = cons;
+clo56066[4] = car;
+clo56066[5] = kont55128;
+clo56066[6] = proc;
 void* map = encode_clo(alloc_clo(map_fptr, 0));
 
-clo58078[7] = map;
-clo58078[8] = lst;
-void* f5711057239 = encode_clo(clo58078);
+clo56066[7] = map;
+clo56066[8] = lst;
+void* f5513455263 = encode_clo(clo56066);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(null_u63);
-arg_buffer[2] = f5711057239;
+arg_buffer[2] = f5513455263;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(null_u63))[0]);
@@ -2509,52 +2509,52 @@ return nullptr;
 
 void* map = encode_clo(alloc_clo(map_fptr, 0));
 
-void* lam57404_fptr() // lam57404 
+void* lam55428_fptr() // lam55428 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57405 = arg_buffer[1];
+void* env55429 = arg_buffer[1];
 //reading env and args
-void* x5701257254 = arg_buffer[2];
+void* x5503655278 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57111 = (decode_clo(env57405))[1];
+void* kont55135 = (decode_clo(env55429))[1];
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57111);
-arg_buffer[2] = x5701257254;
+arg_buffer[1]=reinterpret_cast<void*>(kont55135);
+arg_buffer[2] = x5503655278;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57111))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55135))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
 return nullptr;
 }
 
-void* lam57404 = encode_clo(alloc_clo(lam57404_fptr, 0));
+void* lam55428 = encode_clo(alloc_clo(lam55428_fptr, 0));
 
-void* lam57406_fptr() // lam57406 
+void* lam55430_fptr() // lam55430 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57407 = arg_buffer[1];
+void* env55431 = arg_buffer[1];
 //reading env and args
-void* a5701757264 = arg_buffer[2];
+void* a5504155288 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57111 = (decode_clo(env57407))[3];
+void* kont55135 = (decode_clo(env55431))[3];
 //not do dummy comment
-void* a5701557260 = (decode_clo(env57407))[2];
+void* a5503955284 = (decode_clo(env55431))[2];
 //not do dummy comment
-void* cons = (decode_clo(env57407))[1];
+void* cons = (decode_clo(env55431))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cons);
-arg_buffer[2] = kont57111;
-arg_buffer[3] = a5701557260;
-arg_buffer[4] = a5701757264;
+arg_buffer[2] = kont55135;
+arg_buffer[3] = a5503955284;
+arg_buffer[4] = a5504155288;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cons))[0]);
 //assign buffer size to numArgs
@@ -2563,44 +2563,44 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57406 = encode_clo(alloc_clo(lam57406_fptr, 0));
+void* lam55430 = encode_clo(alloc_clo(lam55430_fptr, 0));
 
-void* lam57408_fptr() // lam57408 
+void* lam55432_fptr() // lam55432 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57409 = arg_buffer[1];
+void* env55433 = arg_buffer[1];
 //reading env and args
-void* a5701657262 = arg_buffer[2];
+void* a5504055286 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57111 = (decode_clo(env57409))[5];
+void* kont55135 = (decode_clo(env55433))[5];
 //not do dummy comment
-void* op = (decode_clo(env57409))[4];
+void* op = (decode_clo(env55433))[4];
 //not do dummy comment
-void* a5701557260 = (decode_clo(env57409))[3];
+void* a5503955284 = (decode_clo(env55433))[3];
 //not do dummy comment
-void* filter = (decode_clo(env57409))[2];
+void* filter = (decode_clo(env55433))[2];
 //not do dummy comment
-void* cons = (decode_clo(env57409))[1];
+void* cons = (decode_clo(env55433))[1];
 
 //creating new closure instance
-void** clo58080 = alloc_clo(lam57406_fptr, 3);
+void** clo56068 = alloc_clo(lam55430_fptr, 3);
 
 //setting env list
-clo58080[1] = cons;
-clo58080[2] = a5701557260;
-clo58080[3] = kont57111;
-void* f5711357263 = encode_clo(clo58080);
+clo56068[1] = cons;
+clo56068[2] = a5503955284;
+clo56068[3] = kont55135;
+void* f5513755287 = encode_clo(clo56068);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(filter);
-arg_buffer[2] = f5711357263;
+arg_buffer[2] = f5513755287;
 arg_buffer[3] = op;
-arg_buffer[4] = a5701657262;
+arg_buffer[4] = a5504055286;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(filter))[0]);
 //assign buffer size to numArgs
@@ -2609,46 +2609,46 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57408 = encode_clo(alloc_clo(lam57408_fptr, 0));
+void* lam55432 = encode_clo(alloc_clo(lam55432_fptr, 0));
 
-void* lam57410_fptr() // lam57410 
+void* lam55434_fptr() // lam55434 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57411 = arg_buffer[1];
+void* env55435 = arg_buffer[1];
 //reading env and args
-void* a5701557260 = arg_buffer[2];
+void* a5503955284 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57411))[6];
+void* cdr = (decode_clo(env55435))[6];
 //not do dummy comment
-void* lst = (decode_clo(env57411))[5];
+void* kont55135 = (decode_clo(env55435))[5];
 //not do dummy comment
-void* kont57111 = (decode_clo(env57411))[4];
+void* lst = (decode_clo(env55435))[4];
 //not do dummy comment
-void* op = (decode_clo(env57411))[3];
+void* op = (decode_clo(env55435))[3];
 //not do dummy comment
-void* filter = (decode_clo(env57411))[2];
+void* filter = (decode_clo(env55435))[2];
 //not do dummy comment
-void* cons = (decode_clo(env57411))[1];
+void* cons = (decode_clo(env55435))[1];
 
 //creating new closure instance
-void** clo58082 = alloc_clo(lam57408_fptr, 5);
+void** clo56070 = alloc_clo(lam55432_fptr, 5);
 
 //setting env list
-clo58082[1] = cons;
-clo58082[2] = filter;
-clo58082[3] = a5701557260;
-clo58082[4] = op;
-clo58082[5] = kont57111;
-void* f5711457261 = encode_clo(clo58082);
+clo56070[1] = cons;
+clo56070[2] = filter;
+clo56070[3] = a5503955284;
+clo56070[4] = op;
+clo56070[5] = kont55135;
+void* f5513855285 = encode_clo(clo56070);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cdr);
-arg_buffer[2] = f5711457261;
+arg_buffer[2] = f5513855285;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cdr))[0]);
@@ -2658,29 +2658,29 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57410 = encode_clo(alloc_clo(lam57410_fptr, 0));
+void* lam55434 = encode_clo(alloc_clo(lam55434_fptr, 0));
 
-void* lam57412_fptr() // lam57412 
+void* lam55436_fptr() // lam55436 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57413 = arg_buffer[1];
+void* env55437 = arg_buffer[1];
 //reading env and args
-void* a5701857266 = arg_buffer[2];
+void* a5504255290 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57111 = (decode_clo(env57413))[3];
+void* kont55135 = (decode_clo(env55437))[3];
 //not do dummy comment
-void* op = (decode_clo(env57413))[2];
+void* op = (decode_clo(env55437))[2];
 //not do dummy comment
-void* filter = (decode_clo(env57413))[1];
+void* filter = (decode_clo(env55437))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(filter);
-arg_buffer[2] = kont57111;
+arg_buffer[2] = kont55135;
 arg_buffer[3] = op;
-arg_buffer[4] = a5701857266;
+arg_buffer[4] = a5504255290;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(filter))[0]);
 //assign buffer size to numArgs
@@ -2689,54 +2689,54 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57412 = encode_clo(alloc_clo(lam57412_fptr, 0));
+void* lam55436 = encode_clo(alloc_clo(lam55436_fptr, 0));
 
-void* lam57414_fptr() // lam57414 
+void* lam55438_fptr() // lam55438 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57415 = arg_buffer[1];
+void* env55439 = arg_buffer[1];
 //reading env and args
-void* a5701457258 = arg_buffer[2];
+void* a5503855282 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57415))[7];
+void* cdr = (decode_clo(env55439))[7];
 //not do dummy comment
-void* lst = (decode_clo(env57415))[6];
+void* kont55135 = (decode_clo(env55439))[6];
 //not do dummy comment
-void* kont57111 = (decode_clo(env57415))[5];
+void* lst = (decode_clo(env55439))[5];
 //not do dummy comment
-void* op = (decode_clo(env57415))[4];
+void* op = (decode_clo(env55439))[4];
 //not do dummy comment
-void* cons = (decode_clo(env57415))[3];
+void* cons = (decode_clo(env55439))[3];
 //not do dummy comment
-void* filter = (decode_clo(env57415))[2];
+void* filter = (decode_clo(env55439))[2];
 //not do dummy comment
-void* car = (decode_clo(env57415))[1];
+void* car = (decode_clo(env55439))[1];
 
 //if-clause
-bool if_guard58083 = is_true(a5701457258);
-if(if_guard58083)
+bool if_guard56071 = is_true(a5503855282);
+if(if_guard56071)
 {
 
 //creating new closure instance
-void** clo58085 = alloc_clo(lam57410_fptr, 6);
+void** clo56073 = alloc_clo(lam55434_fptr, 6);
 
 //setting env list
-clo58085[1] = cons;
-clo58085[2] = filter;
-clo58085[3] = op;
-clo58085[4] = kont57111;
-clo58085[5] = lst;
-clo58085[6] = cdr;
-void* f5711557259 = encode_clo(clo58085);
+clo56073[1] = cons;
+clo56073[2] = filter;
+clo56073[3] = op;
+clo56073[4] = lst;
+clo56073[5] = kont55135;
+clo56073[6] = cdr;
+void* f5513955283 = encode_clo(clo56073);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(car);
-arg_buffer[2] = f5711557259;
+arg_buffer[2] = f5513955283;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(car))[0]);
@@ -2749,19 +2749,19 @@ else
 {
 
 //creating new closure instance
-void** clo58087 = alloc_clo(lam57412_fptr, 3);
+void** clo56075 = alloc_clo(lam55436_fptr, 3);
 
 //setting env list
-clo58087[1] = filter;
-clo58087[2] = op;
-clo58087[3] = kont57111;
-void* f5711657265 = encode_clo(clo58087);
+clo56075[1] = filter;
+clo56075[2] = op;
+clo56075[3] = kont55135;
+void* f5514055289 = encode_clo(clo56075);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cdr);
-arg_buffer[2] = f5711657265;
+arg_buffer[2] = f5514055289;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cdr))[0]);
@@ -2773,51 +2773,51 @@ return nullptr;
 
 }
 
-void* lam57414 = encode_clo(alloc_clo(lam57414_fptr, 0));
+void* lam55438 = encode_clo(alloc_clo(lam55438_fptr, 0));
 
-void* lam57416_fptr() // lam57416 
+void* lam55440_fptr() // lam55440 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57417 = arg_buffer[1];
+void* env55441 = arg_buffer[1];
 //reading env and args
-void* a5701357256 = arg_buffer[2];
+void* a5503755280 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57417))[7];
+void* cdr = (decode_clo(env55441))[7];
 //not do dummy comment
-void* lst = (decode_clo(env57417))[6];
+void* kont55135 = (decode_clo(env55441))[6];
 //not do dummy comment
-void* kont57111 = (decode_clo(env57417))[5];
+void* lst = (decode_clo(env55441))[5];
 //not do dummy comment
-void* op = (decode_clo(env57417))[4];
+void* op = (decode_clo(env55441))[4];
 //not do dummy comment
-void* cons = (decode_clo(env57417))[3];
+void* cons = (decode_clo(env55441))[3];
 //not do dummy comment
-void* filter = (decode_clo(env57417))[2];
+void* filter = (decode_clo(env55441))[2];
 //not do dummy comment
-void* car = (decode_clo(env57417))[1];
+void* car = (decode_clo(env55441))[1];
 
 //creating new closure instance
-void** clo58089 = alloc_clo(lam57414_fptr, 7);
+void** clo56077 = alloc_clo(lam55438_fptr, 7);
 
 //setting env list
-clo58089[1] = car;
-clo58089[2] = filter;
-clo58089[3] = cons;
-clo58089[4] = op;
-clo58089[5] = kont57111;
-clo58089[6] = lst;
-clo58089[7] = cdr;
-void* f5711757257 = encode_clo(clo58089);
+clo56077[1] = car;
+clo56077[2] = filter;
+clo56077[3] = cons;
+clo56077[4] = op;
+clo56077[5] = lst;
+clo56077[6] = kont55135;
+clo56077[7] = cdr;
+void* f5514155281 = encode_clo(clo56077);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(op);
-arg_buffer[2] = f5711757257;
-arg_buffer[3] = a5701357256;
+arg_buffer[2] = f5514155281;
+arg_buffer[3] = a5503755280;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(op))[0]);
 //assign buffer size to numArgs
@@ -2826,51 +2826,51 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57416 = encode_clo(alloc_clo(lam57416_fptr, 0));
+void* lam55440 = encode_clo(alloc_clo(lam55440_fptr, 0));
 
-void* lam57418_fptr() // lam57418 
+void* lam55442_fptr() // lam55442 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57419 = arg_buffer[1];
+void* env55443 = arg_buffer[1];
 //reading env and args
-void* a5701157252 = arg_buffer[2];
+void* a5503555276 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* lst = (decode_clo(env57419))[8];
+void* kont55135 = (decode_clo(env55443))[8];
 //not do dummy comment
-void* kont57111 = (decode_clo(env57419))[7];
+void* lst = (decode_clo(env55443))[7];
 //not do dummy comment
-void* op = (decode_clo(env57419))[6];
+void* op = (decode_clo(env55443))[6];
 //not do dummy comment
-void* cons = (decode_clo(env57419))[5];
+void* cons = (decode_clo(env55443))[5];
 //not do dummy comment
-void* list = (decode_clo(env57419))[4];
+void* list = (decode_clo(env55443))[4];
 //not do dummy comment
-void* cdr = (decode_clo(env57419))[3];
+void* cdr = (decode_clo(env55443))[3];
 //not do dummy comment
-void* filter = (decode_clo(env57419))[2];
+void* filter = (decode_clo(env55443))[2];
 //not do dummy comment
-void* car = (decode_clo(env57419))[1];
+void* car = (decode_clo(env55443))[1];
 
 //if-clause
-bool if_guard58090 = is_true(a5701157252);
-if(if_guard58090)
+bool if_guard56078 = is_true(a5503555276);
+if(if_guard56078)
 {
 
 //creating new closure instance
-void** clo58092 = alloc_clo(lam57404_fptr, 1);
+void** clo56080 = alloc_clo(lam55428_fptr, 1);
 
 //setting env list
-clo58092[1] = kont57111;
-void* f5711257253 = encode_clo(clo58092);
+clo56080[1] = kont55135;
+void* f5513655277 = encode_clo(clo56080);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(list);
-arg_buffer[2] = f5711257253;
+arg_buffer[2] = f5513655277;
 arg_buffer[0] = reinterpret_cast<void*>(2);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(list))[0]);
 //assign buffer size to numArgs
@@ -2882,23 +2882,23 @@ else
 {
 
 //creating new closure instance
-void** clo58094 = alloc_clo(lam57416_fptr, 7);
+void** clo56082 = alloc_clo(lam55440_fptr, 7);
 
 //setting env list
-clo58094[1] = car;
-clo58094[2] = filter;
-clo58094[3] = cons;
-clo58094[4] = op;
-clo58094[5] = kont57111;
-clo58094[6] = lst;
-clo58094[7] = cdr;
-void* f5711857255 = encode_clo(clo58094);
+clo56082[1] = car;
+clo56082[2] = filter;
+clo56082[3] = cons;
+clo56082[4] = op;
+clo56082[5] = lst;
+clo56082[6] = kont55135;
+clo56082[7] = cdr;
+void* f5514255279 = encode_clo(clo56082);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(car);
-arg_buffer[2] = f5711857255;
+arg_buffer[2] = f5514255279;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(car))[0]);
@@ -2910,41 +2910,41 @@ return nullptr;
 
 }
 
-void* lam57418 = encode_clo(alloc_clo(lam57418_fptr, 0));
+void* lam55442 = encode_clo(alloc_clo(lam55442_fptr, 0));
 
 void* filter_fptr() // filter 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57420 = arg_buffer[1];
+void* _55444 = arg_buffer[1];
 //reading env and args
-void* kont57111 = arg_buffer[2];
+void* kont55135 = arg_buffer[2];
 void* op = arg_buffer[3];
 void* lst = arg_buffer[4];
 //Dummy comment
 
 //creating new closure instance
-void** clo58096 = alloc_clo(lam57418_fptr, 8);
+void** clo56084 = alloc_clo(lam55442_fptr, 8);
 
 //setting env list
-clo58096[1] = car;
+clo56084[1] = car;
 void* filter = encode_clo(alloc_clo(filter_fptr, 0));
 
-clo58096[2] = filter;
-clo58096[3] = cdr;
-clo58096[4] = list;
-clo58096[5] = cons;
-clo58096[6] = op;
-clo58096[7] = kont57111;
-clo58096[8] = lst;
-void* f5711957251 = encode_clo(clo58096);
+clo56084[2] = filter;
+clo56084[3] = cdr;
+clo56084[4] = list;
+clo56084[5] = cons;
+clo56084[6] = op;
+clo56084[7] = lst;
+clo56084[8] = kont55135;
+void* f5514355275 = encode_clo(clo56084);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(null_u63);
-arg_buffer[2] = f5711957251;
+arg_buffer[2] = f5514355275;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(null_u63))[0]);
@@ -2956,27 +2956,27 @@ return nullptr;
 
 void* filter = encode_clo(alloc_clo(filter_fptr, 0));
 
-void* lam57421_fptr() // lam57421 
+void* lam55445_fptr() // lam55445 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57422 = arg_buffer[1];
+void* env55446 = arg_buffer[1];
 //reading env and args
-void* a5702357274 = arg_buffer[2];
+void* a5504755298 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* drop = (decode_clo(env57422))[3];
+void* a5504555295 = (decode_clo(env55446))[3];
 //not do dummy comment
-void* a5702157271 = (decode_clo(env57422))[2];
+void* drop = (decode_clo(env55446))[2];
 //not do dummy comment
-void* kont57120 = (decode_clo(env57422))[1];
+void* kont55144 = (decode_clo(env55446))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(drop);
-arg_buffer[2] = kont57120;
-arg_buffer[3] = a5702157271;
-arg_buffer[4] = a5702357274;
+arg_buffer[2] = kont55144;
+arg_buffer[3] = a5504555295;
+arg_buffer[4] = a5504755298;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(drop))[0]);
 //assign buffer size to numArgs
@@ -2985,45 +2985,45 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57421 = encode_clo(alloc_clo(lam57421_fptr, 0));
+void* lam55445 = encode_clo(alloc_clo(lam55445_fptr, 0));
 
-void* lam57424_fptr() // lam57424 
+void* lam55448_fptr() // lam55448 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57425 = arg_buffer[1];
+void* env55449 = arg_buffer[1];
 //reading env and args
-void* a5702157271 = arg_buffer[2];
+void* a5504555295 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* drop = (decode_clo(env57425))[4];
+void* drop = (decode_clo(env55449))[4];
 //not do dummy comment
-void* n = (decode_clo(env57425))[3];
+void* kont55144 = (decode_clo(env55449))[3];
 //not do dummy comment
-void* kont57120 = (decode_clo(env57425))[2];
+void* n = (decode_clo(env55449))[2];
 //not do dummy comment
-void* _u45 = (decode_clo(env57425))[1];
-mpz_t* mpzvar58097 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58097, "1", 10);
-void* a5702257272 = encode_mpz(mpzvar58097);
+void* _u45 = (decode_clo(env55449))[1];
+mpz_t* mpzvar56085 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar56085, "1", 10);
+void* a5504655296 = encode_mpz(mpzvar56085);
 
 //creating new closure instance
-void** clo58099 = alloc_clo(lam57421_fptr, 3);
+void** clo56087 = alloc_clo(lam55445_fptr, 3);
 
 //setting env list
-clo58099[1] = kont57120;
-clo58099[2] = a5702157271;
-clo58099[3] = drop;
-void* f5712157273 = encode_clo(clo58099);
+clo56087[1] = kont55144;
+clo56087[2] = drop;
+clo56087[3] = a5504555295;
+void* f5514555297 = encode_clo(clo56087);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(_u45);
-arg_buffer[2] = f5712157273;
+arg_buffer[2] = f5514555297;
 arg_buffer[3] = n;
-arg_buffer[4] = a5702257272;
+arg_buffer[4] = a5504655296;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(_u45))[0]);
 //assign buffer size to numArgs
@@ -3032,40 +3032,40 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57424 = encode_clo(alloc_clo(lam57424_fptr, 0));
+void* lam55448 = encode_clo(alloc_clo(lam55448_fptr, 0));
 
-void* lam57426_fptr() // lam57426 
+void* lam55450_fptr() // lam55450 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57427 = arg_buffer[1];
+void* env55451 = arg_buffer[1];
 //reading env and args
-void* a5702057269 = arg_buffer[2];
+void* a5504455293 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57427))[6];
+void* cdr = (decode_clo(env55451))[6];
 //not do dummy comment
-void* n = (decode_clo(env57427))[5];
+void* kont55144 = (decode_clo(env55451))[5];
 //not do dummy comment
-void* lst = (decode_clo(env57427))[4];
+void* n = (decode_clo(env55451))[4];
 //not do dummy comment
-void* drop = (decode_clo(env57427))[3];
+void* _u45 = (decode_clo(env55451))[3];
 //not do dummy comment
-void* kont57120 = (decode_clo(env57427))[2];
+void* lst = (decode_clo(env55451))[2];
 //not do dummy comment
-void* _u45 = (decode_clo(env57427))[1];
+void* drop = (decode_clo(env55451))[1];
 
 //if-clause
-bool if_guard58100 = is_true(a5702057269);
-if(if_guard58100)
+bool if_guard56088 = is_true(a5504455293);
+if(if_guard56088)
 {
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57120);
+arg_buffer[1]=reinterpret_cast<void*>(kont55144);
 arg_buffer[2] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57120))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55144))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -3075,20 +3075,20 @@ else
 {
 
 //creating new closure instance
-void** clo58102 = alloc_clo(lam57424_fptr, 4);
+void** clo56090 = alloc_clo(lam55448_fptr, 4);
 
 //setting env list
-clo58102[1] = _u45;
-clo58102[2] = kont57120;
-clo58102[3] = n;
-clo58102[4] = drop;
-void* f5712257270 = encode_clo(clo58102);
+clo56090[1] = _u45;
+clo56090[2] = n;
+clo56090[3] = kont55144;
+clo56090[4] = drop;
+void* f5514655294 = encode_clo(clo56090);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cdr);
-arg_buffer[2] = f5712257270;
+arg_buffer[2] = f5514655294;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cdr))[0]);
@@ -3100,44 +3100,44 @@ return nullptr;
 
 }
 
-void* lam57426 = encode_clo(alloc_clo(lam57426_fptr, 0));
+void* lam55450 = encode_clo(alloc_clo(lam55450_fptr, 0));
 
 void* drop_fptr() // drop 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57429 = arg_buffer[1];
+void* _55453 = arg_buffer[1];
 //reading env and args
-void* kont57120 = arg_buffer[2];
+void* kont55144 = arg_buffer[2];
 void* lst = arg_buffer[3];
 void* n = arg_buffer[4];
 //Dummy comment
-mpz_t* mpzvar58103 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58103, "0", 10);
-void* a5701957267 = encode_mpz(mpzvar58103);
+mpz_t* mpzvar56091 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar56091, "0", 10);
+void* a5504355291 = encode_mpz(mpzvar56091);
 
 //creating new closure instance
-void** clo58105 = alloc_clo(lam57426_fptr, 6);
+void** clo56093 = alloc_clo(lam55450_fptr, 6);
 
 //setting env list
-clo58105[1] = _u45;
-clo58105[2] = kont57120;
 void* drop = encode_clo(alloc_clo(drop_fptr, 0));
 
-clo58105[3] = drop;
-clo58105[4] = lst;
-clo58105[5] = n;
-clo58105[6] = cdr;
-void* f5712357268 = encode_clo(clo58105);
+clo56093[1] = drop;
+clo56093[2] = lst;
+clo56093[3] = _u45;
+clo56093[4] = n;
+clo56093[5] = kont55144;
+clo56093[6] = cdr;
+void* f5514755292 = encode_clo(clo56093);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(_u61);
-arg_buffer[2] = f5712357268;
+arg_buffer[2] = f5514755292;
 arg_buffer[3] = n;
-arg_buffer[4] = a5701957267;
+arg_buffer[4] = a5504355291;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(_u61))[0]);
 //assign buffer size to numArgs
@@ -3148,27 +3148,27 @@ return nullptr;
 
 void* drop = encode_clo(alloc_clo(drop_fptr, 0));
 
-void* lam57430_fptr() // lam57430 
+void* lam55454_fptr() // lam55454 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57431 = arg_buffer[1];
+void* env55455 = arg_buffer[1];
 //reading env and args
-void* a5702757282 = arg_buffer[2];
+void* a5505155306 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57124 = (decode_clo(env57431))[3];
+void* kont55148 = (decode_clo(env55455))[3];
 //not do dummy comment
-void* proc = (decode_clo(env57431))[2];
+void* a5504955302 = (decode_clo(env55455))[2];
 //not do dummy comment
-void* a5702557278 = (decode_clo(env57431))[1];
+void* proc = (decode_clo(env55455))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(proc);
-arg_buffer[2] = kont57124;
-arg_buffer[3] = a5702557278;
-arg_buffer[4] = a5702757282;
+arg_buffer[2] = kont55148;
+arg_buffer[3] = a5504955302;
+arg_buffer[4] = a5505155306;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(proc))[0]);
 //assign buffer size to numArgs
@@ -3177,45 +3177,45 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57430 = encode_clo(alloc_clo(lam57430_fptr, 0));
+void* lam55454 = encode_clo(alloc_clo(lam55454_fptr, 0));
 
-void* lam57432_fptr() // lam57432 
+void* lam55456_fptr() // lam55456 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57433 = arg_buffer[1];
+void* env55457 = arg_buffer[1];
 //reading env and args
-void* a5702657280 = arg_buffer[2];
+void* a5505055304 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57124 = (decode_clo(env57433))[5];
+void* kont55148 = (decode_clo(env55457))[5];
 //not do dummy comment
-void* foldr = (decode_clo(env57433))[4];
+void* foldr = (decode_clo(env55457))[4];
 //not do dummy comment
-void* a5702557278 = (decode_clo(env57433))[3];
+void* a5504955302 = (decode_clo(env55457))[3];
 //not do dummy comment
-void* proc = (decode_clo(env57433))[2];
+void* proc = (decode_clo(env55457))[2];
 //not do dummy comment
-void* acc = (decode_clo(env57433))[1];
+void* acc = (decode_clo(env55457))[1];
 
 //creating new closure instance
-void** clo58107 = alloc_clo(lam57430_fptr, 3);
+void** clo56095 = alloc_clo(lam55454_fptr, 3);
 
 //setting env list
-clo58107[1] = a5702557278;
-clo58107[2] = proc;
-clo58107[3] = kont57124;
-void* f5712557281 = encode_clo(clo58107);
+clo56095[1] = proc;
+clo56095[2] = a5504955302;
+clo56095[3] = kont55148;
+void* f5514955305 = encode_clo(clo56095);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(foldr);
-arg_buffer[2] = f5712557281;
+arg_buffer[2] = f5514955305;
 arg_buffer[3] = proc;
 arg_buffer[4] = acc;
-arg_buffer[5] = a5702657280;
+arg_buffer[5] = a5505055304;
 arg_buffer[0] = reinterpret_cast<void*>(5);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(foldr))[0]);
 //assign buffer size to numArgs
@@ -3224,46 +3224,46 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57432 = encode_clo(alloc_clo(lam57432_fptr, 0));
+void* lam55456 = encode_clo(alloc_clo(lam55456_fptr, 0));
 
-void* lam57434_fptr() // lam57434 
+void* lam55458_fptr() // lam55458 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57435 = arg_buffer[1];
+void* env55459 = arg_buffer[1];
 //reading env and args
-void* a5702557278 = arg_buffer[2];
+void* a5504955302 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57435))[6];
+void* kont55148 = (decode_clo(env55459))[6];
 //not do dummy comment
-void* kont57124 = (decode_clo(env57435))[5];
+void* cdr = (decode_clo(env55459))[5];
 //not do dummy comment
-void* foldr = (decode_clo(env57435))[4];
+void* foldr = (decode_clo(env55459))[4];
 //not do dummy comment
-void* lst = (decode_clo(env57435))[3];
+void* lst = (decode_clo(env55459))[3];
 //not do dummy comment
-void* proc = (decode_clo(env57435))[2];
+void* proc = (decode_clo(env55459))[2];
 //not do dummy comment
-void* acc = (decode_clo(env57435))[1];
+void* acc = (decode_clo(env55459))[1];
 
 //creating new closure instance
-void** clo58109 = alloc_clo(lam57432_fptr, 5);
+void** clo56097 = alloc_clo(lam55456_fptr, 5);
 
 //setting env list
-clo58109[1] = acc;
-clo58109[2] = proc;
-clo58109[3] = a5702557278;
-clo58109[4] = foldr;
-clo58109[5] = kont57124;
-void* f5712657279 = encode_clo(clo58109);
+clo56097[1] = acc;
+clo56097[2] = proc;
+clo56097[3] = a5504955302;
+clo56097[4] = foldr;
+clo56097[5] = kont55148;
+void* f5515055303 = encode_clo(clo56097);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cdr);
-arg_buffer[2] = f5712657279;
+arg_buffer[2] = f5515055303;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cdr))[0]);
@@ -3273,42 +3273,42 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57434 = encode_clo(alloc_clo(lam57434_fptr, 0));
+void* lam55458 = encode_clo(alloc_clo(lam55458_fptr, 0));
 
-void* lam57436_fptr() // lam57436 
+void* lam55460_fptr() // lam55460 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57437 = arg_buffer[1];
+void* env55461 = arg_buffer[1];
 //reading env and args
-void* a5702457276 = arg_buffer[2];
+void* a5504855300 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57437))[7];
+void* car = (decode_clo(env55461))[7];
 //not do dummy comment
-void* kont57124 = (decode_clo(env57437))[6];
+void* kont55148 = (decode_clo(env55461))[6];
 //not do dummy comment
-void* car = (decode_clo(env57437))[5];
+void* cdr = (decode_clo(env55461))[5];
 //not do dummy comment
-void* foldr = (decode_clo(env57437))[4];
+void* foldr = (decode_clo(env55461))[4];
 //not do dummy comment
-void* lst = (decode_clo(env57437))[3];
+void* lst = (decode_clo(env55461))[3];
 //not do dummy comment
-void* proc = (decode_clo(env57437))[2];
+void* proc = (decode_clo(env55461))[2];
 //not do dummy comment
-void* acc = (decode_clo(env57437))[1];
+void* acc = (decode_clo(env55461))[1];
 
 //if-clause
-bool if_guard58110 = is_true(a5702457276);
-if(if_guard58110)
+bool if_guard56098 = is_true(a5504855300);
+if(if_guard56098)
 {
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57124);
+arg_buffer[1]=reinterpret_cast<void*>(kont55148);
 arg_buffer[2] = acc;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57124))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55148))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -3318,22 +3318,22 @@ else
 {
 
 //creating new closure instance
-void** clo58112 = alloc_clo(lam57434_fptr, 6);
+void** clo56100 = alloc_clo(lam55458_fptr, 6);
 
 //setting env list
-clo58112[1] = acc;
-clo58112[2] = proc;
-clo58112[3] = lst;
-clo58112[4] = foldr;
-clo58112[5] = kont57124;
-clo58112[6] = cdr;
-void* f5712757277 = encode_clo(clo58112);
+clo56100[1] = acc;
+clo56100[2] = proc;
+clo56100[3] = lst;
+clo56100[4] = foldr;
+clo56100[5] = cdr;
+clo56100[6] = kont55148;
+void* f5515155301 = encode_clo(clo56100);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(car);
-arg_buffer[2] = f5712757277;
+arg_buffer[2] = f5515155301;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(car))[0]);
@@ -3345,41 +3345,41 @@ return nullptr;
 
 }
 
-void* lam57436 = encode_clo(alloc_clo(lam57436_fptr, 0));
+void* lam55460 = encode_clo(alloc_clo(lam55460_fptr, 0));
 
 void* foldr_fptr() // foldr 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57438 = arg_buffer[1];
+void* _55462 = arg_buffer[1];
 //reading env and args
-void* kont57124 = arg_buffer[2];
+void* kont55148 = arg_buffer[2];
 void* proc = arg_buffer[3];
 void* acc = arg_buffer[4];
 void* lst = arg_buffer[5];
 //Dummy comment
 
 //creating new closure instance
-void** clo58114 = alloc_clo(lam57436_fptr, 7);
+void** clo56102 = alloc_clo(lam55460_fptr, 7);
 
 //setting env list
-clo58114[1] = acc;
-clo58114[2] = proc;
-clo58114[3] = lst;
+clo56102[1] = acc;
+clo56102[2] = proc;
+clo56102[3] = lst;
 void* foldr = encode_clo(alloc_clo(foldr_fptr, 0));
 
-clo58114[4] = foldr;
-clo58114[5] = car;
-clo58114[6] = kont57124;
-clo58114[7] = cdr;
-void* f5712857275 = encode_clo(clo58114);
+clo56102[4] = foldr;
+clo56102[5] = cdr;
+clo56102[6] = kont55148;
+clo56102[7] = car;
+void* f5515255299 = encode_clo(clo56102);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(null_u63);
-arg_buffer[2] = f5712857275;
+arg_buffer[2] = f5515255299;
 arg_buffer[3] = lst;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(null_u63))[0]);
@@ -3391,27 +3391,27 @@ return nullptr;
 
 void* foldr = encode_clo(alloc_clo(foldr_fptr, 0));
 
-void* lam57439_fptr() // lam57439 
+void* lam55463_fptr() // lam55463 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57440 = arg_buffer[1];
+void* env55464 = arg_buffer[1];
 //reading env and args
-void* a5703157290 = arg_buffer[2];
+void* a5505555314 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* a5702957286 = (decode_clo(env57440))[3];
+void* a5505355310 = (decode_clo(env55464))[3];
 //not do dummy comment
-void* kont57129 = (decode_clo(env57440))[2];
+void* kont55153 = (decode_clo(env55464))[2];
 //not do dummy comment
-void* cons = (decode_clo(env57440))[1];
+void* cons = (decode_clo(env55464))[1];
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cons);
-arg_buffer[2] = kont57129;
-arg_buffer[3] = a5702957286;
-arg_buffer[4] = a5703157290;
+arg_buffer[2] = kont55153;
+arg_buffer[3] = a5505355310;
+arg_buffer[4] = a5505555314;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cons))[0]);
 //assign buffer size to numArgs
@@ -3420,43 +3420,43 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57439 = encode_clo(alloc_clo(lam57439_fptr, 0));
+void* lam55463 = encode_clo(alloc_clo(lam55463_fptr, 0));
 
-void* lam57441_fptr() // lam57441 
+void* lam55465_fptr() // lam55465 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57442 = arg_buffer[1];
+void* env55466 = arg_buffer[1];
 //reading env and args
-void* a5703057288 = arg_buffer[2];
+void* a5505455312 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* a5702957286 = (decode_clo(env57442))[5];
+void* a5505355310 = (decode_clo(env55466))[5];
 //not do dummy comment
-void* lst2 = (decode_clo(env57442))[4];
+void* kont55153 = (decode_clo(env55466))[4];
 //not do dummy comment
-void* cons = (decode_clo(env57442))[3];
+void* append = (decode_clo(env55466))[3];
 //not do dummy comment
-void* append = (decode_clo(env57442))[2];
+void* lst2 = (decode_clo(env55466))[2];
 //not do dummy comment
-void* kont57129 = (decode_clo(env57442))[1];
+void* cons = (decode_clo(env55466))[1];
 
 //creating new closure instance
-void** clo58116 = alloc_clo(lam57439_fptr, 3);
+void** clo56104 = alloc_clo(lam55463_fptr, 3);
 
 //setting env list
-clo58116[1] = cons;
-clo58116[2] = kont57129;
-clo58116[3] = a5702957286;
-void* f5713057289 = encode_clo(clo58116);
+clo56104[1] = cons;
+clo56104[2] = kont55153;
+clo56104[3] = a5505355310;
+void* f5515455313 = encode_clo(clo56104);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(append);
-arg_buffer[2] = f5713057289;
-arg_buffer[3] = a5703057288;
+arg_buffer[2] = f5515455313;
+arg_buffer[3] = a5505455312;
 arg_buffer[4] = lst2;
 arg_buffer[0] = reinterpret_cast<void*>(4);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(append))[0]);
@@ -3466,46 +3466,46 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57441 = encode_clo(alloc_clo(lam57441_fptr, 0));
+void* lam55465 = encode_clo(alloc_clo(lam55465_fptr, 0));
 
-void* lam57443_fptr() // lam57443 
+void* lam55467_fptr() // lam55467 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57444 = arg_buffer[1];
+void* env55468 = arg_buffer[1];
 //reading env and args
-void* a5702957286 = arg_buffer[2];
+void* a5505355310 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57444))[6];
+void* cdr = (decode_clo(env55468))[6];
 //not do dummy comment
-void* lst2 = (decode_clo(env57444))[5];
+void* kont55153 = (decode_clo(env55468))[5];
 //not do dummy comment
-void* lst1 = (decode_clo(env57444))[4];
+void* append = (decode_clo(env55468))[4];
 //not do dummy comment
-void* cons = (decode_clo(env57444))[3];
+void* lst2 = (decode_clo(env55468))[3];
 //not do dummy comment
-void* append = (decode_clo(env57444))[2];
+void* lst1 = (decode_clo(env55468))[2];
 //not do dummy comment
-void* kont57129 = (decode_clo(env57444))[1];
+void* cons = (decode_clo(env55468))[1];
 
 //creating new closure instance
-void** clo58118 = alloc_clo(lam57441_fptr, 5);
+void** clo56106 = alloc_clo(lam55465_fptr, 5);
 
 //setting env list
-clo58118[1] = kont57129;
-clo58118[2] = append;
-clo58118[3] = cons;
-clo58118[4] = lst2;
-clo58118[5] = a5702957286;
-void* f5713157287 = encode_clo(clo58118);
+clo56106[1] = cons;
+clo56106[2] = lst2;
+clo56106[3] = append;
+clo56106[4] = kont55153;
+clo56106[5] = a5505355310;
+void* f5515555311 = encode_clo(clo56106);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(cdr);
-arg_buffer[2] = f5713157287;
+arg_buffer[2] = f5515555311;
 arg_buffer[3] = lst1;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(cdr))[0]);
@@ -3515,42 +3515,42 @@ function_ptr();
 return nullptr;
 }
 
-void* lam57443 = encode_clo(alloc_clo(lam57443_fptr, 0));
+void* lam55467 = encode_clo(alloc_clo(lam55467_fptr, 0));
 
-void* lam57445_fptr() // lam57445 
+void* lam55469_fptr() // lam55469 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57446 = arg_buffer[1];
+void* env55470 = arg_buffer[1];
 //reading env and args
-void* a5702857284 = arg_buffer[2];
+void* a5505255308 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* cdr = (decode_clo(env57446))[7];
+void* cdr = (decode_clo(env55470))[7];
 //not do dummy comment
-void* lst2 = (decode_clo(env57446))[6];
+void* kont55153 = (decode_clo(env55470))[6];
 //not do dummy comment
-void* cons = (decode_clo(env57446))[5];
+void* append = (decode_clo(env55470))[5];
 //not do dummy comment
-void* append = (decode_clo(env57446))[4];
+void* lst2 = (decode_clo(env55470))[4];
 //not do dummy comment
-void* kont57129 = (decode_clo(env57446))[3];
+void* cons = (decode_clo(env55470))[3];
 //not do dummy comment
-void* lst1 = (decode_clo(env57446))[2];
+void* lst1 = (decode_clo(env55470))[2];
 //not do dummy comment
-void* car = (decode_clo(env57446))[1];
+void* car = (decode_clo(env55470))[1];
 
 //if-clause
-bool if_guard58119 = is_true(a5702857284);
-if(if_guard58119)
+bool if_guard56107 = is_true(a5505255308);
+if(if_guard56107)
 {
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57129);
+arg_buffer[1]=reinterpret_cast<void*>(kont55153);
 arg_buffer[2] = lst2;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57129))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55153))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -3560,22 +3560,22 @@ else
 {
 
 //creating new closure instance
-void** clo58121 = alloc_clo(lam57443_fptr, 6);
+void** clo56109 = alloc_clo(lam55467_fptr, 6);
 
 //setting env list
-clo58121[1] = kont57129;
-clo58121[2] = append;
-clo58121[3] = cons;
-clo58121[4] = lst1;
-clo58121[5] = lst2;
-clo58121[6] = cdr;
-void* f5713257285 = encode_clo(clo58121);
+clo56109[1] = cons;
+clo56109[2] = lst1;
+clo56109[3] = lst2;
+clo56109[4] = append;
+clo56109[5] = kont55153;
+clo56109[6] = cdr;
+void* f5515655309 = encode_clo(clo56109);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(car);
-arg_buffer[2] = f5713257285;
+arg_buffer[2] = f5515655309;
 arg_buffer[3] = lst1;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(car))[0]);
@@ -3587,40 +3587,40 @@ return nullptr;
 
 }
 
-void* lam57445 = encode_clo(alloc_clo(lam57445_fptr, 0));
+void* lam55469 = encode_clo(alloc_clo(lam55469_fptr, 0));
 
 void* append_fptr() // append 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57447 = arg_buffer[1];
+void* _55471 = arg_buffer[1];
 //reading env and args
-void* kont57129 = arg_buffer[2];
+void* kont55153 = arg_buffer[2];
 void* lst1 = arg_buffer[3];
 void* lst2 = arg_buffer[4];
 //Dummy comment
 
 //creating new closure instance
-void** clo58123 = alloc_clo(lam57445_fptr, 7);
+void** clo56111 = alloc_clo(lam55469_fptr, 7);
 
 //setting env list
-clo58123[1] = car;
-clo58123[2] = lst1;
-clo58123[3] = kont57129;
+clo56111[1] = car;
+clo56111[2] = lst1;
+clo56111[3] = cons;
+clo56111[4] = lst2;
 void* append = encode_clo(alloc_clo(append_fptr, 0));
 
-clo58123[4] = append;
-clo58123[5] = cons;
-clo58123[6] = lst2;
-clo58123[7] = cdr;
-void* f5713357283 = encode_clo(clo58123);
+clo56111[5] = append;
+clo56111[6] = kont55153;
+clo56111[7] = cdr;
+void* f5515755307 = encode_clo(clo56111);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(null_u63);
-arg_buffer[2] = f5713357283;
+arg_buffer[2] = f5515755307;
 arg_buffer[3] = lst1;
 arg_buffer[0] = reinterpret_cast<void*>(3);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(null_u63))[0]);
@@ -3638,7 +3638,7 @@ void* hash_fptr() // hash
 // This is the second type of the functions
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57448 = arg_buffer[1];
+void* _55472 = arg_buffer[1];
 void* lst;
 if(is_cons(arg_buffer[2]))
 {
@@ -3657,15 +3657,15 @@ lst = prim_cons(arg_buffer[i], lst);
 
 }
 
-void* kont5713457291 = prim_car(lst);
-void* lst57292 = prim_cdr(lst);
-void* x5703257293 = apply_prim_hash(lst57292);
+void* kont5515855315 = prim_car(lst);
+void* lst55316 = prim_cdr(lst);
+void* x5505655317 = apply_prim_hash(lst55316);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont5713457291);
-arg_buffer[2] = x5703257293;
+arg_buffer[1]=reinterpret_cast<void*>(kont5515855315);
+arg_buffer[2] = x5505655317;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5713457291))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont5515855315))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -3679,19 +3679,19 @@ void* hash_u45ref_fptr() // hash-ref
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57449 = arg_buffer[1];
+void* _55473 = arg_buffer[1];
 //reading env and args
-void* kont57136 = arg_buffer[2];
+void* kont55160 = arg_buffer[2];
 void* h = arg_buffer[3];
 void* k = arg_buffer[4];
 //Dummy comment
-void* x5703357294 = prim_hash_u45ref(h, k);
+void* x5505755318 = prim_hash_u45ref(h, k);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57136);
-arg_buffer[2] = x5703357294;
+arg_buffer[1]=reinterpret_cast<void*>(kont55160);
+arg_buffer[2] = x5505755318;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57136))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55160))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -3705,20 +3705,20 @@ void* hash_u45set_fptr() // hash-set
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57450 = arg_buffer[1];
+void* _55474 = arg_buffer[1];
 //reading env and args
-void* kont57137 = arg_buffer[2];
+void* kont55161 = arg_buffer[2];
 void* h = arg_buffer[3];
 void* k = arg_buffer[4];
 void* v = arg_buffer[5];
 //Dummy comment
-void* x5703457295 = prim_hash_u45set(h, k, v);
+void* x5505855319 = prim_hash_u45set(h, k, v);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57137);
-arg_buffer[2] = x5703457295;
+arg_buffer[1]=reinterpret_cast<void*>(kont55161);
+arg_buffer[2] = x5505855319;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57137))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55161))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -3732,19 +3732,19 @@ void* hash_u45has_u45key_u63_fptr() // hash-has-key?
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57451 = arg_buffer[1];
+void* _55475 = arg_buffer[1];
 //reading env and args
-void* kont57138 = arg_buffer[2];
+void* kont55162 = arg_buffer[2];
 void* h = arg_buffer[3];
 void* k = arg_buffer[4];
 //Dummy comment
-void* x5703557296 = prim_hash_u45has_u45key_u63(h, k);
+void* x5505955320 = prim_hash_u45has_u45key_u63(h, k);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57138);
-arg_buffer[2] = x5703557296;
+arg_buffer[1]=reinterpret_cast<void*>(kont55162);
+arg_buffer[2] = x5505955320;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57138))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55162))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -3758,18 +3758,18 @@ void* hash_u45count_fptr() // hash-count
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57452 = arg_buffer[1];
+void* _55476 = arg_buffer[1];
 //reading env and args
-void* kont57139 = arg_buffer[2];
+void* kont55163 = arg_buffer[2];
 void* h = arg_buffer[3];
 //Dummy comment
-void* x5703657297 = prim_hash_u45count(h);
+void* x5506055321 = prim_hash_u45count(h);
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57139);
-arg_buffer[2] = x5703657297;
+arg_buffer[1]=reinterpret_cast<void*>(kont55163);
+arg_buffer[2] = x5506055321;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57139))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55163))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
@@ -3783,34 +3783,34 @@ void* call_fptr() // call
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57458 = arg_buffer[1];
+void* _55482 = arg_buffer[1];
 //reading env and args
-void* kont57140 = arg_buffer[2];
+void* kont55164 = arg_buffer[2];
 //Dummy comment
-mpz_t* mpzvar58124 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58124, "100", 10);
-void* a5703757298 = encode_mpz(mpzvar58124);
-mpz_t* mpzvar58125 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58125, "90", 10);
-void* a5703857299 = encode_mpz(mpzvar58125);
-mpz_t* mpzvar58126 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58126, "80", 10);
-void* a5703957300 = encode_mpz(mpzvar58126);
-mpz_t* mpzvar58127 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58127, "70", 10);
-void* a5704057301 = encode_mpz(mpzvar58127);
-mpz_t* mpzvar58128 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-mpz_init_set_str(*mpzvar58128, "60", 10);
-void* a5704157302 = encode_mpz(mpzvar58128);
+mpz_t* mpzvar56112 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar56112, "100", 10);
+void* a5506155322 = encode_mpz(mpzvar56112);
+mpz_t* mpzvar56113 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar56113, "90", 10);
+void* a5506255323 = encode_mpz(mpzvar56113);
+mpz_t* mpzvar56114 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar56114, "80", 10);
+void* a5506355324 = encode_mpz(mpzvar56114);
+mpz_t* mpzvar56115 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar56115, "70", 10);
+void* a5506455325 = encode_mpz(mpzvar56115);
+mpz_t* mpzvar56116 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+mpz_init_set_str(*mpzvar56116, "60", 10);
+void* a5506555326 = encode_mpz(mpzvar56116);
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(_u62_u61);
-arg_buffer[2] = kont57140;
-arg_buffer[3] = a5703757298;
-arg_buffer[4] = a5703857299;
-arg_buffer[5] = a5703957300;
-arg_buffer[6] = a5704057301;
-arg_buffer[7] = a5704157302;
+arg_buffer[2] = kont55164;
+arg_buffer[3] = a5506155322;
+arg_buffer[4] = a5506255323;
+arg_buffer[5] = a5506355324;
+arg_buffer[6] = a5506455325;
+arg_buffer[7] = a5506555326;
 arg_buffer[0] = reinterpret_cast<void*>(7);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(_u62_u61))[0]);
 //assign buffer size to numArgs
@@ -3821,53 +3821,53 @@ return nullptr;
 
 void* call = encode_clo(alloc_clo(call_fptr, 0));
 
-void* lam57459_fptr() // lam57459 
+void* lam55483_fptr() // lam55483 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* env57460 = arg_buffer[1];
+void* env55484 = arg_buffer[1];
 //reading env and args
-void* x5704257304 = arg_buffer[2];
+void* x5506655328 = arg_buffer[2];
 //Dummy comment
 //not do dummy comment
-void* kont57141 = (decode_clo(env57460))[1];
+void* kont55165 = (decode_clo(env55484))[1];
 
 //clo-app
-arg_buffer[1]=reinterpret_cast<void*>(kont57141);
-arg_buffer[2] = x5704257304;
+arg_buffer[1]=reinterpret_cast<void*>(kont55165);
+arg_buffer[2] = x5506655328;
 arg_buffer[0] = reinterpret_cast<void*>(2);
-auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont57141))[0]);
+auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont55165))[0]);
 //assign buffer size to numArgs
 //call next proc using a function pointer
 function_ptr();
 return nullptr;
 }
 
-void* lam57459 = encode_clo(alloc_clo(lam57459_fptr, 0));
+void* lam55483 = encode_clo(alloc_clo(lam55483_fptr, 0));
 
 void* brouhaha_main_fptr() // brouhaha_main 
 {
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
-void* _57461 = arg_buffer[1];
+void* _55485 = arg_buffer[1];
 //reading env and args
-void* kont57141 = arg_buffer[2];
+void* kont55165 = arg_buffer[2];
 //Dummy comment
 
 //creating new closure instance
-void** clo58130 = alloc_clo(lam57459_fptr, 1);
+void** clo56118 = alloc_clo(lam55483_fptr, 1);
 
 //setting env list
-clo58130[1] = kont57141;
-void* f5714257303 = encode_clo(clo58130);
+clo56118[1] = kont55165;
+void* f5516655327 = encode_clo(clo56118);
 
 
 
 //clo-app
 arg_buffer[1]=reinterpret_cast<void*>(call);
-arg_buffer[2] = f5714257303;
+arg_buffer[2] = f5516655327;
 arg_buffer[0] = reinterpret_cast<void*>(2);
 auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(call))[0]);
 //assign buffer size to numArgs
