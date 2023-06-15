@@ -13,8 +13,8 @@
 (define (modulo a b)
   (prim modulo a b))
 
-(define (/ . lst)
-  (apply-prim / lst))
+; (define (/ . lst)
+;   (apply-prim / lst))
 
 (define (= . lst)
   (apply-prim = lst))

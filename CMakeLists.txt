@@ -1,18 +1,18 @@
 # cmake_minimum_required(VERSION 3.0.0)
-# project(bourhaha VERSION 0.1.0)
+# project(brouhaha VERSION 0.1.0)
 
 # include(CTest)
 # enable_testing()
 
-# # add_executable(bourhaha main.cpp)
-# add_executable(bourhaha tests2/easy/easy_cpp_program.cpp)
-# # add_executable(bourhaha tests2/minus/minus_cpp_program.cpp)
+# # add_executable(brouhaha main.cpp)
+# add_executable(brouhaha tests2/easy/easy_cpp_program.cpp)
+# # add_executable(brouhaha tests2/minus/minus_cpp_program.cpp)
 
 # set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 # set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 # include(CPack)
-set(CMAKE_CXX_COMPILER "/Library/Developer/CommandLineTools/usr/bin/g++")
-set(CMAKE_C_COMPILER "/Library/Developer/CommandLineTools/usr/bin/gcc")
+# set(CMAKE_CXX_COMPILER "/Library/Developer/CommandLineTools/usr/bin/g++")
+# set(CMAKE_C_COMPILER "/Library/Developer/CommandLineTools/usr/bin/gcc")
 
 
 cmake_minimum_required(VERSION 3.0.0)
@@ -40,15 +40,15 @@ include_directories(${DEPENDENCIES_DIR} ${BDWGC_INCLUDE_DIR} ${GMP_INCLUDE_DIR} 
 link_directories(${DEPENDENCIES_DIR} ${BDWGC_LIBRARY_DIR} ${GMP_LIBRARY_DIR} ${VALGRIND_LIBRARY_DIR})
 
 # Add executable
-# add_executable(bourhaha tests2/easy/easy_cpp_program.cpp)
-# add_executable(bourhaha easy_cpp_program.cpp)
-# add_executable(bourhaha dummy.cpp)
-# add_executable(bourhaha tests2/minus/minus_cpp_program.cpp)
-# add_executable(bourhaha tests2/filter/filter_cpp_program.cpp)
+# add_executable(brouhaha tests2/easy/easy_cpp_program.cpp)
+# add_executable(brouhaha easy_cpp_program.cpp)
+# add_executable(brouhaha dummy.cpp)
+# add_executable(brouhaha tests2/minus/minus_cpp_program.cpp)
+# add_executable(brouhaha tests2/filter/filter_cpp_program.cpp)
 # add_executable(brouhaha tests2/apply/apply_cpp_program.cpp)
 # add_executable(brouhaha tests3/complex/complex_cpp_program.cpp)
 add_executable(brouhaha tests2/fact/fact_cpp_program.cpp)
-# add_executable(bourhaha tests2/foldl/foldl_cpp_program.cpp)
+# add_executable(brouhaha tests2/foldl/foldl_cpp_program.cpp)
 
 # ../dependencies/valgrind/bin/valgrind --leak-check=full ./bdwgc-gmp_test 
 
