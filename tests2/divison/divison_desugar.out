@@ -48,5 +48,5 @@
   (define (hash-set h k v) (prim hash-set h k v))
   (define (hash-has-key? h k) (prim hash-has-key? h k))
   (define (hash-count h) (prim hash-count h))
-  (define (call) (/ '100 '2))
+  (define (call) (/ '100.0 '2.0))
   (define (brouhaha_main) (call)))
