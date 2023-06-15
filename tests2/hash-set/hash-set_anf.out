@@ -1,0 +1,306 @@
+'((define (+ . lst)
+    (let ((kont42523 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42428 (apply-prim + lst))) (kont42523 x42428)))))
+  (define (- . lst)
+    (let ((kont42525 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42429 (apply-prim - lst))) (kont42525 x42429)))))
+  (define (* . lst)
+    (let ((kont42527 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42430 (apply-prim * lst))) (kont42527 x42430)))))
+  (define (modulo kont42529 a b)
+    (let ((x42431 (prim modulo a b))) (kont42529 x42431)))
+  (define (/ . lst)
+    (let ((kont42530 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42432 (apply-prim / lst))) (kont42530 x42432)))))
+  (define (= . lst)
+    (let ((kont42532 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42433 (apply-prim = lst))) (kont42532 x42433)))))
+  (define (> . lst)
+    (let ((kont42534 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42434 (apply-prim > lst))) (kont42534 x42434)))))
+  (define (< . lst)
+    (let ((kont42536 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42435 (apply-prim < lst))) (kont42536 x42435)))))
+  (define (<= . lst)
+    (let ((kont42538 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42436 (apply-prim <= lst))) (kont42538 x42436)))))
+  (define (>= . lst)
+    (let ((kont42540 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42437 (apply-prim >= lst))) (kont42540 x42437)))))
+  (define (null? kont42542 x)
+    (let ((x42438 (prim null? x))) (kont42542 x42438)))
+  (define (equal? kont42543 x y)
+    (let ((x42439 (prim equal? x y))) (kont42543 x42439)))
+  (define (eq? kont42544 x y)
+    (let ((x42440 (prim eq? x y))) (kont42544 x42440)))
+  (define (cons kont42545 a b)
+    (let ((x42441 (prim cons a b))) (kont42545 x42441)))
+  (define (car kont42546 lst)
+    (let ((x42442 (prim car lst))) (kont42546 x42442)))
+  (define (cdr kont42547 lst)
+    (let ((x42443 (prim cdr lst))) (kont42547 x42443)))
+  (define (even? kont42548 x)
+    (let ((a42444 '0))
+      (let ((a42445 '2))
+        (let ((f42549 (lambda (a42446) (equal? kont42548 a42444 a42446))))
+          (modulo f42549 x a42445)))))
+  (define (odd? kont42550 x)
+    (let ((a42447 '1))
+      (let ((a42448 '2))
+        (let ((f42551 (lambda (a42449) (equal? kont42550 a42447 a42449))))
+          (modulo f42551 x a42448)))))
+  (define (list . x)
+    (let ((kont42552 (prim car x))) (let ((x (prim cdr x))) (kont42552 x))))
+  (define (and . lst)
+    (let ((kont42554 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42450 (apply-prim and lst))) (kont42554 x42450)))))
+  (define (or . lst)
+    (let ((kont42556 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42451 (apply-prim or lst))) (kont42556 x42451)))))
+  (define (member? kont42558 x lst)
+    (let ((f42562
+           (lambda (a42452)
+             (if a42452
+               (let ((x42453 '#f)) (kont42558 x42453))
+               (let ((f42561
+                      (lambda (a42454)
+                        (let ((f42560
+                               (lambda (a42455)
+                                 (if a42455
+                                   (let ((x42456 '#t)) (kont42558 x42456))
+                                   (let ((f42559
+                                          (lambda (a42457)
+                                            (member? kont42558 x a42457))))
+                                     (cdr f42559 lst))))))
+                          (equal? f42560 a42454 x)))))
+                 (car f42561 lst))))))
+      (null? f42562 lst)))
+  (define (foldl kont42563 fun acc lst)
+    (let ((f42567
+           (lambda (a42458)
+             (if a42458
+               (kont42563 acc)
+               (let ((f42566
+                      (lambda (a42459)
+                        (let ((f42565
+                               (lambda (a42460)
+                                 (let ((f42564
+                                        (lambda (a42461)
+                                          (foldl
+                                           kont42563
+                                           fun
+                                           a42460
+                                           a42461))))
+                                   (cdr f42564 lst)))))
+                          (fun f42565 a42459 acc)))))
+                 (car f42566 lst))))))
+      (null? f42567 lst)))
+  (define (reverse-helper kont42568 lst lst2)
+    (let ((f42572
+           (lambda (a42462)
+             (if a42462
+               (kont42568 lst2)
+               (let ((f42571
+                      (lambda (a42463)
+                        (let ((f42570
+                               (lambda (a42464)
+                                 (let ((f42569
+                                        (lambda (a42465)
+                                          (reverse-helper
+                                           kont42568
+                                           a42463
+                                           a42465))))
+                                   (cons f42569 a42464 lst2)))))
+                          (car f42570 lst)))))
+                 (cdr f42571 lst))))))
+      (null? f42572 lst)))
+  (define (reverse kont42573 lst)
+    (let ((f42574 (lambda (a42466) (reverse-helper kont42573 lst a42466))))
+      (list f42574)))
+  (define (take-helper kont42575 lst n lst2)
+    (let ((a42467 '0))
+      (let ((f42581
+             (lambda (a42468)
+               (if a42468
+                 (let ((f42576 (lambda (x42469) (kont42575 x42469))))
+                   (reverse f42576 lst2))
+                 (let ((f42580
+                        (lambda (a42470)
+                          (let ((a42471 '1))
+                            (let ((f42579
+                                   (lambda (a42472)
+                                     (let ((f42578
+                                            (lambda (a42473)
+                                              (let ((f42577
+                                                     (lambda (a42474)
+                                                       (take-helper
+                                                        kont42575
+                                                        a42470
+                                                        a42472
+                                                        a42474))))
+                                                (cons f42577 a42473 lst2)))))
+                                       (car f42578 lst)))))
+                              (- f42579 n a42471))))))
+                   (cdr f42580 lst))))))
+        (= f42581 n a42467))))
+  (define (take kont42582 lst n)
+    (let ((f42583 (lambda (a42475) (take-helper kont42582 lst n a42475))))
+      (list f42583)))
+  (define (length kont42584 lst)
+    (let ((f42587
+           (lambda (a42476)
+             (if a42476
+               (let ((x42477 '0)) (kont42584 x42477))
+               (let ((a42478 '1))
+                 (let ((f42586
+                        (lambda (a42479)
+                          (let ((f42585
+                                 (lambda (a42480)
+                                   (+ kont42584 a42478 a42480))))
+                            (length f42585 a42479)))))
+                   (cdr f42586 lst)))))))
+      (null? f42587 lst)))
+  (define (map kont42588 proc lst)
+    (let ((f42594
+           (lambda (a42481)
+             (if a42481
+               (let ((f42589 (lambda (x42482) (kont42588 x42482))))
+                 (list f42589))
+               (let ((f42593
+                      (lambda (a42483)
+                        (let ((f42592
+                               (lambda (a42484)
+                                 (let ((f42591
+                                        (lambda (a42485)
+                                          (let ((f42590
+                                                 (lambda (a42486)
+                                                   (cons
+                                                    kont42588
+                                                    a42484
+                                                    a42486))))
+                                            (map f42590 proc a42485)))))
+                                   (cdr f42591 lst)))))
+                          (proc f42592 a42483)))))
+                 (car f42593 lst))))))
+      (null? f42594 lst)))
+  (define (filter kont42595 op lst)
+    (let ((f42603
+           (lambda (a42487)
+             (if a42487
+               (let ((f42596 (lambda (x42488) (kont42595 x42488))))
+                 (list f42596))
+               (let ((f42602
+                      (lambda (a42489)
+                        (let ((f42601
+                               (lambda (a42490)
+                                 (if a42490
+                                   (let ((f42599
+                                          (lambda (a42491)
+                                            (let ((f42598
+                                                   (lambda (a42492)
+                                                     (let ((f42597
+                                                            (lambda (a42493)
+                                                              (cons
+                                                               kont42595
+                                                               a42491
+                                                               a42493))))
+                                                       (filter
+                                                        f42597
+                                                        op
+                                                        a42492)))))
+                                              (cdr f42598 lst)))))
+                                     (car f42599 lst))
+                                   (let ((f42600
+                                          (lambda (a42494)
+                                            (filter kont42595 op a42494))))
+                                     (cdr f42600 lst))))))
+                          (op f42601 a42489)))))
+                 (car f42602 lst))))))
+      (null? f42603 lst)))
+  (define (drop kont42604 lst n)
+    (let ((a42495 '0))
+      (let ((f42607
+             (lambda (a42496)
+               (if a42496
+                 (kont42604 lst)
+                 (let ((f42606
+                        (lambda (a42497)
+                          (let ((a42498 '1))
+                            (let ((f42605
+                                   (lambda (a42499)
+                                     (drop kont42604 a42497 a42499))))
+                              (- f42605 n a42498))))))
+                   (cdr f42606 lst))))))
+        (= f42607 n a42495))))
+  (define (foldr kont42608 proc acc lst)
+    (let ((f42612
+           (lambda (a42500)
+             (if a42500
+               (kont42608 acc)
+               (let ((f42611
+                      (lambda (a42501)
+                        (let ((f42610
+                               (lambda (a42502)
+                                 (let ((f42609
+                                        (lambda (a42503)
+                                          (proc kont42608 a42501 a42503))))
+                                   (foldr f42609 proc acc a42502)))))
+                          (cdr f42610 lst)))))
+                 (car f42611 lst))))))
+      (null? f42612 lst)))
+  (define (append kont42613 lst1 lst2)
+    (let ((f42617
+           (lambda (a42504)
+             (if a42504
+               (kont42613 lst2)
+               (let ((f42616
+                      (lambda (a42505)
+                        (let ((f42615
+                               (lambda (a42506)
+                                 (let ((f42614
+                                        (lambda (a42507)
+                                          (cons kont42613 a42505 a42507))))
+                                   (append f42614 a42506 lst2)))))
+                          (cdr f42615 lst1)))))
+                 (car f42616 lst1))))))
+      (null? f42617 lst1)))
+  (define (hash . lst)
+    (let ((kont42618 (prim car lst)))
+      (let ((lst (prim cdr lst)))
+        (let ((x42508 (apply-prim hash lst))) (kont42618 x42508)))))
+  (define (hash-ref kont42620 h k)
+    (let ((x42509 (prim hash-ref h k))) (kont42620 x42509)))
+  (define (hash-set kont42621 h k v)
+    (let ((x42510 (prim hash-set h k v))) (kont42621 x42510)))
+  (define (hash-has-key? kont42622 h k)
+    (let ((x42511 (prim hash-has-key? h k))) (kont42622 x42511)))
+  (define (hash-count kont42623 h)
+    (let ((x42512 (prim hash-count h))) (kont42623 x42512)))
+  (define (call kont42624)
+    (let ((a42513 "work"))
+      (let ((a42514 '80))
+        (let ((a42515 '10))
+          (let ((a42516 "lmao"))
+            (let ((f42626
+                   (lambda (a42517)
+                     (let ((a42518 "work"))
+                       (let ((a42519 '90))
+                         (let ((f42625
+                                (lambda (a42520)
+                                  (let ((a42521 "work"))
+                                    (hash-ref kont42624 a42520 a42521)))))
+                           (hash-set f42625 a42517 a42518 a42519)))))))
+              (hash f42626 a42513 a42514 a42515 a42516)))))))
+  (define (brouhaha_main kont42627)
+    (let ((f42628 (lambda (x42522) (kont42627 x42522)))) (call f42628))))
