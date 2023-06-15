@@ -96,19 +96,19 @@
 
           (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" mpzVar))
           (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" mpzVar val))
-          (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_mpz(~a));" (get-c-string lhs) mpzVar))
+          (append-line filepath (format "void* ~a = encode_mpz(~a);" (get-c-string lhs) mpzVar))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [`(quote ,(? boolean? val) )
           (cond [(true? val)
-                 (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_bool(true));" (get-c-string lhs)))
+                 (append-line filepath (format "void* ~a = encode_bool(true);" (get-c-string lhs)))
                  (convert-proc-body proc_name proc_env proc_arg letbody)]
                 [else
-                 (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_bool(false));" (get-c-string lhs)))
+                 (append-line filepath (format "void* ~a = encode_bool(false);" (get-c-string lhs)))
                  (convert-proc-body proc_name proc_env proc_arg letbody)
                  ])]
 
-         [`(quote ,(? null? ))
+         [`(quote ,(? null? val))
           (append-line filepath (format "void* ~a = encode_null();" (get-c-string lhs)))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
@@ -116,12 +116,12 @@
          [(? string? )
 
           ; (define strName (gensym 'str))
-          (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_str(new std::string(\"~a\")));"
+          (append-line filepath (format "void* ~a = encode_str(new(GC) std::string(\"~a\"));"
                                         (get-c-string lhs) val))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
-         [(? symbol?)
+         [(? symbol?) ; Not sure what this case does or supposed to do - SK
           (pretty-print (~a "cpb: " val))
-          (append-line filepath (format "void* ~a = reinterpret_cast<void *>(encode_str(new string(\"~a\")));"
+          (append-line filepath (format "void* ~a = encode_str(new string(\"~a\"));"
                                         (get-c-string lhs) val))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
@@ -142,7 +142,6 @@
 
       [`(clo-apply ,func ,args)
        (append-line filepath "\n//clo-apply")
-       ;  (append-line filepath "arg_buffer.clear();")
 
        (append-line filepath (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string  func)))
        (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
@@ -159,7 +158,6 @@
 
       [`(clo-app ,func ,args ...)
        (append-line filepath "\n//clo-app")
-       ;  (append-line filepath "arg_buffer.clear();")
 
        (append-line filepath (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string  func)))
        (for ([i (in-range 1 (+ (length args) 1))]
@@ -172,7 +170,6 @@
         (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" (get-c-string func)))
 
        (append-line filepath "//assign buffer size to numArgs")
-       ;  (append-line filepath "arg_num = arg_buffer.size();")
        (append-line filepath "//call next proc using a function pointer")
        (append-line filepath "function_ptr();")
        (append-line filepath "return nullptr;")

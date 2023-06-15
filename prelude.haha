@@ -117,11 +117,14 @@
 (define (hash-ref h k)
   (prim hash-ref h k))
 
-; (define (hash-set h k v)
-;    (prim hash-set h k v))
+(define (hash-set h k v)
+   (prim hash-set h k v))
 
 ; (define (hash-keys h)
 ;    (prim hash-keys h))
 
-; (define (hash-has-key? h k)
-;    (prim hash-has-key? h k))
+(define (hash-has-key? h k)
+   (prim hash-has-key? h k))
+
+(define (hash-count h)
+  (prim hash-count h))

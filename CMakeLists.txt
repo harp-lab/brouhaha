@@ -41,20 +41,44 @@ link_directories(${DEPENDENCIES_DIR} ${BDWGC_LIBRARY_DIR} ${GMP_LIBRARY_DIR} ${V
 
 # Add executable
 # add_executable(brouhaha tests2/easy/easy_cpp_program.cpp)
+# add_executable(brouhaha tests2/and/and_cpp_program.cpp)
+# add_executable(brouhaha tests2/apply/apply_cpp_program.cpp)
+# add_executable(brouhaha tests2/even/even_cpp_program.cpp)
+# add_executable(brouhaha tests2/fact/fact_cpp_program.cpp)
+# add_executable(brouhaha tests2/filter/filter_cpp_program.cpp)
+# add_executable(brouhaha tests2/foldl/foldl_cpp_program.cpp)
+# add_executable(brouhaha tests2/minus/minus_cpp_program.cpp)
+# add_executable(brouhaha tests2/modulo/modulo_cpp_program.cpp)
+# add_executable(brouhaha tests2/multiply/multiply_cpp_program.cpp)
+# add_executable(brouhaha tests2/not/not_cpp_program.cpp)
+# add_executable(brouhaha tests2/null/null_cpp_program.cpp)
+# add_executable(brouhaha tests2/or/or_cpp_program.cpp)
+# add_executable(brouhaha tests2/string/string_cpp_program.cpp)
+# add_executable(brouhaha tests2/sym_equal/sym_equal_cpp_program.cpp)
+# add_executable(brouhaha tests2/sym_gt/sym_gt_cpp_program.cpp)
+# add_executable(brouhaha tests2/sym_gteq/sym_gteq_cpp_program.cpp)
+# add_executable(brouhaha tests2/sym_lt/sym_lt_cpp_program.cpp)
+# add_executable(brouhaha tests2/hash-ref/hash-ref_cpp_program.cpp)
+# add_executable(brouhaha tests2/hash-set/hash-set_cpp_program.cpp)
+# add_executable(brouhaha tests2/hash-has-key/hash-has-key_cpp_program.cpp)
+# add_executable(brouhaha tests2/hash-count/hash-count_cpp_program.cpp)
+add_executable(brouhaha tests2/divison/divison_cpp_program.cpp)
 # add_executable(brouhaha easy_cpp_program.cpp)
 # add_executable(brouhaha dummy.cpp)
+# add_executable(brouhaha strings_trails.cpp)
 # add_executable(brouhaha tests2/minus/minus_cpp_program.cpp)
 # add_executable(brouhaha tests2/filter/filter_cpp_program.cpp)
 # add_executable(brouhaha tests2/apply/apply_cpp_program.cpp)
-# add_executable(brouhaha tests3/complex/complex_cpp_program.cpp)
-add_executable(brouhaha tests2/fact/fact_cpp_program.cpp)
+# add_executable(brouhaha tests2/fact/fact_cpp_program.cpp)
+# add_executable(brouhaha tests4/string/string_cpp_program.cpp)
+# add_executable(brouhaha tests4/hash-string/hash-string_cpp_program.cpp)
 # add_executable(brouhaha tests2/foldl/foldl_cpp_program.cpp)
-
-# ../dependencies/valgrind/bin/valgrind --leak-check=full ./bdwgc-gmp_test 
+ 
+# ../dependencies/valgrind/bin/valgrind --leak-check=full ./brouhaha
 
 
 # Link libraries
-target_link_libraries(brouhaha PRIVATE gmpxx gmp gc)
+target_link_libraries(brouhaha PRIVATE gmpxx gmp gc gccpp)
 
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
