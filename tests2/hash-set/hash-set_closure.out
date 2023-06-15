@@ -1,871 +1,859 @@
 '((proc
-   (+ _42803 . lst)
-   (let ((kont4252342629 (prim car lst)))
-     (let ((lst42630 (prim cdr lst)))
-       (let ((x4242842631 (apply-prim + lst42630)))
-         (clo-app kont4252342629 x4242842631)))))
+   (+ _43174 . lst)
+   (let ((kont4290443006 (prim car lst)))
+     (let ((lst43007 (prim cdr lst)))
+       (let ((x4281143008 (apply-prim + lst43007)))
+         (clo-app kont4290443006 x4281143008)))))
   (proc
-   (- _42804 . lst)
-   (let ((kont4252542632 (prim car lst)))
-     (let ((lst42633 (prim cdr lst)))
-       (let ((x4242942634 (apply-prim - lst42633)))
-         (clo-app kont4252542632 x4242942634)))))
+   (- _43175 . lst)
+   (let ((kont4290643009 (prim car lst)))
+     (let ((lst43010 (prim cdr lst)))
+       (let ((x4281243011 (apply-prim - lst43010)))
+         (clo-app kont4290643009 x4281243011)))))
   (proc
-   (* _42805 . lst)
-   (let ((kont4252742635 (prim car lst)))
-     (let ((lst42636 (prim cdr lst)))
-       (let ((x4243042637 (apply-prim * lst42636)))
-         (clo-app kont4252742635 x4243042637)))))
+   (* _43176 . lst)
+   (let ((kont4290843012 (prim car lst)))
+     (let ((lst43013 (prim cdr lst)))
+       (let ((x4281343014 (apply-prim * lst43013)))
+         (clo-app kont4290843012 x4281343014)))))
   (proc
-   (modulo _42806 kont42529 a b)
-   (let ((x4243142638 (prim modulo a b))) (clo-app kont42529 x4243142638)))
+   (modulo _43177 kont42910 a b)
+   (let ((x4281443015 (prim modulo a b))) (clo-app kont42910 x4281443015)))
   (proc
-   (/ _42807 . lst)
-   (let ((kont4253042639 (prim car lst)))
-     (let ((lst42640 (prim cdr lst)))
-       (let ((x4243242641 (apply-prim / lst42640)))
-         (clo-app kont4253042639 x4243242641)))))
+   (/ _43178 . lst)
+   (let ((kont4291143016 (prim car lst)))
+     (let ((lst43017 (prim cdr lst)))
+       (let ((x4281543018 (apply-prim / lst43017)))
+         (clo-app kont4291143016 x4281543018)))))
   (proc
-   (= _42808 . lst)
-   (let ((kont4253242642 (prim car lst)))
-     (let ((lst42643 (prim cdr lst)))
-       (let ((x4243342644 (apply-prim = lst42643)))
-         (clo-app kont4253242642 x4243342644)))))
+   (= _43179 . lst)
+   (let ((kont4291343019 (prim car lst)))
+     (let ((lst43020 (prim cdr lst)))
+       (let ((x4281643021 (apply-prim = lst43020)))
+         (clo-app kont4291343019 x4281643021)))))
   (proc
-   (> _42809 . lst)
-   (let ((kont4253442645 (prim car lst)))
-     (let ((lst42646 (prim cdr lst)))
-       (let ((x4243442647 (apply-prim > lst42646)))
-         (clo-app kont4253442645 x4243442647)))))
+   (> _43180 . lst)
+   (let ((kont4291543022 (prim car lst)))
+     (let ((lst43023 (prim cdr lst)))
+       (let ((x4281743024 (apply-prim > lst43023)))
+         (clo-app kont4291543022 x4281743024)))))
   (proc
-   (< _42810 . lst)
-   (let ((kont4253642648 (prim car lst)))
-     (let ((lst42649 (prim cdr lst)))
-       (let ((x4243542650 (apply-prim < lst42649)))
-         (clo-app kont4253642648 x4243542650)))))
+   (< _43181 . lst)
+   (let ((kont4291743025 (prim car lst)))
+     (let ((lst43026 (prim cdr lst)))
+       (let ((x4281843027 (apply-prim < lst43026)))
+         (clo-app kont4291743025 x4281843027)))))
   (proc
-   (<= _42811 . lst)
-   (let ((kont4253842651 (prim car lst)))
-     (let ((lst42652 (prim cdr lst)))
-       (let ((x4243642653 (apply-prim <= lst42652)))
-         (clo-app kont4253842651 x4243642653)))))
+   (<= _43182 . lst)
+   (let ((kont4291943028 (prim car lst)))
+     (let ((lst43029 (prim cdr lst)))
+       (let ((x4281943030 (apply-prim <= lst43029)))
+         (clo-app kont4291943028 x4281943030)))))
   (proc
-   (>= _42812 . lst)
-   (let ((kont4254042654 (prim car lst)))
-     (let ((lst42655 (prim cdr lst)))
-       (let ((x4243742656 (apply-prim >= lst42655)))
-         (clo-app kont4254042654 x4243742656)))))
+   (>= _43183 . lst)
+   (let ((kont4292143031 (prim car lst)))
+     (let ((lst43032 (prim cdr lst)))
+       (let ((x4282043033 (apply-prim >= lst43032)))
+         (clo-app kont4292143031 x4282043033)))))
   (proc
-   (null? _42813 kont42542 x)
-   (let ((x4243842657 (prim null? x))) (clo-app kont42542 x4243842657)))
+   (null? _43184 kont42923 x)
+   (let ((x4282143034 (prim null? x))) (clo-app kont42923 x4282143034)))
   (proc
-   (equal? _42814 kont42543 x y)
-   (let ((x4243942658 (prim equal? x y))) (clo-app kont42543 x4243942658)))
+   (equal? _43185 kont42924 x y)
+   (let ((x4282243035 (prim equal? x y))) (clo-app kont42924 x4282243035)))
   (proc
-   (eq? _42815 kont42544 x y)
-   (let ((x4244042659 (prim eq? x y))) (clo-app kont42544 x4244042659)))
+   (eq? _43186 kont42925 x y)
+   (let ((x4282343036 (prim eq? x y))) (clo-app kont42925 x4282343036)))
   (proc
-   (cons _42816 kont42545 a b)
-   (let ((x4244142660 (prim cons a b))) (clo-app kont42545 x4244142660)))
+   (cons _43187 kont42926 a b)
+   (let ((x4282443037 (prim cons a b))) (clo-app kont42926 x4282443037)))
   (proc
-   (car _42817 kont42546 lst)
-   (let ((x4244242661 (prim car lst))) (clo-app kont42546 x4244242661)))
+   (car _43188 kont42927 lst)
+   (let ((x4282543038 (prim car lst))) (clo-app kont42927 x4282543038)))
   (proc
-   (cdr _42818 kont42547 lst)
-   (let ((x4244342662 (prim cdr lst))) (clo-app kont42547 x4244342662)))
+   (cdr _43189 kont42928 lst)
+   (let ((x4282643039 (prim cdr lst))) (clo-app kont42928 x4282643039)))
   (proc
-   (lam42819 env42820 a4244642666)
-   (let ((kont42548 (env-ref env42820 3)))
-     (let ((equal? (env-ref env42820 2)))
-       (let ((a4244442663 (env-ref env42820 1)))
-         (clo-app equal? kont42548 a4244442663 a4244642666)))))
+   (lam43190 env43191 a4282943043)
+   (let ((a4282743040 (env-ref env43191 3)))
+     (let ((kont42929 (env-ref env43191 2)))
+       (let ((equal? (env-ref env43191 1)))
+         (clo-app equal? kont42929 a4282743040 a4282943043)))))
   (proc
-   (even? _42823 kont42548 x)
-   (let ((a4244442663 '0))
-     (let ((a4244542664 '2))
-       (let ((f4254942665
-              (make-closure lam42819 a4244442663 equal? kont42548)))
-         (clo-app modulo f4254942665 x a4244542664)))))
+   (even? _43194 kont42929 x)
+   (let ((a4282743040 '0))
+     (let ((a4282843041 '2))
+       (let ((f4293043042
+              (make-closure lam43190 equal? kont42929 a4282743040)))
+         (clo-app modulo f4293043042 x a4282843041)))))
   (proc
-   (lam42824 env42825 a4244942670)
-   (let ((a4244742667 (env-ref env42825 3)))
-     (let ((kont42550 (env-ref env42825 2)))
-       (let ((equal? (env-ref env42825 1)))
-         (clo-app equal? kont42550 a4244742667 a4244942670)))))
+   (lam43195 env43196 a4283243047)
+   (let ((kont42931 (env-ref env43196 3)))
+     (let ((a4283043044 (env-ref env43196 2)))
+       (let ((equal? (env-ref env43196 1)))
+         (clo-app equal? kont42931 a4283043044 a4283243047)))))
   (proc
-   (odd? _42828 kont42550 x)
-   (let ((a4244742667 '1))
-     (let ((a4244842668 '2))
-       (let ((f4255142669
-              (make-closure lam42824 equal? kont42550 a4244742667)))
-         (clo-app modulo f4255142669 x a4244842668)))))
+   (odd? _43199 kont42931 x)
+   (let ((a4283043044 '1))
+     (let ((a4283143045 '2))
+       (let ((f4293243046
+              (make-closure lam43195 equal? a4283043044 kont42931)))
+         (clo-app modulo f4293243046 x a4283143045)))))
   (proc
-   (list _42829 . x)
-   (let ((kont4255242671 (prim car x)))
-     (let ((x42672 (prim cdr x))) (clo-app kont4255242671 x42672))))
+   (list _43200 . x)
+   (let ((kont4293343048 (prim car x)))
+     (let ((x43049 (prim cdr x))) (clo-app kont4293343048 x43049))))
   (proc
-   (and _42830 . lst)
-   (let ((kont4255442673 (prim car lst)))
-     (let ((lst42674 (prim cdr lst)))
-       (let ((x4245042675 (apply-prim and lst42674)))
-         (clo-app kont4255442673 x4245042675)))))
+   (lam43203 env43204 a4283843059)
+   (let ((kont42935 (env-ref env43204 3)))
+     (let ((x (env-ref env43204 2)))
+       (let ((member? (env-ref env43204 1)))
+         (clo-app member? kont42935 x a4283843059)))))
   (proc
-   (or _42831 . lst)
-   (let ((kont4255642676 (prim car lst)))
-     (let ((lst42677 (prim cdr lst)))
-       (let ((x4245142678 (apply-prim or lst42677)))
-         (clo-app kont4255642676 x4245142678)))))
+   (lam43205 env43206 a4283643056)
+   (let ((cdr (env-ref env43206 5)))
+     (let ((lst (env-ref env43206 4)))
+       (let ((kont42935 (env-ref env43206 3)))
+         (let ((x (env-ref env43206 2)))
+           (let ((member? (env-ref env43206 1)))
+             (if a4283643056
+               (let ((x4283743057 '#t)) (clo-app kont42935 x4283743057))
+               (let ((f4293643058 (make-closure lam43203 member? x kont42935)))
+                 (clo-app cdr f4293643058 lst)))))))))
   (proc
-   (lam42834 env42835 a4245742688)
-   (let ((kont42558 (env-ref env42835 3)))
-     (let ((x (env-ref env42835 2)))
-       (let ((member? (env-ref env42835 1)))
-         (clo-app member? kont42558 x a4245742688)))))
+   (lam43207 env43208 a4283543054)
+   (let ((cdr (env-ref env43208 6)))
+     (let ((lst (env-ref env43208 5)))
+       (let ((equal? (env-ref env43208 4)))
+         (let ((kont42935 (env-ref env43208 3)))
+           (let ((x (env-ref env43208 2)))
+             (let ((member? (env-ref env43208 1)))
+               (let ((f4293743055
+                      (make-closure lam43205 member? x kont42935 lst cdr)))
+                 (clo-app equal? f4293743055 a4283543054 x)))))))))
   (proc
-   (lam42836 env42837 a4245542685)
-   (let ((lst (env-ref env42837 5)))
-     (let ((x (env-ref env42837 4)))
-       (let ((member? (env-ref env42837 3)))
-         (let ((kont42558 (env-ref env42837 2)))
-           (let ((cdr (env-ref env42837 1)))
-             (if a4245542685
-               (let ((x4245642686 '#t)) (clo-app kont42558 x4245642686))
-               (let ((f4255942687 (make-closure lam42834 member? x kont42558)))
-                 (clo-app cdr f4255942687 lst)))))))))
-  (proc
-   (lam42838 env42839 a4245442683)
-   (let ((lst (env-ref env42839 6)))
-     (let ((equal? (env-ref env42839 5)))
-       (let ((x (env-ref env42839 4)))
-         (let ((member? (env-ref env42839 3)))
-           (let ((kont42558 (env-ref env42839 2)))
-             (let ((cdr (env-ref env42839 1)))
-               (let ((f4256042684
-                      (make-closure lam42836 cdr kont42558 member? x lst)))
-                 (clo-app equal? f4256042684 a4245442683 x)))))))))
-  (proc
-   (lam42840 env42841 a4245242680)
-   (let ((lst (env-ref env42841 7)))
-     (let ((equal? (env-ref env42841 6)))
-       (let ((x (env-ref env42841 5)))
-         (let ((car (env-ref env42841 4)))
-           (let ((member? (env-ref env42841 3)))
-             (let ((kont42558 (env-ref env42841 2)))
-               (let ((cdr (env-ref env42841 1)))
-                 (if a4245242680
-                   (let ((x4245342681 '#f)) (clo-app kont42558 x4245342681))
-                   (let ((f4256142682
+   (lam43209 env43210 a4283343051)
+   (let ((cdr (env-ref env43210 7)))
+     (let ((lst (env-ref env43210 6)))
+       (let ((equal? (env-ref env43210 5)))
+         (let ((kont42935 (env-ref env43210 4)))
+           (let ((x (env-ref env43210 3)))
+             (let ((car (env-ref env43210 2)))
+               (let ((member? (env-ref env43210 1)))
+                 (if a4283343051
+                   (let ((x4283443052 '#f)) (clo-app kont42935 x4283443052))
+                   (let ((f4293843053
                           (make-closure
-                           lam42838
-                           cdr
-                           kont42558
+                           lam43207
                            member?
                            x
+                           kont42935
                            equal?
-                           lst)))
-                     (clo-app car f4256142682 lst)))))))))))
+                           lst
+                           cdr)))
+                     (clo-app car f4293843053 lst)))))))))))
   (proc
-   (member? _42842 kont42558 x lst)
-   (let ((f4256242679
-          (make-closure lam42840 cdr kont42558 member? car x equal? lst)))
-     (clo-app null? f4256242679 lst)))
+   (member? _43211 kont42935 x lst)
+   (let ((f4293943050
+          (make-closure lam43209 member? car x kont42935 equal? lst cdr)))
+     (clo-app null? f4293943050 lst)))
   (proc
-   (lam42843 env42844 a4246142696)
-   (let ((kont42563 (env-ref env42844 4)))
-     (let ((a4246042694 (env-ref env42844 3)))
-       (let ((fun (env-ref env42844 2)))
-         (let ((foldl (env-ref env42844 1)))
-           (clo-app foldl kont42563 fun a4246042694 a4246142696))))))
+   (lam43212 env43213 a4284243067)
+   (let ((fun (env-ref env43213 4)))
+     (let ((a4284143065 (env-ref env43213 3)))
+       (let ((foldl (env-ref env43213 2)))
+         (let ((kont42940 (env-ref env43213 1)))
+           (clo-app foldl kont42940 fun a4284143065 a4284243067))))))
   (proc
-   (lam42845 env42846 a4246042694)
-   (let ((cdr (env-ref env42846 5)))
-     (let ((lst (env-ref env42846 4)))
-       (let ((kont42563 (env-ref env42846 3)))
-         (let ((fun (env-ref env42846 2)))
-           (let ((foldl (env-ref env42846 1)))
-             (let ((f4256442695
-                    (make-closure lam42843 foldl fun a4246042694 kont42563)))
-               (clo-app cdr f4256442695 lst))))))))
+   (lam43214 env43215 a4284143065)
+   (let ((cdr (env-ref env43215 5)))
+     (let ((lst (env-ref env43215 4)))
+       (let ((fun (env-ref env43215 3)))
+         (let ((foldl (env-ref env43215 2)))
+           (let ((kont42940 (env-ref env43215 1)))
+             (let ((f4294143066
+                    (make-closure lam43212 kont42940 foldl a4284143065 fun)))
+               (clo-app cdr f4294143066 lst))))))))
   (proc
-   (lam42847 env42848 a4245942692)
-   (let ((cdr (env-ref env42848 6)))
-     (let ((lst (env-ref env42848 5)))
-       (let ((kont42563 (env-ref env42848 4)))
-         (let ((fun (env-ref env42848 3)))
-           (let ((acc (env-ref env42848 2)))
-             (let ((foldl (env-ref env42848 1)))
-               (let ((f4256542693
-                      (make-closure lam42845 foldl fun kont42563 lst cdr)))
-                 (clo-app fun f4256542693 a4245942692 acc)))))))))
+   (lam43216 env43217 a4284043063)
+   (let ((cdr (env-ref env43217 6)))
+     (let ((lst (env-ref env43217 5)))
+       (let ((fun (env-ref env43217 4)))
+         (let ((acc (env-ref env43217 3)))
+           (let ((foldl (env-ref env43217 2)))
+             (let ((kont42940 (env-ref env43217 1)))
+               (let ((f4294243064
+                      (make-closure lam43214 kont42940 foldl fun lst cdr)))
+                 (clo-app fun f4294243064 a4284043063 acc)))))))))
   (proc
-   (lam42849 env42850 a4245842690)
-   (let ((cdr (env-ref env42850 7)))
-     (let ((lst (env-ref env42850 6)))
-       (let ((kont42563 (env-ref env42850 5)))
-         (let ((fun (env-ref env42850 4)))
-           (let ((acc (env-ref env42850 3)))
-             (let ((car (env-ref env42850 2)))
-               (let ((foldl (env-ref env42850 1)))
-                 (if a4245842690
-                   (clo-app kont42563 acc)
-                   (let ((f4256642691
+   (lam43218 env43219 a4283943061)
+   (let ((cdr (env-ref env43219 7)))
+     (let ((lst (env-ref env43219 6)))
+       (let ((fun (env-ref env43219 5)))
+         (let ((acc (env-ref env43219 4)))
+           (let ((car (env-ref env43219 3)))
+             (let ((foldl (env-ref env43219 2)))
+               (let ((kont42940 (env-ref env43219 1)))
+                 (if a4283943061
+                   (clo-app kont42940 acc)
+                   (let ((f4294343062
                           (make-closure
-                           lam42847
+                           lam43216
+                           kont42940
                            foldl
                            acc
                            fun
-                           kont42563
                            lst
                            cdr)))
-                     (clo-app car f4256642691 lst)))))))))))
+                     (clo-app car f4294343062 lst)))))))))))
   (proc
-   (foldl _42851 kont42563 fun acc lst)
-   (let ((f4256742689
-          (make-closure lam42849 foldl car acc fun kont42563 lst cdr)))
-     (clo-app null? f4256742689 lst)))
+   (foldl _43220 kont42940 fun acc lst)
+   (let ((f4294443060
+          (make-closure lam43218 kont42940 foldl car acc fun lst cdr)))
+     (clo-app null? f4294443060 lst)))
   (proc
-   (lam42852 env42853 a4246542704)
-   (let ((reverse-helper (env-ref env42853 3)))
-     (let ((kont42568 (env-ref env42853 2)))
-       (let ((a4246342700 (env-ref env42853 1)))
-         (clo-app reverse-helper kont42568 a4246342700 a4246542704)))))
+   (lam43221 env43222 a4284643075)
+   (let ((a4284443071 (env-ref env43222 3)))
+     (let ((kont42945 (env-ref env43222 2)))
+       (let ((reverse-helper (env-ref env43222 1)))
+         (clo-app reverse-helper kont42945 a4284443071 a4284643075)))))
   (proc
-   (lam42854 env42855 a4246442702)
-   (let ((reverse-helper (env-ref env42855 5)))
-     (let ((kont42568 (env-ref env42855 4)))
-       (let ((lst2 (env-ref env42855 3)))
-         (let ((cons (env-ref env42855 2)))
-           (let ((a4246342700 (env-ref env42855 1)))
-             (let ((f4256942703
+   (lam43223 env43224 a4284543073)
+   (let ((a4284443071 (env-ref env43224 5)))
+     (let ((kont42945 (env-ref env43224 4)))
+       (let ((reverse-helper (env-ref env43224 3)))
+         (let ((lst2 (env-ref env43224 2)))
+           (let ((cons (env-ref env43224 1)))
+             (let ((f4294643074
                     (make-closure
-                     lam42852
-                     a4246342700
-                     kont42568
-                     reverse-helper)))
-               (clo-app cons f4256942703 a4246442702 lst2))))))))
+                     lam43221
+                     reverse-helper
+                     kont42945
+                     a4284443071)))
+               (clo-app cons f4294643074 a4284543073 lst2))))))))
   (proc
-   (lam42856 env42857 a4246342700)
-   (let ((lst (env-ref env42857 6)))
-     (let ((reverse-helper (env-ref env42857 5)))
-       (let ((kont42568 (env-ref env42857 4)))
-         (let ((lst2 (env-ref env42857 3)))
-           (let ((car (env-ref env42857 2)))
-             (let ((cons (env-ref env42857 1)))
-               (let ((f4257042701
+   (lam43225 env43226 a4284443071)
+   (let ((reverse-helper (env-ref env43226 6)))
+     (let ((lst2 (env-ref env43226 5)))
+       (let ((car (env-ref env43226 4)))
+         (let ((cons (env-ref env43226 3)))
+           (let ((lst (env-ref env43226 2)))
+             (let ((kont42945 (env-ref env43226 1)))
+               (let ((f4294743072
                       (make-closure
-                       lam42854
-                       a4246342700
+                       lam43223
                        cons
                        lst2
-                       kont42568
-                       reverse-helper)))
-                 (clo-app car f4257042701 lst)))))))))
+                       reverse-helper
+                       kont42945
+                       a4284443071)))
+                 (clo-app car f4294743072 lst)))))))))
   (proc
-   (lam42858 env42859 a4246242698)
-   (let ((cdr (env-ref env42859 7)))
-     (let ((lst (env-ref env42859 6)))
-       (let ((reverse-helper (env-ref env42859 5)))
-         (let ((kont42568 (env-ref env42859 4)))
-           (let ((lst2 (env-ref env42859 3)))
-             (let ((car (env-ref env42859 2)))
-               (let ((cons (env-ref env42859 1)))
-                 (if a4246242698
-                   (clo-app kont42568 lst2)
-                   (let ((f4257142699
+   (lam43227 env43228 a4284343069)
+   (let ((cdr (env-ref env43228 7)))
+     (let ((reverse-helper (env-ref env43228 6)))
+       (let ((lst2 (env-ref env43228 5)))
+         (let ((car (env-ref env43228 4)))
+           (let ((cons (env-ref env43228 3)))
+             (let ((lst (env-ref env43228 2)))
+               (let ((kont42945 (env-ref env43228 1)))
+                 (if a4284343069
+                   (clo-app kont42945 lst2)
+                   (let ((f4294843070
                           (make-closure
-                           lam42856
+                           lam43225
+                           kont42945
+                           lst
                            cons
                            car
                            lst2
-                           kont42568
-                           reverse-helper
-                           lst)))
-                     (clo-app cdr f4257142699 lst)))))))))))
+                           reverse-helper)))
+                     (clo-app cdr f4294843070 lst)))))))))))
   (proc
-   (reverse-helper _42860 kont42568 lst lst2)
-   (let ((f4257242697
+   (reverse-helper _43229 kont42945 lst lst2)
+   (let ((f4294943068
           (make-closure
-           lam42858
+           lam43227
+           kont42945
+           lst
            cons
            car
            lst2
-           kont42568
            reverse-helper
-           lst
            cdr)))
-     (clo-app null? f4257242697 lst)))
+     (clo-app null? f4294943068 lst)))
   (proc
-   (lam42861 env42862 a4246642706)
-   (let ((lst (env-ref env42862 3)))
-     (let ((reverse-helper (env-ref env42862 2)))
-       (let ((kont42573 (env-ref env42862 1)))
-         (clo-app reverse-helper kont42573 lst a4246642706)))))
+   (lam43230 env43231 a4284743077)
+   (let ((lst (env-ref env43231 3)))
+     (let ((reverse-helper (env-ref env43231 2)))
+       (let ((kont42950 (env-ref env43231 1)))
+         (clo-app reverse-helper kont42950 lst a4284743077)))))
   (proc
-   (reverse _42863 kont42573 lst)
-   (let ((f4257442705 (make-closure lam42861 kont42573 reverse-helper lst)))
-     (clo-app list f4257442705)))
+   (reverse _43232 kont42950 lst)
+   (let ((f4295143076 (make-closure lam43230 kont42950 reverse-helper lst)))
+     (clo-app list f4295143076)))
   (proc
-   (lam42864 env42865 x4246942711)
-   (let ((kont42575 (env-ref env42865 1))) (clo-app kont42575 x4246942711)))
+   (lam43233 env43234 x4285043082)
+   (let ((kont42952 (env-ref env43234 1))) (clo-app kont42952 x4285043082)))
   (proc
-   (lam42866 env42867 a4247442720)
-   (let ((kont42575 (env-ref env42867 4)))
-     (let ((a4247042713 (env-ref env42867 3)))
-       (let ((take-helper (env-ref env42867 2)))
-         (let ((a4247242716 (env-ref env42867 1)))
+   (lam43235 env43236 a4285543091)
+   (let ((a4285343087 (env-ref env43236 4)))
+     (let ((kont42952 (env-ref env43236 3)))
+       (let ((take-helper (env-ref env43236 2)))
+         (let ((a4285143084 (env-ref env43236 1)))
            (clo-app
             take-helper
-            kont42575
-            a4247042713
-            a4247242716
-            a4247442720))))))
+            kont42952
+            a4285143084
+            a4285343087
+            a4285543091))))))
   (proc
-   (lam42868 env42869 a4247342718)
-   (let ((kont42575 (env-ref env42869 6)))
-     (let ((a4247042713 (env-ref env42869 5)))
-       (let ((take-helper (env-ref env42869 4)))
-         (let ((lst2 (env-ref env42869 3)))
-           (let ((cons (env-ref env42869 2)))
-             (let ((a4247242716 (env-ref env42869 1)))
-               (let ((f4257742719
+   (lam43237 env43238 a4285443089)
+   (let ((a4285343087 (env-ref env43238 6)))
+     (let ((kont42952 (env-ref env43238 5)))
+       (let ((cons (env-ref env43238 4)))
+         (let ((a4285143084 (env-ref env43238 3)))
+           (let ((take-helper (env-ref env43238 2)))
+             (let ((lst2 (env-ref env43238 1)))
+               (let ((f4295443090
                       (make-closure
-                       lam42866
-                       a4247242716
+                       lam43235
+                       a4285143084
                        take-helper
-                       a4247042713
-                       kont42575)))
-                 (clo-app cons f4257742719 a4247342718 lst2)))))))))
+                       kont42952
+                       a4285343087)))
+                 (clo-app cons f4295443090 a4285443089 lst2)))))))))
   (proc
-   (lam42870 env42871 a4247242716)
-   (let ((kont42575 (env-ref env42871 7)))
-     (let ((lst (env-ref env42871 6)))
-       (let ((a4247042713 (env-ref env42871 5)))
-         (let ((car (env-ref env42871 4)))
-           (let ((cons (env-ref env42871 3)))
-             (let ((take-helper (env-ref env42871 2)))
-               (let ((lst2 (env-ref env42871 1)))
-                 (let ((f4257842717
+   (lam43239 env43240 a4285343087)
+   (let ((lst (env-ref env43240 7)))
+     (let ((kont42952 (env-ref env43240 6)))
+       (let ((car (env-ref env43240 5)))
+         (let ((cons (env-ref env43240 4)))
+           (let ((a4285143084 (env-ref env43240 3)))
+             (let ((take-helper (env-ref env43240 2)))
+               (let ((lst2 (env-ref env43240 1)))
+                 (let ((f4295543088
                         (make-closure
-                         lam42868
-                         a4247242716
-                         cons
+                         lam43237
                          lst2
                          take-helper
-                         a4247042713
-                         kont42575)))
-                   (clo-app car f4257842717 lst))))))))))
+                         a4285143084
+                         cons
+                         kont42952
+                         a4285343087)))
+                   (clo-app car f4295543088 lst))))))))))
   (proc
-   (lam42873 env42874 a4247042713)
-   (let ((kont42575 (env-ref env42874 8)))
-     (let ((lst (env-ref env42874 7)))
-       (let ((cons (env-ref env42874 6)))
-         (let ((- (env-ref env42874 5)))
-           (let ((take-helper (env-ref env42874 4)))
-             (let ((lst2 (env-ref env42874 3)))
-               (let ((n (env-ref env42874 2)))
-                 (let ((car (env-ref env42874 1)))
-                   (let ((a4247142714 '1))
-                     (let ((f4257942715
+   (lam43242 env43243 a4285143084)
+   (let ((lst (env-ref env43243 8)))
+     (let ((kont42952 (env-ref env43243 7)))
+       (let ((cons (env-ref env43243 6)))
+         (let ((- (env-ref env43243 5)))
+           (let ((take-helper (env-ref env43243 4)))
+             (let ((lst2 (env-ref env43243 3)))
+               (let ((n (env-ref env43243 2)))
+                 (let ((car (env-ref env43243 1)))
+                   (let ((a4285243085 '1))
+                     (let ((f4295643086
                             (make-closure
-                             lam42870
+                             lam43239
                              lst2
                              take-helper
+                             a4285143084
                              cons
                              car
-                             a4247042713
-                             lst
-                             kont42575)))
-                       (clo-app - f4257942715 n a4247142714))))))))))))
+                             kont42952
+                             lst)))
+                       (clo-app - f4295643086 n a4285243085))))))))))))
   (proc
-   (lam42875 env42876 a4246842709)
-   (let ((cdr (env-ref env42876 10)))
-     (let ((kont42575 (env-ref env42876 9)))
-       (let ((lst (env-ref env42876 8)))
-         (let ((reverse (env-ref env42876 7)))
-           (let ((cons (env-ref env42876 6)))
-             (let ((- (env-ref env42876 5)))
-               (let ((take-helper (env-ref env42876 4)))
-                 (let ((lst2 (env-ref env42876 3)))
-                   (let ((n (env-ref env42876 2)))
-                     (let ((car (env-ref env42876 1)))
-                       (if a4246842709
-                         (let ((f4257642710 (make-closure lam42864 kont42575)))
-                           (clo-app reverse f4257642710 lst2))
-                         (let ((f4258042712
+   (lam43244 env43245 a4284943080)
+   (let ((cdr (env-ref env43245 10)))
+     (let ((lst (env-ref env43245 9)))
+       (let ((reverse (env-ref env43245 8)))
+         (let ((kont42952 (env-ref env43245 7)))
+           (let ((cons (env-ref env43245 6)))
+             (let ((- (env-ref env43245 5)))
+               (let ((take-helper (env-ref env43245 4)))
+                 (let ((lst2 (env-ref env43245 3)))
+                   (let ((n (env-ref env43245 2)))
+                     (let ((car (env-ref env43245 1)))
+                       (if a4284943080
+                         (let ((f4295343081 (make-closure lam43233 kont42952)))
+                           (clo-app reverse f4295343081 lst2))
+                         (let ((f4295743083
                                 (make-closure
-                                 lam42873
+                                 lam43242
                                  car
                                  n
                                  lst2
                                  take-helper
                                  -
                                  cons
-                                 lst
-                                 kont42575)))
-                           (clo-app cdr f4258042712 lst))))))))))))))
+                                 kont42952
+                                 lst)))
+                           (clo-app cdr f4295743083 lst))))))))))))))
   (proc
-   (take-helper _42878 kont42575 lst n lst2)
-   (let ((a4246742707 '0))
-     (let ((f4258142708
+   (take-helper _43247 kont42952 lst n lst2)
+   (let ((a4284843078 '0))
+     (let ((f4295843079
             (make-closure
-             lam42875
+             lam43244
              car
              n
              lst2
              take-helper
              -
              cons
+             kont42952
              reverse
              lst
-             kont42575
              cdr)))
-       (clo-app = f4258142708 n a4246742707))))
+       (clo-app = f4295843079 n a4284843078))))
   (proc
-   (lam42879 env42880 a4247542722)
-   (let ((lst (env-ref env42880 4)))
-     (let ((kont42582 (env-ref env42880 3)))
-       (let ((take-helper (env-ref env42880 2)))
-         (let ((n (env-ref env42880 1)))
-           (clo-app take-helper kont42582 lst n a4247542722))))))
+   (lam43248 env43249 a4285643093)
+   (let ((kont42959 (env-ref env43249 4)))
+     (let ((lst (env-ref env43249 3)))
+       (let ((take-helper (env-ref env43249 2)))
+         (let ((n (env-ref env43249 1)))
+           (clo-app take-helper kont42959 lst n a4285643093))))))
   (proc
-   (take _42881 kont42582 lst n)
-   (let ((f4258342721 (make-closure lam42879 n take-helper kont42582 lst)))
-     (clo-app list f4258342721)))
+   (take _43250 kont42959 lst n)
+   (let ((f4296043092 (make-closure lam43248 n take-helper lst kont42959)))
+     (clo-app list f4296043092)))
   (proc
-   (lam42883 env42884 a4248042730)
-   (let ((a4247842726 (env-ref env42884 3)))
-     (let ((+ (env-ref env42884 2)))
-       (let ((kont42584 (env-ref env42884 1)))
-         (clo-app + kont42584 a4247842726 a4248042730)))))
+   (lam43252 env43253 a4286143101)
+   (let ((kont42961 (env-ref env43253 3)))
+     (let ((+ (env-ref env43253 2)))
+       (let ((a4285943097 (env-ref env43253 1)))
+         (clo-app + kont42961 a4285943097 a4286143101)))))
   (proc
-   (lam42885 env42886 a4247942728)
-   (let ((length (env-ref env42886 4)))
-     (let ((a4247842726 (env-ref env42886 3)))
-       (let ((+ (env-ref env42886 2)))
-         (let ((kont42584 (env-ref env42886 1)))
-           (let ((f4258542729 (make-closure lam42883 kont42584 + a4247842726)))
-             (clo-app length f4258542729 a4247942728)))))))
+   (lam43254 env43255 a4286043099)
+   (let ((kont42961 (env-ref env43255 4)))
+     (let ((length (env-ref env43255 3)))
+       (let ((+ (env-ref env43255 2)))
+         (let ((a4285943097 (env-ref env43255 1)))
+           (let ((f4296243100 (make-closure lam43252 a4285943097 + kont42961)))
+             (clo-app length f4296243100 a4286043099)))))))
   (proc
-   (lam42888 env42889 a4247642724)
-   (let ((cdr (env-ref env42889 5)))
-     (let ((lst (env-ref env42889 4)))
-       (let ((length (env-ref env42889 3)))
-         (let ((+ (env-ref env42889 2)))
-           (let ((kont42584 (env-ref env42889 1)))
-             (if a4247642724
-               (let ((x4247742725 '0)) (clo-app kont42584 x4247742725))
-               (let ((a4247842726 '1))
-                 (let ((f4258642727
+   (lam43257 env43258 a4285743095)
+   (let ((cdr (env-ref env43258 5)))
+     (let ((length (env-ref env43258 4)))
+       (let ((+ (env-ref env43258 3)))
+         (let ((lst (env-ref env43258 2)))
+           (let ((kont42961 (env-ref env43258 1)))
+             (if a4285743095
+               (let ((x4285843096 '0)) (clo-app kont42961 x4285843096))
+               (let ((a4285943097 '1))
+                 (let ((f4296343098
                         (make-closure
-                         lam42885
-                         kont42584
+                         lam43254
+                         a4285943097
                          +
-                         a4247842726
-                         length)))
-                   (clo-app cdr f4258642727 lst))))))))))
+                         length
+                         kont42961)))
+                   (clo-app cdr f4296343098 lst))))))))))
   (proc
-   (length _42890 kont42584 lst)
-   (let ((f4258742723 (make-closure lam42888 kont42584 + length lst cdr)))
-     (clo-app null? f4258742723 lst)))
+   (length _43259 kont42961 lst)
+   (let ((f4296443094 (make-closure lam43257 kont42961 lst + length cdr)))
+     (clo-app null? f4296443094 lst)))
   (proc
-   (lam42891 env42892 x4248242734)
-   (let ((kont42588 (env-ref env42892 1))) (clo-app kont42588 x4248242734)))
+   (lam43260 env43261 x4286343105)
+   (let ((kont42965 (env-ref env43261 1))) (clo-app kont42965 x4286343105)))
   (proc
-   (lam42893 env42894 a4248642742)
-   (let ((a4248442738 (env-ref env42894 3)))
-     (let ((cons (env-ref env42894 2)))
-       (let ((kont42588 (env-ref env42894 1)))
-         (clo-app cons kont42588 a4248442738 a4248642742)))))
+   (lam43262 env43263 a4286743113)
+   (let ((cons (env-ref env43263 3)))
+     (let ((a4286543109 (env-ref env43263 2)))
+       (let ((kont42965 (env-ref env43263 1)))
+         (clo-app cons kont42965 a4286543109 a4286743113)))))
   (proc
-   (lam42895 env42896 a4248542740)
-   (let ((a4248442738 (env-ref env42896 5)))
-     (let ((map (env-ref env42896 4)))
-       (let ((proc (env-ref env42896 3)))
-         (let ((cons (env-ref env42896 2)))
-           (let ((kont42588 (env-ref env42896 1)))
-             (let ((f4259042741
-                    (make-closure lam42893 kont42588 cons a4248442738)))
-               (clo-app map f4259042741 proc a4248542740))))))))
+   (lam43264 env43265 a4286643111)
+   (let ((map (env-ref env43265 5)))
+     (let ((proc (env-ref env43265 4)))
+       (let ((cons (env-ref env43265 3)))
+         (let ((a4286543109 (env-ref env43265 2)))
+           (let ((kont42965 (env-ref env43265 1)))
+             (let ((f4296743112
+                    (make-closure lam43262 kont42965 a4286543109 cons)))
+               (clo-app map f4296743112 proc a4286643111))))))))
   (proc
-   (lam42897 env42898 a4248442738)
-   (let ((cdr (env-ref env42898 6)))
-     (let ((lst (env-ref env42898 5)))
-       (let ((map (env-ref env42898 4)))
-         (let ((proc (env-ref env42898 3)))
-           (let ((cons (env-ref env42898 2)))
-             (let ((kont42588 (env-ref env42898 1)))
-               (let ((f4259142739
+   (lam43266 env43267 a4286543109)
+   (let ((cdr (env-ref env43267 6)))
+     (let ((lst (env-ref env43267 5)))
+       (let ((map (env-ref env43267 4)))
+         (let ((kont42965 (env-ref env43267 3)))
+           (let ((proc (env-ref env43267 2)))
+             (let ((cons (env-ref env43267 1)))
+               (let ((f4296843110
                       (make-closure
-                       lam42895
-                       kont42588
+                       lam43264
+                       kont42965
+                       a4286543109
                        cons
                        proc
-                       map
-                       a4248442738)))
-                 (clo-app cdr f4259142739 lst)))))))))
+                       map)))
+                 (clo-app cdr f4296843110 lst)))))))))
   (proc
-   (lam42899 env42900 a4248342736)
-   (let ((cdr (env-ref env42900 6)))
-     (let ((lst (env-ref env42900 5)))
-       (let ((map (env-ref env42900 4)))
-         (let ((proc (env-ref env42900 3)))
-           (let ((cons (env-ref env42900 2)))
-             (let ((kont42588 (env-ref env42900 1)))
-               (let ((f4259242737
-                      (make-closure lam42897 kont42588 cons proc map lst cdr)))
-                 (clo-app proc f4259242737 a4248342736)))))))))
+   (lam43268 env43269 a4286443107)
+   (let ((cdr (env-ref env43269 6)))
+     (let ((lst (env-ref env43269 5)))
+       (let ((map (env-ref env43269 4)))
+         (let ((kont42965 (env-ref env43269 3)))
+           (let ((proc (env-ref env43269 2)))
+             (let ((cons (env-ref env43269 1)))
+               (let ((f4296943108
+                      (make-closure lam43266 cons proc kont42965 map lst cdr)))
+                 (clo-app proc f4296943108 a4286443107)))))))))
   (proc
-   (lam42901 env42902 a4248142732)
-   (let ((lst (env-ref env42902 8)))
-     (let ((map (env-ref env42902 7)))
-       (let ((proc (env-ref env42902 6)))
-         (let ((car (env-ref env42902 5)))
-           (let ((list (env-ref env42902 4)))
-             (let ((cdr (env-ref env42902 3)))
-               (let ((cons (env-ref env42902 2)))
-                 (let ((kont42588 (env-ref env42902 1)))
-                   (if a4248142732
-                     (let ((f4258942733 (make-closure lam42891 kont42588)))
-                       (clo-app list f4258942733))
-                     (let ((f4259342735
+   (lam43270 env43271 a4286243103)
+   (let ((lst (env-ref env43271 8)))
+     (let ((map (env-ref env43271 7)))
+       (let ((kont42965 (env-ref env43271 6)))
+         (let ((proc (env-ref env43271 5)))
+           (let ((car (env-ref env43271 4)))
+             (let ((cons (env-ref env43271 3)))
+               (let ((list (env-ref env43271 2)))
+                 (let ((cdr (env-ref env43271 1)))
+                   (if a4286243103
+                     (let ((f4296643104 (make-closure lam43260 kont42965)))
+                       (clo-app list f4296643104))
+                     (let ((f4297043106
                             (make-closure
-                             lam42899
-                             kont42588
+                             lam43268
                              cons
                              proc
+                             kont42965
                              map
                              lst
                              cdr)))
-                       (clo-app car f4259342735 lst))))))))))))
+                       (clo-app car f4297043106 lst))))))))))))
   (proc
-   (map _42903 kont42588 proc lst)
-   (let ((f4259442731
-          (make-closure lam42901 kont42588 cons cdr list car proc map lst)))
-     (clo-app null? f4259442731 lst)))
+   (map _43272 kont42965 proc lst)
+   (let ((f4297143102
+          (make-closure lam43270 cdr list cons car proc kont42965 map lst)))
+     (clo-app null? f4297143102 lst)))
   (proc
-   (lam42904 env42905 x4248842746)
-   (let ((kont42595 (env-ref env42905 1))) (clo-app kont42595 x4248842746)))
+   (lam43273 env43274 x4286943117)
+   (let ((kont42972 (env-ref env43274 1))) (clo-app kont42972 x4286943117)))
   (proc
-   (lam42906 env42907 a4249342756)
-   (let ((a4249142752 (env-ref env42907 3)))
-     (let ((kont42595 (env-ref env42907 2)))
-       (let ((cons (env-ref env42907 1)))
-         (clo-app cons kont42595 a4249142752 a4249342756)))))
+   (lam43275 env43276 a4287443127)
+   (let ((a4287243123 (env-ref env43276 3)))
+     (let ((cons (env-ref env43276 2)))
+       (let ((kont42972 (env-ref env43276 1)))
+         (clo-app cons kont42972 a4287243123 a4287443127)))))
   (proc
-   (lam42908 env42909 a4249242754)
-   (let ((a4249142752 (env-ref env42909 5)))
-     (let ((kont42595 (env-ref env42909 4)))
-       (let ((op (env-ref env42909 3)))
-         (let ((filter (env-ref env42909 2)))
-           (let ((cons (env-ref env42909 1)))
-             (let ((f4259742755
-                    (make-closure lam42906 cons kont42595 a4249142752)))
-               (clo-app filter f4259742755 op a4249242754))))))))
+   (lam43277 env43278 a4287343125)
+   (let ((a4287243123 (env-ref env43278 5)))
+     (let ((op (env-ref env43278 4)))
+       (let ((filter (env-ref env43278 3)))
+         (let ((cons (env-ref env43278 2)))
+           (let ((kont42972 (env-ref env43278 1)))
+             (let ((f4297443126
+                    (make-closure lam43275 kont42972 cons a4287243123)))
+               (clo-app filter f4297443126 op a4287343125))))))))
   (proc
-   (lam42910 env42911 a4249142752)
-   (let ((cdr (env-ref env42911 6)))
-     (let ((lst (env-ref env42911 5)))
-       (let ((kont42595 (env-ref env42911 4)))
-         (let ((op (env-ref env42911 3)))
-           (let ((filter (env-ref env42911 2)))
-             (let ((cons (env-ref env42911 1)))
-               (let ((f4259842753
+   (lam43279 env43280 a4287243123)
+   (let ((cdr (env-ref env43280 6)))
+     (let ((lst (env-ref env43280 5)))
+       (let ((op (env-ref env43280 4)))
+         (let ((filter (env-ref env43280 3)))
+           (let ((cons (env-ref env43280 2)))
+             (let ((kont42972 (env-ref env43280 1)))
+               (let ((f4297543124
                       (make-closure
-                       lam42908
+                       lam43277
+                       kont42972
                        cons
                        filter
                        op
-                       kont42595
-                       a4249142752)))
-                 (clo-app cdr f4259842753 lst)))))))))
+                       a4287243123)))
+                 (clo-app cdr f4297543124 lst)))))))))
   (proc
-   (lam42912 env42913 a4249442758)
-   (let ((kont42595 (env-ref env42913 3)))
-     (let ((op (env-ref env42913 2)))
-       (let ((filter (env-ref env42913 1)))
-         (clo-app filter kont42595 op a4249442758)))))
+   (lam43281 env43282 a4287543129)
+   (let ((op (env-ref env43282 3)))
+     (let ((filter (env-ref env43282 2)))
+       (let ((kont42972 (env-ref env43282 1)))
+         (clo-app filter kont42972 op a4287543129)))))
   (proc
-   (lam42914 env42915 a4249042750)
-   (let ((cdr (env-ref env42915 7)))
-     (let ((lst (env-ref env42915 6)))
-       (let ((kont42595 (env-ref env42915 5)))
-         (let ((op (env-ref env42915 4)))
-           (let ((cons (env-ref env42915 3)))
-             (let ((filter (env-ref env42915 2)))
-               (let ((car (env-ref env42915 1)))
-                 (if a4249042750
-                   (let ((f4259942751
+   (lam43283 env43284 a4287143121)
+   (let ((cdr (env-ref env43284 7)))
+     (let ((lst (env-ref env43284 6)))
+       (let ((op (env-ref env43284 5)))
+         (let ((cons (env-ref env43284 4)))
+           (let ((kont42972 (env-ref env43284 3)))
+             (let ((filter (env-ref env43284 2)))
+               (let ((car (env-ref env43284 1)))
+                 (if a4287143121
+                   (let ((f4297643122
                           (make-closure
-                           lam42910
+                           lam43279
+                           kont42972
                            cons
                            filter
                            op
-                           kont42595
                            lst
                            cdr)))
-                     (clo-app car f4259942751 lst))
-                   (let ((f4260042757
-                          (make-closure lam42912 filter op kont42595)))
-                     (clo-app cdr f4260042757 lst)))))))))))
+                     (clo-app car f4297643122 lst))
+                   (let ((f4297743128
+                          (make-closure lam43281 kont42972 filter op)))
+                     (clo-app cdr f4297743128 lst)))))))))))
   (proc
-   (lam42916 env42917 a4248942748)
-   (let ((cdr (env-ref env42917 7)))
-     (let ((lst (env-ref env42917 6)))
-       (let ((kont42595 (env-ref env42917 5)))
-         (let ((op (env-ref env42917 4)))
-           (let ((cons (env-ref env42917 3)))
-             (let ((filter (env-ref env42917 2)))
-               (let ((car (env-ref env42917 1)))
-                 (let ((f4260142749
+   (lam43285 env43286 a4287043119)
+   (let ((cdr (env-ref env43286 7)))
+     (let ((lst (env-ref env43286 6)))
+       (let ((op (env-ref env43286 5)))
+         (let ((cons (env-ref env43286 4)))
+           (let ((kont42972 (env-ref env43286 3)))
+             (let ((filter (env-ref env43286 2)))
+               (let ((car (env-ref env43286 1)))
+                 (let ((f4297843120
                         (make-closure
-                         lam42914
+                         lam43283
                          car
                          filter
+                         kont42972
                          cons
                          op
-                         kont42595
                          lst
                          cdr)))
-                   (clo-app op f4260142749 a4248942748))))))))))
+                   (clo-app op f4297843120 a4287043119))))))))))
   (proc
-   (lam42918 env42919 a4248742744)
-   (let ((lst (env-ref env42919 8)))
-     (let ((kont42595 (env-ref env42919 7)))
-       (let ((op (env-ref env42919 6)))
-         (let ((cons (env-ref env42919 5)))
-           (let ((list (env-ref env42919 4)))
-             (let ((cdr (env-ref env42919 3)))
-               (let ((filter (env-ref env42919 2)))
-                 (let ((car (env-ref env42919 1)))
-                   (if a4248742744
-                     (let ((f4259642745 (make-closure lam42904 kont42595)))
-                       (clo-app list f4259642745))
-                     (let ((f4260242747
+   (lam43287 env43288 a4286843115)
+   (let ((lst (env-ref env43288 8)))
+     (let ((op (env-ref env43288 7)))
+       (let ((cons (env-ref env43288 6)))
+         (let ((kont42972 (env-ref env43288 5)))
+           (let ((list (env-ref env43288 4)))
+             (let ((cdr (env-ref env43288 3)))
+               (let ((filter (env-ref env43288 2)))
+                 (let ((car (env-ref env43288 1)))
+                   (if a4286843115
+                     (let ((f4297343116 (make-closure lam43273 kont42972)))
+                       (clo-app list f4297343116))
+                     (let ((f4297943118
                             (make-closure
-                             lam42916
+                             lam43285
                              car
                              filter
+                             kont42972
                              cons
                              op
-                             kont42595
                              lst
                              cdr)))
-                       (clo-app car f4260242747 lst))))))))))))
+                       (clo-app car f4297943118 lst))))))))))))
   (proc
-   (filter _42920 kont42595 op lst)
-   (let ((f4260342743
-          (make-closure lam42918 car filter cdr list cons op kont42595 lst)))
-     (clo-app null? f4260342743 lst)))
+   (filter _43289 kont42972 op lst)
+   (let ((f4298043114
+          (make-closure lam43287 car filter cdr list kont42972 cons op lst)))
+     (clo-app null? f4298043114 lst)))
   (proc
-   (lam42921 env42922 a4249942766)
-   (let ((drop (env-ref env42922 3)))
-     (let ((a4249742763 (env-ref env42922 2)))
-       (let ((kont42604 (env-ref env42922 1)))
-         (clo-app drop kont42604 a4249742763 a4249942766)))))
+   (lam43290 env43291 a4288043137)
+   (let ((a4287843134 (env-ref env43291 3)))
+     (let ((drop (env-ref env43291 2)))
+       (let ((kont42981 (env-ref env43291 1)))
+         (clo-app drop kont42981 a4287843134 a4288043137)))))
   (proc
-   (lam42924 env42925 a4249742763)
-   (let ((drop (env-ref env42925 4)))
-     (let ((n (env-ref env42925 3)))
-       (let ((kont42604 (env-ref env42925 2)))
-         (let ((- (env-ref env42925 1)))
-           (let ((a4249842764 '1))
-             (let ((f4260542765
-                    (make-closure lam42921 kont42604 a4249742763 drop)))
-               (clo-app - f4260542765 n a4249842764))))))))
+   (lam43293 env43294 a4287843134)
+   (let ((drop (env-ref env43294 4)))
+     (let ((kont42981 (env-ref env43294 3)))
+       (let ((n (env-ref env43294 2)))
+         (let ((- (env-ref env43294 1)))
+           (let ((a4287943135 '1))
+             (let ((f4298243136
+                    (make-closure lam43290 kont42981 drop a4287843134)))
+               (clo-app - f4298243136 n a4287943135))))))))
   (proc
-   (lam42926 env42927 a4249642761)
-   (let ((cdr (env-ref env42927 6)))
-     (let ((n (env-ref env42927 5)))
-       (let ((kont42604 (env-ref env42927 4)))
-         (let ((- (env-ref env42927 3)))
-           (let ((lst (env-ref env42927 2)))
-             (let ((drop (env-ref env42927 1)))
-               (if a4249642761
-                 (clo-app kont42604 lst)
-                 (let ((f4260642762
-                        (make-closure lam42924 - kont42604 n drop)))
-                   (clo-app cdr f4260642762 lst))))))))))
+   (lam43295 env43296 a4287743132)
+   (let ((cdr (env-ref env43296 6)))
+     (let ((kont42981 (env-ref env43296 5)))
+       (let ((n (env-ref env43296 4)))
+         (let ((- (env-ref env43296 3)))
+           (let ((lst (env-ref env43296 2)))
+             (let ((drop (env-ref env43296 1)))
+               (if a4287743132
+                 (clo-app kont42981 lst)
+                 (let ((f4298343133
+                        (make-closure lam43293 - n kont42981 drop)))
+                   (clo-app cdr f4298343133 lst))))))))))
   (proc
-   (drop _42929 kont42604 lst n)
-   (let ((a4249542759 '0))
-     (let ((f4260742760 (make-closure lam42926 drop lst - kont42604 n cdr)))
-       (clo-app = f4260742760 n a4249542759))))
+   (drop _43298 kont42981 lst n)
+   (let ((a4287643130 '0))
+     (let ((f4298443131 (make-closure lam43295 drop lst - n kont42981 cdr)))
+       (clo-app = f4298443131 n a4287643130))))
   (proc
-   (lam42930 env42931 a4250342774)
-   (let ((kont42608 (env-ref env42931 3)))
-     (let ((a4250142770 (env-ref env42931 2)))
-       (let ((proc (env-ref env42931 1)))
-         (clo-app proc kont42608 a4250142770 a4250342774)))))
+   (lam43299 env43300 a4288443145)
+   (let ((a4288243141 (env-ref env43300 3)))
+     (let ((proc (env-ref env43300 2)))
+       (let ((kont42985 (env-ref env43300 1)))
+         (clo-app proc kont42985 a4288243141 a4288443145)))))
   (proc
-   (lam42932 env42933 a4250242772)
-   (let ((kont42608 (env-ref env42933 5)))
-     (let ((foldr (env-ref env42933 4)))
-       (let ((a4250142770 (env-ref env42933 3)))
-         (let ((proc (env-ref env42933 2)))
-           (let ((acc (env-ref env42933 1)))
-             (let ((f4260942773
-                    (make-closure lam42930 proc a4250142770 kont42608)))
-               (clo-app foldr f4260942773 proc acc a4250242772))))))))
+   (lam43301 env43302 a4288343143)
+   (let ((foldr (env-ref env43302 5)))
+     (let ((a4288243141 (env-ref env43302 4)))
+       (let ((kont42985 (env-ref env43302 3)))
+         (let ((proc (env-ref env43302 2)))
+           (let ((acc (env-ref env43302 1)))
+             (let ((f4298643144
+                    (make-closure lam43299 kont42985 proc a4288243141)))
+               (clo-app foldr f4298643144 proc acc a4288343143))))))))
   (proc
-   (lam42934 env42935 a4250142770)
-   (let ((cdr (env-ref env42935 6)))
-     (let ((kont42608 (env-ref env42935 5)))
-       (let ((foldr (env-ref env42935 4)))
-         (let ((lst (env-ref env42935 3)))
-           (let ((proc (env-ref env42935 2)))
-             (let ((acc (env-ref env42935 1)))
-               (let ((f4261042771
+   (lam43303 env43304 a4288243141)
+   (let ((cdr (env-ref env43304 6)))
+     (let ((kont42985 (env-ref env43304 5)))
+       (let ((foldr (env-ref env43304 4)))
+         (let ((lst (env-ref env43304 3)))
+           (let ((proc (env-ref env43304 2)))
+             (let ((acc (env-ref env43304 1)))
+               (let ((f4298743142
                       (make-closure
-                       lam42932
+                       lam43301
                        acc
                        proc
-                       a4250142770
-                       foldr
-                       kont42608)))
-                 (clo-app cdr f4261042771 lst)))))))))
+                       kont42985
+                       a4288243141
+                       foldr)))
+                 (clo-app cdr f4298743142 lst)))))))))
   (proc
-   (lam42936 env42937 a4250042768)
-   (let ((cdr (env-ref env42937 7)))
-     (let ((kont42608 (env-ref env42937 6)))
-       (let ((car (env-ref env42937 5)))
-         (let ((foldr (env-ref env42937 4)))
-           (let ((lst (env-ref env42937 3)))
-             (let ((proc (env-ref env42937 2)))
-               (let ((acc (env-ref env42937 1)))
-                 (if a4250042768
-                   (clo-app kont42608 acc)
-                   (let ((f4261142769
+   (lam43305 env43306 a4288143139)
+   (let ((cdr (env-ref env43306 7)))
+     (let ((kont42985 (env-ref env43306 6)))
+       (let ((car (env-ref env43306 5)))
+         (let ((foldr (env-ref env43306 4)))
+           (let ((lst (env-ref env43306 3)))
+             (let ((proc (env-ref env43306 2)))
+               (let ((acc (env-ref env43306 1)))
+                 (if a4288143139
+                   (clo-app kont42985 acc)
+                   (let ((f4298843140
                           (make-closure
-                           lam42934
+                           lam43303
                            acc
                            proc
                            lst
                            foldr
-                           kont42608
+                           kont42985
                            cdr)))
-                     (clo-app car f4261142769 lst)))))))))))
+                     (clo-app car f4298843140 lst)))))))))))
   (proc
-   (foldr _42938 kont42608 proc acc lst)
-   (let ((f4261242767
-          (make-closure lam42936 acc proc lst foldr car kont42608 cdr)))
-     (clo-app null? f4261242767 lst)))
+   (foldr _43307 kont42985 proc acc lst)
+   (let ((f4298943138
+          (make-closure lam43305 acc proc lst foldr car kont42985 cdr)))
+     (clo-app null? f4298943138 lst)))
   (proc
-   (lam42939 env42940 a4250742782)
-   (let ((kont42613 (env-ref env42940 3)))
-     (let ((a4250542778 (env-ref env42940 2)))
-       (let ((cons (env-ref env42940 1)))
-         (clo-app cons kont42613 a4250542778 a4250742782)))))
+   (lam43308 env43309 a4288843153)
+   (let ((a4288643149 (env-ref env43309 3)))
+     (let ((kont42990 (env-ref env43309 2)))
+       (let ((cons (env-ref env43309 1)))
+         (clo-app cons kont42990 a4288643149 a4288843153)))))
   (proc
-   (lam42941 env42942 a4250642780)
-   (let ((kont42613 (env-ref env42942 5)))
-     (let ((append (env-ref env42942 4)))
-       (let ((cons (env-ref env42942 3)))
-         (let ((a4250542778 (env-ref env42942 2)))
-           (let ((lst2 (env-ref env42942 1)))
-             (let ((f4261442781
-                    (make-closure lam42939 cons a4250542778 kont42613)))
-               (clo-app append f4261442781 a4250642780 lst2))))))))
+   (lam43310 env43311 a4288743151)
+   (let ((a4288643149 (env-ref env43311 5)))
+     (let ((kont42990 (env-ref env43311 4)))
+       (let ((append (env-ref env43311 3)))
+         (let ((lst2 (env-ref env43311 2)))
+           (let ((cons (env-ref env43311 1)))
+             (let ((f4299143152
+                    (make-closure lam43308 cons kont42990 a4288643149)))
+               (clo-app append f4299143152 a4288743151 lst2))))))))
   (proc
-   (lam42943 env42944 a4250542778)
-   (let ((cdr (env-ref env42944 6)))
-     (let ((kont42613 (env-ref env42944 5)))
-       (let ((append (env-ref env42944 4)))
-         (let ((lst2 (env-ref env42944 3)))
-           (let ((lst1 (env-ref env42944 2)))
-             (let ((cons (env-ref env42944 1)))
-               (let ((f4261542779
+   (lam43312 env43313 a4288643149)
+   (let ((cdr (env-ref env43313 6)))
+     (let ((kont42990 (env-ref env43313 5)))
+       (let ((append (env-ref env43313 4)))
+         (let ((lst2 (env-ref env43313 3)))
+           (let ((lst1 (env-ref env43313 2)))
+             (let ((cons (env-ref env43313 1)))
+               (let ((f4299243150
                       (make-closure
-                       lam42941
-                       lst2
-                       a4250542778
+                       lam43310
                        cons
+                       lst2
                        append
-                       kont42613)))
-                 (clo-app cdr f4261542779 lst1)))))))))
+                       kont42990
+                       a4288643149)))
+                 (clo-app cdr f4299243150 lst1)))))))))
   (proc
-   (lam42945 env42946 a4250442776)
-   (let ((cdr (env-ref env42946 7)))
-     (let ((kont42613 (env-ref env42946 6)))
-       (let ((append (env-ref env42946 5)))
-         (let ((lst2 (env-ref env42946 4)))
-           (let ((cons (env-ref env42946 3)))
-             (let ((lst1 (env-ref env42946 2)))
-               (let ((car (env-ref env42946 1)))
-                 (if a4250442776
-                   (clo-app kont42613 lst2)
-                   (let ((f4261642777
+   (lam43314 env43315 a4288543147)
+   (let ((cdr (env-ref env43315 7)))
+     (let ((kont42990 (env-ref env43315 6)))
+       (let ((append (env-ref env43315 5)))
+         (let ((lst2 (env-ref env43315 4)))
+           (let ((cons (env-ref env43315 3)))
+             (let ((lst1 (env-ref env43315 2)))
+               (let ((car (env-ref env43315 1)))
+                 (if a4288543147
+                   (clo-app kont42990 lst2)
+                   (let ((f4299343148
                           (make-closure
-                           lam42943
+                           lam43312
                            cons
                            lst1
                            lst2
                            append
-                           kont42613
+                           kont42990
                            cdr)))
-                     (clo-app car f4261642777 lst1)))))))))))
+                     (clo-app car f4299343148 lst1)))))))))))
   (proc
-   (append _42947 kont42613 lst1 lst2)
-   (let ((f4261742775
-          (make-closure lam42945 car lst1 cons lst2 append kont42613 cdr)))
-     (clo-app null? f4261742775 lst1)))
+   (append _43316 kont42990 lst1 lst2)
+   (let ((f4299443146
+          (make-closure lam43314 car lst1 cons lst2 append kont42990 cdr)))
+     (clo-app null? f4299443146 lst1)))
   (proc
-   (hash _42948 . lst)
-   (let ((kont4261842783 (prim car lst)))
-     (let ((lst42784 (prim cdr lst)))
-       (let ((x4250842785 (apply-prim hash lst42784)))
-         (clo-app kont4261842783 x4250842785)))))
+   (hash _43317 . lst)
+   (let ((kont4299543154 (prim car lst)))
+     (let ((lst43155 (prim cdr lst)))
+       (let ((x4288943156 (apply-prim hash lst43155)))
+         (clo-app kont4299543154 x4288943156)))))
   (proc
-   (hash-ref _42949 kont42620 h k)
-   (let ((x4250942786 (prim hash-ref h k))) (clo-app kont42620 x4250942786)))
+   (hash-ref _43318 kont42997 h k)
+   (let ((x4289043157 (prim hash-ref h k))) (clo-app kont42997 x4289043157)))
   (proc
-   (hash-set _42950 kont42621 h k v)
-   (let ((x4251042787 (prim hash-set h k v))) (clo-app kont42621 x4251042787)))
+   (hash-set _43319 kont42998 h k v)
+   (let ((x4289143158 (prim hash-set h k v))) (clo-app kont42998 x4289143158)))
   (proc
-   (hash-has-key? _42951 kont42622 h k)
-   (let ((x4251142788 (prim hash-has-key? h k)))
-     (clo-app kont42622 x4251142788)))
+   (hash-has-key? _43320 kont42999 h k)
+   (let ((x4289243159 (prim hash-has-key? h k)))
+     (clo-app kont42999 x4289243159)))
   (proc
-   (hash-count _42952 kont42623 h)
-   (let ((x4251242789 (prim hash-count h))) (clo-app kont42623 x4251242789)))
+   (hash-count _43321 kont43000 h)
+   (let ((x4289343160 (prim hash-count h))) (clo-app kont43000 x4289343160)))
   (proc
-   (lam42954 env42955 a4252042799)
-   (let ((hash-ref (env-ref env42955 2)))
-     (let ((kont42624 (env-ref env42955 1)))
-       (let ((a4252142800 "work"))
-         (clo-app hash-ref kont42624 a4252042799 a4252142800)))))
+   (lam43323 env43324 a4290143170)
+   (let ((hash-ref (env-ref env43324 2)))
+     (let ((kont43001 (env-ref env43324 1)))
+       (let ((a4290243171 "work"))
+         (clo-app hash-ref kont43001 a4290143170 a4290243171)))))
   (proc
-   (lam42958 env42959 a4251742795)
-   (let ((hash-ref (env-ref env42959 3)))
-     (let ((kont42624 (env-ref env42959 2)))
-       (let ((hash-set (env-ref env42959 1)))
-         (let ((a4251842796 "work"))
-           (let ((a4251942797 '90))
-             (let ((f4262542798 (make-closure lam42954 kont42624 hash-ref)))
+   (lam43327 env43328 a4289843166)
+   (let ((hash-ref (env-ref env43328 3)))
+     (let ((hash-set (env-ref env43328 2)))
+       (let ((kont43001 (env-ref env43328 1)))
+         (let ((a4289943167 "work"))
+           (let ((a4290043168 '90))
+             (let ((f4300243169 (make-closure lam43323 kont43001 hash-ref)))
                (clo-app
                 hash-set
-                f4262542798
-                a4251742795
-                a4251842796
-                a4251942797))))))))
+                f4300243169
+                a4289843166
+                a4289943167
+                a4290043168))))))))
   (proc
-   (call _42964 kont42624)
-   (let ((a4251342790 "work"))
-     (let ((a4251442791 '80))
-       (let ((a4251542792 '10))
-         (let ((a4251642793 "lmao"))
-           (let ((f4262642794
-                  (make-closure lam42958 hash-set kont42624 hash-ref)))
+   (call _43333 kont43001)
+   (let ((a4289443161 "work"))
+     (let ((a4289543162 '80))
+       (let ((a4289643163 '10))
+         (let ((a4289743164 "lmao"))
+           (let ((f4300343165
+                  (make-closure lam43327 kont43001 hash-set hash-ref)))
              (clo-app
               hash
-              f4262642794
-              a4251342790
-              a4251442791
-              a4251542792
-              a4251642793)))))))
+              f4300343165
+              a4289443161
+              a4289543162
+              a4289643163
+              a4289743164)))))))
   (proc
-   (lam42965 env42966 x4252242802)
-   (let ((kont42627 (env-ref env42966 1))) (clo-app kont42627 x4252242802)))
+   (lam43334 env43335 x4290343173)
+   (let ((kont43004 (env-ref env43335 1))) (clo-app kont43004 x4290343173)))
   (proc
-   (brouhaha_main _42967 kont42627)
-   (let ((f4262842801 (make-closure lam42965 kont42627)))
-     (clo-app call f4262842801))))
+   (brouhaha_main _43336 kont43004)
+   (let ((f4300543172 (make-closure lam43334 kont43004)))
+     (clo-app call f4300543172))))
