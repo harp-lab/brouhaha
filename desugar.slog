@@ -179,3 +179,6 @@
  (env-map ?(env-set env x _) y {env-map env y})]
 
 
+(store (addr "call") (define "call" (fixedparam []) (const "42")))
+(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+(top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))

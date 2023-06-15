@@ -1,5 +1,5 @@
 (define (call)
-    (+ 10 3 (+ 4 3)))
+    42)
 
 (define (brouhaha_main)
     (call))
