@@ -1,5 +1,5 @@
-tests/*/*.out
-tests/*/
+# tests/*/*.out
+# tests/*/
 tests2/*/*.out
 tests2/*/
 tests3/
