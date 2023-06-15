@@ -1,5 +1,6 @@
 (define (call)
-    (- 100 80 10 2))
+    ; (- 100.8 80))
+    (- 100.8 80 10 2.4))
 
 (define (brouhaha_main)
     (call))

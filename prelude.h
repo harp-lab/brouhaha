@@ -424,6 +424,7 @@ u64 hash_(void *val)
 }
 
 #pragma endregion
+
 void *prim_modulo(void *arg1, void *arg2)
 {
     mpz_t *remainder = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
@@ -470,113 +471,364 @@ void *prim_null_u63(void *lst)
     return encode_bool(false);
 }
 
-void *apply_prim__u43(void *lst) //+
+// casting functions
+mpf_t *mpz_2_mpf(mpz_t *val)
+{
+    mpf_t *ret_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*ret_val);
+    mpf_set_z(*ret_val, *val);
+    return ret_val;
+}
+
+#pragma region Addition
+void *add_mpz(void *arg1, void *arg2)
 {
     mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
     mpz_init(*result);
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        bool type_check = (get_tag(cons_lst[0]) == MPZ);
-
-        assert_type(type_check, "Error in addition: values in the lst are not MPT");
-
-        mpz_t *opd1 = decode_mpz(cons_lst[0]);
-
-        mpz_add(*result, *result, *opd1);
-
-        lst = cons_lst[1];
-    }
-
+    mpz_add(*result, *(decode_mpz(arg1)), *(decode_mpz(arg2)));
     return encode_mpz(result);
 }
 
-void *apply_prim__u45(void *lst) // -
+void *add_mpf(void *arg1, void *arg2)
 {
-    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*result);
-    long counter = 0;
+    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*result);
+    mpf_add(*result, *(decode_mpf(arg1)), *(decode_mpf(arg2)));
+    return encode_mpf(result);
+}
+void *add_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
+{
+    if (get_tag(arg1) == MPZ)
+    { // arg1 is mpz, arg2 is mpf
+        mpf_t *mpf_arg1 = mpz_2_mpf(decode_mpz(arg1));
+        mpf_add(*mpf_arg1, *mpf_arg1, *(decode_mpf(arg2)));
+        return encode_mpf(mpf_arg1);
+    }
+    mpf_t *mpf_arg2 = mpz_2_mpf(decode_mpz(arg2)); // arg1 is mpf and arg2 is mpz
+    mpf_add(*mpf_arg2, *(decode_mpf(arg1)), *mpf_arg2);
+    return encode_mpf(mpf_arg2);
+}
+
+// takes in two number?, gets the tags,  does the castings as required and adds them.
+// the numbers could be mpz_t or mpf_t, if different, mpz_t gets casted to mpf_t
+void *add(void *arg1, void *arg2)
+{
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
+    switch (arg1_tag == arg2_tag)
+    {
+    case true:
+    {
+        if (arg1_tag == MPZ)
+        {
+            return add_mpz(arg1, arg2);
+        }
+        else
+        {
+            return add_mpf(arg1, arg2);
+        }
+    }
+    case false:
+    {
+        return add_mpz_mpf(arg1, arg2);
+    }
+    }
+    return 0;
+}
+
+void *apply_prim__u43(void *lst) //+
+{
+    void *result = nullptr;
+
     while (is_cons(lst))
     {
         void **cons_lst = decode_cons(lst);
-        bool type_check = (get_tag(cons_lst[0]) == MPZ);
+        int car_tag = get_tag(cons_lst[0]);
+        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check,
-                    "Error in apply_prim_u43: values in the lst are not MPT");
+        assert_type(type_check, "Error in addition: values in the lst are not MPZ/MPF");
 
-        mpz_t *opd1 = decode_mpz(cons_lst[0]);
-
-        if (counter == 0)
+        if (!result)
         {
-            mpz_set(*result, *opd1);
-            lst = cons_lst[1];
-            counter++;
-            continue;
+            result = cons_lst[0];
+        }
+        else
+        {
+            result = add(result, cons_lst[0]);
         }
 
-        mpz_sub(*result, *result, *opd1);
-
         lst = cons_lst[1];
-        counter++;
     }
 
+    return result;
+}
+
+#pragma endregion
+
+#pragma region Subtraction
+void *sub_mpz(void *arg1, void *arg2)
+{
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+    mpz_sub(*result, *(decode_mpz(arg1)), *(decode_mpz(arg2)));
     return encode_mpz(result);
+}
+
+void *sub_mpf(void *arg1, void *arg2)
+{
+    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*result);
+    mpf_sub(*result, *(decode_mpf(arg1)), *(decode_mpf(arg2)));
+    return encode_mpf(result);
+}
+
+void *sub_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
+{
+    if (get_tag(arg1) == MPZ)
+    { // arg1 is mpz, arg2 is mpf
+        mpf_t *mpf_arg1 = mpz_2_mpf(decode_mpz(arg1));
+        mpf_sub(*mpf_arg1, *mpf_arg1, *(decode_mpf(arg2)));
+        return encode_mpf(mpf_arg1);
+    }
+    mpf_t *mpf_arg2 = mpz_2_mpf(decode_mpz(arg2)); // arg1 is mpf and arg2 is mpz
+    mpf_sub(*mpf_arg2, *(decode_mpf(arg1)), *mpf_arg2);
+    return encode_mpf(mpf_arg2);
+}
+
+// takes in two number?, gets the tags,  does the castings as required and adds them.
+// the numbers could be mpz_t or mpf_t, if different, mpz_t gets casted to mpf_t
+void *sub(void *arg1, void *arg2)
+{
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
+    switch (arg1_tag == arg2_tag)
+    {
+    case true:
+    {
+        if (arg1_tag == MPZ)
+        {
+            return sub_mpz(arg1, arg2);
+        }
+        else
+        {
+            return sub_mpf(arg1, arg2);
+        }
+    }
+    case false:
+    {
+        return sub_mpz_mpf(arg1, arg2);
+    }
+    }
+    return 0;
+}
+
+void *apply_prim__u45(void *lst) //-
+{
+    void *result = nullptr;
+
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        int car_tag = get_tag(cons_lst[0]);
+        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+
+        assert_type(type_check, "Error in subtraction: values in the lst are not MPZ/MPF");
+
+        if (!result)
+        {
+            if (!is_cons(cons_lst))
+            {
+                // mpz_t* ret_val = (mpz)
+                // ?? this has to be changed to return the - value of the car, as it is the only element
+                result = cons_lst[0];
+            }
+            else
+            {
+
+                result = cons_lst[0];
+            }
+        }
+        else
+        {
+            result = sub(result, cons_lst[0]);
+        }
+
+        lst = cons_lst[1];
+    }
+
+    return result;
+}
+
+#pragma endregion
+
+#pragma region Multiplication
+void *mul_mpz(void *arg1, void *arg2)
+{
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+    mpz_mul(*result, *(decode_mpz(arg1)), *(decode_mpz(arg2)));
+    return encode_mpz(result);
+}
+void *mul_mpf(void *arg1, void *arg2)
+{
+    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*result);
+    mpf_mul(*result, *(decode_mpf(arg1)), *(decode_mpf(arg2)));
+    return encode_mpf(result);
+}
+void *mul_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
+{
+    if (get_tag(arg1) == MPZ)
+    { // arg1 is mpz, arg2 is mpf
+        mpf_t *mpf_arg1 = mpz_2_mpf(decode_mpz(arg1));
+        print_val(mpf_arg1);
+        mpf_mul(*mpf_arg1, *mpf_arg1, *(decode_mpf(arg2)));
+        return encode_mpf(mpf_arg1);
+    }
+    mpf_t *mpf_arg2 = mpz_2_mpf(decode_mpz(arg2)); // arg1 is mpf and arg2 is mpz
+    mpf_mul(*mpf_arg2, *(decode_mpf(arg1)), *mpf_arg2);
+    return encode_mpf(mpf_arg2);
+}
+
+// takes in two number?, gets the tags,  does the castings as required and adds them.
+// the numbers could be mpz_t or mpf_t, if different, mpz_t gets casted to mpf_t
+void *mul(void *arg1, void *arg2)
+{
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
+    switch (arg1_tag == arg2_tag)
+    {
+    case true:
+    {
+        if (arg1_tag == MPZ)
+        {
+            return mul_mpz(arg1, arg2);
+        }
+        else
+        {
+            return mul_mpf(arg1, arg2);
+        }
+    }
+    case false:
+    {
+        return mul_mpz_mpf(arg1, arg2);
+    }
+    }
+    return 0;
+}
+
+void *apply_prim__u42(void *lst) //*
+{
+    void *result = nullptr;
+
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        int car_tag = get_tag(cons_lst[0]);
+        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+
+        assert_type(type_check, "Error in multiplication: values in the lst are not MPZ/MPF");
+        if (!result)
+        {
+            result = cons_lst[0];
+        }
+        else
+        {
+            result = mul(result, cons_lst[0]);
+        }
+
+        lst = cons_lst[1];
+    }
+
+    return result;
+}
+
+#pragma endregion
+
+#pragma region Division
+
+void *div_mpz(void *arg1, void *arg2)
+{
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+    mpz_div(*result, *(decode_mpz(arg1)), *(decode_mpz(arg2)));
+    return encode_mpz(result);
+}
+void *div_mpf(void *arg1, void *arg2)
+{
+    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*result);
+    mpf_div(*result, *(decode_mpf(arg1)), *(decode_mpf(arg2)));
+    return encode_mpf(result);
+}
+void *div_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
+{
+    if (get_tag(arg1) == MPZ)
+    { // arg1 is mpz, arg2 is mpf
+        mpf_t *mpf_arg1 = mpz_2_mpf(decode_mpz(arg1));
+        print_val(mpf_arg1);
+        mpf_div(*mpf_arg1, *mpf_arg1, *(decode_mpf(arg2)));
+        return encode_mpf(mpf_arg1);
+    }
+    mpf_t *mpf_arg2 = mpz_2_mpf(decode_mpz(arg2)); // arg1 is mpf and arg2 is mpz
+    mpf_div(*mpf_arg2, *(decode_mpf(arg1)), *mpf_arg2);
+    return encode_mpf(mpf_arg2);
+}
+
+// takes in two number?, gets the tags,  does the castings as required and adds them.
+// the numbers could be mpz_t or mpf_t, if different, mpz_t gets casted to mpf_t
+void *div(void *arg1, void *arg2)
+{
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
+    switch (arg1_tag == arg2_tag)
+    {
+    case true:
+    {
+        if (arg1_tag == MPZ)
+        {
+            return div_mpz(arg1, arg2);
+        }
+        else
+        {
+            return div_mpf(arg1, arg2);
+        }
+    }
+    case false:
+    {
+        return div_mpz_mpf(arg1, arg2);
+    }
+    }
+    return 0;
 }
 
 void *apply_prim__u47(void *lst) // / division
 {
-    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*result);
-    long counter = 0;
+    void *result = nullptr;
+
     while (is_cons(lst))
     {
         void **cons_lst = decode_cons(lst);
-        bool type_check = (get_tag(cons_lst[0]) == MPZ);
+        int car_tag = get_tag(cons_lst[0]);
+        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check,
-                    "Error in apply_prim_u43: values in the lst are not MPT");
-
-        mpz_t *opd1 = decode_mpz(cons_lst[0]);
-
-        if (counter == 0)
+        assert_type(type_check, "Error in division: values in the lst are not MPZ/MPF");
+        if (!result)
         {
-            mpz_set(*result, *opd1);
-            lst = cons_lst[1];
-            counter++;
-            continue;
+            result = cons_lst[0];
+        }
+        else
+        {
+            result = div(result, cons_lst[0]);
         }
 
-        mpz_div(*result, *result, *opd1);
-
-        lst = cons_lst[1];
-        counter++;
-    }
-
-    return encode_mpz(result);
-}
-
-void *apply_prim__u42(void *lst) // *
-{
-    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init_set_ui(*result, 1);
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        bool type_check = (get_tag(cons_lst[0]) == MPZ);
-
-        assert_type(type_check,
-                    "Error in apply_prim_u42: values in the lst are not MPT");
-
-        mpz_t *opd1 = decode_mpz(cons_lst[0]);
-
-        mpz_mul(*result, *result, *opd1);
-
         lst = cons_lst[1];
     }
 
-    return encode_mpz(result);
+    return result;
 }
 
+#pragma endregion
 void *apply_prim_and(void *lst)
 {
     bool result = false;
@@ -932,11 +1184,13 @@ void print_val(void *val)
         std::cout << "This is a hash" << std::endl;
         // decode the hash
         const hamt<hash_struct, hash_struct> *h = decode_hash(val);
-        mpz_t* key = (mpz_t*)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init_set_str(*key, "100", 10);
+        // mpz_t* key = (mpz_t*)(GC_MALLOC(sizeof(mpz_t)));
+        // mpz_init_set_str(*key, "10", 10);
+        mpf_t *key = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init_set_str(*key, "10.3", 10);
         // std::string *str = new (GC) std::string("random");
         // const hash_struct *const_key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(encode_str(str));
-        const hash_struct* const_key = new ((hash_struct*)GC_MALLOC(sizeof(hash_struct))) hash_struct(encode_mpz(key));
+        const hash_struct *const_key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(encode_mpf(key));
         const hash_struct *hash_val = h->get(const_key);
         hash_val->print_hash_val();
         break;
@@ -955,6 +1209,12 @@ void print_val(void *val)
         std::string *str = decode_str(val);
         std::cout << *str << std::endl;
         break;
+    }
+    case MPF:
+    {
+        std::cout << "This is a float" << std::endl;
+        mpf_t *final_mpf = decode_mpf(val);
+        gmp_printf("%.30Ff\n", final_mpf);
     }
     }
 }
