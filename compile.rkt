@@ -42,6 +42,7 @@
     (match exp
       [(? string? y) y]
       [(? integer? y) `',y]
+      [(? flonum? y) `',y]
       [(? symbol? x) x]
       [(? boolean? x) `',x]
       [`(let ([,xs ,es] ...) ,body)

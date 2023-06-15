@@ -17,6 +17,7 @@
     (match exp
       [(? string? y) y]
       [`(quote ,(? number? x)) x]
+      [`(quote ,(? flonum? x)) x]
       [`(quote ,(? boolean? x)) x]
       [`(quote ,(? symbol? x)) x]
       [(? symbol?) (hash-ref env exp)]

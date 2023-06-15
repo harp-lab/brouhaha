@@ -91,12 +91,20 @@
 
       ;  (match (p-dbg val)
        (match val 
-         [`(quote ,(? number? val) )
+         [`(quote ,(? integer? val) )
           (define mpzVar (gensym 'mpzvar))
 
           (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" mpzVar))
           (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" mpzVar val))
           (append-line filepath (format "void* ~a = encode_mpz(~a);" (get-c-string lhs) mpzVar))
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
+
+         [`(quote ,(? number? val) )
+          (define mpfVar (gensym 'mpfvar))
+
+          (append-line filepath (format "mpf_t* ~a = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));" mpfVar))
+          (append-line filepath (format "mpf_init_set_str(*~a, \"~a\", 10);" mpfVar val))
+          (append-line filepath (format "void* ~a = encode_mpf(~a);" (get-c-string lhs) mpfVar))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [`(quote ,(? boolean? val) )

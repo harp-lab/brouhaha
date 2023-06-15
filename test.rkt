@@ -91,7 +91,7 @@
 
 (define (main args)
   (cond
-    [(= (vector-length args) 0) (read-direc "tests3/")]
+    [(= (vector-length args) 0) (read-direc "tests/")]
     [(and (= (vector-length args) 1) (directory-exists? (vector-ref args 0)))
      (read-direc (vector-ref args 0))]
     ; below is for individual files, not currently working
