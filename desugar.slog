@@ -57,25 +57,18 @@
 
 
 
-
-
-
-
-
-
-
-
-
-;ADD-TOP-LEVEL-DEFINE
-
-
-
-
-;EVAL CASES
-;This is the injection function (allows you to just eval the expression without manually adding (empty) and (halt))
-[(eval exp)
+[(define "brouhaha_main" (fixedparam []) body)
  -->
- (eval exp (empty) (halt))]
+ (eval body {top-level-env} (halt))]
+
+
+
+
+; ;EVAL CASES
+; ;This is the injection function (allows you to just eval the expression without manually adding (empty) and (halt))
+; [(eval exp)
+;  -->
+;  (eval exp (empty) (halt))]
 
 ;numbers
 [(eval (const x) env kont)
@@ -94,13 +87,19 @@
 
 [(eval (ref x) env kont)
  -->
- (ret {store {env-map env x}} kont)]
+ (varfunc? )]
+
+ ;(ret {store {env-map env x}} kont)
 
 [(eval (lambda (fixedparam [xs ...]) eb) env kont)
  -->
  (ret (clo (lambda (fixedparam [xs ...]) eb) env) kont)]
 
-[(eval (app ef [eas ...]) env knot)
+[(eval (func (fixedparam [args ...]) body) env kont)
+ -->
+ (ret (clo (func (fixedparam args) body) env) kont)]
+
+[(eval (app ef [eas ...]) env kont)
  -->
  (eval ef env (appk [] [eas ...] env kont))]
 
@@ -113,6 +112,10 @@
 
 
 ;RET CASES
+[(ret (define fname (fixedparam [args ...]) body) kont)
+ -->
+ (eval (func (fixedparam args) body) {top-level-env} kont)]
+
 [(ret v (appk [vs ...] [ea0 ea-rest ...] env kont))
  -->
  (eval ea0 env (appk [vs ... v] [ea-rest ...] env kont))]
@@ -156,7 +159,12 @@
 [(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
  --> 
  (store (kaddr eb) kont)
- (eval eb {ext-all !(do-ext-all env xs vs)} (kaddr eb))]
+ (eval eb {ext-all !(do-ext-all envlam xs vs)} (kaddr eb))]
+
+[(apply (clo (func (fixedparam [args ...]) body) envfunc) [vs ...] kont)
+ --> 
+ (store (kaddr body) kont)
+ (eval body {ext-all !(do-ext-all envfunc args vs)} (kaddr body))]
 
 
  ;DO-EXT-ALL

@@ -60,8 +60,8 @@
   (void))
 
 
-(write-program-for-slog `((define (call) 42)
-  (define (brouhaha_main) (call))))
+(write-program-for-slog `((define (call num) num)
+  (define (brouhaha_main) (call 42))))
 
 ;;;    (write-program-for-slog '((define (+ . lst) (apply-prim + lst))
 ;;;    (define (call)
