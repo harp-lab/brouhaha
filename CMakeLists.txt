@@ -49,7 +49,7 @@ link_directories(${DEPENDENCIES_DIR} ${BDWGC_LIBRARY_DIR} ${GMP_LIBRARY_DIR} ${V
 # add_executable(brouhaha tests2/foldl/foldl_cpp_program.cpp)
 # add_executable(brouhaha tests2/minus/minus_cpp_program.cpp)
 # add_executable(brouhaha tests2/modulo/modulo_cpp_program.cpp)
-add_executable(brouhaha tests2/multiply/multiply_cpp_program.cpp)
+# add_executable(brouhaha tests2/multiply/multiply_cpp_program.cpp)
 # add_executable(brouhaha tests2/not/not_cpp_program.cpp)
 # add_executable(brouhaha tests2/null/null_cpp_program.cpp)
 # add_executable(brouhaha tests2/or/or_cpp_program.cpp)
