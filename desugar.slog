@@ -86,10 +86,15 @@
  (eval guard env (if-k tExp fExp env kont))]
 
 [(eval (ref x) env kont)
+ (=/= {store {env-map env x}} (define fname (fixedparam [args ...]) body))
  -->
- (varfunc? )]
+ (ret {store {env-map env x}} kont)]
 
- ;(ret {store {env-map env x}} kont)
+ [(eval (ref x) env kont)
+ (= {store {env-map env x}} (define fname (fixedparam [args ...]) body))
+ -->
+ (eval (func (fixedparam args) body) env kont)]
+
 
 [(eval (lambda (fixedparam [xs ...]) eb) env kont)
  -->
@@ -112,17 +117,13 @@
 
 
 ;RET CASES
-[(ret (define fname (fixedparam [args ...]) body) kont)
- -->
- (eval (func (fixedparam args) body) {top-level-env} kont)]
-
 [(ret v (appk [vs ...] [ea0 ea-rest ...] env kont))
  -->
  (eval ea0 env (appk [vs ... v] [ea-rest ...] env kont))]
 
 [(ret v (appk [vf vs ...] [] env kont))
  -->
- (apply vf [vs ...] kont)]
+ (apply vf [vs ... v] kont)]
 
 [(ret vf (ar ea env kont))
  -->
@@ -156,11 +157,18 @@
  (store (kaddr eb) kont)
  (eval eb (env-set envlam x (addr x)) (kaddr eb))]
 
+
+;(apply (clo (lambda (fixedparam ($lst x ($nil 0))) (ref x))
+; (env-set (empty ) brouhaha_main (addr brouhaha_main))) 
+; ($lst (const 42) ($nil 0)) (halt ))
 [(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
  --> 
  (store (kaddr eb) kont)
  (eval eb {ext-all !(do-ext-all envlam xs vs)} (kaddr eb))]
 
+; (apply (clo (func (fixedparam ($lst num ($nil 0))) (ref num)) 
+; (env-set (env-set (empty ) brouhaha_main (addr brouhaha_main)) call (addr call))) 
+; ($lst (const 42) ($nil 0)) (halt ))
 [(apply (clo (func (fixedparam [args ...]) body) envfunc) [vs ...] kont)
  --> 
  (store (kaddr body) kont)
@@ -187,6 +195,9 @@
  (env-map ?(env-set env x _) y {env-map env y})]
 
 
-(store (addr "call") (define "call" (fixedparam []) (const "42")))
-(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
-(top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
+; (store (addr "call") (define "call" (fixedparam ["num"]) (ref "num")))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(const "42")])))
+; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
+
+(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (lambda (fixedparam ["x"]) (ref "x")) [(const "42")])))
+(top-level-env (env-set (empty) "brouhaha_main" (addr "brouhaha_main")))
