@@ -1,62 +1,6 @@
-; small step rules require you to implement a stack
-; Control Env Kontinuations machine
-; (e, env, 'mt) -> CEK state -> CEK state -> ....... -> (v, env, 'mt)
-; (x, p, k) -> lookup in p for x
-; (x, p, k) -> (p(x), k)
-; ((lam (x) eb), p, k) -> (<((lam (x) eb), p), k)
-; ((ef, ea), p, k) -> (ef, p, <ea, p, k>)
-;                                      -> (vf, (ea, p, k)) -> (ea, p, <vf, k>)
-;                                                                           -> (va, (vf, k)) -> (vf, va, k)
-; (<(lam (x) eb), px>, va, k) -> (eb, p[x -> va], k)
-
-
-
-;IMPLEMENTING IF
-;(if cond true false)
-;;  eval cond and put true and false as kont frames (with their own pointers)
-;;
-
-; TEST CASES
-;(eval (app (lam "x" (ref "x")) (lam "y" (ref "y"))) (empty) (halt))
-
-;(eval (app (lam "x" (app (ref "x") (lam "c" (ref "c")))) (lam "z" (ref "z"))) (empty) (halt))
-;;((lam (x) (x (lam (c) c))) (lam (z) z))
-
-; (eval (app (lam "x" (ref "x")) (const 1)) (empty) (halt))
-;(eval (if (bool "f") (const 1) (const 0)))
-;(eval (if (if (bool "t") (bool "f") (bool "t")) (const 1) (app (lam "x" (ref "x")) (lam "y" (ref "y")))))
-;(prim "+" [(const 1) (const 2)]) ;-> (const 3)
-; (prims op ["+" "-" "*" "/"])
-
-;(U (lam "x" (app (ref "x") (ref "x"))))
-; (Y (app {U} 
-;     (lam "y" 
-;         (lam "f" 
-;             (app (ref "f") (lam "x" 
-;                 (app (app (app {U} (ref "y")) (ref "f")) (ref "x"))))))))
-
-; (eval   (app {Y} 
-;             (lam "z" 
-;                 (lam "c" 
-;                     (if {== (ref "c") (const 0)}
-;                         (const 1) 
-;                         (app (mult (ref "c") 
-;                              (app (ref "z") 
-;                                 (app (minus (ref "c") (const 1)))
-;                                     )))))) (const 5))))
-
-;(eval (app {U} {U}))
-;(eval {Y})
-;(eval (app (lam "x" (ref "x")) (lam "y" (ref "y"))))
-
-
-
-;---------------------------------------------------------------------------------;
-;                                      NOTES                                      ;
-;---------------------------------------------------------------------------------;
-
-
-
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;START RULE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
 [(define "brouhaha_main" (fixedparam []) body)
  -->
  (eval body {top-level-env} (halt))]
@@ -64,27 +8,19 @@
 
 
 
-; ;EVAL CASES
-; ;This is the injection function (allows you to just eval the expression without manually adding (empty) and (halt))
-; [(eval exp)
-;  -->
-;  (eval exp (empty) (halt))]
-
-;numbers
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EVAL CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+;BASE PRIMITIVES
 [(eval (const x) env kont)
  -->
  (ret (const x) kont)]
 
-;boolean
 [(eval (bool x) env kont)
  -->
  (ret (bool x) kont)]
 
-;if case
-[(eval (if guard tExp fExp) env kont)
- -->
- (eval guard env (if-k tExp fExp env kont))]
-
+;FUNCTION AND VARIABLE REFERENCES
 [(eval (ref x) env kont)
  (=/= {store {env-map env x}} (define fname (fixedparam [args ...]) body))
  -->
@@ -95,7 +31,7 @@
  -->
  (eval (func (fixedparam args) body) env kont)]
 
-
+;LAMBDA AND FUNC
 [(eval (lambda (fixedparam [xs ...]) eb) env kont)
  -->
  (ret (clo (lambda (fixedparam [xs ...]) eb) env) kont)]
@@ -104,6 +40,7 @@
  -->
  (ret (clo (func (fixedparam args) body) env) kont)]
 
+;APP AND APPLY
 [(eval (app ef [eas ...]) env kont)
  -->
  (eval ef env (appk [] [eas ...] env kont))]
@@ -112,11 +49,22 @@
  -->
  (eval ef env (ar ea env kont))]
 
+;IF CASE
+[(eval (if guard tExp fExp) env kont)
+ -->
+ (eval guard env (if-k tExp fExp env kont))]
+
+ ;LET CASE
+ [(eval (let [bindings ...] body) env kont)
+  -->
+  ()]
 
 
 
 
-;RET CASES
+;---------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;RET CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;---------------------------------------------------------------------;
 [(ret v (appk [vs ...] [ea0 ea-rest ...] env kont))
  -->
  (eval ea0 env (appk [vs ... v] [ea-rest ...] env kont))]
@@ -149,8 +97,9 @@
 
 
 
-
-;APPLY CASES
+;---------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;APPLY CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;---------------------------------------------------------------------;
 [(apply (clo (lam x eb) envlam) va kont)
  -->
  (store (addr x) va)
@@ -162,27 +111,36 @@
 ; (env-set (empty ) brouhaha_main (addr brouhaha_main))) 
 ; ($lst (const 42) ($nil 0)) (halt ))
 [(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
+ (ext-semi !(do-ext-all envlam xs vs) envlam)
  --> 
  (store (kaddr eb) kont)
- (eval eb {ext-all !(do-ext-all envlam xs vs)} (kaddr eb))]
+ (eval eb {ext-all (do-ext-all env [] [])} (kaddr eb))]
+
 
 ; (apply (clo (func (fixedparam ($lst num ($nil 0))) (ref num)) 
 ; (env-set (env-set (empty ) brouhaha_main (addr brouhaha_main)) call (addr call))) 
 ; ($lst (const 42) ($nil 0)) (halt ))
 [(apply (clo (func (fixedparam [args ...]) body) envfunc) [vs ...] kont)
+ (ext-semi !(do-ext-all envfunc args vs) envfunc)
  --> 
  (store (kaddr body) kont)
- (eval body {ext-all !(do-ext-all envfunc args vs)} (kaddr body))]
+ (eval body {ext-all (do-ext-all env [] [])} (kaddr body))]
+
+;(ext-all (do-ext-all (env-set (env-set (empty ) brouhaha_main (addr brouhaha_main)) x (addr x)) ($nil 0) ($nil 0)) (env-set (env-set (empty ) brouhaha_main (addr brouhaha_main)) x (addr x)))
 
 
- ;DO-EXT-ALL
+
+
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
  [(do-ext-all env [x x-rest ...] [v v-rest ...])
  -->
  (store (addr x) v)
  (do-ext-all (env-set env x (addr x)) x-rest v-rest)]
  
+ (ext-semi ?(do-ext-all env _ _) env)
  (ext-all ?(do-ext-all env [] []) env)
-
 
 
 
@@ -195,9 +153,22 @@
  (env-map ?(env-set env x _) y {env-map env y})]
 
 
+
+
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;TEST CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+;LAMBDA APPLICATION CASE
 ; (store (addr "call") (define "call" (fixedparam ["num"]) (ref "num")))
 ; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(const "42")])))
 ; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
-(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (lambda (fixedparam ["x"]) (ref "x")) [(const "42")])))
-(top-level-env (env-set (empty) "brouhaha_main" (addr "brouhaha_main")))
+;FUNCTION CALL/APPLICATION CASE
+; (store (addr "call") (define "call" (fixedparam ["num1""num2"]) (if (bool "f") (ref "num1") (ref "num2"))))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(const "1")(const "2")])))
+; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
+
+;LET CASE
+(store (addr "call") (define "call" (fixedparam []) (let [ (binding "x82714" (quote 5)) (binding "y82715" (quote 42))] (ref "x82714"))))
+(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+(top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))

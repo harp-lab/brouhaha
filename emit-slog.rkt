@@ -30,7 +30,7 @@
            [`(lambda ,(? symbol? x) ,body)
             (foldr string-append "" `("(lambda (varparam [" ,(sym->qstr x) "]) " ,(write-exp body) ")"))]
            [`(let ([,xs ,es] ...) ,body)
-            (foldr string-append "" `("let [" ,@(foldr (lambda (x e acc) (cons `(binding ,x ,e) acc)) `() xs es) "] " ,(write-exp body) ")"))]
+            (foldr string-append "" `("(let [" ,(foldr (lambda (x e acc) (string-append (format " (binding \"~a\" ~a)" x e) acc)) "" xs es) "] " ,(write-exp body) ")"))]
            [`(if ,grd ,tExp ,fExp)
             (foldr string-append "" `("(if " ,(write-exp grd) " " ,(write-exp tExp) " " ,(write-exp fExp) ")"))]
            [`(apply-prim ,op ,e1)
@@ -60,10 +60,10 @@
   (void))
 
 
-;;; (write-program-for-slog `((define (call num) num)
-;;;   (define (brouhaha_main) (call 42))))
+(write-program-for-slog `((define (call) (let ((x82714 '5) (y82715 '42)) x82714))
+  (define (brouhaha_main) (call))))
 
-(write-program-for-slog `((define (brouhaha_main) ((lambda (x) x) 42))))
+;;; (write-program-for-slog `((define (brouhaha_main) ((lambda (x) x) 42))))
 
 ;;;    (write-program-for-slog '((define (+ . lst) (apply-prim + lst))
 ;;;    (define (call)

@@ -1,5 +1,3 @@
-(define (call)
-    (+ 1 2))
 
-(define (brouhaha_main)
-    (call))
+
+(let ([]) 5) 

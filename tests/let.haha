@@ -1,0 +1,6 @@
+(define (call)
+    (let ([x 5] [y 42])
+        x))
+
+(define (brouhaha_main)
+    (call))
