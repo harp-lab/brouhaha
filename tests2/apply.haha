@@ -1,4 +1,0 @@
-(define (call) 
-    (apply + (list 1 2 3)))
-    
-(define (brouhaha_main) (call))

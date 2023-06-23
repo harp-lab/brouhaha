@@ -1,6 +1,0 @@
-(define (call)
-     (not #f))
-
-            
-    
-(define (brouhaha_main) (call))
