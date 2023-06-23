@@ -10,7 +10,7 @@
   (append-line filepath "#include<stdio.h>" 'replace)
   (append-line filepath "#include<string.h>" )
   (append-line filepath "#include \"gmp_func.h\"" )
-  (append-line filepath (string-append "#include " "\"../../prelude.h\""))
+  (append-line filepath (string-append "#include " "\"../../prelude.hpp\""))
   ; (append-line filepath "using namespace std;\n" )
 
   ; (define top-lvl-procs
@@ -92,7 +92,6 @@
       ;  (match (p-dbg val)
        (match val 
          [`(quote ,(? flonum? val) )
-         (pretty-print "lol")
           (define mpfVar (gensym 'mpfvar))
 
           (append-line filepath (format "mpf_t* ~a = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));" mpfVar))

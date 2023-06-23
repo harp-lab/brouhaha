@@ -1,25 +1,6 @@
-# cmake_minimum_required(VERSION 3.0.0)
-# project(brouhaha VERSION 0.1.0)
-
-# include(CTest)
-# enable_testing()
-
-# # add_executable(brouhaha main.cpp)
-# add_executable(brouhaha tests/easy/easy_cpp_program.cpp)
-# # add_executable(brouhaha tests/minus/minus_cpp_program.cpp)
-
-# set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-# set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-# include(CPack)
-# set(CMAKE_CXX_COMPILER "/Library/Developer/CommandLineTools/usr/bin/g++")
-# set(CMAKE_C_COMPILER "/Library/Developer/CommandLineTools/usr/bin/gcc")
-
-
 cmake_minimum_required(VERSION 3.0.0)
-project(brouhaha VERSION 0.1.0)
+project(brouhaha VERSION 0.1.0 LANGUAGES CXX)
 
-include(CTest)
-enable_testing()
 
 # Set additional directories
 set(DEPENDENCIES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies)
@@ -33,55 +14,66 @@ set(BDWGC_LIBRARY_DIR ${DEPENDENCIES_DIR}/bdwgc/lib)
 set(GMP_LIBRARY_DIR ${DEPENDENCIES_DIR}/gmp/lib)
 set(VALGRIND_LIBRARY_DIR ${DEPENDENCIES_DIR}/valgrind/lib)
 
-# Include directories
-include_directories(${DEPENDENCIES_DIR} ${BDWGC_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${VALGRIND_INCLUDE_DIR} ${HAMT_INCLUDE_DIR})
 
-# Link directories
-link_directories(${DEPENDENCIES_DIR} ${BDWGC_LIBRARY_DIR} ${GMP_LIBRARY_DIR} ${VALGRIND_LIBRARY_DIR})
+set(CMAKE_CXX_STANDARD 14) # requiring 14 as google test requires 14
+set(CMAKE_CXX_STANDARD_REQUIRED ON) # Not sure what this does
+set(CMAKE_CXX_EXTENSIONS OFF) # Not sure what this does
+
+include(FetchContent)
+
+option(BUILD_GMOCK OFF)
+option(INSTALL_GTEST OFF)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG        release-1.11.0
+)
+FetchContent_MakeAvailable(googletest)
+
+include(CTest)
+enable_testing()
+
+add_library(prelude prelude.hpp)
+set_target_properties(prelude PROPERTIES LINKER_LANGUAGE CXX)
+
+add_subdirectory(runtime-testing)
+add_subdirectory(tests)
+
+
 
 # Add executable
 # add_executable(brouhaha tests2/easy/easy_cpp_program.cpp)
-# add_executable(brouhaha tests2/and/and_cpp_program.cpp)
-# add_executable(brouhaha tests2/apply/apply_cpp_program.cpp)
-# add_executable(brouhaha tests2/even/even_cpp_program.cpp)
-# add_executable(brouhaha tests2/fact/fact_cpp_program.cpp)
-# add_executable(brouhaha tests2/filter/filter_cpp_program.cpp)
-# add_executable(brouhaha tests2/foldl/foldl_cpp_program.cpp)
-# add_executable(brouhaha tests2/minus/minus_cpp_program.cpp)
-# add_executable(brouhaha tests2/modulo/modulo_cpp_program.cpp)
-# add_executable(brouhaha tests2/multiply/multiply_cpp_program.cpp)
-# add_executable(brouhaha tests2/not/not_cpp_program.cpp)
-# add_executable(brouhaha tests2/null/null_cpp_program.cpp)
-# add_executable(brouhaha tests2/or/or_cpp_program.cpp)
-# add_executable(brouhaha tests2/string/string_cpp_program.cpp)
-# add_executable(brouhaha tests2/sym_equal/sym_equal_cpp_program.cpp)
-# add_executable(brouhaha tests2/sym_gt/sym_gt_cpp_program.cpp)
-# add_executable(brouhaha tests2/sym_gteq/sym_gteq_cpp_program.cpp)
-# add_executable(brouhaha tests2/sym_lt/sym_lt_cpp_program.cpp)
-# add_executable(brouhaha tests2/hash-ref/hash-ref_cpp_program.cpp)
-# add_executable(brouhaha tests2/hash-set/hash-set_cpp_program.cpp)
-# add_executable(brouhaha tests2/hash-has-key/hash-has-key_cpp_program.cpp)
-# add_executable(brouhaha tests2/hash-count/hash-count_cpp_program.cpp)
-# add_executable(brouhaha tests2/divison/divison_cpp_program.cpp)
-# add_executable(brouhaha tests/float/float_cpp_program.cpp)
-# add_executable(brouhaha easy_cpp_program.cpp)
-# add_executable(brouhaha dummy.cpp)
-# add_executable(brouhaha strings_trails.cpp)
-# add_executable(brouhaha tests/minus/minus_cpp_program.cpp)
-# add_executable(brouhaha tests/filter/filter_cpp_program.cpp)
-# add_executable(brouhaha tests/apply/apply_cpp_program.cpp)
-# add_executable(brouhaha tests/fact/fact_cpp_program.cpp)
-# add_executable(brouhaha tests4/string/string_cpp_program.cpp)
-# add_executable(brouhaha tests4/hash-string/hash-string_cpp_program.cpp)
-# add_executable(brouhaha tests/foldl/foldl_cpp_program.cpp)
- 
-# ../dependencies/valgrind/bin/valgrind --leak-check=full ./brouhaha
+
+# # ../dependencies/valgrind/bin/valgrind --leak-check=full ./brouhaha
+
+find_library(gmp_lib 
+    NAMES gmp
+    PATHS ${DEPENDENCIES_DIR}
+    REQUIRED)
+
+find_library(gmpxx_lib 
+    NAMES gmpxx
+    PATHS ${DEPENDENCIES_DIR}
+    REQUIRED)
+
+find_library(gc_lib 
+    NAMES gc
+    PATHS ${DEPENDENCIES_DIR}
+    REQUIRED)
+
+find_library(gccpp_lib 
+    NAMES gccpp
+    PATHS ${DEPENDENCIES_DIR}
+    REQUIRED)
+
+# target_include_directories(brouhaha PRIVATE ${DEPENDENCIES_DIR} ${BDWGC_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${VALGRIND_INCLUDE_DIR} ${HAMT_INCLUDE_DIR})
+target_include_directories(prelude PUBLIC ${DEPENDENCIES_DIR} ${BDWGC_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${VALGRIND_INCLUDE_DIR} ${HAMT_INCLUDE_DIR})
+# # Link libraries
+# target_link_libraries(brouhaha PRIVATE ${gmpxx_lib} ${gmp_lib} ${gc_lib} ${gccpp_lib})
+target_link_libraries(prelude PUBLIC ${gmpxx_lib} ${gmp_lib} ${gc_lib} ${gccpp_lib})
+# # target_link_libraries(brouhaha PRIVATE gmpxx gmp gc gccpp)
 
 
-# Link libraries
-target_link_libraries(brouhaha PRIVATE gmpxx gmp gc gccpp)
-
-
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+# set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+# set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+# include(CPack)

@@ -1,6 +1,6 @@
-tests/*/*.out
-tests/*/
-tests/*/
+# tests/*/*.out
+# tests/*/
+# tests/*/output/
 tests2/*/*.out
 tests2/*/
 tests3/
@@ -22,3 +22,9 @@ todo.md
 strings_trails.cpp
 trial.py
 trial.txt
+copy_tests.sh
+set_answer.sh
+generate_test.sh
+cmake-notes.md
+grep_replace.sh
+runtime-testing/tests_info.md
