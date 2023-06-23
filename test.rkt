@@ -7,6 +7,7 @@
 (require "emit-cpp.rkt")
 (require "emit-slog.rkt")
 
+
 (define (write-to file content)
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
 
@@ -18,16 +19,16 @@
 
 (define (run-program directory program filename file-path prelude-path)
   ; (pretty-print (list directory program filename file-path prelude-path))
-  (define filename-string-ext (path->string filename))
-  (define filename-string (regexp-replace #rx"[.]haha$" filename-string-ext ""))
-  (define out-dir (string-append directory "/" filename-string))
+  (define filename-string-ext (path->string filename)) ; converting  #<path:apply.haha> to "apply.haha"
+  (define filename-string (regexp-replace #rx"[.]haha$" filename-string-ext "")) ; fname wo extension
+  (define out-dir (string-append directory "/" filename-string)) ; "tests2/" + "apply"
 
   (unless (directory-exists? out-dir)
-    ; (pretty-print out-dir)
-    (make-directory out-dir))
+    (pretty-print out-dir)
+    (make-directory out-dir)) ; create directory if it doesn't exist
 
-  (let* ([generate-filepath (lambda (suffix) (string-append out-dir "/" filename-string suffix))]
-         [compiled-program (compile (append (read-program prelude-path) (read-program file-path)))]
+  (let* ([generate-filepath (lambda (suffix) (string-append out-dir "/output/" filename-string suffix))] ; a lambda that takes the suffix and append it with path and the filename, suffix
+         [compiled-program (compile (append (read-program prelude-path) (read-program file-path)))] ; calling compile
          [desugar_prg (list-ref compiled-program 0)]
          [alphatize_prg (list-ref compiled-program 1)]
          [anf_prg (list-ref compiled-program 2)]
@@ -46,14 +47,14 @@
                    " and outputting to: "
                    (generate-filepath "_cpp_program.cpp")))
     (emit-cpp clo_conv_prg (generate-filepath "_cpp_program.cpp"))
-    
+
     ; (displayln (~a "Emitting Slog for: "
     ;                filename-string
     ;                " and outputting to: "
     ;                (generate-filepath "_slog.slog")))
     ; ; (write-to (generate-filepath "_slog.slog") (write-program-for-slog desugar_prg))
     ; (with-output-to-file (generate-filepath "_slog.slog") (lambda () (pretty-print (write-program-for-slog desugar_prg))) #:exists 'replace)
-    
+
     (for-each
      write-to
      (map generate-filepath
@@ -68,15 +69,19 @@
     (apply verify-correctness (cons filename-string results))))
 
 (define (read-direc directory)
-  (for-each (lambda (file)
-              (let ([full-path (build-path (current-directory) directory file)])
-                (when (and (file-exists? full-path) (regexp-match? #rx"[.]haha$" (path->string file)))
-                  (run-program directory
-                               (read-program full-path)
-                               file
-                               full-path
-                               (build-path (current-directory) "prelude.haha")))))
-            (directory-list directory)))
+  (for-each (lambda (dir)
+              (let ([dir-path (build-path (current-directory) directory dir)])
+                (when (directory-exists? dir-path)
+                (for-each (lambda (file) 
+                  (let ([file-path (build-path (current-directory) directory dir file)])
+                  (when (and (file-exists? file-path) (regexp-match? #rx"[.]haha$" (path->string file)))
+                    (run-program directory
+                                 (read-program file-path)
+                                 file
+                                 file-path
+                                 (build-path (current-directory) "prelude.haha"))))) (directory-list (build-path (current-directory) directory dir))))))
+              (directory-list directory)))
+
 
 (define (test-file user-file)
   ; (displayln (~a "File: " user-file))
@@ -91,7 +96,7 @@
 
 (define (main args)
   (cond
-    [(= (vector-length args) 0) (read-direc "tests2/")]
+    [(= (vector-length args) 0) (read-direc "tests4/")]
     [(and (= (vector-length args) 1) (directory-exists? (vector-ref args 0)))
      (read-direc (vector-ref args 0))]
     ; below is for individual files, not currently working
