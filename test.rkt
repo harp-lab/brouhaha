@@ -16,6 +16,10 @@
     [(and (equal? desugar alphatize) (equal? alphatize anf) (equal? anf cps) (equal? cps closure))
      (displayln (~a "Each output stage matched!\n"))]
     [else (displayln (~a "Your outputs did not match for " file "\n"))]))
+(define (verify-dir out-dir)
+  (unless (directory-exists? out-dir)
+    (pretty-print out-dir)
+    (make-directory out-dir))) ; create directory if it doesn't exist
 
 (define (run-program directory program filename file-path prelude-path)
   ; (pretty-print (list directory program filename file-path prelude-path))
@@ -23,11 +27,13 @@
   (define filename-string (regexp-replace #rx"[.]haha$" filename-string-ext "")) ; fname wo extension
   (define out-dir (string-append directory "/" filename-string)) ; "tests2/" + "apply"
 
-  (unless (directory-exists? out-dir)
-    (pretty-print out-dir)
-    (make-directory out-dir)) ; create directory if it doesn't exist
 
-  (let* ([generate-filepath (lambda (suffix) (string-append out-dir "/output/" filename-string suffix))] ; a lambda that takes the suffix and append it with path and the filename, suffix
+  ; (unless (directory-exists? out-dir)
+  ;   (pretty-print out-dir)
+  ;   (make-directory out-dir)) ; create directory if it doesn't exist
+
+  (let* ([generate-res-filepath (lambda (suffix) (string-append out-dir "/output/" filename-string suffix))] ; a lambda that takes the suffix and append it with path and the filename, suffix
+         [generate-comp-filepath (lambda (suffix) (string-append out-dir "/compiler-out/" filename-string suffix))]
          [compiled-program (compile (append (read-program prelude-path) (read-program file-path)))] ; calling compile
          [desugar_prg (list-ref compiled-program 0)]
          [alphatize_prg (list-ref compiled-program 1)]
@@ -40,13 +46,17 @@
                         (interp anf_prg)
                         (interp-cps cps_prg)
                         (interp-closure clo_conv_prg))])
+                        
+    (verify-dir (string-append out-dir "/output/"))
+    (verify-dir (string-append out-dir "/compiler-out/"))
     (displayln (~a "Now running: " filename-string))
 
+    
     (displayln (~a "Emitting C++ for: "
                    filename-string
                    " and outputting to: "
-                   (generate-filepath "_cpp_program.cpp")))
-    (emit-cpp clo_conv_prg (generate-filepath "_cpp_program.cpp"))
+                   (generate-comp-filepath "_cpp_program.cpp")))
+    (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp"))
 
     ; (displayln (~a "Emitting Slog for: "
     ;                filename-string
@@ -57,13 +67,13 @@
 
     (for-each
      write-to
-     (map generate-filepath
+     (map generate-comp-filepath
           (list "_compile.out" "_desugar.out" "_alphatize.out" "_anf.out" "_cps.out" "_closure.out"))
      compiled-program)
     (for-each
      write-to
      (map
-      generate-filepath
+      generate-res-filepath
       (list "_desugar_res.out" "_alphatize_res.out" "_anf_res.out" "_cps_res.out" "_closure_res.out"))
      results)
     (apply verify-correctness (cons filename-string results))))
@@ -72,15 +82,15 @@
   (for-each (lambda (dir)
               (let ([dir-path (build-path (current-directory) directory dir)])
                 (when (directory-exists? dir-path)
-                (for-each (lambda (file) 
-                  (let ([file-path (build-path (current-directory) directory dir file)])
-                  (when (and (file-exists? file-path) (regexp-match? #rx"[.]haha$" (path->string file)))
-                    (run-program directory
-                                 (read-program file-path)
-                                 file
-                                 file-path
-                                 (build-path (current-directory) "prelude.haha"))))) (directory-list (build-path (current-directory) directory dir))))))
-              (directory-list directory)))
+                  (for-each (lambda (file)
+                              (let ([file-path (build-path (current-directory) directory dir file)])
+                                (when (and (file-exists? file-path) (regexp-match? #rx"[.]haha$" (path->string file)))
+                                  (run-program directory
+                                               (read-program file-path)
+                                               file
+                                               file-path
+                                               (build-path (current-directory) "prelude.haha"))))) (directory-list (build-path (current-directory) directory dir))))))
+            (directory-list directory)))
 
 
 (define (test-file user-file)
