@@ -55,9 +55,9 @@
  (eval guard env (if-k tExp fExp env kont))]
 
  ;LET CASE
- [(eval (let [bindings ...] body) env kont)
+ [(eval (let [(binding lhs rhs) bind-rest ...] body) env kont)
   -->
-  ()]
+  (eval rhs env (letk body [lhs] [] bind-rest env kont))]
 
 
 
@@ -65,6 +65,7 @@
 ;---------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;RET CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;---------------------------------------------------------------------;
+;LAMBDA AND FUNC
 [(ret v (appk [vs ...] [ea0 ea-rest ...] env kont))
  -->
  (eval ea0 env (appk [vs ... v] [ea-rest ...] env kont))]
@@ -73,6 +74,7 @@
  -->
  (apply vf [vs ... v] kont)]
 
+;APPLY CASE
 [(ret vf (ar ea env kont))
  -->
  (eval ea env (fn vf kont))]
@@ -85,7 +87,7 @@
  -->
  (ret v {store (kaddr eb)})]
 
-;if case
+;IF CASES
 [(ret (bool "t") (if-k tExp fExp env kont))
  --> 
  (eval tExp env kont)]
@@ -94,6 +96,16 @@
  --> 
  (eval fExp env kont)]
 
+;LET CASE
+[(ret v (letk body [xs ...] [vs ...] [(binding lhs rhs) bind-rest ...] env kont))
+ -->
+ (eval rhs env (letk body [xs ... lhs] [vs ... v] bind-rest env kont))]
+
+[(ret v (letk body [xs ...] [vs ...] [] envlet kont))
+ (ext-semi !(do-ext-all envlet xs [vs ... v]) env)
+ -->
+ (store (kaddr body) kont)
+ (eval body {ext-all (do-ext-all env [] [])} (kaddr body))]
 
 
 
@@ -169,6 +181,6 @@
 ; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
 ;LET CASE
-(store (addr "call") (define "call" (fixedparam []) (let [ (binding "x82714" (quote 5)) (binding "y82715" (quote 42))] (ref "x82714"))))
-(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+(store (addr "call") (define "call" (fixedparam ["num1""num2"]) (let [ (binding "x83113" "num1") (binding "y83114" "num2")] (ref "x83113"))))
+(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (const "5"))(quote (const "42"))])))
 (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))

@@ -14,11 +14,13 @@
        (format "(store (addr \"~a\") (define \"~a\" (varparam ~a) ~a))\n" fname fname (sym->qstr params) (write-exp body))]
     )
   )
-  (define (write-exp exp)
+  (define (write-exp exp [ref? #t])
     (match exp
            [`',e (format "(quote ~a)" (write-exp e))]
            [(? symbol? x)
-            (format "(ref \"~a\")" x)]
+              (if ref?
+               (format "(ref \"~a\")" x)
+               (format "\"~a\"" x))]
            [(? boolean? x)
             (if x
              "(bool \"t\")"
@@ -30,7 +32,7 @@
            [`(lambda ,(? symbol? x) ,body)
             (foldr string-append "" `("(lambda (varparam [" ,(sym->qstr x) "]) " ,(write-exp body) ")"))]
            [`(let ([,xs ,es] ...) ,body)
-            (foldr string-append "" `("(let [" ,(foldr (lambda (x e acc) (string-append (format " (binding \"~a\" ~a)" x e) acc)) "" xs es) "] " ,(write-exp body) ")"))]
+            (foldr string-append "" `("(let [" ,(foldr (lambda (x e acc) (string-append (format " (binding ~a ~a)" (sym->qstr x) (write-exp e #f)) acc)) "" xs es) "] " ,(write-exp body) ")"))]
            [`(if ,grd ,tExp ,fExp)
             (foldr string-append "" `("(if " ,(write-exp grd) " " ,(write-exp tExp) " " ,(write-exp fExp) ")"))]
            [`(apply-prim ,op ,e1)
@@ -60,8 +62,8 @@
   (void))
 
 
-(write-program-for-slog `((define (call) (let ((x82714 '5) (y82715 '42)) x82714))
-  (define (brouhaha_main) (call))))
+(write-program-for-slog `((define (call num1 num2) (let ((x83113 num1) (y83114 num2)) x83113))
+  (define (brouhaha_main) (call '5 '42))))
 
 ;;; (write-program-for-slog `((define (brouhaha_main) ((lambda (x) x) 42))))
 
