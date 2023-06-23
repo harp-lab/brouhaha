@@ -1,5 +1,0 @@
-(define (call)
-    (hash-has-key? (hash 100 80 10 2) 5))
-
-(define (brouhaha_main)
-    (call))

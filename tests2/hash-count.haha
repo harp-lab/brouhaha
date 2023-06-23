@@ -1,5 +1,0 @@
-(define (call)
-    (hash-count (hash 100 80 10 2 25 30)))
-
-(define (brouhaha_main)
-    (call))

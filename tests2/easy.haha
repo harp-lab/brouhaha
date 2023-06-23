@@ -1,5 +1,0 @@
-(define (call num1 num2)
-    (if #t num1 num2))
-
-(define (brouhaha_main)
-    (call 1 2))
