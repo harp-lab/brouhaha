@@ -5,7 +5,6 @@
 
 (define (- . lst)
   (apply-prim - lst))
-; To add a length function here
 
 (define (* . lst)
   (apply-prim * lst))
@@ -58,12 +57,6 @@
 (define (list . x)
   x)
 
-; (define (and . lst)
-;   (apply-prim and lst))
-
-; (define (or . lst)
-;   (apply-prim or lst))
-
 (define (member? x lst)
   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
 
@@ -102,15 +95,6 @@
 (define (append lst1 lst2)
   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
 
-; hash-prims to support
-; (prim hash) // takes in a list of key and value pairs (hash k1 v1 k2 v2 ...) and makes a hash
-; (prim hash-ref h k) // takes in a hash and a key and returns the value
-; (prim hash-set h k v) // takes in a hash and a key and a value and update or insert the key
-; (prim hash-keys h) // gets a cons list of keys
-; (prim hash-has-key? h k) //takes a hash and a key and checks if it is there
-; (prim hash-count h) // returns the count of keys hashed in the hash provided
-; interfaces expected defined on https://docs.racket-lang.org/reference/hashtables.html#
-
 (define (hash . lst)
   (apply-prim hash lst))
 
@@ -118,13 +102,13 @@
   (prim hash-ref h k))
 
 (define (hash-set h k v)
-   (prim hash-set h k v))
+  (prim hash-set h k v))
 
 ; (define (hash-keys h)
 ;    (prim hash-keys h))
 
 (define (hash-has-key? h k)
-   (prim hash-has-key? h k))
+  (prim hash-has-key? h k))
 
 (define (hash-count h)
   (prim hash-count h))

@@ -22,10 +22,10 @@
 ; (require print-debug/print-dbg)
 (define (read-program filename)
   (with-input-from-file filename
-    (lambda ()
-      (let ([bytes (read-bytes (file-size filename))])
-        (with-input-from-string (bytes->string/utf-8 bytes)
-          (lambda () (read-all (current-input-port))))))))
+                        (lambda ()
+                          (let ([bytes (read-bytes (file-size filename))])
+                            (with-input-from-string (bytes->string/utf-8 bytes)
+                                                    (lambda () (read-all (current-input-port))))))))
 
 (define (read-all in)
   (let loop ([exprs '()])
@@ -35,8 +35,7 @@
   (define (unroll-args args body)
     (match args
       [(? symbol? x) `(let ([,x vargs]) ,body)]
-      [`(,(? symbol? x) . ,rst)
-       `(let ([,x (car vargs)] [vargs (cdr vargs)]) ,(unroll-args rst body))]
+      [`(,(? symbol? x) . ,rst) `(let ([,x (car vargs)] [vargs (cdr vargs)]) ,(unroll-args rst body))]
       [_ body]))
   (define (desugar-exp exp)
     (match exp
@@ -50,10 +49,10 @@
       [`(lambda (,xs ...) ,body) `(lambda ,xs ,(desugar-exp body))]
       [`(lambda ,(? symbol? x) ,body) `(lambda ,x ,(desugar-exp body))]
       [`(lambda ,args ,body) (desugar-exp `(lambda vargs ,(unroll-args args body)))]
-      [`(and)`',#t]
+      [`(and) `',#t]
       [`(and ,e0) (desugar-exp e0)]
       [`(and ,e0 ,eas ...) `(if ,(desugar-exp e0) ,(desugar-exp `(and ,@eas)) '#f)]
-      [`(or)`',#f]
+      [`(or) `',#f]
       [`(or ,e0) (desugar-exp e0)]
       [`(or ,e0 ,eas ...) `(if ,(desugar-exp e0) ,(desugar-exp e0) ,(desugar-exp `(or ,@eas)))]
       [`(not ,e0) `(if ,(desugar-exp e0) '#f '#t)]
@@ -177,8 +176,7 @@
        (define x+ (gensym x))
        `(lambda ,x+ (let ([,cx (prim car ,x+)]) (let ([,x (prim cdr ,x+)]) ,(T e0 cx))))]
       [(? symbol? x) x]
-      [`',dat `',dat]
-      ))
+      [`',dat `',dat]))
   (define (T e cae)
     (if (not (symbol? cae))
         (let ([f (gensym 'f)]) `(let ([,f ,cae]) ,(T e f)))
@@ -256,7 +254,7 @@
                    envlist)))
      (list (set-remove (set-union envvars freevars) x)
            `(let ([,x (make-closure ,fx ,@envlist)]) ,e0+)
-           `(,@procs0+ ,@procs1+ (proc (,fx ,envx ,@xs) ,body++) ))]
+           `(,@procs0+ ,@procs1+ (proc (,fx ,envx ,@xs) ,body++)))]
     [`(let ([,x (lambda ,arg ,body)]) ,e0)
      (match-define `(,freevars ,e0+ ,procs0+) (T-bottom-up e0))
      (match-define `(,freelambda ,body+ ,procs1+) (T-bottom-up body))
