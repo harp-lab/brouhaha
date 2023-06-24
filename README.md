@@ -72,6 +72,8 @@ modulo
 < 
 <= 
 >= 
+and
+or
 null? 
 equal? 
 eq? 
