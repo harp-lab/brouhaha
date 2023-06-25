@@ -104,13 +104,13 @@
 
       # adds a test to be tracked by the cmake
       add_test(${TEST_NAME}_test ${TEST_NAME}_test)")))
-  
+
 (define (verify-driver driver-file)
   (unless (file-exists? driver-file)
     (displayln "Outputting the necessary C++ driver file")
     (write-to-c
-      driver-file
-      "#include <prelude.hpp>
+     driver-file
+     "#include <prelude.hpp>
         #include <testing.hpp>
         #include <filesystem>
         #include <gtest/gtest.h>
