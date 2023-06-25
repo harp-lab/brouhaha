@@ -1,7 +1,6 @@
 #lang racket
 
 (require "compile.rkt"
-         "verify.rkt"
          "utils.rkt"
          "interp-anf.rkt"
          "interp-cps.rkt"
