@@ -15,21 +15,19 @@
     [(and (equal? desugar alphatize) (equal? alphatize anf) (equal? anf cps) (equal? cps closure))
      (displayln (~a "Each output stage matched!\n"))]
     [else (displayln (~a "Your outputs did not match for " file "\n"))]))
+
 (define (verify-dir out-dir)
   (unless (directory-exists? out-dir)
     (pretty-print out-dir)
-    (make-directory out-dir))) ; create directory if it doesn't exist
+    (make-directory out-dir)))
 
 (define (run-program directory program filename file-path prelude-path)
-  ; (pretty-print (list directory program filename file-path prelude-path))
+  (pretty-print (list directory program filename file-path prelude-path))
   (define filename-string-ext
     (path->string filename)) ; converting  #<path:apply.haha> to "apply.haha"
   (define filename-string (regexp-replace #rx"[.]haha$" filename-string-ext "")) ; fname wo extension
   (define out-dir (string-append directory "/" filename-string)) ; "tests2/" + "apply"
-
-  ; (unless (directory-exists? out-dir)
-  ;   (pretty-print out-dir)
-  ;   (make-directory out-dir)) ; create directory if it doesn't exist
+  (verify-dir out-dir)
 
   (let* ([generate-res-filepath
           (lambda (suffix)
@@ -37,7 +35,7 @@
              out-dir
              "/output/"
              filename-string
-             suffix))] ; a lambda that takes the suffix and append it with path and the filename, suffix
+             suffix))] 
          [generate-comp-filepath
           (lambda (suffix) (string-append out-dir "/compiler-out/" filename-string suffix))]
          [compiled-program (compile (append (read-program prelude-path)
@@ -54,6 +52,7 @@
                         (interp-cps cps_prg)
                         (interp-closure clo_conv_prg))])
 
+    (verify-dir out-dir)
     (verify-dir (string-append out-dir "/output/"))
     (verify-dir (string-append out-dir "/compiler-out/"))
     (displayln (~a "Now running: " filename-string))
@@ -103,10 +102,12 @@
 (define (test-file user-file)
   ; (displayln (~a "File: " user-file))
   (define direc (regexp-replace #rx"[A-Za-z0-9]+\\.haha$" user-file ""))
-  (let ([full-path (build-path (current-directory) user-file)])
+  (let ([full-path (build-path (current-directory) user-file)]
+        [create-path (build-path (current-directory) direc)])
     (run-program direc
                  (read-program full-path)
-                 (resolve-path user-file)
+                 (string->path "\\")
+                 ; (resolve-path user-file)
                  ; (regexp-replace #rx".*/" user-file "")
                  full-path
                  (build-path (current-directory) "prelude.haha"))))
@@ -116,7 +117,6 @@
     [(= (vector-length args) 0) (read-direc "tests/")]
     [(and (= (vector-length args) 1) (directory-exists? (vector-ref args 0)))
      (read-direc (vector-ref args 0))]
-    ; below is for individual files, not currently working
     [(and (= (vector-length args) 1) (file-exists? (vector-ref args 0)))
      (test-file (vector-ref args 0))]
     [else (error "Invalid command line arguments. Please provide either a file or a directory.")]))

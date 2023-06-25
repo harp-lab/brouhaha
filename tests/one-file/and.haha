@@ -1,0 +1,7 @@
+(define (call)
+    (if (equal? 1 1)
+        "wow"
+        "not-wow"))
+
+(define (brouhaha_main)
+    (call))
