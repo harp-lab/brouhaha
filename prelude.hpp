@@ -396,10 +396,6 @@ u64 str_hash(void *val)
 
     return h;
 }
-// u64 str_hash(void* val)
-// {
-//  return 0;
-// }
 
 u64 hash_(void *val)
 {
@@ -425,6 +421,7 @@ u64 hash_(void *val)
         assert_type(false, "type passed to hash_ cannot be hashed");
     }
     }
+    return 0;
 }
 
 #pragma endregion

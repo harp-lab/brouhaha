@@ -63,7 +63,7 @@ find_library(gc_lib
 
 find_library(gccpp_lib 
     NAMES gccpp
-    PATHS ${DEPENDENCIES_DIR}
+    PATHS ${BDWGC_LIBRARY_DIR}
     REQUIRED)
 
 # target_include_directories(brouhaha PRIVATE ${DEPENDENCIES_DIR} ${BDWGC_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${VALGRIND_INCLUDE_DIR} ${HAMT_INCLUDE_DIR})
