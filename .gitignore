@@ -26,3 +26,6 @@ trial.txt
 cmake-notes.md
 *.sh
 runtime-testing/tests_info.md
+tin/
+brouhaha.rkt
+repl.rkt
