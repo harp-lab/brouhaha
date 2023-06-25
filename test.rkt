@@ -39,7 +39,7 @@
          [generate-comp-filepath
           (lambda (suffix) (string-append out-dir "/compiler-out/" filename-string suffix))]
          [compiled-program (compile (append (read-program prelude-path)
-                                            (read-program file-path)))] ; calling compile
+                                            (read-program file-path)))] 
          [desugar_prg (list-ref compiled-program 0)]
          [alphatize_prg (list-ref compiled-program 1)]
          [anf_prg (list-ref compiled-program 2)]
@@ -100,15 +100,11 @@
             (directory-list directory)))
 
 (define (test-file user-file)
-  ; (displayln (~a "File: " user-file))
   (define direc (regexp-replace #rx"[A-Za-z0-9]+\\.haha$" user-file ""))
-  (let ([full-path (build-path (current-directory) user-file)]
-        [create-path (build-path (current-directory) direc)])
+  (let ([full-path (build-path (current-directory) user-file)])
     (run-program direc
                  (read-program full-path)
                  (string->path "\\")
-                 ; (resolve-path user-file)
-                 ; (regexp-replace #rx".*/" user-file "")
                  full-path
                  (build-path (current-directory) "prelude.haha"))))
 
