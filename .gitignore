@@ -2,6 +2,8 @@
 # tests/*/
 tests/*/output/*
 tests/*/compiler-out/*
+tests/*/CMakeLists.txt
+tests/*/driver.cpp
 tests2/*/*.out
 tests2/*/
 tests3/
@@ -29,3 +31,4 @@ runtime-testing/tests_info.md
 tin/
 brouhaha.rkt
 repl.rkt
+docs
