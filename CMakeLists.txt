@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.22.1)
 project(brouhaha VERSION 0.1.0 LANGUAGES CXX)
 
 
@@ -48,17 +48,17 @@ add_subdirectory(tests)
 
 find_library(gmp_lib 
     NAMES gmp
-    PATHS ${DEPENDENCIES_DIR}
+    PATHS ${GMP_LIBRARY_DIR}
     REQUIRED)
 
 find_library(gmpxx_lib 
     NAMES gmpxx
-    PATHS ${DEPENDENCIES_DIR}
+    PATHS ${GMP_LIBRARY_DIR}
     REQUIRED)
 
 find_library(gc_lib 
     NAMES gc
-    PATHS ${DEPENDENCIES_DIR}
+    PATHS ${BDWGC_LIBRARY_DIR}
     REQUIRED)
 
 find_library(gccpp_lib 
