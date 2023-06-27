@@ -26,7 +26,7 @@ option(INSTALL_GTEST OFF)
 FetchContent_Declare(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG        release-1.11.0
+  GIT_TAG        v1.13.0
 )
 FetchContent_MakeAvailable(googletest)
 
@@ -63,7 +63,7 @@ find_library(gc_lib
 
 find_library(gccpp_lib 
     NAMES gccpp
-    PATHS ${DEPENDENCIES_DIR}
+    PATHS ${BDWGC_LIBRARY_DIR}
     REQUIRED)
 
 # target_include_directories(brouhaha PRIVATE ${DEPENDENCIES_DIR} ${BDWGC_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${VALGRIND_INCLUDE_DIR} ${HAMT_INCLUDE_DIR})

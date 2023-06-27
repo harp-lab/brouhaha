@@ -105,72 +105,67 @@
       # adds a test to be tracked by the cmake
       add_test(${TEST_NAME}_test ${TEST_NAME}_test)")))
 
-(define (verify-driver driver-file)
+(define (verify-driver test-name driver-file)
   (unless (file-exists? driver-file)
     (displayln "Outputting the necessary C++ driver file")
     (write-to-c
      driver-file
-     "#include <prelude.hpp>
-        #include <testing.hpp>
-        #include <filesystem>
-        #include <gtest/gtest.h>
-        #include <iostream>
+     
+     (string-replace 
+     "
+      // Please don't edit this file, this file is created by test.rkt,
+      // to regenerate this file, delete the file and run this test using test.rkt
+      #include <prelude.hpp>
+      #include <testing.hpp>
+      #include <gtest/gtest.h>
+      #include <iostream>
 
-        std::string getCurrentDirectory() {
-            return std::filesystem::path(__FILE__).parent_path().filename();
-        }
+      TEST(test-name_Test, desugar)
+      {
+          std::string answer = readFileToString(\"../../../tests/test-name/answer\");
+          std::string desugar_res = readFileToString(\"../../../tests/test-name/output/test-name_desugar_res.out\");
+          ASSERT_EQ(answer, desugar_res);
+      }
 
-        std::string constructRelativePath(const std::string& subpath) {
-            return \"../../../tests/\" + getCurrentDirectory() + \"/\" + subpath;
-        }
+      TEST(test-name_Test, alphatize)
+      {
+          std::string answer = readFileToString(\"../../../tests/test-name/answer\");
+          std::string alphatize_res = readFileToString(\"../../../tests/test-name/output/test-name_alphatize_res.out\");
+          ASSERT_EQ(answer, alphatize_res);
+      }
 
-        TEST(and_Test, desugar)
-        {
-            std::string answer = readFileToString(constructRelativePath(\"answer\"));
-            std::string desugar_res = readFileToString(constructRelativePath(\"output/and_alphatize_res.out\"));
-            ASSERT_EQ(answer, desugar_res);
-        }
+      TEST(test-name_Test, anf)
+      {
+          std::string answer = readFileToString(\"../../../tests/test-name/answer\");
+          std::string anf_res = readFileToString(\"../../../tests/test-name/output/test-name_anf_res.out\");
+          ASSERT_EQ(answer, anf_res);
+      }
 
-        TEST(and_Test, alphatize)
-        {
-            std::string answer = readFileToString(constructRelativePath(\"answer\"));
-            std::string alphatize_res = readFileToString(constructRelativePath(\"output/and_alphatize_res.out\"));
-            ASSERT_EQ(answer, alphatize_res);
-        }
+      TEST(test-name_Test, closure)
+      {
+          std::string answer = readFileToString(\"../../../tests/test-name/answer\");
+          std::string closure_res = readFileToString(\"../../../tests/test-name/output/test-name_closure_res.out\");
+          ASSERT_EQ(answer, closure_res);
+      }
 
-        TEST(and_Test, anf)
-        {
-            std::string answer = readFileToString(constructRelativePath(\"answer\"));
-            std::string anf_res = readFileToString(constructRelativePath(\"output/and_anf_res.out\"));
-            ASSERT_EQ(answer, anf_res);
-        }
+      TEST(test-name_Test, cps)
+      {
+          std::string answer = readFileToString(\"../../../tests/test-name/answer\");
+          std::string cps_res = readFileToString(\"../../../tests/test-name/output/test-name_cps_res.out\");
+          ASSERT_EQ(answer, cps_res);
+      }
 
-        TEST(and_Test, closure)
-        {
-            std::string answer = readFileToString(constructRelativePath(\"answer\"));
-            std::string closure_res = readFileToString(constructRelativePath(\"output/and_closure_res.out\"));
-            ASSERT_EQ(answer, closure_res);
-        }
+      TEST(test-name_Test, CPP_test)
+      {
+          std::string answer = readFileToString(\"../../../tests/test-name/answer\");
+          std::string output = executeAndGetOutput(\"./test-name_exec\");
+          writeStringToFile(\"../../../tests/test-name/output/test-name_cpp_res.out\",output);
+          ASSERT_EQ(answer, output);
+      }
 
-        TEST(and_Test, cps)
-        {
-            std::string answer = readFileToString(constructRelativePath(\"answer\"));
-            std::string cps_res = readFileToString(constructRelativePath(\"output/and_cps_res.out\"));
-            ASSERT_EQ(answer, cps_res);
-        }
-
-        TEST(and_Test, CPP_test)
-        {
-            std::string answer = readFileToString(constructRelativePath(\"answer\"));
-            std::string output = executeAndGetOutput(\"./and_exec\");
-            writeStringToFile(constructRelativePath(\"output/and_cpp_res.out\"), output);
-            ASSERT_EQ(answer, output);
-        }
-
-        int main(int argc, char** argv)
-        {
-            ::testing::InitGoogleTest(&argc, argv);
-            return RUN_ALL_TESTS();
-        }
-        ")))
+      int main(int argc, char** argv)
+      {
+          ::testing::InitGoogleTest(&argc, argv);
+          return RUN_ALL_TESTS();
+      }" "test-name" test-name))))
 ; end further testing section

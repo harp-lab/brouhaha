@@ -2,6 +2,7 @@
 #include <functional>
 #include <iostream>
 #include <string>
+#include <sstream>
 
 // GMP and gc headers
 #include "gc.h"
@@ -39,7 +40,7 @@ enum DataType
 };
 
 struct hash_struct;
-void print_val(void *val);
+std::string print_val(void *val);
 void *equal_(void *arg1, void *arg2);
 
 #pragma region Types
@@ -396,10 +397,6 @@ u64 str_hash(void *val)
 
     return h;
 }
-// u64 str_hash(void* val)
-// {
-//  return 0;
-// }
 
 u64 hash_(void *val)
 {
@@ -425,6 +422,7 @@ u64 hash_(void *val)
         assert_type(false, "type passed to hash_ cannot be hashed");
     }
     }
+    return 0;
 }
 
 #pragma endregion
@@ -1009,6 +1007,25 @@ void *prim_cdr(void *val)
     void **cell = decode_cons(val);
     return cell[1];
 }
+
+std::string print_cons(void *lst)
+{
+    std::string ret_str;
+    ret_str.append("'(");
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        ret_str.append(print_val(cons_lst[0]));
+        if (!is_cons(cons_lst[1]))
+        {
+            break;
+        }
+        ret_str.append(" ");
+        lst = cons_lst[1];
+    }
+    ret_str.append(")");
+    return ret_str;
+}
 #pragma endregion
 
 #pragma region hash-prims
@@ -1037,6 +1054,25 @@ struct hash_struct
         print_val(this->val);
     }
 };
+
+// std::string print_hash(void *lst)
+// {
+//     std::string ret_str;
+//     ret_str.append("'#hash(");
+//     while (is_cons(lst))
+//     {
+//         void **cons_lst = decode_cons(lst);
+//         ret_str.append(print_val(cons_lst[0]));
+//         if (!is_cons(cons_lst[1]))
+//         {
+//             break;
+//         }
+//         ret_str.append(" ");
+//         lst = cons_lst[1];
+//     }
+//     ret_str.append(")");
+//     return ret_str;
+// }
 
 // we'd atleast want to accept and work with strings and numbers
 // but we will start with just numbers(mpz_t's)
@@ -1167,20 +1203,18 @@ void *prim_hash_u45keys(void *h)
 #pragma endregion
 
 #pragma region PRINTING
-void print_val(void *val)
+std::string print_val(void *val)
 {
-    // std::cout << get_tag(val) << std::endl;
     switch (get_tag(val))
     {
     case SPL:
-        // std::cout << "This is a boolean" << std::endl;
         if (decode_bool(val))
         {
-            std::cout << "#t" << std::endl;
+            return "#t";
         }
         else
         {
-            std::cout << "#f" << std::endl;
+            return "#f";
         }
         break;
     case HASH:
@@ -1197,31 +1231,39 @@ void print_val(void *val)
         // const hash_struct *const_key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(encode_str(str));
         const hash_struct *const_key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(encode_mpf(key));
         const hash_struct *hash_val = h->get(const_key);
-        hash_val->print_hash_val();
+        // hash_val->print_hash_val();
         break;
     }
     case MPZ:
     {
 
-        // std::cout << "This is an MPZ" << std::endl;
         mpz_t *final_mpz = decode_mpz(val);
-        std::cout << mpz_get_str(nullptr, 10, *final_mpz) << std::endl;
+        std::string str(mpz_get_str(nullptr, 10, *final_mpz));
+        return str;
         break;
     }
     case STRING:
     {
-        // std::cout << "This is a string" << std::endl;
-        std::string *str = decode_str(val);
-        std::cout << "\"" << *str << "\"" << std::endl;
+        std::string str = "\"" + *(decode_str(val)) + "\"";
+        return str;
         break;
     }
     case MPF:
     {
-        // std::cout << "This is a float" << std::endl;
         mpf_t *final_mpf = decode_mpf(val);
-        gmp_printf("%.30Ff\n", final_mpf);
+        const char *boom;
+        char buffer[1000];
+        gmp_sprintf(buffer, "%.Ff", *final_mpf);
+        return std::string(buffer);
+        break;
+    }
+    case CONS:
+    {
+        return print_cons(val);
+        break;
     }
     }
+    return "unknown_data_type_print_val";
 }
 
 #pragma endregion
@@ -1233,11 +1275,7 @@ long numArgs;
 void *fhalt()
 {
     // std::cout << "In fhalt" << std::endl;
-    print_val(arg_buffer[2]);
+    std::cout << print_val(arg_buffer[2]) << std::endl;
+    // print_val(arg_buffer[2]);
     exit(1);
-}
-
-int test_lol(int a, int b)
-{
-    return a * b;
 }

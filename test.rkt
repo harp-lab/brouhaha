@@ -8,10 +8,11 @@
          "emit-cpp.rkt"
          "emit-slog.rkt")
 
+
 (define (write-to file content)
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
 
-(define (run-program directory program filename file-path prelude-path)
+(define (run-program directory filename file-path prelude-path)
   (with-handlers ([exn:fail?
                    (lambda (exn)
                      (displayln
@@ -26,7 +27,7 @@
     (define out-dir (string-append directory "/" filename-string)) ; "tests2/" + "apply"
 
     (verify-cmake (string-append out-dir "/CMakeLists.txt"))
-    (verify-driver (string-append out-dir "/driver.cpp"))
+    (verify-driver filename-string (string-append out-dir "/driver.cpp"))
     (verify-answer-file (string-append out-dir "/answer"))
 
     (let* ([generate-res-filepath
@@ -89,19 +90,17 @@
                                 (when (and (file-exists? file-path)
                                            (regexp-match? #rx"[.]haha$" (path->string file)))
                                   (run-program directory
-                                               (read-program file-path)
                                                file
                                                file-path
                                                (build-path (current-directory) "prelude.haha")))))
                             (directory-list (build-path (current-directory) directory dir))))))
             (directory-list directory)))
-
+; takes a relative path, cannot pass an absolute path
+; right now, can only support running individual files in the tests, not in tests2 or some place else
 (define (test-file user-file)
-  (define direc (regexp-replace #rx"[A-Za-z0-9]+\\.haha$" user-file ""))
   (let ([full-path (build-path (current-directory) user-file)])
-    (run-program direc
-                 (read-program full-path)
-                 (string->path "\\")
+    (run-program "tests" ; directory
+                 (string->path (car (regexp-match #rx"[A-Za-z0-9]+\\.haha$" user-file))) ; filename in the form #<path: apply.haha>
                  full-path
                  (build-path (current-directory) "prelude.haha"))))
 
@@ -110,7 +109,7 @@
     [(= (vector-length args) 0) (read-direc "tests/")]
     [(and (= (vector-length args) 1) (directory-exists? (vector-ref args 0)))
      (read-direc (vector-ref args 0))]
-    [(and (= (vector-length args) 1) (file-exists? (vector-ref args 0)))
+    [(and (= (vector-length args) 1) (file-exists? (vector-ref args 0))) ; racket test tests/easy/easy.haha
      (test-file (vector-ref args 0))]
     [else (error "Invalid command line arguments. Please provide either a file or a directory.")]))
 
