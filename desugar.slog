@@ -20,6 +20,17 @@
  -->
  (ret (bool x) kont)]
 
+[(eval (quote dat) env kont)
+ -->
+ (ret (quote dat) kont)]
+
+[(eval (string str) env kont)
+ -->
+ (ret (string str) kont)]
+
+
+
+
 ;FUNCTION AND VARIABLE REFERENCES
 [(eval (ref x) env kont)
  (=/= {store {env-map env x}} (define fname (fixedparam [args ...]) body))

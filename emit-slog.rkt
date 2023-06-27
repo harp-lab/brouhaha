@@ -29,6 +29,7 @@
       [(? symbol? x) (if ref? (format "(ref \"~a\")" x) (format "\"~a\"" x))]
       [(? boolean? x) (if x "(bool \"t\")" "(bool \"f\")")]
       [(? number? x) (format "(const \"~a\")" x)]
+      [(? string? x) (format "(string \"~a\")" x)]
       [`(lambda (,(? symbol? xs) ...) ,body)
        (foldr string-append
               ""
