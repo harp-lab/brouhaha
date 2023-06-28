@@ -98,10 +98,9 @@
  (eval rhs env (letk body [xs ... lhs] [vs ... v] bind-rest env kont))]
 
 [(ret v (letk body [xs ...] [vs ...] [] envlet kont))
- (ext-semi !(do-ext-all envlet xs [vs ... v]) env)
  -->
  (store (kaddr body) kont)
- (eval body {ext-all (do-ext-all env [] [])} (kaddr body))]
+ (eval body {ext-all !(do-ext-all envlet xs vs)} (kaddr body))]
 
 
 
@@ -128,17 +127,16 @@
  [(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
  --> 
  (store (kaddr eb) kont)
- (eval eb {ext-all (do-ext-all envlam xs vs)} (kaddr eb))]
+ (eval eb {ext-all !(do-ext-all envlam xs vs)} (kaddr eb))]
 
 
 ; (apply (clo (func (fixedparam ($lst num ($nil 0))) (ref num)) 
 ; (env-set (env-set (empty ) brouhaha_main (addr brouhaha_main)) call (addr call))) 
 ; ($lst (const 42) ($nil 0)) (halt ))
 [(apply (clo (func (fixedparam [args ...]) body) envfunc) [vs ...] kont)
- (ext-semi !(do-ext-all envfunc args vs) envfunc)
  --> 
  (store (kaddr body) kont)
- (eval body {ext-all (do-ext-all env [] [])} (kaddr body))]
+ (eval body {ext-all !(do-ext-all envfunc args vs)} (kaddr body))]
 
 ;(ext-all (do-ext-all (env-set (env-set (empty ) brouhaha_main (addr brouhaha_main)) x (addr x)) ($nil 0) ($nil 0)) (env-set (env-set (empty ) brouhaha_main (addr brouhaha_main)) x (addr x)))
 
@@ -148,14 +146,7 @@
 ;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
-;  [(do-ext-all env [x x-rest ...] [v v-rest ...])
-;  -->
-;  (store (addr x) v)
-;  (do-ext-all (env-set env x (addr x)) x-rest v-rest)]
- 
- ;(ext-semi ?(do-ext-all env _ _) env)
-
-;;REWRITE
+;DO-EXT-ALL/EXT-ALL
 [-->
  (ext-all ?(do-ext-all env [x x-rest ...] [v v-rest ...])
           {ext-all !(do-ext-all (env-set env x (addr x)) x-rest v-rest)})
@@ -181,14 +172,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;TEST CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
 ;LAMBDA APPLICATION CASE
-(store (addr "lam") (define "lam" (fixedparam ["x""y"]) (app (lambda (fixedparam ["a5737""b5738"]) (ref "b5738")) [(ref "x")(ref "y")])))
-(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "lam") [(quote (int "5"))(quote (int "6"))])))
-(top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "lam" (addr "lam")))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (lambda (fixedparam ["a5737""b5738"]) (ref "b5738")) [(quote (int "5"))(quote (int "6"))])))
+; (top-level-env (env-set (empty) "brouhaha_main" (addr "brouhaha_main")))
 
 ;FUNCTION CALL/APPLICATION CASE
-; (store (addr "call") (define "call" (fixedparam ["num1""num2"]) (if (bool "f") (ref "num1") (ref "num2"))))
-; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(const "1")(const "2")])))
-; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
+(store (addr "call") (define "call" (fixedparam ["num1""num2"]) (if (quote (bool "f")) (ref "num1") (ref "num2"))))
+(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (int "1"))(quote (int "2"))])))
+(top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
 ;LET CASE
 ; (store (addr "call") (define "call" (fixedparam ["num1""num2"]) (let [ (binding "x83113" "num1") (binding "y83114" "num2")] (ref "x83113"))))

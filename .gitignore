@@ -31,3 +31,4 @@ runtime-testing/tests_info.md
 tin/
 brouhaha.rkt
 repl.rkt
+slog-out/

@@ -1,5 +1,5 @@
-(define (call)
-    42)
+(define (call num1 num2)
+    (if #f num1 num2))
 
 (define (brouhaha_main)
-    (call))
+    (call 1 2))

@@ -1,5 +1,2 @@
-(define (lam x y)
-    ((lambda (a b) b) x y))
-
 (define (brouhaha_main)
-    (lam 5 6))
+    ((lambda (a b) b) 5 6))
