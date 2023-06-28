@@ -11,25 +11,10 @@
 ;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EVAL CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
-;BASE PRIMITIVES
-[(eval (const x) env kont)
- -->
- (ret (const x) kont)]
-
-[(eval (bool x) env kont)
- -->
- (ret (bool x) kont)]
-
+;BASE PRIMITIVE TYPES
 [(eval (quote dat) env kont)
  -->
- (ret (quote dat) kont)]
-
-[(eval (string str) env kont)
- -->
- (ret (string str) kont)]
-
-
-
+ (ret dat kont)]
 
 ;FUNCTION AND VARIABLE REFERENCES
 [(eval (ref x) env kont)
@@ -120,6 +105,7 @@
 
 
 
+
 ;---------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;APPLY CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;---------------------------------------------------------------------;
@@ -133,11 +119,16 @@
 ;(apply (clo (lambda (fixedparam ($lst x ($nil 0))) (ref x))
 ; (env-set (empty ) brouhaha_main (addr brouhaha_main))) 
 ; ($lst (const 42) ($nil 0)) (halt ))
-[(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
- (ext-semi !(do-ext-all envlam xs vs) envlam)
+; [(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
+;  (ext-semi !(do-ext-all envlam xs vs) envlam)
+;  --> 
+;  (store (kaddr eb) kont)
+;  (eval eb {ext-all (do-ext-all env [] [])} (kaddr eb))]
+
+ [(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
  --> 
  (store (kaddr eb) kont)
- (eval eb {ext-all (do-ext-all env [] [])} (kaddr eb))]
+ (eval eb {ext-all !(do-ext-all envlam xs vs)} (kaddr eb))]
 
 
 ; (apply (clo (func (fixedparam ($lst num ($nil 0))) (ref num)) 
@@ -157,13 +148,21 @@
 ;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
- [(do-ext-all env [x x-rest ...] [v v-rest ...])
- -->
- (store (addr x) v)
- (do-ext-all (env-set env x (addr x)) x-rest v-rest)]
+;  [(do-ext-all env [x x-rest ...] [v v-rest ...])
+;  -->
+;  (store (addr x) v)
+;  (do-ext-all (env-set env x (addr x)) x-rest v-rest)]
  
- (ext-semi ?(do-ext-all env _ _) env)
- (ext-all ?(do-ext-all env [] []) env)
+ ;(ext-semi ?(do-ext-all env _ _) env)
+
+;;REWRITE
+[-->
+ (ext-all ?(do-ext-all env [x x-rest ...] [v v-rest ...])
+          {ext-all !(do-ext-all (env-set env x (addr x)) x-rest v-rest)})
+ (store (addr x) v)]
+
+(ext-all ?(do-ext-all env [] []) env)
+
 
 
 
