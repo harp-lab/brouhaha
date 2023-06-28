@@ -85,3 +85,6 @@
 ;;;       '98))
 ;;;    (define (brouhaha_main) (call)))
 ;;;  )
+
+(write-program-for-slog `((define (lam x y) ((lambda (a5737 b5738) b5738) x y))
+  (define (brouhaha_main) (lam '5 '6))))
