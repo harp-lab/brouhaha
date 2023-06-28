@@ -128,7 +128,7 @@
  [(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
  --> 
  (store (kaddr eb) kont)
- (eval eb {ext-all !(do-ext-all envlam xs vs)} (kaddr eb))]
+ (eval eb {ext-all (do-ext-all envlam xs vs)} (kaddr eb))]
 
 
 ; (apply (clo (func (fixedparam ($lst num ($nil 0))) (ref num)) 
