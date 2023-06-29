@@ -171,6 +171,6 @@
 ; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
 ;LET CASE
-(store (addr "call") (define "call" (fixedparam ["num1""num2"]) (let [ (binding "x83113" "num1") (binding "y83114" "num2")] (ref "x83113"))))
+(store (addr "call") (define "call" (fixedparam ["num1""num2"]) (let [ (binding "x83113" (ref "num1")) (binding "y83114" (ref "num2"))] (ref "x83113"))))
 (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (const "5"))(quote (const "42"))])))
 (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
