@@ -60,6 +60,10 @@
  -->
  (apply vf [vs ... v] kont)]
 
+[(ret vf (appk [] [] env kont))
+ -->
+ (apply vf [] kont)]
+
 ;APPLY CASE
 [(ret vf (ar ea env kont))
  -->
