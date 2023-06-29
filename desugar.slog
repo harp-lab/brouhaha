@@ -90,7 +90,7 @@
 [(ret v (letk body [xs ...] [vs ...] [] envlet kont))
  -->
  (store (kaddr body) kont)
- (eval body {ext-all !(do-ext-all envlet xs vs)} (kaddr body))]
+ (eval body {ext-all !(do-ext-all envlet xs [vs ... v])} (kaddr body))]
 
 
 
