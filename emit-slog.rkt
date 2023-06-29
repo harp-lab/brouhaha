@@ -35,7 +35,7 @@
               ""
               `("(lambda (fixedparam [" ,@(map sym->qstr xs) "]) " ,(write-exp body) ")"))]
       [`(lambda ,(? symbol? x) ,body)
-       (foldr string-append "" `("(lambda (varparam [" ,(sym->qstr x) "]) " ,(write-exp body) ")"))]
+       (foldr string-append "" `("(lambda (varparam " ,(sym->qstr x) ") " ,(write-exp body) ")"))]
       [`(let ([,xs ,es] ...) ,body)
        (foldr string-append
               ""

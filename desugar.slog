@@ -102,37 +102,27 @@
 ;---------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;APPLY CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;---------------------------------------------------------------------;
-[(apply (clo (lam x eb) envlam) va kont)
- -->
- (store (addr x) va)
- (store (kaddr eb) kont)
- (eval eb (env-set envlam x (addr x)) (kaddr eb))]
-
-
-;(apply (clo (lambda (fixedparam ($lst x ($nil 0))) (ref x))
-; (env-set (empty ) brouhaha_main (addr brouhaha_main))) 
-; ($lst (const 42) ($nil 0)) (halt ))
-; [(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
-;  (ext-semi !(do-ext-all envlam xs vs) envlam)
-;  --> 
-;  (store (kaddr eb) kont)
-;  (eval eb {ext-all (do-ext-all env [] [])} (kaddr eb))]
-
- [(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
+;FIXED PARAM
+[(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) [vs ...] kont)
  --> 
  (store (kaddr eb) kont)
  (eval eb {ext-all !(do-ext-all envlam xs vs)} (kaddr eb))]
 
-
-; (apply (clo (func (fixedparam ($lst num ($nil 0))) (ref num)) 
-; (env-set (env-set (empty ) brouhaha_main (addr brouhaha_main)) call (addr call))) 
-; ($lst (const 42) ($nil 0)) (halt ))
 [(apply (define fname (fixedparam [args ...]) body) [vs ...] kont)
  --> 
  (store (kaddr body) kont)
  (eval body {ext-all !(do-ext-all {top-level-env} args vs)} (kaddr body))]
 
-;(ext-all (do-ext-all (env-set (env-set (empty ) brouhaha_main (addr brouhaha_main)) x (addr x)) ($nil 0) ($nil 0)) (env-set (env-set (empty ) brouhaha_main (addr brouhaha_main)) x (addr x)))
+ ;VARIADIC PARAM
+[(apply (clo (lambda (varparam lstx) eb) envlam) [vs ...] kont)
+ --> 
+ (store (kaddr eb) kont)
+ (eval eb {ext-all !(do-ext-all envlam [lstx] [vs])} (kaddr eb))]
+
+[(apply (define fname (varparam lstx) body) [vs ...] kont)
+ --> 
+ (store (kaddr body) kont)
+ (eval body {ext-all !(do-ext-all {top-level-env} [lstx] [vs])} (kaddr body))]
 
 
 
