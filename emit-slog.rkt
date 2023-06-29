@@ -86,5 +86,5 @@
 ;;;    (define (brouhaha_main) (call)))
 ;;;  )
 
-(write-program-for-slog `((define (call num1 num2) (if '#f num1 num2))
-  (define (brouhaha_main) (call '1 '2))))
+(write-program-for-slog `((define (call) (if '#f '1 '2))
+  (define (brouhaha_main) (call))))
