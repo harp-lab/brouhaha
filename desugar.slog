@@ -153,6 +153,15 @@
 
 
 ;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;PRIM FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+;LIST
+(store (addr "list") (define "list" (fixedparam)))
+
+
+
+
+;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;TEST CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
 ;LAMBDA APPLICATION CASE
@@ -165,12 +174,18 @@
 ; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
 ;NO ARGUMENT FUNCTION CALL
-(store (addr "call") (define "call" (fixedparam []) (if (quote (bool "f")) (quote (int "1")) (quote (int "2")))))
-(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
-(top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
+; (store (addr "call") (define "call" (fixedparam []) (if (quote (bool "f")) (quote (int "1")) (quote (int "2")))))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
 ;LET CASE
 ; (store (addr "call") (define "call" (fixedparam ["num1""num2"]) (let [ (binding "x83113" (ref "num1")) (binding "y83114" (ref "num2"))] (ref "x83113"))))
 ; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (const "5"))(quote (const "42"))])))
 ; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
+
+;VARIADIC APPLY
+(store (addr "call") (define "call" (fixedparam []) (appl (ref "+") (app (ref "list") [(quote (int "1"))(quote (int "2"))(quote (int "3"))]))))
+(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+(top-level-env (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")) "hash-count" (addr "hash-count")) "hash-has-key?" (addr "hash-has-key?")) "hash-set" (addr "hash-set")) "hash-ref" (addr "hash-ref")) "hash" (addr "hash")) "append" (addr "append")) "foldr" (addr "foldr")) "drop" (addr "drop")) "filter" (addr "filter")) "map" (addr "map")) "length" (addr "length")) "take" (addr "take")) "take-helper" (addr "take-helper")) "reverse" (addr "reverse")) "reverse-helper" (addr "reverse-helper")) "foldl" (addr "foldl")) "member?" (addr "member?")) "list" (addr "list")) "odd?" (addr "odd?")) "even?" (addr "even?")) "cdr" (addr "cdr")) "car" (addr "car")) "cons" (addr "cons")) "eq?" (addr "eq?")) "equal?" (addr "equal?")) "null?" (addr "null?")) ">=" (addr ">=")) "<=" (addr "<=")) "<" (addr "<")) ">" (addr ">")) "=" (addr "=")) "/" (addr "/")) "modulo" (addr "modulo")) "*" (addr "*")) "-" (addr "-")) "+" (addr "+")))#<void>
+
 

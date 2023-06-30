@@ -58,12 +58,12 @@
                      (generate-comp-filepath "_cpp_program.cpp")))
       (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp"))
 
-      ; (displayln (~a "Emitting Slog for: "
-      ;                filename-string
-      ;                " and outputting to: "
-      ;                (generate-filepath "_slog.slog")))
-      ; ; (write-to (generate-filepath "_slog.slog") (write-program-for-slog desugar_prg))
-      ; (with-output-to-file (generate-filepath "_slog.slog") (lambda () (pretty-print (write-program-for-slog desugar_prg))) #:exists 'replace)
+      (displayln (~a "Emitting Slog for: "
+                     filename-string
+                     " and outputting to: "
+                     (generate-res-filepath "_slog.slog")))
+      ; (write-to (generate-filepath "_slog.slog") (write-program-for-slog desugar_prg))
+      (with-output-to-file (generate-res-filepath "_slog.slog") (lambda () (pretty-print (write-program-for-slog desugar_prg))) #:exists 'replace)
 
       (for-each
        write-to
