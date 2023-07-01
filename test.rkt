@@ -100,7 +100,7 @@
 (define (test-file user-file)
   (let ([full-path (build-path (current-directory) user-file)])
     (run-program "tests" ; directory
-                 (string->path (car (regexp-match #rx"[A-Za-z0-9]+\\.haha$" user-file))) ; filename in the form #<path: apply.haha>
+                 (string->path (car (regexp-match #rx"[A-Za-z0-9_]+\\.haha$" user-file))) ; filename in the form #<path: apply.haha>
                  full-path
                  (build-path (current-directory) "prelude.haha"))))
 

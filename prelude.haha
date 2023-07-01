@@ -1,5 +1,6 @@
 ; Prelude is used as a way to add functionality to the language and programs as a library
 
+
 (define (+ . lst)
   (apply-prim + lst))
 
@@ -56,6 +57,12 @@
 
 (define (list . x)
   x)
+  
+(define (float->int val)
+  (prim inexact->exact val))
+
+(define (int->float val)
+  (prim exact->inexact val))
 
 (define (member? x lst)
   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
@@ -112,3 +119,32 @@
 
 (define (hash-count h)
   (prim hash-count h))
+
+; (define (set . lst)
+;   (apply-prim set lst))
+
+; (define (set-add s val)
+;   (prim set-add s val))
+
+; (define (set-has-val? s val)
+;   (prim set-has-val? s val))
+
+; string functions
+
+(define (string? str)
+  (prim string? str))
+
+(define (string-length str)
+  (prim string-length str))
+
+(define (string-ref str pos)
+  (prim string-ref str pos))
+
+(define (substring str start end)
+  (prim substring str start end))
+
+(define (string-append s1 s2)
+  (prim string-append s1 s2))
+
+; (define (string->list str)
+;   (prim string->list str))

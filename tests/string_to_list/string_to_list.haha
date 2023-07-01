@@ -1,5 +1,5 @@
 (define (call)
-    (+ 3.25 4.85))
+    (string->list "brouhaha"))
 
 (define (brouhaha_main)
     (call))

@@ -77,3 +77,4 @@ target_link_libraries(prelude PUBLIC ${gmpxx_lib} ${gmp_lib} ${gc_lib} ${gccpp_l
 # set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 # set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 # include(CPack)
+# docker run --name=brouhaha_v4 --entrypoint=/slog/slog-server --rm --detach brouhaha_v4
