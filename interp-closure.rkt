@@ -4,6 +4,9 @@
 (define racket-eval eval)
 (provide interp-closure)
 
+(define-namespace-anchor anc)
+(define ns (namespace-anchor->namespace anc))
+
 (define (interp-closure program (env (hash)))
   (define (add-top-lvl env)
     (let loop ([env+ env] [prog+ program])
@@ -23,7 +26,7 @@
       [`(prim halt ,lst) (hash-ref env lst)]
       [`(prim ,op ,es ...)
        (apply (racket-eval op (make-base-namespace)) (map (lambda (e) (eval e env)) es))]
-      [`(apply-prim ,op ,e0) (apply (racket-eval op (make-base-namespace)) (eval e0 env))]
+      [`(apply-prim ,op ,e0) (apply (racket-eval op ns) (eval e0 env))]
       [`(make-closure ,ef ,xs ...)
        (let ([free-vals (map (lambda (x) (eval x env)) xs)])
          `(closure ,(second (eval ef env)) ,@free-vals))]
