@@ -146,5 +146,5 @@
 (define (string-append s1 s2)
   (prim string-append s1 s2))
 
-; (define (string->list str)
-;   (prim string->list str))
+(define (string->list str)
+  (prim string->list str))

@@ -1318,7 +1318,9 @@ void* prim_string_u45append(void* s1_void, void* s2_void){
     return encode_str(s1);
 }
 
-// void* prim_string_u45_u62list(void* )
+void* prim_string_u45_u62list(void* val){
+    return val;
+}
 
 #pragma endregion
 #pragma region PRINTING
