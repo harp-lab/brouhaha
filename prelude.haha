@@ -136,7 +136,6 @@
   (prim set-count s val))
 
 ; string functions
-
 (define (string? str)
   (prim string? str))
 
