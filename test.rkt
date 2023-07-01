@@ -63,6 +63,8 @@
                      filename-string
                      " and outputting to: "
                      (generate-res-filepath "_slog.slog")))
+
+      ; this should use write-to in the future                     
       (with-output-to-file (generate-res-filepath "_slog.slog")
                            (lambda () (pretty-print (write-program-for-slog desugar_prg)))
                            #:exists 'replace)
@@ -76,12 +78,11 @@
         (let ([result (interp-cps prg)])
           (write-to (generate-res-filepath res-file) result)
           result))
-      
+
       (define (interpret-clo-and-output prg res-file)
         (let ([result (interp-closure prg)])
           (write-to (generate-res-filepath res-file) result)
           result))
-      
 
       (let ([desugar_res (interpret-anf-and-output desugar_prg "_desugar_res.out")]
             [alphatize_res (interpret-anf-and-output alphatize_prg "_alphatize_res.out")]
