@@ -1,0 +1,5 @@
+(define (call)
+    (set 1 2 3 "haha"))
+
+(define (brouhaha_main)
+    (call))

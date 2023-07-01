@@ -8,7 +8,6 @@
          "emit-cpp.rkt"
          "emit-slog.rkt")
 
-
 (define (write-to file content)
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
 
@@ -40,17 +39,19 @@
            [anf_prg (list-ref compiled-program 2)]
            [cps_prg (list-ref compiled-program 3)]
            [cps_after_anf (list-ref compiled-program 4)]
-           [clo_conv_prg (list-ref compiled-program 5)]
-           [results (list (interp desugar_prg)
-                          (interp alphatize_prg)
-                          (interp anf_prg)
-                          (interp-cps cps_prg)
-                          (interp-closure clo_conv_prg))])
+           [clo_conv_prg (list-ref compiled-program 5)])
 
       (verify-dir out-dir)
       (verify-dir (string-append out-dir "/output/"))
       (verify-dir (string-append out-dir "/compiler-out/"))
       (displayln (~a "Now running: " filename-string))
+
+      (for-each
+       write-to
+       (map
+        generate-comp-filepath
+        (list "_compile.out" "_desugar.out" "_alphatize.out" "_anf.out" "_cps.out" "_closure.out"))
+       compiled-program)
 
       (displayln (~a "Emitting C++ for: "
                      filename-string
@@ -62,24 +63,33 @@
                      filename-string
                      " and outputting to: "
                      (generate-res-filepath "_slog.slog")))
-      ; (write-to (generate-filepath "_slog.slog") (write-program-for-slog desugar_prg))
-      (with-output-to-file (generate-res-filepath "_slog.slog") (lambda () (pretty-print (write-program-for-slog desugar_prg))) #:exists 'replace)
+      (with-output-to-file (generate-res-filepath "_slog.slog")
+                           (lambda () (pretty-print (write-program-for-slog desugar_prg)))
+                           #:exists 'replace)
 
-      (for-each
-       write-to
-       (map
-        generate-comp-filepath
-        (list "_compile.out" "_desugar.out" "_alphatize.out" "_anf.out" "_cps.out" "_closure.out"))
-       compiled-program)
-      (for-each write-to
-                (map generate-res-filepath
-                     (list "_desugar_res.out"
-                           "_alphatize_res.out"
-                           "_anf_res.out"
-                           "_cps_res.out"
-                           "_closure_res.out"))
-                results)
-      (apply verify-correctness (cons filename-string results)))))
+      (define (interpret-anf-and-output prg res-file)
+        (let ([result (interp prg)])
+          (write-to (generate-res-filepath res-file) result)
+          result))
+
+      (define (interpret-cps-and-output prg res-file)
+        (let ([result (interp-cps prg)])
+          (write-to (generate-res-filepath res-file) result)
+          result))
+      
+      (define (interpret-clo-and-output prg res-file)
+        (let ([result (interp-closure prg)])
+          (write-to (generate-res-filepath res-file) result)
+          result))
+      
+
+      (let ([desugar_res (interpret-anf-and-output desugar_prg "_desugar_res.out")]
+            [alphatize_res (interpret-anf-and-output alphatize_prg "_alphatize_res.out")]
+            [anf_res (interpret-anf-and-output anf_prg "_anf_res.out")]
+            [cps_res (interpret-cps-and-output cps_prg "_cps_res.out")]
+            [closure_res (interpret-clo-and-output clo_conv_prg "_closure_res.out")])
+
+        (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res closure_res)))))
 
 (define (read-direc directory)
   (for-each (lambda (dir)
@@ -99,17 +109,20 @@
 ; right now, can only support running individual files in the tests, not in tests2 or some place else
 (define (test-file user-file)
   (let ([full-path (build-path (current-directory) user-file)])
-    (run-program "tests" ; directory
-                 (string->path (car (regexp-match #rx"[A-Za-z0-9_]+\\.haha$" user-file))) ; filename in the form #<path: apply.haha>
-                 full-path
-                 (build-path (current-directory) "prelude.haha"))))
+    (run-program
+     "tests" ; directory
+     (string->path (car (regexp-match #rx"[A-Za-z0-9_]+\\.haha$"
+                                      user-file))) ; filename in the form #<path: apply.haha>
+     full-path
+     (build-path (current-directory) "prelude.haha"))))
 
 (define (main args)
   (cond
     [(= (vector-length args) 0) (read-direc "tests/")]
     [(and (= (vector-length args) 1) (directory-exists? (vector-ref args 0)))
      (read-direc (vector-ref args 0))]
-    [(and (= (vector-length args) 1) (file-exists? (vector-ref args 0))) ; racket test tests/easy/easy.haha
+    [(and (= (vector-length args) 1)
+          (file-exists? (vector-ref args 0))) ; racket test tests/easy/easy.haha
      (test-file (vector-ref args 0))]
     [else (error "Invalid command line arguments. Please provide either a file or a directory.")]))
 

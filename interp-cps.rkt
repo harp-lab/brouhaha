@@ -4,7 +4,8 @@
 (require "compile.rkt")
 (define racket-eval eval)
 (provide interp-cps)
-
+(define-namespace-anchor anc)
+(define ns (namespace-anchor->namespace anc))
 (define (interp-cps program (env (hash)))
   (define (add-top-lvl env)
     (let loop ([env+ env] [prog+ program])
@@ -26,7 +27,7 @@
       [`(prim halt ,lst) (hash-ref env lst)]
       [`(prim ,op ,es ...)
        (apply (racket-eval op (make-base-namespace)) (map (lambda (e) (eval e env)) es))]
-      [`(apply-prim ,op ,e0) (apply (racket-eval op (make-base-namespace)) (eval e0 env))]
+      [`(apply-prim ,op ,e0) (apply (racket-eval op ns) (eval e0 env))]
       [`(lambda ,_ ,_) `(closure ,exp ,env)]
       [`(if ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
       [`(let ([,xs ,rhss] ...) ,body)
