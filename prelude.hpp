@@ -168,13 +168,16 @@ const hamt<hash_struct, hash_struct> *decode_hash(void *val)
     assert_type((get_tag(val) == HASH), "Type error: Not HASH");
     return reinterpret_cast<const hamt<hash_struct, hash_struct> *>(MASK(val));
 }
-
 // Closure Allocation, alloc_clo
 void **alloc_clo(void *(*fptr)(), int num)
 {
     void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
-
-    obj[0] = reinterpret_cast<void *>(fptr);
+    obj[0] = 0;
+    obj[1] = 0;
+    if (obj != NULL)
+    {
+        obj[0] = reinterpret_cast<void *>(fptr);
+    }
 
     return obj;
 }
@@ -416,6 +419,11 @@ u64 hash_(void *val)
     {
         return str_hash(val);
         break;
+    }
+    case HASH:
+    {
+        // ??
+        std::cout << "can't do this" << std::endl;
     }
     default:
     {
@@ -917,7 +925,7 @@ void *compare_lst(void *lst, bool (*cmp_op)(long))
 {
     int cmp_result = 0;
     long counter = 0;
-    mpz_t *temp_store;
+    mpz_t *temp_store = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
     mpz_init(*temp_store);
     while (is_cons(lst))
     {
@@ -1201,7 +1209,120 @@ void *prim_hash_u45keys(void *h)
     return 0;
 }
 #pragma endregion
+/*
+Takes a MPZ and returns MPF for that integer
+*/
+void *prim_exact_u45_u62inexact(void *val)
+{
+    int val_tag = get_tag(val);
+    if (val_tag != MPZ)
+    {
+        assert_type(false, "type passed to int->float is not an int");
+    }
+    mpf_t *ret_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*ret_mpf);
+    mpf_set_z(*ret_mpf, *(decode_mpz(val)));
+    return encode_mpf(ret_mpf);
+}
 
+/*
+Takes a MPF and returns MPZ for that FLOAT
+*/
+void *prim_inexact_u45_u62exact(void *val)
+{
+    int val_tag = get_tag(val);
+    if (val_tag != MPF)
+    {
+        assert_type(false, "type passed to float->int is not an float");
+    }
+    mpz_t *ret_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*ret_mpz);
+    mpz_set_f(*ret_mpz, *(decode_mpf(val)));
+    return encode_mpz(ret_mpz);
+}
+
+#pragma region STRINGS
+// takes in a void* and checks if the passed value is a string or not
+void *prim_string_u63(void *val)
+{
+    int tag = get_tag(val);
+    if (tag == STRING)
+    {
+        return encode_bool(true);
+    }
+    return encode_bool(false);
+}
+// takes a void* and checks if it is a string and then returns the length of it
+void *prim_string_u45length(void *val)
+{
+    int tag = get_tag(val);
+    if (tag != STRING)
+    {
+        assert_type(false, "val passed to string_length is not a string");
+    }
+
+    std::string *str = decode_str(val);
+    mpz_t *str_len = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init_set_ui(*str_len, str->length());
+    return encode_mpz(str_len);
+}
+// takes in str and the position and returns the character at that position
+void *prim_string_u45ref(void *str_void, void *pos_void)
+{
+    assert_type((get_tag(str_void)) == STRING, "str passed to the string-ref is not a string");
+    assert_type((get_tag(pos_void)) == MPZ, "pos passed to the string-ref is not an integer");
+
+    std::string *str = decode_str(str_void);
+    mpz_t *pos = decode_mpz(pos_void);
+
+    if (!mpz_cmp_ui(*pos, str->length()) < 0)
+    { // pos < str.length()
+        assert_type(false, "Array out of bounds exception");
+    }
+    const char ch = str->at(mpz_get_ui(*pos));
+    return encode_str(new (GC) std::string(&ch));
+}
+// takes in the str, start[inclusive] and end[exclusive]
+// and returns the substring starting from start till end
+void *prim_substring(void *str_void, void *start_void, void *end_void)
+{
+    assert_type((get_tag(str_void)) == STRING, "str passed to the substring is not a string");
+    assert_type((get_tag(start_void)) == MPZ, "start passed to the substring is not an integer");
+    assert_type((get_tag(end_void)) == MPZ, "end passed to the substring is not an integer");
+
+    std::string *str = decode_str(str_void);
+    long str_len = str->length();
+    mpz_t *start = decode_mpz(start_void);
+    mpz_t *end = decode_mpz(end_void);
+
+    if(!((mpz_cmp_ui(*start,str_len) < 0) && (mpz_cmp_ui(*end,str_len) <= 0))){
+        assert_type(false, "Array out of bounds exception");
+    }
+
+    mpz_sub(*end, *start, *end);
+    long substr_len = mpz_get_ui(*end);
+
+    std::string* ret_str = new(GC) std::string(str->substr(mpz_get_ui(*start),substr_len));
+
+    return encode_str(ret_str);
+}
+
+// takes two strings and returns the appended string
+void* prim_string_u45append(void* s1_void, void* s2_void){
+    assert_type((get_tag(s1_void)) == STRING, "str passed to the string-append is not a string");
+    assert_type((get_tag(s2_void)) == STRING, "str passed to the string-append is not a string");
+
+    std::string* s1 = new(GC) std::string(*(decode_str(s1_void)));
+    std::string* s2 = decode_str(s2_void);
+    s1->append(*s2);
+    return encode_str(s1);
+}
+
+void* prim_string_u45_u62list(void* val){
+    return val;
+}
+
+#pragma endregion
 #pragma region PRINTING
 std::string print_val(void *val)
 {
@@ -1253,7 +1374,7 @@ std::string print_val(void *val)
         mpf_t *final_mpf = decode_mpf(val);
         const char *boom;
         char buffer[1000];
-        gmp_sprintf(buffer, "%.Ff", *final_mpf);
+        gmp_sprintf(buffer, "%.1Ff", *final_mpf);
         return std::string(buffer);
         break;
     }

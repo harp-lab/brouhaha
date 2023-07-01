@@ -1,0 +1,6 @@
+{
+        <Garbage Collector>
+        Memcheck:Cond
+        ...
+        fun:GC_*
+}

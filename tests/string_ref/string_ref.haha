@@ -1,5 +1,5 @@
 (define (call)
-    (+ 3.25 4.85))
+    (string-ref "brouhaha" 3))
 
 (define (brouhaha_main)
     (call))
