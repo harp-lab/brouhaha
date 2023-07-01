@@ -102,6 +102,14 @@ TEST(Strings, prim_string_u45append)
 
 }
 
+TEST(Strings, prim_string_u45_u62list)
+{
+    std::string* s1 = new(GC) std::string("bro");
+
+    ASSERT_EQ(print_val(prim_string_u45_u62list(encode_str(s1))), "'(\"b\" \"r\" \"o\")");
+    ASSERT_EQ(*s1,"bro");
+}
+
 int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

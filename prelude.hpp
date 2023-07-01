@@ -1318,8 +1318,17 @@ void* prim_string_u45append(void* s1_void, void* s2_void){
     return encode_str(s1);
 }
 
-void* prim_string_u45_u62list(void* val){
-    return val;
+void* prim_string_u45_u62list(void* str_void){
+    assert_type((get_tag(str_void)) == STRING, "str passed to the string->list is not a string");
+    
+    std::string* str = decode_str(str_void);
+    std::string* ret_str = new(GC) std::string(*str);
+    std::reverse(ret_str->begin(),ret_str->end());
+    void* lst = encode_null();
+    for(char c: *ret_str){
+        lst = prim_cons(encode_str(new(GC) std::string(&c)),lst);
+    }
+    return lst;
 }
 
 #pragma endregion
