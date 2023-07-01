@@ -123,19 +123,17 @@
 (define (set . lst)
   (apply-prim set lst))
 
-; (define (set-member? s val)
-;   (prim set-member? s val))
+(define (set-member? s val)
+  (prim set-member? s val))
 
-; (define (set-add s val)
-;   (prim set-add s val))
+(define (set-add s val)
+  (prim set-add s val))
 
-; (define (set-remove s val)
-;   (prim set-remove s val))
+(define (set-remove s val)
+  (prim set-remove s val))
 
-; (define (set-count s val)
-;   (prim set-count s val))
-
-
+(define (set-count s val)
+  (prim set-count s val))
 
 ; string functions
 
