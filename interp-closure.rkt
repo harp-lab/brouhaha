@@ -1,5 +1,5 @@
 #lang racket
-(require racket/trace)
+
 (require "compile.rkt")
 (provide interp-closure)
 
@@ -11,8 +11,7 @@
   (namespace-require 'racket/base))
 
 (define (racket-eval-in-new-ns expr)
-  (parameterize ([current-namespace new-ns])
-    (eval expr)))
+  (parameterize ([current-namespace new-ns]) (eval expr)))
 
 (define (interp-closure program (env (hash)))
   (define (add-top-lvl env)
@@ -31,8 +30,7 @@
       [`(quote ,(? symbol? x)) x]
       [(? symbol?) (hash-ref env exp)]
       [`(prim halt ,lst) (hash-ref env lst)]
-      [`(prim ,op ,es ...)
-       (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
+      [`(prim ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
       [`(apply-prim ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
       [`(make-closure ,ef ,xs ...)
        (let ([free-vals (map (lambda (x) (eval x env)) xs)])
