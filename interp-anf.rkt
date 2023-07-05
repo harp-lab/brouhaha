@@ -11,8 +11,7 @@
   (namespace-require 'racket/base))
 
 (define (racket-eval-in-new-ns expr)
-  (parameterize ([current-namespace new-ns])
-    (eval expr)))
+  (parameterize ([current-namespace new-ns]) (eval expr)))
 
 (define (interp program (env (hash)))
   (define (add-top-lvl env)
@@ -32,8 +31,7 @@
       [`(quote ,(? boolean? x)) x]
       [`(quote ,(? symbol? x)) x]
       [(? symbol?) (hash-ref env exp)]
-      [`(prim ,op ,es ...)
-       (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
+      [`(prim ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
       [`(apply-prim ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
       [`(lambda ,_ ,_) `(closure ,exp ,env)]
       [`(if ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
