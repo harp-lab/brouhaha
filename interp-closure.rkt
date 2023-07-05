@@ -1,5 +1,5 @@
 #lang racket
-(require racket/trace)
+
 (require "compile.rkt")
 (provide interp-closure)
 
