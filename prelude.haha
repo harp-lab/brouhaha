@@ -4,6 +4,9 @@
 (define (+ . lst)
   (apply-prim + lst))
 
+(define (max . lst)
+  (apply-prim max lst))
+
 (define (- . lst)
   (apply-prim - lst))
 
@@ -45,6 +48,9 @@
 
 (define (car lst)
   (prim car lst))
+
+(define (abs x)
+  (prim abs x))
 
 (define (cdr lst)
   (prim cdr lst))

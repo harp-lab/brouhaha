@@ -46,6 +46,9 @@
       [(? boolean? x) `',x]
       [`(let ([,xs ,es] ...) ,body)
        `(let ,(map (lambda (x e) `[,x ,(desugar-exp e)]) xs es) ,(desugar-exp body))]
+      [`(let* () ,ebody) (desugar-exp ebody)]
+      [`(let* ([,lhs ,rhs] ,e-pairs ...) ,ebody)
+       (desugar-exp `(let ([,lhs ,rhs]) (let* ,e-pairs ,ebody)))]
       [`(lambda (,xs ...) ,body) `(lambda ,xs ,(desugar-exp body))]
       [`(lambda ,(? symbol? x) ,body) `(lambda ,x ,(desugar-exp body))]
       [`(lambda ,args ,body) (desugar-exp `(lambda vargs ,(unroll-args args body)))]

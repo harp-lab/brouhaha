@@ -1,0 +1,5 @@
+(define (call num1 num2) 
+    (let* ([x num1] [x num2]) x))
+
+(define (brouhaha_main) 
+    (call 5 42))

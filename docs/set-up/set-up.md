@@ -1,10 +1,10 @@
 # Set-up
-[go to main-page](../docs.md)
+[Back to main page](../docs.md)
 
 ## Introduction
 This file talks about how to set-up the repo to run all the tests, How to install the required programs, clone the repo, running test.rkt and running CMake.
 
-## Get the Docker to quickly try-out
+## Setup Docker
 - This is pending work
 - Talk about how to get the docker image and get the docker container running
 
