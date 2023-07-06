@@ -3,6 +3,12 @@
 (provide write-program-for-slog)
 
 ;; This program will take in a brouhaha input and convert it to a slog-compatible database
+(define apply-prims `(+ - / * = > < <= >=))
+(define prims `(modulo null? equal? eq? cons car cdr odd? even? list float->int int->float))
+(define (member? op lst)
+  (if (member op lst)
+  #t
+  #f))
 
 (define (write-program-for-slog program)
   (define (sym->qstr x)
@@ -57,9 +63,15 @@
        (foldr string-append "" `("(apply-prim \"" ,(~a op) "\" " ,(write-exp e1) ")"))]
       [`(prim ,op ,es ...)
        (foldr string-append "" `("(prim \"" ,(~a op) "\" [" ,@(map write-exp es) "])"))]
-      [`(apply ,e0 ,e1) (foldr string-append "" `("(appl " ,(write-exp e0) " " ,(write-exp e1) ")"))]
+      [`(apply ,e0 ,e1) 
+       (foldr string-append "" `("(appl " ,(write-exp e0) " " ,(write-exp e1) ")"))]
       [`(,ef ,eas ...)
-       (foldr string-append "" `("(app " ,(write-exp ef) " [" ,@(map write-exp eas) "])"))]))
+        ;;; (cond
+        ;;;   [(member? ef prims) (write-exp `(prim ,ef ,eas))]
+        ;;;   [(member? ef apply-prims) (write-exp `(apply-prim ,ef ,eas))]
+        ;;;   [else (foldr string-append "" `("(app " ,(write-exp ef) " [" ,@(map write-exp eas) "])"))])
+        (foldr string-append "" `("(app " ,(write-exp ef) " [" ,@(map write-exp eas) "])"))
+       ]))
   (define (emit-top-level-env program)
     (format "(top-level-env ~a)"
             (foldr (lambda (def code)
@@ -72,6 +84,9 @@
 
   (display (foldr string-append (emit-top-level-env program) (map write-def program)))
   (void))
+
+(write-program-for-slog `((define (call) (+ '1 '2))
+  (define (brouhaha_main) (call))))
 
 ; (write-program-for-slog `((define (call num1 num2) (let ((x83113 num1) (y83114 num2)) x83113))
 ; (define (brouhaha_main) (call '5 '42))))

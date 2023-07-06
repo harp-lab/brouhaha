@@ -1,0 +1,231 @@
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;START RULE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+[(define "brouhaha_main" (fixedparam []) body)
+ -->
+ (eval body {top-level-env} (halt))]
+
+
+
+
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EVAL CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+;BASE PRIMITIVE TYPES
+[(eval (quote dat) env kont)
+ -->
+ (store (addr (quote dat)) dat)
+ (ret (addr (quote dat)) kont)]
+
+;FUNCTION AND VARIABLE REFERENCES
+[(eval (ref x) env kont)
+ -->
+ (ret {env-map env x} kont)]
+
+;LAMBDA AND FUNC
+[(eval e env kont)
+ (= e (lambda (fixedparam [xs ...]) eb))
+ -->
+ (store (addr e) (clo (lambda (fixedparam [xs ...]) eb) env))
+ (ret (addr e) kont)]
+
+;APP AND APPLY
+[(eval (app ef [eas ...]) env kont)
+ -->
+ (eval ef env (appk [] [eas ...] env kont))]
+
+[(eval (appl ef ea) env kont)
+ -->
+ ]
+
+;IF CASE
+[(eval (if guard tExp fExp) env kont)
+ -->
+ (eval guard env (if-k tExp fExp env kont))]
+
+ ;LET CASE
+ [(eval (let [(binding lhs rhs) bind-rest ...] body) env kont)
+  -->
+  (eval rhs env (letk body [lhs] [] bind-rest env kont))]
+
+
+
+
+;---------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;RET CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;---------------------------------------------------------------------;
+;LAMBDA AND FUNC
+[(ret a (appk [as ...] [ea0 ea-rest ...] env kont))
+ -->
+ (eval ea0 env (appk [as ... a] [ea-rest ...] env kont))]
+
+[(ret a (appk [af as ...] [] env kont))
+ (store af vf)
+ -->
+ (apply vf [as ... a] kont)]
+
+[(ret af (appk [] [] env kont))
+ (store af vf)
+ -->
+ (apply vf [] kont)]
+
+[(ret a (kaddr eb))
+ -->
+ (ret a {store (kaddr eb)})]
+
+;IF CASES
+[(ret ga (if-k tExp fExp env kont))
+ (store ga (bool "t"))
+ --> 
+ (eval tExp env kont)]
+
+[(ret ga (if-k tExp fExp env kont))
+ (store ga (bool "f"))
+ --> 
+ (eval fExp env kont)]
+
+;LET CASE
+[(ret a (letk body [xs ...] [as ...] [(binding lhs rhs) bind-rest ...] env kont))
+ -->
+ (eval rhs env (letk body [xs ... lhs] [as ... a] bind-rest env kont))]
+
+[(ret a (letk body [xs ...] [as ...] [] envlet kont))
+ -->
+ (store (kaddr body) kont)
+ (do-fixed-prop-all xs as)
+ (eval body {ext-all !(do-ext-all envlet xs)} (kaddr body))]
+
+
+
+
+;---------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;APPLY CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;---------------------------------------------------------------------;
+;DEFINE --> CLOSURE
+[(apply (define fname params body) args kont)
+ --> 
+ (apply (clo (lambda params body) {top-level-env}) args kont)]
+
+
+;FIXED ARG
+[(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) kont)
+ --> 
+ (store (kaddr eb) kont)
+ (do-fixed-prop-all xs as)
+ (eval eb {ext-all !(do-ext-all envlam xs)} (kaddr eb))]
+
+ [(apply (clo (lambda (varparam x) eb) envlam) (fixedarg [as ...]) kont)
+ --> 
+ (store (kaddr eb) kont)
+ (store (addr x) (list-of as))
+ (eval eb (env-set envlam x (addr x)) (kaddr eb))]
+
+
+ ;VARIADIC ARG
+[(apply (clo (lambda (varparam x) eb) envlam) (vararg a) kont)
+ --> 
+ (store (kaddr eb) kont)
+ (store-flow a (addr x))
+ (eval eb {ext-all !(do-ext-all envlam [x])} (kaddr eb))]
+
+[(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) (vararg a) kont)
+ (store a (list-of as))
+ --> 
+ (store (kaddr eb) kont)
+ (do-var-prop-all xs as)
+ (eval eb {ext-all !(do-ext-all envlam xs)} (kaddr eb))]
+
+
+
+;CASES:
+  ;dimension one: fixed vs var param
+  ;dimension two: fixed vs var arg
+
+; [(apply (define fname (varparam lstx) body) [vs ...] kont)
+;  --> 
+;  (store (kaddr body) kont)
+;  (eval body {ext-all !(do-ext-all {top-level-env} [lstx] [vs])} (kaddr body))]
+
+
+
+
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+;DO-EXT-ALL/EXT-ALL
+[-->
+ (ext-all ?(do-ext-all env [x x-rest ...])
+          {ext-all !(do-ext-all (env-set env x (addr x)) x-rest)})]
+
+(ext-all ?(do-ext-all env []) env)
+
+
+;DO-VIXED-PROP-ALL
+[(do-fixed-prop-all [x x-rest ...] [a a-rest ...])
+ -->
+ (do-dixed-prop-all x-rest a-rest)
+ (store-flow a (addr x))]
+
+
+;DO-VAR-PROP-ALL
+[(do-var-prop-all [x x-rest ...] [a a-rest ...])
+ -->
+ (do-var-prop-all-h [x x-rest ...] [a a-rest ...] [a a-rest ...])]
+
+[(do-var-prop-all-h [x x-rest ...] [a a-rest ...] a-old)
+ -->
+ (do-var-prop-all-h [x x-rest ...] a-rest a-old)
+ (store-flow a (addr x))]
+
+[(do-var-prop-all-h [x x-rest ...] [] a-old)
+ -->
+ (do-var-prop-all-h x-rest a-old a-old)]
+
+;STORE-FLOW
+[(store a v)
+ (store-flow a a1)
+ -->
+ (store a1 v)]
+
+;ENV HANDLING
+(env-map ?(env-set env x val) x val)
+
+[(=/= x y)
+ (env-set _ y _) ;;could also do (ref y)
+ -->
+ (env-map ?(env-set env x _) y {env-map env y})]
+
+
+
+
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;TEST CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+;LAMBDA APPLICATION CASE
+(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (lambda (fixedparam ["a5737""b5738"]) (ref "b5738")) [(quote (int "5"))(quote (int "6"))])))
+(top-level-env (env-set (empty) "brouhaha_main" (addr "brouhaha_main")))
+
+;FUNCTION CALL/APPLICATION CASE
+; (store (addr "call") (define "call" (fixedparam ["num1""num2"]) (if (quote (bool "f")) (ref "num1") (ref "num2"))))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (int "1"))(quote (int "2"))])))
+; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
+
+;NO ARGUMENT FUNCTION CALL
+; (store (addr "call") (define "call" (fixedparam []) (if (quote (bool "f")) (quote (int "1")) (quote (int "2")))))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
+
+;LET CASE
+; (store (addr "call") (define "call" (fixedparam ["num1""num2"]) (let [ (binding "x83113" (ref "num1")) (binding "y83114" (ref "num2"))] (ref "x83113"))))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (const "5"))(quote (const "42"))])))
+; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
+
+;VARIADIC APPLY
+; (store (addr "call") (define "call" (fixedparam []) (appl (ref "+") (app (ref "list") [(quote (int "1"))(quote (int "2"))(quote (int "3"))]))))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+; (top-level-env (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")) "hash-count" (addr "hash-count")) "hash-has-key?" (addr "hash-has-key?")) "hash-set" (addr "hash-set")) "hash-ref" (addr "hash-ref")) "hash" (addr "hash")) "append" (addr "append")) "foldr" (addr "foldr")) "drop" (addr "drop")) "filter" (addr "filter")) "map" (addr "map")) "length" (addr "length")) "take" (addr "take")) "take-helper" (addr "take-helper")) "reverse" (addr "reverse")) "reverse-helper" (addr "reverse-helper")) "foldl" (addr "foldl")) "member?" (addr "member?")) "list" (addr "list")) "odd?" (addr "odd?")) "even?" (addr "even?")) "cdr" (addr "cdr")) "car" (addr "car")) "cons" (addr "cons")) "eq?" (addr "eq?")) "equal?" (addr "equal?")) "null?" (addr "null?")) ">=" (addr ">=")) "<=" (addr "<=")) "<" (addr "<")) ">" (addr ">")) "=" (addr "=")) "/" (addr "/")) "modulo" (addr "modulo")) "*" (addr "*")) "-" (addr "-")) "+" (addr "+")))#<void>
+
+;+ PRIM
+; (store (addr "call") (define "call" (fixedparam []) (app (ref "+") [(quote (int "1"))(quote (int "2"))])))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
