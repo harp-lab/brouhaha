@@ -62,12 +62,12 @@
 [(ret a (appk [af as ...] [] env kont))
  (store af vf)
  -->
- (apply vf [as ... a] kont)]
+ (apply vf (fixedarg [as ... a]) kont)]
 
 [(ret af (appk [] [] env kont))
  (store af vf)
  -->
- (apply vf [] kont)]
+ (apply vf (fixedarg []) kont)]
 
 [(ret a (kaddr eb))
  -->
@@ -136,15 +136,9 @@
  (eval eb {ext-all !(do-ext-all envlam xs)} (kaddr eb))]
 
 
-
 ;CASES:
   ;dimension one: fixed vs var param
   ;dimension two: fixed vs var arg
-
-; [(apply (define fname (varparam lstx) body) [vs ...] kont)
-;  --> 
-;  (store (kaddr body) kont)
-;  (eval body {ext-all !(do-ext-all {top-level-env} [lstx] [vs])} (kaddr body))]
 
 
 
@@ -163,7 +157,7 @@
 ;DO-VIXED-PROP-ALL
 [(do-fixed-prop-all [x x-rest ...] [a a-rest ...])
  -->
- (do-dixed-prop-all x-rest a-rest)
+ (do-fixed-prop-all x-rest a-rest)
  (store-flow a (addr x))]
 
 
@@ -191,9 +185,14 @@
 (env-map ?(env-set env x val) x val)
 
 [(=/= x y)
- (env-set _ y _) ;;could also do (ref y)
+ (env-set _ y _)
  -->
  (env-map ?(env-set env x _) y {env-map env y})]
+
+;RETURN TO ANSWER
+[(ret (addr a) (halt))
+ -->
+ (answer {store (addr a)})]
 
 
 
@@ -201,23 +200,23 @@
 ;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;TEST CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
-;LAMBDA APPLICATION CASE
-(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (lambda (fixedparam ["a5737""b5738"]) (ref "b5738")) [(quote (int "5"))(quote (int "6"))])))
-(top-level-env (env-set (empty) "brouhaha_main" (addr "brouhaha_main")))
+;LAMBDA APPLICATION CASE (answer (int 6))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (lambda (fixedparam ["a5737""b5738"]) (ref "b5738")) [(quote (int "5"))(quote (int "6"))])))
+; (top-level-env (env-set (empty) "brouhaha_main" (addr "brouhaha_main")))
 
-;FUNCTION CALL/APPLICATION CASE
+;FUNCTION CALL/APPLICATION CASE (answer (int 2))
 ; (store (addr "call") (define "call" (fixedparam ["num1""num2"]) (if (quote (bool "f")) (ref "num1") (ref "num2"))))
 ; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (int "1"))(quote (int "2"))])))
 ; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
-;NO ARGUMENT FUNCTION CALL
+;NO ARGUMENT FUNCTION CALL (answer (int 2))
 ; (store (addr "call") (define "call" (fixedparam []) (if (quote (bool "f")) (quote (int "1")) (quote (int "2")))))
 ; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
 ; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
-;LET CASE
+;LET CASE (asnwer (int 5))
 ; (store (addr "call") (define "call" (fixedparam ["num1""num2"]) (let [ (binding "x83113" (ref "num1")) (binding "y83114" (ref "num2"))] (ref "x83113"))))
-; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (const "5"))(quote (const "42"))])))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (int "5"))(quote (int "42"))])))
 ; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
 ;VARIADIC APPLY
