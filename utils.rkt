@@ -12,9 +12,7 @@
 ; appends a line in the program, default mode is append, if not specified
 (define (append-line filename line [mode 'append])
   (define outfile (open-output-file #:exists mode filename))
-
   (displayln line outfile)
-
   (close-output-port outfile))
 
 ; appends a list of lines in the program
@@ -25,6 +23,9 @@
     (displayln item outfile))
 
   (close-output-port outfile))
+
+(define (open-slog file-path)
+  (file->string file-path))
 
 ; Takes a symbol as input and returns a string that represents a C-compatible identifier
 (define (convert-id-to-c sym)
@@ -77,7 +78,7 @@
     (displayln "Outputting necessary CMakeLists.txt file")
     (write-to-c
      cmake-file
-"# variable for ../ and ../../ directories
+     "# variable for ../ and ../../ directories
 
 cmake_path(GET CMAKE_CURRENT_SOURCE_DIR PARENT_PATH testing_dir)
 cmake_path(GET testing_dir PARENT_PATH main_dir)
@@ -110,9 +111,8 @@ add_test(${TEST_NAME}_test ${TEST_NAME}_test)")))
     (displayln "Outputting the necessary C++ driver file")
     (write-to-c
      driver-file
-
      (string-replace
-"
+      "
 // Please don't edit this file, this file is created by test.rkt,
 // to regenerate this file, delete the file and run this test using test.rkt
 #include <prelude.hpp>
@@ -173,5 +173,7 @@ int main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
-}" "test-name" test-name))))
+}"
+      "test-name"
+      test-name))))
 ; end further testing section
