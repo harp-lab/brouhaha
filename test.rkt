@@ -66,7 +66,7 @@
 
       ; this should use write-to in the future                     
       (with-output-to-file (generate-res-filepath ".slog")
-                           (lambda () (pretty-print (write-program-for-slog desugar_prg)))
+                           (lambda () (display (write-program-for-slog desugar_prg)))
                            #:exists 'replace)
 
       (define (interpret-anf-and-output prg res-file)

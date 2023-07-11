@@ -29,10 +29,10 @@
                fname
                (sym->qstr params)
                (write-exp body))]))
-  (define (write-exp exp [ref? #f])
+  (define (write-exp exp)
     (match exp
       [`',e (format "(quote ~a)" (write-exp e))]
-      [(? symbol? x) (if ref? (format "(ref \"~a\")" x) (format "\"~a\"" x))]
+      [(? symbol? x) (format "(ref \"~a\")" x)]
       [(? boolean? x) (if x "(bool \"t\")" "(bool \"f\")")]
       [(? number? x) (format "(int \"~a\")" x)]
       [(? string? x) (format "(string \"~a\")" x)]
@@ -47,7 +47,7 @@
               ""
               `("(let [" ,(foldr (lambda (x e acc)
                                    (string-append
-                                    (format " (binding ~a ~a)" (sym->qstr x) (write-exp e #f))
+                                    (format " (binding ~a ~a)" (sym->qstr x) (write-exp e))
                                     acc))
                                  ""
                                  xs
