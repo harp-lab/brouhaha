@@ -82,8 +82,7 @@
                    "(empty)"
                    program)))
 
-  (display (foldr string-append (emit-top-level-env program) (map write-def program)))
-  (void))
+  (format "~a" (foldr string-append (emit-top-level-env program) (map write-def program))))
 
 (write-program-for-slog `((define (call) (+ '1 '2))
   (define (brouhaha_main) (call))))

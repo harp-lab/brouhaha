@@ -62,10 +62,10 @@
       (displayln (~a "Emitting Slog for: "
                      filename-string
                      " and outputting to: "
-                     (generate-res-filepath "_slog.slog")))
+                     (generate-res-filepath ".slog")))
 
       ; this should use write-to in the future                     
-      (with-output-to-file (generate-res-filepath "_slog.slog")
+      (with-output-to-file (generate-res-filepath ".slog")
                            (lambda () (pretty-print (write-program-for-slog desugar_prg)))
                            #:exists 'replace)
 
