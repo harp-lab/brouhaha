@@ -29,7 +29,7 @@
                fname
                (sym->qstr params)
                (write-exp body))]))
-  (define (write-exp exp [ref? #t])
+  (define (write-exp exp [ref? #f])
     (match exp
       [`',e (format "(quote ~a)" (write-exp e))]
       [(? symbol? x) (if ref? (format "(ref \"~a\")" x) (format "\"~a\"" x))]

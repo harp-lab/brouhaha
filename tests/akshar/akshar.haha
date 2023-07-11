@@ -1,5 +1,6 @@
-(define (call)
-    (+ 1 2))
+(define (call num1 num2)
+    (let ([x num1] [y num2])
+    y))
 
 (define (brouhaha_main)
-    (call))
+    (call 1 2))
