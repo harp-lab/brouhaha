@@ -26,7 +26,7 @@
 [(eval e env kont)
  (= e (lambda (fixedparam [xs ...]) eb))
  -->
- (store (addr e) (clo (lambda (fixedparam [xs ...]) eb) env))
+ (store (addr e) (clo e env))
  (ret (addr e) kont)]
 
 ;APP AND APPLY
@@ -171,6 +171,7 @@
  (do-var-prop-all-h [x x-rest ...] a-rest a-old)
  (store-flow a (addr x))]
 
+
 [(do-var-prop-all-h [x x-rest ...] [] a-old)
  -->
  (do-var-prop-all-h x-rest a-old a-old)]
@@ -182,7 +183,8 @@
  (store a1 v)]
 
 ;ENV HANDLING
-(env-map ?(env-set env x val) x val)
+(env-map ?(env-set env x addr) x addr)
+
 
 [(=/= x y)
  (env-set _ y _)
@@ -203,9 +205,9 @@
 ; (top-level-env (env-set (empty) "brouhaha_main" (addr "brouhaha_main")))
 
 ;FUNCTION CALL/APPLICATION CASE (answer (int 2))
-; (store (addr "call") (define "call" (fixedparam ["num1""num2"]) (if (quote (bool "f")) (ref "num1") (ref "num2"))))
-; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (int "1"))(quote (int "2"))])))
-; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
+(store (addr "call") (define "call" (fixedparam ["num1""num2"]) (if (quote (bool "f")) (ref "num1") (ref "num2"))))
+(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (int "1"))(quote (int "2"))])))
+(top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
 ;NO ARGUMENT FUNCTION CALL (answer (int 2))
 ; (store (addr "call") (define "call" (fixedparam []) (if (quote (bool "f")) (quote (int "1")) (quote (int "2")))))
@@ -217,9 +219,6 @@
 ; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (int "5"))(quote (int "42"))])))
 ; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
-(store (addr "call") (define "call" (fixedparam ["num1""num2"]) (let [ (binding "x" (ref "num1")) (binding "y" (ref "num2"))] (ref "y"))))
-(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (int "5"))(quote (int "42"))])))
-(top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
 ;VARIADIC APPLY
 ; (store (addr "call") (define "call" (fixedparam []) (appl (ref "+") (app (ref "list") [(quote (int "1"))(quote (int "2"))(quote (int "3"))]))))
