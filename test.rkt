@@ -53,17 +53,6 @@
         (list "_desugar.out" "_alphatize.out" "_anf.out" "_cps.out" "_cps_anf.out" "_closure.out"))
        compiled-program)
 
-      ;;; (displayln (~a "Emitting C++ for: "
-      ;;;                filename-string
-      ;;;                " and outputting to: "
-      ;;;                (generate-comp-filepath "_cpp_program.cpp")))
-      ;;; (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp"))
-
-      (displayln (~a "Emitting Slog for: "
-                     filename-string
-                     " and outputting to: "
-                     (generate-res-filepath ".slog")))
-
       ; this should use write-to in the future                     
       (with-output-to-file (generate-res-filepath ".slog")
                            (lambda () (display (write-program-for-slog desugar_prg)))
@@ -89,6 +78,17 @@
             [anf_res (interpret-anf-and-output anf_prg "_anf_res.out")]
             [cps_res (interpret-cps-and-output cps_prg "_cps_res.out")]
             [closure_res (interpret-clo-and-output clo_conv_prg "_closure_res.out")])
+      
+      (displayln (~a "Emitting C++ for: "
+                     filename-string
+                     " and outputting to: "
+                     (generate-comp-filepath "_cpp_program.cpp")))
+      (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp"))
+
+      (displayln (~a "Emitting Slog for: "
+                     filename-string
+                     " and outputting to: "
+                     (generate-res-filepath ".slog")))
 
         (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res closure_res)))))
 
