@@ -1,9 +1,0 @@
-[(= e (eval (apply-prim op lst) env kont))
- -->
- (store (saddr e) (state e))
- (ret (saddr e) kont)]
-
-[(= e (eval (prim op [lst ...]) env kont))
- -->
- (store (saddr e) (state e))
- (ret (saddr e) kont)]
