@@ -52,3 +52,5 @@ add_subdirectory(string_append)
 add_subdirectory(string_to_list)
 add_subdirectory(substring)
 add_subdirectory(set)
+
+add_subdirectory(apply)

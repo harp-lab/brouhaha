@@ -123,8 +123,8 @@
     [(and (= (vector-length args) 1) (directory-exists? (vector-ref args 0)))
      (read-direc (vector-ref args 0))]
     [(and (= (vector-length args) 1)
-          (file-exists? (vector-ref args 0))) ; racket test tests/easy/easy.haha
-     (test-file (vector-ref args 0))]
+          (file-exists? (string-append "./tests/" (vector-ref args 0) "/" (vector-ref args 0) ".haha"))) ; racket test tests/easy/easy.haha
+     (test-file (string-append "./tests/" (vector-ref args 0) "/" (vector-ref args 0) ".haha"))]
     [else (error "Invalid command line arguments. Please provide either a file or a directory.")]))
 
 (main (current-command-line-arguments))
