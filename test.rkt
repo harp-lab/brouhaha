@@ -46,6 +46,17 @@
       (verify-dir (string-append out-dir "/compiler-out/"))
       (displayln (~a "Now running: " filename-string))
 
+      (displayln (~a "Emitting Slog for: "
+                     filename-string
+                     " and outputting to: "
+                     (generate-res-filepath ".slog")))
+      
+      ; this should use write-to in the future                     
+      (with-output-to-file (generate-res-filepath ".slog")
+                           (lambda () (display 
+                                        (string-append (string-append (open-slog prelude-slog) (open-slog analyze-slog)) (write-program-for-slog desugar_prg))))
+                           #:exists 'replace)
+
       (for-each
        write-to
        (map
@@ -79,17 +90,6 @@
                      " and outputting to: "
                      (generate-comp-filepath "_cpp_program.cpp")))
       (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp"))
-
-      (displayln (~a "Emitting Slog for: "
-                     filename-string
-                     " and outputting to: "
-                     (generate-res-filepath ".slog")))
-      
-      ; this should use write-to in the future                     
-      (with-output-to-file (generate-res-filepath ".slog")
-                           (lambda () (display 
-                                        (append (append (open-slog prelude-slog) (open-slog analyze-slog)) (write-program-for-slog desugar_prg))))
-                           #:exists 'replace)
 
         (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res closure_res)))))
 
