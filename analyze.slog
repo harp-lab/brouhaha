@@ -24,7 +24,7 @@
 
 ;LAMBDA AND FUNC
 [(eval e env kont)
- (= e (lambda (fixedparam [xs ...]) eb))
+ (= e (lambda _ _))
  -->
  (store (addr e) (clo e env))
  (ret (addr e) kont)]
@@ -32,23 +32,33 @@
 ;APP AND APPLY
 [(eval (app ef [eas ...]) env kont)
  -->
- (eval ef env (appk [] [eas ...] env kont))]
+ (eval ef env (appk [] eas env kont))]
 
 [(eval (appl ef ea) env kont)
  -->
-]
+ (eval ef env (applak ea env kont))]
 
 ;IF CASE
 [(eval (if guard tExp fExp) env kont)
  -->
  (eval guard env (if-k tExp fExp env kont))]
 
- ;LET CASE
- [(eval (let [(binding lhs rhs) bind-rest ...] body) env kont)
-  -->
-  (eval rhs env (letk body [lhs] [] bind-rest env kont))]
+;LET CASE
+[(eval (let [(binding lhs rhs) bind-rest ...] body) env kont)
+ -->
+ (eval rhs env (letk body [lhs] [] bind-rest env kont))]
 
+;APPLY-PRIM CASE
+[(= e (eval (apply-prim op lst) env kont))
+ -->
+ (store (saddr e) (state e))
+ (ret (saddr e) kont)]
 
+;PRIM CASE
+[(= e (eval (prim op [lst ...]) env kont))
+ -->
+ (store (saddr e) (state e))
+ (ret (saddr e) kont)]
 
 
 ;---------------------------------------------------------------------;
@@ -68,6 +78,15 @@
  (store af vf)
  -->
  (apply vf (fixedarg []) kont)]
+
+[(ret af (applak ea env kont))
+ -->
+ (eval ea env (applfk af kont))]
+
+[(ret a (applfk af kont))
+ (store af vf)
+ -->
+ (apply vf (vararg a) kont)]
 
 [(ret a (kaddr eb))
  -->
@@ -193,6 +212,8 @@
 
 
  (answer ?(ret (addr a) (halt)) {store (addr a)})
+ (answer ?(ret (saddr a) (halt)) {store (saddr a)})
+ 
 
 
 
@@ -205,9 +226,9 @@
 ; (top-level-env (env-set (empty) "brouhaha_main" (addr "brouhaha_main")))
 
 ;FUNCTION CALL/APPLICATION CASE (answer (int 2))
-(store (addr "call") (define "call" (fixedparam ["num1""num2"]) (if (quote (bool "f")) (ref "num1") (ref "num2"))))
-(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (int "1"))(quote (int "2"))])))
-(top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
+; (store (addr "call") (define "call" (fixedparam ["num1""num2"]) (if (quote (bool "f")) (ref "num1") (ref "num2"))))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [(quote (int "1"))(quote (int "2"))])))
+; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
 ;NO ARGUMENT FUNCTION CALL (answer (int 2))
 ; (store (addr "call") (define "call" (fixedparam []) (if (quote (bool "f")) (quote (int "1")) (quote (int "2")))))
@@ -230,3 +251,20 @@
 ; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
 ; (top-level-env (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")))
 
+;LIST PRIM
+; (store (addr "call") (define "call" (fixedparam []) (app (ref "list") [(quote (int "1"))(quote (int "2"))(quote (int "3"))(quote (int "4"))])))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+; (store (addr "list") (define "list" (varparam "x") (ref "x")))
+; (top-level-env (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")) "string->list" (addr "string->list")) "string-append" (addr "string-append")) "substring" (addr "substring")) "string-ref" (addr "string-ref")) "string-length" (addr "string-length")) "string?" (addr "string?")) "set-count" (addr "set-count")) "set-remove" (addr "set-remove")) "set-add" (addr "set-add")) "set-member?" (addr "set-member?")) "set" (addr "set")) "hash-count" (addr "hash-count")) "hash-has-key?" (addr "hash-has-key?")) "hash-set" (addr "hash-set")) "hash-ref" (addr "hash-ref")) "hash" (addr "hash")) "append" (addr "append")) "foldr" (addr "foldr")) "drop" (addr "drop")) "filter" (addr "filter")) "map" (addr "map")) "length" (addr "length")) "take" (addr "take")) "take-helper" (addr "take-helper")) "reverse" (addr "reverse")) "reverse-helper" (addr "reverse-helper")) "foldl" (addr "foldl")) "member?" (addr "member?")) "int->float" (addr "int->float")) "float->int" (addr "float->int")) "list" (addr "list")) "odd?" (addr "odd?")) "even?" (addr "even?")) "cdr" (addr "cdr")) "abs" (addr "abs")) "car" (addr "car")) "cons" (addr "cons")) "eq?" (addr "eq?")) "equal?" (addr "equal?")) "null?" (addr "null?")) ">=" (addr ">=")) "<=" (addr "<=")) "<" (addr "<")) ">" (addr ">")) "=" (addr "=")) "/" (addr "/")) "modulo" (addr "modulo")) "*" (addr "*")) "-" (addr "-")) "max" (addr "max")) "+" (addr "+")))
+
+;RACKET-APPLY CASE (VARARG/VARPARAM)
+; (store (addr "list") (define "list" (varparam "x") (ref "x")))
+; (store (addr "call") (define "call" (fixedparam []) (appl (lambda (varparam "x") (ref "x")) (app (ref "list") [(quote (int "1"))(quote (int "2"))(quote (int "3"))(quote (int "4"))(quote (int "5"))]))))
+; (store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+; (top-level-env (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")) "string->list" (addr "string->list")) "string-append" (addr "string-append")) "substring" (addr "substring")) "string-ref" (addr "string-ref")) "string-length" (addr "string-length")) "string?" (addr "string?")) "set-count" (addr "set-count")) "set-remove" (addr "set-remove")) "set-add" (addr "set-add")) "set-member?" (addr "set-member?")) "set" (addr "set")) "hash-count" (addr "hash-count")) "hash-has-key?" (addr "hash-has-key?")) "hash-set" (addr "hash-set")) "hash-ref" (addr "hash-ref")) "hash" (addr "hash")) "append" (addr "append")) "foldr" (addr "foldr")) "drop" (addr "drop")) "filter" (addr "filter")) "map" (addr "map")) "length" (addr "length")) "take" (addr "take")) "take-helper" (addr "take-helper")) "reverse" (addr "reverse")) "reverse-helper" (addr "reverse-helper")) "foldl" (addr "foldl")) "member?" (addr "member?")) "int->float" (addr "int->float")) "float->int" (addr "float->int")) "list" (addr "list")) "odd?" (addr "odd?")) "even?" (addr "even?")) "cdr" (addr "cdr")) "abs" (addr "abs")) "car" (addr "car")) "cons" (addr "cons")) "eq?" (addr "eq?")) "equal?" (addr "equal?")) "null?" (addr "null?")) ">=" (addr ">=")) "<=" (addr "<=")) "<" (addr "<")) ">" (addr ">")) "=" (addr "=")) "/" (addr "/")) "modulo" (addr "modulo")) "*" (addr "*")) "-" (addr "-")) "max" (addr "max")) "+" (addr "+")))
+
+;VARARG/VARPARAM (NO RACKET APPLY)
+(store (addr "list") (define "list" (varparam "x") (ref "x")))
+(store (addr "call") (define "call" (fixedparam []) (app (lambda (varparam "x") (ref "x")) [(app (ref "list") [(quote (int "1"))(quote (int "2"))(quote (int "3"))(quote (int "4"))(quote (int "5"))])])))
+(store (addr "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+(top-level-env (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")) "string->list" (addr "string->list")) "string-append" (addr "string-append")) "substring" (addr "substring")) "string-ref" (addr "string-ref")) "string-length" (addr "string-length")) "string?" (addr "string?")) "set-count" (addr "set-count")) "set-remove" (addr "set-remove")) "set-add" (addr "set-add")) "set-member?" (addr "set-member?")) "set" (addr "set")) "hash-count" (addr "hash-count")) "hash-has-key?" (addr "hash-has-key?")) "hash-set" (addr "hash-set")) "hash-ref" (addr "hash-ref")) "hash" (addr "hash")) "append" (addr "append")) "foldr" (addr "foldr")) "drop" (addr "drop")) "filter" (addr "filter")) "map" (addr "map")) "length" (addr "length")) "take" (addr "take")) "take-helper" (addr "take-helper")) "reverse" (addr "reverse")) "reverse-helper" (addr "reverse-helper")) "foldl" (addr "foldl")) "member?" (addr "member?")) "int->float" (addr "int->float")) "float->int" (addr "float->int")) "list" (addr "list")) "odd?" (addr "odd?")) "even?" (addr "even?")) "cdr" (addr "cdr")) "abs" (addr "abs")) "car" (addr "car")) "cons" (addr "cons")) "eq?" (addr "eq?")) "equal?" (addr "equal?")) "null?" (addr "null?")) ">=" (addr ">=")) "<=" (addr "<=")) "<" (addr "<")) ">" (addr ">")) "=" (addr "=")) "/" (addr "/")) "modulo" (addr "modulo")) "*" (addr "*")) "-" (addr "-")) "max" (addr "max")) "+" (addr "+")))

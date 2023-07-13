@@ -1,5 +1,5 @@
 (define (call)
-    ((lambda x x) 1 2 3 4 5))
+    ((lambda x x) (list 1 2 3 4 5)))
 
 (define (brouhaha_main)
     (call))
