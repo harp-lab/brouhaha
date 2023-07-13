@@ -11,7 +11,7 @@
 (define (write-to file content)
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
 
-(define (run-program directory filename file-path prelude-path)
+(define (run-program directory filename file-path prelude-path prelude-slog analyze-slog)
   (with-handlers ([exn:fail?
                    (lambda (exn)
                      (displayln
@@ -53,11 +53,6 @@
         (list "_desugar.out" "_alphatize.out" "_anf.out" "_cps.out" "_cps_anf.out" "_closure.out"))
        compiled-program)
 
-      ; this should use write-to in the future                     
-      (with-output-to-file (generate-res-filepath ".slog")
-                           (lambda () (display (write-program-for-slog desugar_prg)))
-                           #:exists 'replace)
-
       (define (interpret-anf-and-output prg res-file)
         (let ([result (interp prg)])
           (write-to (generate-res-filepath res-file) result)
@@ -89,6 +84,12 @@
                      filename-string
                      " and outputting to: "
                      (generate-res-filepath ".slog")))
+      
+      ; this should use write-to in the future                     
+      (with-output-to-file (generate-res-filepath ".slog")
+                           (lambda () (display 
+                                        (append (append (open-slog prelude-slog) (open-slog analyze-slog)) (write-program-for-slog desugar_prg))))
+                           #:exists 'replace)
 
         (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res closure_res)))))
 
@@ -115,7 +116,9 @@
      (string->path (car (regexp-match #rx"[A-Za-z0-9_]+\\.haha$"
                                       user-file))) ; filename in the form #<path: apply.haha>
      full-path
-     (build-path (current-directory) "prelude.haha"))))
+     (build-path (current-directory) "prelude.haha")
+     (build-path (current-directory) "prelude.slog")
+     (build-path (current-directory) "analyze.slog"))))
 
 (define (main args)
   (cond
