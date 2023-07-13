@@ -36,7 +36,7 @@
 
 [(eval (appl ef ea) env kont)
  -->
- ]
+]
 
 ;IF CASE
 [(eval (if guard tExp fExp) env kont)
