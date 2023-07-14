@@ -50,12 +50,12 @@
                      filename-string
                      " and outputting to: "
                      (generate-res-filepath ".slog")))
-      
-      ; this should use write-to in the future                     
+
+      ; this should use write-to in the future
       (with-output-to-file (generate-res-filepath ".slog")
-                           (lambda () (display 
-                                        (string-append (string-append (open-slog prelude-slog) (open-slog analyze-slog)) (write-program-for-slog desugar_prg))))
-                           #:exists 'replace)
+        (lambda () (display
+                    (string-append (string-append (open-slog prelude-slog) (open-slog analyze-slog)) (write-program-for-slog desugar_prg))))
+        #:exists 'replace)
 
       (for-each
        write-to
@@ -84,12 +84,12 @@
             [anf_res (interpret-anf-and-output anf_prg "_anf_res.out")]
             [cps_res (interpret-cps-and-output cps_prg "_cps_res.out")]
             [closure_res (interpret-clo-and-output clo_conv_prg "_closure_res.out")])
-      
-      (displayln (~a "Emitting C++ for: "
-                     filename-string
-                     " and outputting to: "
-                     (generate-comp-filepath "_cpp_program.cpp")))
-      (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp"))
+
+        (displayln (~a "Emitting C++ for: "
+                       filename-string
+                       " and outputting to: "
+                       (generate-comp-filepath "_cpp_program.cpp")))
+        (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp"))
 
         (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res closure_res)))))
 
@@ -104,7 +104,9 @@
                                   (run-program directory
                                                file
                                                file-path
-                                               (build-path (current-directory) "prelude.haha")))))
+                                               (build-path (current-directory) "prelude.haha")
+                                               (build-path (current-directory) "prelude.slog")
+                                               (build-path (current-directory) "analyze.slog")))))
                             (directory-list (build-path (current-directory) directory dir))))))
             (directory-list directory)))
 ; takes a relative path, cannot pass an absolute path
