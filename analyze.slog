@@ -17,6 +17,11 @@
  (store (addr (quote dat)) dat)
  (ret (addr (quote dat)) kont)]
 
+[(eval (string str) env kont)
+ -->
+ (store (addr (string str)) (string str))
+ (ret (addr (string str)) kont)]
+
 ;FUNCTION AND VARIABLE REFERENCES
 [(eval (ref x) env kont)
  -->
@@ -101,6 +106,11 @@
 [(ret ga (if-k tExp fExp env kont))
  (store ga (bool "f"))
  --> 
+ (eval fExp env kont)]
+
+[(ret (sddar _) (if-k tExp fExp env kont))
+ --> 
+ (eval tExp env kont)
  (eval fExp env kont)]
 
 ;LET CASE
