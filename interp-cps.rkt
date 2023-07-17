@@ -25,7 +25,8 @@
 
   (define (eval exp env)
     (match exp
-      [(? string? y) y]
+      ; [(? string? y) y]
+      [`(quote ,(? string? y)) y]
       [`(quote ,(? number? x)) x]
       [`(quote ,(? flonum? x)) x]
       [`(quote ,(? boolean? x)) x]

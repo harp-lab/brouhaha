@@ -23,12 +23,14 @@
 
   (define (eval exp env)
     (match exp
-      [(? string? y) y]
+      ; [(? string? y) y]
+      [`(quote ,(? string? y)) y]
       [`(quote ,(? number? x)) x]
       [`(quote ,(? flonum? x)) x]
       [`(quote ,(? boolean? x)) x]
       [`(quote ,(? symbol? x)) x]
       [(? symbol?) (hash-ref env exp)]
+      [`(lambda ,_ ,_) `(closure ,exp ,env)]
       [`(prim halt ,lst) (hash-ref env lst)]
       [`(prim ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
       [`(apply-prim ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]

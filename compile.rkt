@@ -39,7 +39,7 @@
       [_ body]))
   (define (desugar-exp exp)
     (match exp
-      [(? string? y) y]
+      [(? string? y) `',y]
       [(? integer? y) `',y]
       [(? flonum? y) `',y]
       [(? symbol? x) x]
@@ -100,7 +100,7 @@
        `(if ,((alpha-rename env) e0) ,((alpha-rename env) e1) ,((alpha-rename env) e2))]
       [`(apply ,e0 ,e1) `(apply ,((alpha-rename env) e0) ,((alpha-rename env) e1))]
       [(? symbol? x) (hash-ref env x)]
-      [(? string? y) y]
+      [(? string? y) `',y]
       [`',dat `',dat]
       [`(,es ...) (map (alpha-rename env) es)]))
   (define ((rename-define env) def)
@@ -154,7 +154,7 @@
         (k '())
         (normalize-ae (car es) (lambda (x) (normalize-aes (cdr es) (lambda (xs) (k `(,x . ,xs))))))))
   (match e
-    [(? string? y) (k y)]
+    [(? string? y) (k `',y)]
     [`',dat (k `',dat)]
     [(? symbol? x) (k x)]
     [`(lambda ,xs ,e0) (k `(lambda ,xs ,(normalize e0 (lambda (x) x))))]
