@@ -2,6 +2,15 @@
 #include <gtest/gtest.h>
 
 
+// TEST(HAMTTests, getKeys)
+// {
+//     mpz_t* result = (mpz_t*)(GC_MALLOC(sizeof(mpz_t)));
+//     mpz_init(*result);
+//     void* var_mpz = encode_mpz(result);
+//     ASSERT_EQ(get_tag(var_mpz), 1);
+//     ASSERT_NE(get_tag(var_mpz), 2);
+// }
+
 TEST(MPZTests, MPZ)
 {
     mpz_t* result = (mpz_t*)(GC_MALLOC(sizeof(mpz_t)));

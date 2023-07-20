@@ -125,7 +125,7 @@
           (append-line filepath (format "void* ~a = encode_null();" (get-c-string lhs)))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-         [(? string?)
+         [`(quote ,(? string? val))
 
           ; (define strName (gensym 'str))
           (append-line

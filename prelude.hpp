@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <bitset>
 
 // GMP and gc headers
 #include "gc.h"
@@ -1204,9 +1205,21 @@ void *prim_hash_u45count(void *h)
 
 void *prim_hash_u45keys(void *h)
 {
-    // to be implemented
-    //?? returns the cons list of keys
-    return 0;
+    bool type_check_hash = get_tag(h) == HASH;
+    if (!type_check_hash)
+    {
+        assert_type(false, "in the hash-set, hash is not passed");
+    }
+    const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
+    const hash_struct** keys_array = h_hamt->getKeys();
+    keys_array[0]->print_hash_val();
+    void* keys_cons_lst = encode_null();
+    for (long i = 0; i < h_hamt->size(); i++)
+    {
+        keys_cons_lst = prim_cons(keys_array[i]->val, keys_cons_lst);
+    }
+    return keys_cons_lst;
+    
 }
 #pragma endregion
 /*
@@ -1295,38 +1308,42 @@ void *prim_substring(void *str_void, void *start_void, void *end_void)
     mpz_t *start = decode_mpz(start_void);
     mpz_t *end = decode_mpz(end_void);
 
-    if(!((mpz_cmp_ui(*start,str_len) < 0) && (mpz_cmp_ui(*end,str_len) <= 0))){
+    if (!((mpz_cmp_ui(*start, str_len) < 0) && (mpz_cmp_ui(*end, str_len) <= 0)))
+    {
         assert_type(false, "Array out of bounds exception");
     }
 
     mpz_sub(*end, *start, *end);
     long substr_len = mpz_get_ui(*end);
 
-    std::string* ret_str = new(GC) std::string(str->substr(mpz_get_ui(*start),substr_len));
+    std::string *ret_str = new (GC) std::string(str->substr(mpz_get_ui(*start), substr_len));
 
     return encode_str(ret_str);
 }
 
 // takes two strings and returns the appended string
-void* prim_string_u45append(void* s1_void, void* s2_void){
+void *prim_string_u45append(void *s1_void, void *s2_void)
+{
     assert_type((get_tag(s1_void)) == STRING, "str passed to the string-append is not a string");
     assert_type((get_tag(s2_void)) == STRING, "str passed to the string-append is not a string");
 
-    std::string* s1 = new(GC) std::string(*(decode_str(s1_void)));
-    std::string* s2 = decode_str(s2_void);
+    std::string *s1 = new (GC) std::string(*(decode_str(s1_void)));
+    std::string *s2 = decode_str(s2_void);
     s1->append(*s2);
     return encode_str(s1);
 }
 
-void* prim_string_u45_u62list(void* str_void){
+void *prim_string_u45_u62list(void *str_void)
+{
     assert_type((get_tag(str_void)) == STRING, "str passed to the string->list is not a string");
-    
-    std::string* str = decode_str(str_void);
-    std::string* ret_str = new(GC) std::string(*str);
-    std::reverse(ret_str->begin(),ret_str->end());
-    void* lst = encode_null();
-    for(char c: *ret_str){
-        lst = prim_cons(encode_str(new(GC) std::string(&c)),lst);
+
+    std::string *str = decode_str(str_void);
+    std::string *ret_str = new (GC) std::string(*str);
+    std::reverse(ret_str->begin(), ret_str->end());
+    void *lst = encode_null();
+    for (char c : *ret_str)
+    {
+        lst = prim_cons(encode_str(new (GC) std::string(&c)), lst);
     }
     return lst;
 }
