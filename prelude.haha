@@ -4,8 +4,8 @@
 (define (+ . lst)
   (apply-prim + lst))
 
-(define (max . lst)
-  (apply-prim max lst))
+; (define (max . lst)
+;   (apply-prim max lst))
 
 (define (- . lst)
   (apply-prim - lst))
@@ -49,8 +49,8 @@
 (define (car lst)
   (prim car lst))
 
-(define (abs x)
-  (prim abs x))
+; (define (abs x)
+;   (prim abs x))
 
 (define (cdr lst)
   (prim cdr lst))
@@ -117,8 +117,8 @@
 (define (hash-set h k v)
   (prim hash-set h k v))
 
-; (define (hash-keys h)
-;    (prim hash-keys h))
+(define (hash-keys h)
+   (prim hash-keys h))
 
 (define (hash-has-key? h k)
   (prim hash-has-key? h k))
@@ -129,17 +129,17 @@
 (define (set . lst)
   (apply-prim set lst))
 
-(define (set-member? s val)
-  (prim set-member? s val))
+; (define (set-member? s val)
+;   (prim set-member? s val))
 
-(define (set-add s val)
-  (prim set-add s val))
+; (define (set-add s val)
+;   (prim set-add s val))
 
-(define (set-remove s val)
-  (prim set-remove s val))
+; (define (set-remove s val)
+;   (prim set-remove s val))
 
-(define (set-count s val)
-  (prim set-count s val))
+; (define (set-count s val)
+;   (prim set-count s val))
 
 ; string functions
 (define (string? str)

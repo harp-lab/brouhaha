@@ -615,11 +615,6 @@ public:
         return keyArray;
     }
 
-    // void getKeysHelper(const KVtype &kv) const
-    // {
-    //     const KVnext *
-    // }
-
     const hamt<K, V> *insert(const K *const key, const V *const val) const
     {
         // type K must support a method u64 hash() const;

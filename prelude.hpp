@@ -1020,7 +1020,7 @@ void *prim_cdr(void *val)
 std::string print_cons(void *lst)
 {
     std::string ret_str;
-    ret_str.append("'(");
+    ret_str.append("(list ");
     while (is_cons(lst))
     {
         void **cons_lst = decode_cons(lst);
@@ -1211,17 +1211,41 @@ void *prim_hash_u45keys(void *h)
         assert_type(false, "in the hash-set, hash is not passed");
     }
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
-    const hash_struct** keys_array = h_hamt->getKeys();
+    const hash_struct **keys_array = h_hamt->getKeys();
     keys_array[0]->print_hash_val();
-    void* keys_cons_lst = encode_null();
+    void *keys_cons_lst = encode_null();
     for (long i = 0; i < h_hamt->size(); i++)
     {
         keys_cons_lst = prim_cons(keys_array[i]->val, keys_cons_lst);
     }
     return keys_cons_lst;
-    
 }
 #pragma endregion
+
+#pragma region set-prims
+void *apply_prim_set(void *lst)
+{
+    const hamt<hash_struct, hash_struct> *h = new ((hamt<hash_struct, hash_struct> *)GC_MALLOC(sizeof(hamt<hash_struct, hash_struct>))) hamt<hash_struct, hash_struct>();
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        int elem_tag = get_tag(cons_lst[0]);
+        bool type_check = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING);
+
+        if (type_check)
+        {
+            const hash_struct *const k = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(cons_lst[0]);
+            const hash_struct *const v = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(encode_bool(true));
+            h = h->insert(k, v);
+            lst = cons_lst[1];
+            continue;
+        }
+        assert_type(false, "Key is not one of MPZ or MPF or STRING");
+    }
+    return encode_hash(h);
+}
+#pragma end region
+
 /*
 Takes a MPZ and returns MPF for that integer
 */

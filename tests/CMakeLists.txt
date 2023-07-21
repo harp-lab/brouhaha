@@ -51,8 +51,9 @@ set_target_properties(testing PROPERTIES LINKER_LANGUAGE CXX)
 # add_subdirectory(string_append)
 # add_subdirectory(string_to_list)
 # add_subdirectory(substring)
-# add_subdirectory(set)
+add_subdirectory(set)
 
 # add_subdirectory(apply)
+# add_subdirectory(app)
 
-add_subdirectory(hash_keys)
+# add_subdirectory(hash_keys)

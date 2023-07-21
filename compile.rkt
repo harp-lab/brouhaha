@@ -272,7 +272,7 @@
                    (cons 1 body+)
                    envlist)))
      (list (set-remove (set-union envvars freevars) x)
-           `(let ([,x ((make-closure ,fx) ,@envlist)]) ,e0+)
+           `(let ([,x (make-closure ,fx ,@envlist)]) ,e0+)
            `(,@procs0+ ,@procs1+ (proc (,fx ,envx . ,arg) ,body++)))]
     [`(if ,x ,e0 ,e1)
      (match-define `(,freevars0 ,e0+ ,procs0+) (T-bottom-up e0))
