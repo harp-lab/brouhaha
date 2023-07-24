@@ -176,17 +176,46 @@ public:
         const u32 max_elem = __builtin_popcountll(bm << 1);
         for (int i = 0; i < max_elem; i++)
         {
-                if ((data[i].k.bm & 1) == 0)
-                {
-                    keyArray[numKeysStored] = data[i].k.key;
-                    numKeysStored = numKeysStored + 1;
-                }
-                else
-                {
-                    KVnext::inner_get_keys(data[i], numKeysStored, keyArray);
-                }
+            if ((data[i].k.bm & 1) == 0)
+            {
+                keyArray[numKeysStored] = data[i].k.key;
+                numKeysStored = numKeysStored + 1;
+            }
+            else
+            {
+                KVnext::inner_get_keys(data[i], numKeysStored, keyArray);
+            }
         }
     }
+
+    static u64 hash_helper(u64 h_val, const K *const key, const V *const val, bool is_set)
+    {
+        h_val ^= key->hash() + 0x9e3779b9 + (h_val << 6) + (h_val >> 2);
+        if (!is_set)
+        {
+            h_val ^= val->hash() + 0x9e3779b9 + (h_val << 6) + (h_val >> 2);
+        }
+        return h_val;
+    }
+
+    static const void inner_get_hash(const KVtype &kv, u64 &h, bool is_set)
+    {
+        const KVnext *const data = kv.v.node;
+        const u64 bm = kv.k.bm >> 1;
+        const u32 max_elem = __builtin_popcountll(bm << 1);
+        for (int i = 0; i < max_elem; i++)
+        {
+            if ((data[i].k.bm & 1) == 0)
+            {
+                h = hash_helper(h, data[i].k.key, data[i].v.val, is_set);
+            }
+            else
+            {
+                KVnext::inner_get_hash(data[i], h, is_set);
+            }
+        }
+    }
+
     // This is a helper for returning a copy of an internal node with one row replaced by kv
     static const KVtype *update_node(const KVtype *old, const u32 count, const u32 i, const KVtype &kv)
     {
@@ -476,6 +505,21 @@ public:
         std::cout << "In the final one" << std::endl;
     }
 
+    static u64 hash_helper(u64 h_val, const K *const key, const V *const val, bool is_set)
+    {
+        h_val ^= key->hash() + 0x9e3779b9 + (h_val << 6) + (h_val >> 2);
+        if (!is_set)
+        {
+            h_val ^= val->hash() + 0x9e3779b9 + (h_val << 6) + (h_val >> 2);
+        }
+        return h_val;
+    }
+
+    static const void inner_get_hash(const KVbottom &kv, u64 &h, bool is_set)
+    {
+        std::cout << " in the final get hash" << std::endl;
+    }
+
     // This is a helper for returning a copy of an internal node with one row replaced by kv
     static const KVbottom *update_node(const KVbottom *old, const u32 count, const u32 i, const KVbottom &kv)
     {
@@ -544,6 +588,12 @@ public:
     }
 };
 
+enum hamt_ds_type
+{
+    set_type,
+    hash_type
+};
+
 // A simple hash-array-mapped trie implementation (Bagwell 2001)
 // Garbage collected, persistent/immutable hashmaps
 template <typename K, typename V>
@@ -556,10 +606,18 @@ private:
     // other 10*6bits are used for inner nodes up to 10 deep
     KVtop data[rootsize];
     u64 count;
+    hamt_ds_type cur_type;
+    // 0 for hash
+    // 1 for set
 
 public:
     hamt<K, V>()
-        : data{}, count(0)
+        : data{}, count(0), cur_type(hamt_ds_type::hash_type)
+    {
+    }
+
+    hamt<K, V>(hamt_ds_type cur_ds_type)
+        : data{}, count(0), cur_type(cur_ds_type)
     {
     }
 
@@ -717,8 +775,50 @@ public:
         }
     }
 
+    u64 hash_helper(u64 h_val, const K *const key, const V *const val, bool is_set) const
+    {
+        h_val ^= key->hash() + 0x9e3779b9 + (h_val << 6) + (h_val >> 2);
+        if (!is_set)
+        {
+            h_val ^= val->hash() + 0x9e3779b9 + (h_val << 6) + (h_val >> 2);
+        }
+        return h_val;
+    }
+
+    u64 getHash() const
+    {
+        // type K must support a method u64 hash() const;
+        // const u64 h = key->hash();
+        // const u64 hpiece = (h & 0x11000000000000f) % rootsize;
+        bool is_set = (cur_type == hamt_ds_type::set_type);
+        u64 *h = (u64 *)GC_MALLOC(sizeof(u64));
+        *h = 0xcbf29ce484222325;
+        for (int i = 0; i < rootsize; i++)
+        {
+            if (this->data[i].k.bm == 0)
+            {
+                continue;
+            }
+            else if ((this->data[i].k.bm & 1) == 0)
+            {
+                // it's a key value pair
+                *h = hash_helper(*h, this->data[i].k.key, this->data[i].v.val, is_set);
+            }
+            else
+            {
+                KVtop::inner_get_hash(this->data[i], *h, is_set);
+            }
+        }
+        return *h;
+    }
+
     u64 size() const
     {
         return count;
+    }
+
+    hamt_ds_type whatami() const
+    {
+        return cur_type;
     }
 };

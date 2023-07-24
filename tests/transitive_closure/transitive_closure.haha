@@ -1,0 +1,40 @@
+(define (g) (hash 0 (set 1 2) 1 (set 3) 2 (set 3) 3 (set 4)))
+
+(define (iter-to-fixpoint f x)
+  (let ([x+ (f x)])
+    (if (equal? x x+)
+        x
+        (iter-to-fixpoint f x+))))
+
+(define (add-edge g x y)
+  (hash-set g x (set-add 
+                      (if (hash-has-key? g x)
+                            (hash-ref g x)
+                            (set))
+                    ; (hash-ref g x set) 
+                                y)))
+
+(define (f g)
+  (foldl (lambda (a g+)
+           (foldl (lambda (b g+)
+                    (foldl (lambda (c g+)
+                             (add-edge g+ a c))
+                           g+
+                           (if (hash-has-key? g b)
+                            (set->list (hash-ref g b))
+                            (set->list (set)))
+                          ;  (set->list (hash-ref g b set))
+                           ))
+                  g+
+                  (set->list (hash-ref g a))))
+         g
+         (hash-keys g)))
+
+(define (transitive-closure g)
+  (iter-to-fixpoint f g))
+
+(define (call)
+    (transitive-closure (g)))
+
+(define (brouhaha_main)
+    (call))

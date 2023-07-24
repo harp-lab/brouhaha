@@ -21,7 +21,7 @@ build/
 trial.rkt
 tests3/
 dummy.cpp
-todo.md
+# todo.md
 strings_trails.cpp
 trial.py
 trial.txt
@@ -32,3 +32,5 @@ tin/
 brouhaha.rkt
 repl.rkt
 slog-out/
+trans_clo copy.rkt
+trans_clo.rkt

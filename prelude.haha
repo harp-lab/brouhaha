@@ -129,11 +129,17 @@
 (define (set . lst)
   (apply-prim set lst))
 
+(define (set->list h)
+  (prim set->list h))
+
+(define (list->set lst)
+  (prim list->set lst)) 
+
 ; (define (set-member? s val)
 ;   (prim set-member? s val))
 
-; (define (set-add s val)
-;   (prim set-add s val))
+(define (set-add s val)
+  (prim set-add s val))
 
 ; (define (set-remove s val)
 ;   (prim set-remove s val))

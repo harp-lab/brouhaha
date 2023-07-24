@@ -270,6 +270,18 @@ void *cons_equal(void *arg1, void *arg2)
     }
 }
 
+void *hash_equal(void *arg1, void *arg2)
+{
+    const hamt<hash_struct, hash_struct> *h_arg1 = decode_hash(arg1);
+    const hamt<hash_struct, hash_struct> *h_arg2 = decode_hash(arg2);
+
+    if (h_arg1->getHash() == h_arg2->getHash())
+    {
+        return encode_bool(true);
+    }
+    return encode_bool(false);
+}
+
 void *equal_(void *arg1, void *arg2)
 {
     // takes in two voids,
@@ -277,7 +289,7 @@ void *equal_(void *arg1, void *arg2)
     // switches based on the tag to the appropriate function for the type
     int type_arg1 = get_tag(arg1);
     // checking the tags match
-    if (!type_arg1 == (get_tag(arg2)))
+    if (!(type_arg1 == get_tag(arg2)))
     {
         return encode_bool(false);
     }
@@ -306,6 +318,11 @@ void *equal_(void *arg1, void *arg2)
     case CONS:
     {
         return cons_equal(arg1, arg2);
+        break;
+    }
+    case HASH:
+    {
+        return hash_equal(arg1, arg2);
         break;
     }
     default:
@@ -402,6 +419,11 @@ u64 str_hash(void *val)
     return h;
 }
 
+u64 hamt_hash(void *h){
+    const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
+    return h_hamt->getHash();
+}
+
 u64 hash_(void *val)
 {
     switch (get_tag(val))
@@ -423,8 +445,9 @@ u64 hash_(void *val)
     }
     case HASH:
     {
-        // ??
-        std::cout << "can't do this" << std::endl;
+        return hamt_hash(val);
+        break;
+
     }
     default:
     {
@@ -527,9 +550,7 @@ void *add(void *arg1, void *arg2)
 {
     int arg1_tag = get_tag(arg1);
     int arg2_tag = get_tag(arg2);
-    switch (arg1_tag == arg2_tag)
-    {
-    case true:
+    if (arg1_tag == arg2_tag)
     {
         if (arg1_tag == MPZ)
         {
@@ -540,10 +561,9 @@ void *add(void *arg1, void *arg2)
             return add_mpf(arg1, arg2);
         }
     }
-    case false:
+    else
     {
         return add_mpz_mpf(arg1, arg2);
-    }
     }
     return 0;
 }
@@ -572,6 +592,11 @@ void *apply_prim__u43(void *lst) //+
         lst = cons_lst[1];
     }
 
+    if(result == nullptr){
+        mpz_t* val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init_set_str(*val, "0", 10);
+        return encode_mpz(val);
+    }
     return result;
 }
 
@@ -613,9 +638,7 @@ void *sub(void *arg1, void *arg2)
 {
     int arg1_tag = get_tag(arg1);
     int arg2_tag = get_tag(arg2);
-    switch (arg1_tag == arg2_tag)
-    {
-    case true:
+    if (arg1_tag == arg2_tag)
     {
         if (arg1_tag == MPZ)
         {
@@ -626,10 +649,9 @@ void *sub(void *arg1, void *arg2)
             return sub_mpf(arg1, arg2);
         }
     }
-    case false:
+    else
     {
         return sub_mpz_mpf(arg1, arg2);
-    }
     }
     return 0;
 }
@@ -708,9 +730,7 @@ void *mul(void *arg1, void *arg2)
 {
     int arg1_tag = get_tag(arg1);
     int arg2_tag = get_tag(arg2);
-    switch (arg1_tag == arg2_tag)
-    {
-    case true:
+    if (arg1_tag == arg2_tag)
     {
         if (arg1_tag == MPZ)
         {
@@ -721,10 +741,9 @@ void *mul(void *arg1, void *arg2)
             return mul_mpf(arg1, arg2);
         }
     }
-    case false:
+    else
     {
         return mul_mpz_mpf(arg1, arg2);
-    }
     }
     return 0;
 }
@@ -793,9 +812,7 @@ void *div(void *arg1, void *arg2)
 {
     int arg1_tag = get_tag(arg1);
     int arg2_tag = get_tag(arg2);
-    switch (arg1_tag == arg2_tag)
-    {
-    case true:
+    if (arg1_tag == arg2_tag)
     {
         if (arg1_tag == MPZ)
         {
@@ -806,10 +823,9 @@ void *div(void *arg1, void *arg2)
             return div_mpf(arg1, arg2);
         }
     }
-    case false:
+    else
     {
         return div_mpz_mpf(arg1, arg2);
-    }
     }
     return 0;
 }
@@ -859,6 +875,7 @@ void *apply_prim_and(void *lst)
     }
     return encode_bool(result);
 }
+
 void *apply_prim_or(void *lst)
 {
     bool result = false;
@@ -1064,24 +1081,35 @@ struct hash_struct
     }
 };
 
-// std::string print_hash(void *lst)
-// {
-//     std::string ret_str;
-//     ret_str.append("'#hash(");
-//     while (is_cons(lst))
-//     {
-//         void **cons_lst = decode_cons(lst);
-//         ret_str.append(print_val(cons_lst[0]));
-//         if (!is_cons(cons_lst[1]))
-//         {
-//             break;
-//         }
-//         ret_str.append(" ");
-//         lst = cons_lst[1];
-//     }
-//     ret_str.append(")");
-//     return ret_str;
-// }
+std::string print_set(void* s){
+    const hamt<hash_struct, hash_struct> *h_set = decode_hash(s);
+    const hash_struct **keys = h_set->getKeys();
+    std::string ret_str = "(set";
+    for (int i = 0; i < h_set->size(); i++)
+    {
+        ret_str += " " + print_val(keys[i]->val) ;
+    }
+    return ret_str + ")";
+}
+
+// doesn't work now just prints the keys in a list like set
+std::string print_hash(void *h)
+{
+    std::string ret_str;
+    ret_str.append("'#hash(");
+    assert_type(get_tag(h) == HASH, "Passed type is not a hash");
+    const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
+    if(h_hamt->whatami()==hamt_ds_type::set_type){
+        return print_set(h);
+    }
+    const hash_struct **keys = h_hamt->getKeys();
+    for (int i = 0; i < h_hamt->size(); i++)
+    {
+        ret_str += " " + print_val(keys[i]->val) ;
+    }
+    return ret_str + ")";
+    // return ret_str;
+}
 
 // we'd atleast want to accept and work with strings and numbers
 // but we will start with just numbers(mpz_t's)
@@ -1096,7 +1124,7 @@ void *apply_prim_hash(void *lst)
     {
         void **cons_lst = decode_cons(lst);
         int elem_tag = get_tag(cons_lst[0]);
-        bool type_check = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING);
+        bool type_check = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH);
 
         if (!is_cons(cons_lst[1]))
         {
@@ -1115,6 +1143,7 @@ void *apply_prim_hash(void *lst)
         }
         assert_type(false, "Key is not one of MPZ or MPF or STRING");
     }
+    std::cout << h->size() << std::endl;
     return encode_hash(h);
 }
 
@@ -1130,7 +1159,7 @@ void *prim_hash_u45ref(void *h, void *k)
         assert_type(false, "in the hash-ref function hash is not passed");
     }
     int elem_tag = get_tag(k);
-    bool type_check_key = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING);
+    bool type_check_key = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH);
     if (!type_check_key)
     {
         assert_type(false, "in the hash-ref function mpz_t/mpf_t/std::string is not passed");
@@ -1174,6 +1203,11 @@ void *prim_hash_u45set(void *h, void *k, void *v)
     return encode_hash(h_hamt);
 }
 
+void* prim_set_u45add(void* s, void* val){
+    return prim_hash_u45set(s, val, encode_bool(true));
+}
+
+
 void *prim_hash_u45has_u45key_u63(void *h, void *k)
 {
     void *ret_val = prim_hash_u45ref(h, k);
@@ -1195,7 +1229,7 @@ void *prim_hash_u45count(void *h)
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "in the hash-set, hash is not passed");
+        assert_type(false, "in the hash-count, hash is not passed");
     }
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     mpz_t *count = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
@@ -1208,11 +1242,11 @@ void *prim_hash_u45keys(void *h)
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "in the hash-set, hash is not passed");
+        assert_type(false, "in the hash-keys function, hash is not passed");
     }
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     const hash_struct **keys_array = h_hamt->getKeys();
-    keys_array[0]->print_hash_val();
+    // std::cout << "The size of the hash is: " << h_hamt->size() << std::endl;
     void *keys_cons_lst = encode_null();
     for (long i = 0; i < h_hamt->size(); i++)
     {
@@ -1225,7 +1259,7 @@ void *prim_hash_u45keys(void *h)
 #pragma region set-prims
 void *apply_prim_set(void *lst)
 {
-    const hamt<hash_struct, hash_struct> *h = new ((hamt<hash_struct, hash_struct> *)GC_MALLOC(sizeof(hamt<hash_struct, hash_struct>))) hamt<hash_struct, hash_struct>();
+    const hamt<hash_struct, hash_struct> *h = new ((hamt<hash_struct, hash_struct> *)GC_MALLOC(sizeof(hamt<hash_struct, hash_struct>))) hamt<hash_struct, hash_struct>(hamt_ds_type::set_type);
     while (is_cons(lst))
     {
         void **cons_lst = decode_cons(lst);
@@ -1242,8 +1276,20 @@ void *apply_prim_set(void *lst)
         }
         assert_type(false, "Key is not one of MPZ or MPF or STRING");
     }
+    // std::cout << "the size of the set being returned is" << h->size() << std::endl;
     return encode_hash(h);
 }
+
+void *prim_set_u45_u62list(void *h)
+{
+    return prim_hash_u45keys(h);
+}
+
+void *prim_list_u45_u62set(void *lst)
+{
+    return apply_prim_set(lst);
+}
+
 #pragma end region
 
 /*
@@ -1312,7 +1358,7 @@ void *prim_string_u45ref(void *str_void, void *pos_void)
     std::string *str = decode_str(str_void);
     mpz_t *pos = decode_mpz(pos_void);
 
-    if (!mpz_cmp_ui(*pos, str->length()) < 0)
+    if (!(mpz_cmp_ui(*pos, str->length()) < 0))
     { // pos < str.length()
         assert_type(false, "Array out of bounds exception");
     }
@@ -1323,9 +1369,9 @@ void *prim_string_u45ref(void *str_void, void *pos_void)
 // and returns the substring starting from start till end
 void *prim_substring(void *str_void, void *start_void, void *end_void)
 {
-    assert_type((get_tag(str_void)) == STRING, "str passed to the substring is not a string");
-    assert_type((get_tag(start_void)) == MPZ, "start passed to the substring is not an integer");
-    assert_type((get_tag(end_void)) == MPZ, "end passed to the substring is not an integer");
+    assert_type(get_tag(str_void) == STRING, "str passed to the substring is not a string");
+    assert_type(get_tag(start_void) == MPZ, "start passed to the substring is not an integer");
+    assert_type(get_tag(end_void) == MPZ, "end passed to the substring is not an integer");
 
     std::string *str = decode_str(str_void);
     long str_len = str->length();
@@ -1390,19 +1436,8 @@ std::string print_val(void *val)
         break;
     case HASH:
     {
-        // !! have to write printing a hash
-        // std::cout << "This is a hash" << std::endl;
-        // decode the hash
-        const hamt<hash_struct, hash_struct> *h = decode_hash(val);
-        // mpz_t* key = (mpz_t*)(GC_MALLOC(sizeof(mpz_t)));
-        // mpz_init_set_str(*key, "10", 10);
-        mpf_t *key = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init_set_str(*key, "10.3", 10);
-        // std::string *str = new (GC) std::string("random");
-        // const hash_struct *const_key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(encode_str(str));
-        const hash_struct *const_key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(encode_mpf(key));
-        const hash_struct *hash_val = h->get(const_key);
-        // hash_val->print_hash_val();
+        std::cout << "printing a hash" <<std::endl;
+        return print_hash(val);
         break;
     }
     case MPZ:
