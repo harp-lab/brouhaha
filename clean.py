@@ -106,8 +106,8 @@ def main():
     out_path = f"../brouhaha/tests/{args.program_path}/output/slog-out"
 
     print(f"\n\nI'm going to do a sanity check so no weird errors pop up\n")
-    # os.system(f"cd ../brouhaha && racket test.rkt {args.program_path} && cd ../slog")
-    os.system(f"racket test.rkt {args.program_path}")
+    os.system(f"cd ../brouhaha && racket test.rkt {args.program_path} && cd ../slog")
+    # os.system(f"racket test.rkt {args.program_path}")
 
     used_functions = find_used_functions('../brouhaha/prelude.haha', program_path)
     updated_lines = check_slog(slog_path, analyze_slog_path, used_functions)
@@ -116,7 +116,7 @@ def main():
         f.writelines(updated_lines)
     
     print(f"\n\nLooks like everything went well. I'm going to runslog for you now, the slog file is \n\n{slog_path} \n\nand I'll output to \n\n{out_path}\n\n")
-    # os.system(f"./runslog -R -ov {slog_path} {out_path}")
+    os.system(f"./runslog -R -ov {slog_path} {out_path}")
 
 def debug():
     program_path = "divison"
@@ -136,5 +136,5 @@ def debug():
         f.writelines(updated_lines)
 
 if __name__ == "__main__":
-    # main()
-    debug()
+    main()
+    # debug()
