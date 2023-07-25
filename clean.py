@@ -73,15 +73,18 @@ def check_slog(slog_path, analyze_slog_path, used_functions):
     for line in analyze:
         updated_lines.append(line)
     for line in lines:
-        if line.strip().startswith(';'): 
+        stripped_line = line.strip()
+
+        if stripped_line.startswith(';'):
             continue
-        if line.strip().startswith('(store (addr '):
-            for func in used_functions:
-                if line.strip().startswith(f'(store (addr "{func}"') or line.strip().startswith(f'(store (addr "brouhaha_main") ') and not line.strip().startswith(ignore):
-                    updated_lines.append(line)
-                    break
-    
-    updated_lines = updated_lines[:-1]
+
+        if stripped_line.startswith('(store (addr '):
+            if any(stripped_line.startswith(f'(store (addr "{func}"') for func in used_functions):
+                updated_lines.append(line)
+            elif stripped_line.startswith('(store (addr "brouhaha_main") '):
+                updated_lines.append(line)
+        
+    # updated_lines = updated_lines[:-1]
     
     nested_env_set = "(empty)"
     for func in reversed(used_functions):
