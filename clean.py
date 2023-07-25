@@ -55,6 +55,7 @@ def find_used_functions(prelude_path, program_path):
         if used_functions[x] in question_mark:
             used_functions[x] = used_functions[x] + "?"
 
+    used_functions = list(set(used_functions))
     print(f"These are the functions I found: {used_functions}")
     return used_functions
 
