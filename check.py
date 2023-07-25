@@ -98,9 +98,9 @@ def main():
     parser.add_argument('program_path', help='The path to the program file.')
     args = parser.parse_args()
 
-    slog_path = f"tests/{args.program_path}/output/{args.program_path}.slog"
-    program_path = f"tests/{args.program_path}/{args.program_path}.haha"
-    used_functions = find_used_functions('prelude.haha', program_path)
+    slog_path = f"../brouhaha/tests/{args.program_path}/output/{args.program_path}.slog"
+    program_path = f"../brouhaha/tests/{args.program_path}/{args.program_path}.haha"
+    used_functions = find_used_functions('../brouhaha/prelude.haha', program_path)
     updated_lines = check_slog(slog_path, used_functions)
 
     with open(slog_path, 'w') as f:
