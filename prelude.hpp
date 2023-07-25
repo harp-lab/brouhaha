@@ -43,6 +43,7 @@ enum DataType
 struct hash_struct;
 std::string print_val(void *val);
 void *equal_(void *arg1, void *arg2);
+u64 hash_(void *val);
 
 #pragma region Types
 // region Encoding and Decoding and Tags
@@ -247,27 +248,34 @@ void *spl_equal(void *arg1, void *arg2)
 
 void *cons_equal(void *arg1, void *arg2)
 {
-    // we have to get the cons_lst and go through each element and
-    // call equal on each element and return false when one of equal calls
-    // return false or return true once the cons is exhausted
-    void **cons_arg1 = decode_cons(arg1);
-    void **cons_arg2 = decode_cons(arg2);
-    // looks wrong but we have exit conditions when the vals don't match or when the one/both cons enc
-    while (true)
+    // tags have to be equal or false
+    // if both are cons, then we fetch the car and call equal on them if not equal return false
+    // update to cdr and continue
+    // if not cons, call equal on the value and if not return false or return true
+    while ((get_tag(arg1) == get_tag(arg2)))
     {
-        // comparing the car values of two cons using the equal function
-        if (!equal_(cons_arg1[0], cons_arg2[0]))
+        if (is_cons(arg1) && is_cons(arg2))
         {
+            void **cons_arg1 = decode_cons(arg1);
+            void **cons_arg2 = decode_cons(arg2);
+            // comparing the car values of two cons using the equal function
+            if (!equal_(cons_arg1[0], cons_arg2[0]))
+            {
+                return encode_bool(false);
+            }
+            arg1 = cons_arg1[1];
+            arg2 = cons_arg2[1];
+        }
+        else
+        {
+            if (equal_(arg1, arg2))
+            {
+                return encode_bool(true);
+            }
             return encode_bool(false);
         }
-        // checking if both of the cdr are cons, if not comparing the cdr and returning
-        if (!(get_tag(cons_arg1[1]) == CONS) && (get_tag(cons_arg2[1]) == CONS))
-        {
-            return encode_bool(equal_(cons_arg1[1], cons_arg2[1]));
-        }
-        cons_arg1 = decode_cons(cons_arg1[1]);
-        cons_arg2 = decode_cons(cons_arg2[1]);
     }
+    return encode_bool(false);
 }
 
 void *hash_equal(void *arg1, void *arg2)
@@ -419,9 +427,30 @@ u64 str_hash(void *val)
     return h;
 }
 
-u64 hamt_hash(void *h){
+u64 hamt_hash(void *h)
+{
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     return h_hamt->getHash();
+}
+
+u64 cons_hash(void *lst)
+{
+    assert_type((get_tag(lst) == CONS), "Type passed to cons_hash is not a CONS");
+    u64 *h = (u64 *)GC_MALLOC(sizeof(u64));
+    *h = 0xcbf29ce484222325;
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        int car_tag = get_tag(cons_lst[0]);
+        bool type_check = (car_tag == MPZ) || (car_tag == MPF) || (car_tag == STRING) || (car_tag == HASH) || (car_tag == CONS);
+
+        assert_type(type_check, "Error in cons_hash: values in the lst are not hashable");
+
+        *h ^= hash_(cons_lst[0]) + 0x9e3779b9 + (*h << 6) + (*h >> 2);
+
+        lst = cons_lst[1];
+    }
+    return *h;
 }
 
 u64 hash_(void *val)
@@ -447,7 +476,11 @@ u64 hash_(void *val)
     {
         return hamt_hash(val);
         break;
-
+    }
+    case CONS:
+    {
+        return cons_hash(val);
+        break;
     }
     default:
     {
@@ -592,8 +625,9 @@ void *apply_prim__u43(void *lst) //+
         lst = cons_lst[1];
     }
 
-    if(result == nullptr){
-        mpz_t* val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    if (result == nullptr)
+    {
+        mpz_t *val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
         mpz_init_set_str(*val, "0", 10);
         return encode_mpz(val);
     }
@@ -1081,13 +1115,14 @@ struct hash_struct
     }
 };
 
-std::string print_set(void* s){
+std::string print_set(void *s)
+{
     const hamt<hash_struct, hash_struct> *h_set = decode_hash(s);
     const hash_struct **keys = h_set->getKeys();
     std::string ret_str = "(set";
     for (int i = 0; i < h_set->size(); i++)
     {
-        ret_str += " " + print_val(keys[i]->val) ;
+        ret_str += " " + print_val(keys[i]->val);
     }
     return ret_str + ")";
 }
@@ -1099,13 +1134,14 @@ std::string print_hash(void *h)
     ret_str.append("'#hash(");
     assert_type(get_tag(h) == HASH, "Passed type is not a hash");
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
-    if(h_hamt->whatami()==hamt_ds_type::set_type){
+    if (h_hamt->whatami() == hamt_ds_type::set_type)
+    {
         return print_set(h);
     }
     const hash_struct **keys = h_hamt->getKeys();
     for (int i = 0; i < h_hamt->size(); i++)
     {
-        ret_str += " " + print_val(keys[i]->val) ;
+        ret_str += " " + print_val(keys[i]->val);
     }
     return ret_str + ")";
     // return ret_str;
@@ -1124,7 +1160,7 @@ void *apply_prim_hash(void *lst)
     {
         void **cons_lst = decode_cons(lst);
         int elem_tag = get_tag(cons_lst[0]);
-        bool type_check = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH);
+        bool type_check = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH) || (elem_tag == CONS);
 
         if (!is_cons(cons_lst[1]))
         {
@@ -1203,10 +1239,10 @@ void *prim_hash_u45set(void *h, void *k, void *v)
     return encode_hash(h_hamt);
 }
 
-void* prim_set_u45add(void* s, void* val){
+void *prim_set_u45add(void *s, void *val)
+{
     return prim_hash_u45set(s, val, encode_bool(true));
 }
-
 
 void *prim_hash_u45has_u45key_u63(void *h, void *k)
 {
@@ -1436,7 +1472,7 @@ std::string print_val(void *val)
         break;
     case HASH:
     {
-        std::cout << "printing a hash" <<std::endl;
+        std::cout << "printing a hash" << std::endl;
         return print_hash(val);
         break;
     }
