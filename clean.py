@@ -1,5 +1,4 @@
-import re
-import argparse
+import re, argparse, os
 
 def extract_prelude_funcs(file_path):
     with open(file_path, 'r') as f:
@@ -50,7 +49,7 @@ def find_used_functions(prelude_path, program_path):
             used_functions = used_functions + ls
 
     used_functions = list(set(used_functions))
-    print(used_functions)
+    print(f"These are the functions I found: {used_functions}")
     return used_functions
 
 def check_slog(slog_path, used_functions):
@@ -66,32 +65,14 @@ def check_slog(slog_path, used_functions):
                 updated_lines.append(line)
                 break
     
-    # Remove the original 'top-level-env' structure
     updated_lines = updated_lines[:-1]
     
-    # Create a new 'top-level-env' structure based on 'used_functions'
     nested_env_set = "(empty)"
     for func in reversed(used_functions):
         nested_env_set = f'(env-set {nested_env_set} "{func}" (addr "{func}"))'
     updated_lines.append(f'(top-level-env {nested_env_set})')
     
     return updated_lines
-
-
-# def check_slog(slog_path, used_functions):
-#     with open(slog_path, 'r') as f:
-#         lines = f.readlines()
-    
-#     updated_lines = []
-#     for line in lines:
-#         if line.strip().startswith(';'): 
-#             continue
-#         for func in used_functions:
-#             if line.strip().startswith(f'(store (addr "{func}"') or not line.strip().startswith(';') and not line.strip().startswith('(store (addr '):
-#                 updated_lines.append(line)
-#                 break
-    
-#     return updated_lines
 
 def main():
     parser = argparse.ArgumentParser(description='Find functions in prelude used by the program.')
@@ -100,11 +81,14 @@ def main():
 
     slog_path = f"../brouhaha/tests/{args.program_path}/output/{args.program_path}.slog"
     program_path = f"../brouhaha/tests/{args.program_path}/{args.program_path}.haha"
+    out_path = f"../brouhaha/tests/{args.program_path}/output/slog-out"
     used_functions = find_used_functions('../brouhaha/prelude.haha', program_path)
     updated_lines = check_slog(slog_path, used_functions)
 
     with open(slog_path, 'w') as f:
         f.writelines(updated_lines)
+    
+    os.system(f"./runslog -R -ov {slog_path} {out_path}")
 
 if __name__ == "__main__":
     main()
