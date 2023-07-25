@@ -95,7 +95,7 @@ def main():
         f.writelines(updated_lines)
     
     print(f"Looks like everything went well. I'm going to runslog for you now, the slog file is \n{slog_path} \nand I'll output to \n{out_path}")
-    # os.system(f"./runslog -R -ov {slog_path} {out_path}")
+    os.system(f"./runslog -R -ov {slog_path} {out_path}")
 
 if __name__ == "__main__":
     main()
