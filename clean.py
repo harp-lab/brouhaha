@@ -56,7 +56,7 @@ def find_used_functions(prelude_path, program_path):
         if used_functions[x] in question_mark:
             # used_functions.append(used_functions[x] + "?")
             used_functions[x] = used_functions[x] + "?"
-
+    used_functions = used_functions + ['+', '-', '/', 'brouhaha_main']
     used_functions = list(set(used_functions))
     print(f"These are the functions I found: {used_functions}")
     return used_functions
@@ -75,14 +75,18 @@ def check_slog(slog_path, analyze_slog_path, used_functions):
     for line in analyze:
         updated_lines.append(line)
     for line in lines:
-        if line.strip().startswith(';'): 
+        stripped_line = line.strip()
+
+        if stripped_line.startswith(';'):
             continue
-        for func in used_functions:
-            if line.strip().startswith(f'(store (addr "{func}"') and not line.strip().startswith(ignore):
+
+        if stripped_line.startswith('(store (addr '):
+            if any(stripped_line.startswith(f'(store (addr "{func}"') for func in used_functions):
                 updated_lines.append(line)
-                break
-    
-    updated_lines = updated_lines[:-1]
+            elif stripped_line.startswith('(store (addr "brouhaha_main") '):
+                updated_lines.append(line)
+        
+    # updated_lines = updated_lines[:-1]
     
     nested_env_set = "(empty)"
     for func in reversed(used_functions):
@@ -102,8 +106,8 @@ def main():
     out_path = f"../brouhaha/tests/{args.program_path}/output/slog-out"
 
     print(f"\n\nI'm going to do a sanity check so no weird errors pop up\n")
-    os.system(f"cd ../brouhaha && racket test.rkt {args.program_path} && cd ../slog")
-    # os.system(f"racket test.rkt {args.program_path}")
+    # os.system(f"cd ../brouhaha && racket test.rkt {args.program_path} && cd ../slog")
+    os.system(f"racket test.rkt {args.program_path}")
 
     used_functions = find_used_functions('../brouhaha/prelude.haha', program_path)
     updated_lines = check_slog(slog_path, analyze_slog_path, used_functions)
@@ -112,7 +116,25 @@ def main():
         f.writelines(updated_lines)
     
     print(f"\n\nLooks like everything went well. I'm going to runslog for you now, the slog file is \n\n{slog_path} \n\nand I'll output to \n\n{out_path}\n\n")
-    os.system(f"./runslog -R -ov {slog_path} {out_path}")
+    # os.system(f"./runslog -R -ov {slog_path} {out_path}")
+
+def debug():
+    program_path = "divison"
+    slog_path = f"../brouhaha/tests/{program_path}/output/{program_path}.slog"
+    analyze_slog_path = f"../brouhaha/analyze.slog"
+    prgram_path = f"../brouhaha/tests/{program_path}/{program_path}.haha"
+    out_path = f"../brouhaha/tests/{program_path}/output/slog-out"
+
+    print(f"\n\nI'm going to do a sanity check so no weird errors pop up\n")
+    # os.system(f"cd ../brouhaha && racket test.rkt {args.program_path} && cd ../slog")
+    os.system(f"racket test.rkt {program_path}")
+
+    used_functions = find_used_functions('../brouhaha/prelude.haha', prgram_path)
+    updated_lines = check_slog(slog_path, analyze_slog_path, used_functions)
+
+    with open(slog_path, 'w') as f:
+        f.writelines(updated_lines)
 
 if __name__ == "__main__":
-    main()
+    # main()
+    debug()
