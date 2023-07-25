@@ -1,5 +1,7 @@
 import re, argparse, os
 
+# Despite being named "clean" this file is a mess and was cobbled together over night. Pretend you never saw it
+
 def extract_prelude_funcs(file_path):
     with open(file_path, 'r') as f:
         content = f.read()
