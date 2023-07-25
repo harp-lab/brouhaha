@@ -84,8 +84,8 @@
 
   (format "~a" (foldr string-append (emit-top-level-env program) (map write-def program))))
 
-(write-program-for-slog `((define (call) (+ '1 '2))
-  (define (brouhaha_main) (call))))
+; (write-program-for-slog `((define (call) (+ '1 '2))
+;   (define (brouhaha_main) (call))))
 
 ; (write-program-for-slog `((define (call num1 num2) (let ((x83113 num1) (y83114 num2)) x83113))
 ; (define (brouhaha_main) (call '5 '42))))

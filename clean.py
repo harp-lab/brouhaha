@@ -8,7 +8,6 @@ def extract_prelude_funcs(file_path):
     prelude_funcs = re.findall(pattern, content)
 
     call_names = ['call', 'brouhaha_main', 'helper', 'eq-test', 'fact', 'call-foldl', 'interleave-direct', 'power', 'transitive-closure', 'f' 'add-edge', 'iter-to-fixpoint', 'g', 'yes']
-
     
     return prelude_funcs + call_names
 
@@ -53,7 +52,7 @@ def find_used_functions(prelude_path, program_path):
     question_mark = ["equal", "member", "string", "hash-has-key", "null", "even", "odd", "eq"]
     for x in range(len(used_functions)):
         if used_functions[x] in question_mark:
-            used_functions[x] = used_functions[x] + "?"
+            used_functions.append(used_functions[x] + "?")
 
     used_functions = list(set(used_functions))
     print(f"These are the functions I found: {used_functions}")
@@ -89,6 +88,10 @@ def main():
     slog_path = f"../brouhaha/tests/{args.program_path}/output/{args.program_path}.slog"
     program_path = f"../brouhaha/tests/{args.program_path}/{args.program_path}.haha"
     out_path = f"../brouhaha/tests/{args.program_path}/output/slog-out"
+
+    print(f"\n\nI'm going to do a sanity check so no weird errors pop up\n")
+    os.system(f"racket ../brouhaha/test.rkt {args.program_path}")
+
     used_functions = find_used_functions('../brouhaha/prelude.haha', program_path)
     updated_lines = check_slog(slog_path, used_functions)
 
