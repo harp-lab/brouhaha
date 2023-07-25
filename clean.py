@@ -90,7 +90,7 @@ def main():
     out_path = f"../brouhaha/tests/{args.program_path}/output/slog-out"
 
     print(f"\n\nI'm going to do a sanity check so no weird errors pop up\n")
-    os.system(f"racket ../brouhaha/test.rkt {args.program_path}")
+    os.system(f"cd ../brouhaha && racket test.rkt {args.program_path} && cd ../slog")
 
     used_functions = find_used_functions('../brouhaha/prelude.haha', program_path)
     updated_lines = check_slog(slog_path, used_functions)
