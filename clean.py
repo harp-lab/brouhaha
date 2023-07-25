@@ -9,6 +9,7 @@ def extract_prelude_funcs(file_path):
 
     call_names = ['call', 'brouhaha_main', 'helper', 'eq-test', 'fact', 'call-foldl', 'interleave-direct', 'power', 'transitive-closure', 'f' 'add-edge', 'iter-to-fixpoint', 'g', 'yes']
 
+    
     return prelude_funcs + call_names
 
 def extract_program_calls(file_path):
@@ -48,7 +49,12 @@ def find_used_functions(prelude_path, program_path):
             ls = value.split(", ")
             used_functions = used_functions + ls
 
-    used_functions = list(set(used_functions))
+    # I tried to fight the regex to get the "?" and failed
+    question_mark = ["equal", "member", "string", "hash-has-key", "null", "even", "odd", "eq"]
+    for x in range(len(used_functions)):
+        if used_functions[x] in question_mark:
+            used_functions[x] = used_functions[x] + "?"
+
     print(f"These are the functions I found: {used_functions}")
     return used_functions
 
@@ -89,7 +95,7 @@ def main():
         f.writelines(updated_lines)
     
     print(f"Looks like everything went well. I'm going to runslog for you now, the slog file is \n{slog_path} \nand I'll output to \n{out_path}")
-    os.system(f"./runslog -R -ov {slog_path} {out_path}")
+    # os.system(f"./runslog -R -ov {slog_path} {out_path}")
 
 if __name__ == "__main__":
     main()
