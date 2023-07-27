@@ -20,7 +20,7 @@
        (format "(store (addr \"~a\") (define \"~a\" (fixedparam [~a]) ~a))\n"
                fname
                fname
-               (foldr string-append "" (string-join (map sym->qstr xs) " ")
+               (foldr string-append "" (map (lambda (x) (string-append x " ")) (map sym->qstr xs)))
                (write-exp body))]
       [`(define (,fname . ,(? symbol? params))
           ,body)
