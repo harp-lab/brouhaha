@@ -72,8 +72,7 @@ def check_slog(slog_path, analyze_slog_path, used_functions):
     )
 
     updated_lines = []
-    for line in analyze:
-        updated_lines.append(line)
+    
     for line in lines:
         stripped_line = line.strip()
 
@@ -93,6 +92,9 @@ def check_slog(slog_path, analyze_slog_path, used_functions):
         nested_env_set = f'(env-set {nested_env_set} "{func}" (addr "{func}"))'
     updated_lines.append(f'(top-level-env {nested_env_set})')
     
+    for line in analyze:
+        updated_lines.append(line)
+        
     return updated_lines
 
 def main():

@@ -54,7 +54,7 @@
       ; this should use write-to in the future
       (with-output-to-file (generate-res-filepath ".slog")
         (lambda () (display
-                    (string-append (string-append (open-slog prelude-slog) (open-slog analyze-slog)) (write-program-for-slog desugar_prg))))
+                    (string-append (write-program-for-slog desugar_prg) (string-append (open-slog prelude-slog) (open-slog analyze-slog)))))
         #:exists 'replace)
 
       (for-each
