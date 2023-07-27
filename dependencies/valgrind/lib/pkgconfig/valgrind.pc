@@ -1,4 +1,4 @@
-prefix=/home/sowmithk/Downloads/gmp_trail/dependencies/valgrind
+prefix=/home/sowmithk/Documents/Projects/brouhaha/dependencies/valgrind
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include/valgrind
