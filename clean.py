@@ -56,7 +56,7 @@ def find_used_functions(prelude_path, program_path):
         if used_functions[x] in question_mark:
             # used_functions.append(used_functions[x] + "?")
             used_functions[x] = used_functions[x] + "?"
-    used_functions = used_functions + ['+', '-', '/', 'brouhaha_main', '=', '*']
+    used_functions = used_functions + ['+', '-', '/', 'brouhaha_main', '=', '*', '>=', '<=']
     used_functions = list(set(used_functions))
     print(f"These are the functions I found: {used_functions}")
     return used_functions
