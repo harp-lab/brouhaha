@@ -34,3 +34,5 @@ repl.rkt
 slog-out/
 trans_clo copy.rkt
 trans_clo.rkt
+__pycache__
+.venv/
