@@ -5,7 +5,7 @@
 - [ ] Add hash-keys function for bottom level linked lists in hamt
 - [X] Add ability to hash ~~sets~~, ~~lists~~ and ~~hashes~~.
   * [ ] think about having to hash cons with booleans.. 
-- [ ] Printing for ~~sets~~ and hashes.
+- [X] Printing for ~~sets~~ and hashes.
   * [ ] Normalize the order of printing to DFS.
 - [ ] Think about stress testing hamt to make sure new hash functionality is sound on all levels of hamt.
 - [ ] add more tests for untouched branches of the compiler.

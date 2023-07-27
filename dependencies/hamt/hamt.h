@@ -179,7 +179,8 @@ public:
             if ((data[i].k.bm & 1) == 0)
             {
                 keyArray[numKeysStored] = data[i].k.key;
-                numKeysStored = numKeysStored + 1;
+                keyArray[numKeysStored + 1] = data[i].v.val;
+                numKeysStored = numKeysStored + 2;
             }
             else
             {
@@ -650,7 +651,7 @@ public:
         // type K must support a method u64 hash() const;
         // const u64 h = key->hash();
         // const u64 hpiece = (h & 0x11000000000000f) % rootsize;
-        const K **keyArray = (const K **)GC_MALLOC(count * sizeof(const K *));
+        const K **keyArray = (const K **)GC_MALLOC((count*2) * sizeof(const K *));
         long *numKeysStored = (long *)GC_MALLOC(sizeof(long));
         *numKeysStored = 0;
         for (int i = 0; i < rootsize; i++)
@@ -663,7 +664,8 @@ public:
             {
                 // it's a key value pair
                 keyArray[*numKeysStored] = this->data[i].k.key;
-                *numKeysStored = *numKeysStored + 1;
+                keyArray[*numKeysStored + 1] = this->data[i].v.val;
+                *numKeysStored = *numKeysStored + 2;
             }
             else
             {

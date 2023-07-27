@@ -1120,7 +1120,7 @@ std::string print_set(void *s)
     const hamt<hash_struct, hash_struct> *h_set = decode_hash(s);
     const hash_struct **keys = h_set->getKeys();
     std::string ret_str = "(set";
-    for (int i = 0; i < h_set->size(); i++)
+    for (int i = 0; i < (h_set->size() * 2); i+=2)
     {
         ret_str += " " + print_val(keys[i]->val);
     }
@@ -1130,18 +1130,19 @@ std::string print_set(void *s)
 // doesn't work now just prints the keys in a list like set
 std::string print_hash(void *h)
 {
-    std::string ret_str;
-    ret_str.append("'#hash(");
     assert_type(get_tag(h) == HASH, "Passed type is not a hash");
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     if (h_hamt->whatami() == hamt_ds_type::set_type)
     {
         return print_set(h);
     }
+    std::string ret_str;
+    ret_str.append("'#hash(");
     const hash_struct **keys = h_hamt->getKeys();
-    for (int i = 0; i < h_hamt->size(); i++)
+    for (int i = 0; i < (h_hamt->size() * 2); i+=2)
     {
-        ret_str += " " + print_val(keys[i]->val);
+        ret_str += "(" + print_val(keys[i]->val);
+        ret_str += " . " + print_val(keys[i+1]->val) + ") ";
     }
     return ret_str + ")";
     // return ret_str;
@@ -1179,7 +1180,7 @@ void *apply_prim_hash(void *lst)
         }
         assert_type(false, "Key is not one of MPZ or MPF or STRING");
     }
-    std::cout << h->size() << std::endl;
+    // std::cout << h->size() << std::endl;
     return encode_hash(h);
 }
 
@@ -1284,10 +1285,12 @@ void *prim_hash_u45keys(void *h)
     const hash_struct **keys_array = h_hamt->getKeys();
     // std::cout << "The size of the hash is: " << h_hamt->size() << std::endl;
     void *keys_cons_lst = encode_null();
-    for (long i = 0; i < h_hamt->size(); i++)
+    //+=2 and *2 coz getKeys returns an array that also has values.
+    for (long i = 0; i < (h_hamt->size() * 2); i+=2)
     {
         keys_cons_lst = prim_cons(keys_array[i]->val, keys_cons_lst);
     }
+    // std::cout << print_val(keys_cons_lst) << std::endl;
     return keys_cons_lst;
 }
 #pragma endregion
@@ -1472,7 +1475,6 @@ std::string print_val(void *val)
         break;
     case HASH:
     {
-        std::cout << "printing a hash" << std::endl;
         return print_hash(val);
         break;
     }
