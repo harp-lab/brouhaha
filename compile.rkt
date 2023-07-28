@@ -100,7 +100,7 @@
        (coverage `(if ,((alpha-rename env) e0) ,((alpha-rename env) e1) ,((alpha-rename env) e2)))]
       [`(apply ,e0 ,e1) (coverage `(apply ,((alpha-rename env) e0) ,((alpha-rename env) e1)))]
       [(? symbol? x) (coverage (hash-ref env x))]
-      [(? string? y) (coverage `',y)]
+      ; [(? string? y) (coverage `',y)]
       [`',dat (coverage `',dat)]
       [`(,es ...) (coverage (map (alpha-rename env) es))]))
   (define ((rename-define env) def)
@@ -154,7 +154,7 @@
         (coverage (k '()))
         (coverage (normalize-ae (car es) (lambda (x) (normalize-aes (cdr es) (lambda (xs) (k `(,x . ,xs)))))))))
   (match e
-    [(? string? y) (coverage (k `',y))]
+    ; [(? string? y) (coverage (k `',y))]
     [`',dat (coverage (k `',dat))]
     [(? symbol? x) (coverage (k x))]
     [`(lambda ,xs ,e0) (coverage (k `(lambda ,xs ,(normalize e0 (lambda (x) x)))))]
@@ -185,14 +185,14 @@
         (let ([f (gensym 'f)]) (coverage `(let ([,f ,cae]) ,(T e f))))
         ; (match (p-dbg e)
         (match e
-          [(? string? x) (coverage `(,cae ,x))]
+          ; [(? string? x) (coverage `(,cae ,x))]
           [(? symbol? x) (coverage `(,cae ,x))]
-          [`(prim ,op ,aes ...)
-           (define retx (gensym 'retprim))
-           (coverage (T `(let ([,retx (prim ,op ,@aes)]) ,retx) cae))]
-          [`(apply-prim ,op ,ae)
-           (define retx (gensym 'retprim))
-           (coverage (T `(let ([,retx (apply-prim ,op ,ae)]) ,retx) cae))]
+          ; [`(prim ,op ,aes ...)
+          ;  (define retx (gensym 'retprim))
+          ;  (coverage (T `(let ([,retx (prim ,op ,@aes)]) ,retx) cae))]
+          ; [`(apply-prim ,op ,ae)
+          ;  (define retx (gensym 'retprim))
+          ;  (coverage (T `(let ([,retx (apply-prim ,op ,ae)]) ,retx) cae))]
           [`(let ([,x (apply-prim ,op ,ae)]) ,e0)
            (coverage `(let ([,x (apply-prim ,op ,(T-ae ae))]) ,(T e0 cae)))]
           [`(let ([,x (prim ,op ,aes ...)]) ,e0)
@@ -200,7 +200,7 @@
           [`(let ([,x (lambda ,xs ,elam)]) ,e0) (coverage `(let ([,x ,(T-ae `(lambda ,xs ,elam))]) ,(T e0 cae)))]
           [`(let ([,x ',dat]) ,e0) (coverage `(let ([,x ',dat]) ,(T e0 cae)))]
           ; [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,(p-dbg dat)]) ,(T e0 cae))]
-          [`(let ([,x ,(? string? dat)]) ,e0) (coverage `(let ([,x ,dat]) ,(T e0 cae)))]
+          ; [`(let ([,x ,(? string? dat)]) ,e0) (coverage `(let ([,x ,dat]) ,(T e0 cae)))]
           ; [`(let ([,x ,rhs]) ,e0) (T (p-dbg rhs) `(lambda (,x) ,(T e0 cae)))]
           [`(let ([,x ,rhs]) ,e0) (coverage (T rhs `(lambda (,x) ,(T e0 cae))))]
           [`(if ,ae ,e0 ,e1) (coverage `(if ,(T-ae ae) ,(T e0 cae) ,(T e1 cae)))]
@@ -225,7 +225,7 @@
 
 (define (T-bottom-up e)
   (match e
-    [`(quote ,d) (coverage `(,(set) ,e ,(list)))]
+    ; [`(quote ,d) (coverage `(,(set) ,e ,(list)))]
     [`(let ([,x ',dat]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
      (define dx (gensym 'd))

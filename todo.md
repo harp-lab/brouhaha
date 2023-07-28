@@ -16,3 +16,16 @@
 
 #### Sowmith Misc
 - [ ] Implement an iterator for HAMT.
+
+
+### Compiler
+- Look at the CPS convert functions [2:00] and consider inlining T-ae cases into the below match.
+
+### Testing
+- Add tests that have partial variadic functions, that have a couple mandatory arguments and the . notation.
+
+
+### Plugging Analysis
+- Compiler should run slog after the desugar and do some magic based on the results of that analysis.
+- Compiler should canonicalize the order of defines or something and then we should hash it and attach(cache) the slog analysis to that hash.
+- So that we don't run slog analysis, everytime we run the compile.rkt.

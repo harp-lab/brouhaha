@@ -12,5 +12,6 @@
 (define-syntax-rule (coverage body)
   (let ([result body])
     (printf ":~a]\n" (syntax-line #'body))
+    ; (printf "[~a] ~v = ~v~%" (syntax-line #'body) 'body result)
     result))
 
