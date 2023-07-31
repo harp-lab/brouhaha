@@ -31,6 +31,8 @@
   (let loop ([exprs '()])
     (let ([next (read in)]) (if (eof-object? next) (reverse exprs) (loop (cons next exprs))))))
 
+; Desugar Phase
+
 (define (desugar program)
   (define (unroll-args args body)
     (match args
@@ -77,6 +79,8 @@
        (coverage `(define (,fname . vargs)
           ,(desugar-exp (unroll-args params body))))]))
   (map desugar-define program))
+
+; Alphatize Phase
 
 (define (alphatize program)
   (define rename gensym)
@@ -125,6 +129,8 @@
            program))
   (map (rename-define top-env) program))
 
+; ANF Conversion Phase
+
 ; Converts to ANF; adapted from Flanagan et al.
 (define (anf-convert program)
   (define (anf-convert-define def)
@@ -167,6 +173,8 @@
     [`(apply-prim ,op ,e0) (coverage (normalize-ae e0 (lambda (x) (k `(apply-prim ,op ,x)))))]
     [`(apply ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(apply . ,xs)))))]
     [`(,es ...) (coverage (normalize-aes es k))]))
+
+; CPS Conversion Phase
 
 (define (cps-convert program)
   (define (T-ae ae)
@@ -222,6 +230,8 @@
        (coverage `(define (,fname . ,params)
           ,(T `(let ([,k (prim car ,params)]) (let ([,params (prim cdr ,params)]) ,body)) k)))]))
   (map cps-convert-def program))
+
+; Closure Convert Phase
 
 (define (T-bottom-up e)
   (match e
