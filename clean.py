@@ -118,7 +118,7 @@ def main():
         f.writelines(updated_lines)
     
     print(f"\n\nLooks like everything went well. I'm going to runslog for you now, the slog file is \n\n{slog_path} \n\nand I'll output to \n\n{out_path}\n\n")
-    os.system(f"./runslog -R -ov {slog_path} {out_path}")
+    os.system(f"./runslog -ov -b {slog_path} {out_path}")
 
 def debug():
     program_path = "divison"
