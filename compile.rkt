@@ -100,7 +100,7 @@
        `(if ,((alpha-rename env) e0) ,((alpha-rename env) e1) ,((alpha-rename env) e2))]
       [`(apply ,e0 ,e1) `(apply ,((alpha-rename env) e0) ,((alpha-rename env) e1))]
       [(? symbol? x) (hash-ref env x)]
-      [(? string? y) `',y]
+      ; [(? string? y) `',y]
       [`',dat `',dat]
       [`(,es ...) (map (alpha-rename env) es)]))
   (define ((rename-define env) def)
@@ -154,7 +154,7 @@
         (k '())
         (normalize-ae (car es) (lambda (x) (normalize-aes (cdr es) (lambda (xs) (k `(,x . ,xs))))))))
   (match e
-    [(? string? y) (k `',y)]
+    ; [(? string? y) (k `',y)]
     [`',dat (k `',dat)]
     [(? symbol? x) (k x)]
     [`(lambda ,xs ,e0) (k `(lambda ,xs ,(normalize e0 (lambda (x) x))))]
@@ -185,14 +185,14 @@
         (let ([f (gensym 'f)]) `(let ([,f ,cae]) ,(T e f)))
         ; (match (p-dbg e)
         (match e
-          [(? string? x) `(,cae ,x)]
+          ; [(? string? x) `(,cae ,x)]
           [(? symbol? x) `(,cae ,x)]
-          [`(prim ,op ,aes ...)
-           (define retx (gensym 'retprim))
-           (T `(let ([,retx (prim ,op ,@aes)]) ,retx) cae)]
-          [`(apply-prim ,op ,ae)
-           (define retx (gensym 'retprim))
-           (T `(let ([,retx (apply-prim ,op ,ae)]) ,retx) cae)]
+          ; [`(prim ,op ,aes ...)
+          ;  (define retx (gensym 'retprim))
+          ;  (T `(let ([,retx (prim ,op ,@aes)]) ,retx) cae)]
+          ; [`(apply-prim ,op ,ae)
+          ;  (define retx (gensym 'retprim))
+          ;  (T `(let ([,retx (apply-prim ,op ,ae)]) ,retx) cae)]
           [`(let ([,x (apply-prim ,op ,ae)]) ,e0)
            `(let ([,x (apply-prim ,op ,(T-ae ae))]) ,(T e0 cae))]
           [`(let ([,x (prim ,op ,aes ...)]) ,e0)
@@ -200,7 +200,7 @@
           [`(let ([,x (lambda ,xs ,elam)]) ,e0) `(let ([,x ,(T-ae `(lambda ,xs ,elam))]) ,(T e0 cae))]
           [`(let ([,x ',dat]) ,e0) `(let ([,x ',dat]) ,(T e0 cae))]
           ; [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,(p-dbg dat)]) ,(T e0 cae))]
-          [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,dat]) ,(T e0 cae))]
+          ; [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,dat]) ,(T e0 cae))]
           ; [`(let ([,x ,rhs]) ,e0) (T (p-dbg rhs) `(lambda (,x) ,(T e0 cae)))]
           [`(let ([,x ,rhs]) ,e0) (T rhs `(lambda (,x) ,(T e0 cae)))]
           [`(if ,ae ,e0 ,e1) `(if ,(T-ae ae) ,(T e0 cae) ,(T e1 cae))]
@@ -225,7 +225,7 @@
 
 (define (T-bottom-up e)
   (match e
-    [`(quote ,d) `(,(set) ,e ,(list))]
+    ; [`(quote ,d) `(,(set) ,e ,(list))]
     [`(let ([,x ',dat]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
      (define dx (gensym 'd))

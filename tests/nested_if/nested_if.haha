@@ -1,8 +1,20 @@
+;;; (define (call)
+;;;     (if (not (equal? (+ 1 2 3) (- 10 4)))
+;;;         (append (list 1 2 3 4) (list 234 12212 332 12 2))
+;;;         (if (even? 3)
+;;;             (* 10 2)
+;;;             (append(list 0) (list 0 1)))))
+;;; (define (brouhaha_main)
+;;;     (call))
+
+
 (define (call)
-    (if (not (equal? (+ 1 2 3) (- 10 4)))
-        (append (list 1 2 3 4) (list 234 12212 332 12 2))
-        (if (even? 3)
-            (* 10 2)
-            (append(list 0) (list 0 1)))))
+    (if (equal? 1 1)
+        1
+        (if (equal? 2 2)
+            2
+            3)))
+
 (define (brouhaha_main)
     (call))
+

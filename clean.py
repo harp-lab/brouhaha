@@ -9,7 +9,7 @@ def extract_prelude_funcs(file_path):
     pattern = r'\(define\s+\(([a-zA-Z0-9_\->]+).*?\)'
     prelude_funcs = re.findall(pattern, content)
 
-    call_names = ['call', 'brouhaha_main', 'helper', 'eq-test', 'fact', 'call-foldl', 'interleave-direct', 'power', 'transitive-closure', 'f' 'add-edge', 'iter-to-fixpoint', 'g', 'yes']
+    call_names = ['call', 'brouhaha_main', 'helper', 'eq-test', 'fact', 'call-foldl', 'interleave-direct', 'power', 'transitive-closure', 'f' 'add-edge', 'iter-to-fixpoint', 'g', 'yes', 'count-divisors']
     
     return prelude_funcs + call_names
 
