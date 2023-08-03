@@ -94,7 +94,7 @@ def check_slog(slog_path, analyze_slog_path, used_functions):
     
     for line in analyze:
         updated_lines.append(line)
-        
+
     return updated_lines
 
 def main():

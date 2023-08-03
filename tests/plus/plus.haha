@@ -1,0 +1,5 @@
+(define (call x)
+    (+ 1 x))
+
+(define (brouhaha_main)
+    (call 1))
