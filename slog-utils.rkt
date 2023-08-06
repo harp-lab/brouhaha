@@ -48,37 +48,39 @@
 ; check if the first element, if it exists in the root
 (define (insert-fact fact tree)
   (define tree-hash (cadr tree))
-  (define head (car fact))
+  (define tree-list (caddr tree))
+  (define head (car fact)) ; this assumes that the fact is a list, which I guess should be true
+  (define items (cdr fact)) ; the same assumption as the above line
   (if (hash-has-key? tree-hash head)
-    ; compare the list of items and check for branches
-    ; create the new node in the tree
-    ; adding the head
-    (let ([new-tree-hash (hash-set tree-hash head `(,head (hash) (list)))])
-    ; should have a foldl for inserting each item and inside the foldl, we should have the following
-    ; match insert elements directly if they are symbols or to recursively calll insert-fact if they are 
-    ; s-exprs
-    (foldl (lambda (item new-tree-hash) 
-      (match item
-        [(? list? item)
-          ; call insert-fact for the second-item on the 
-          (insert-fact item new-tree-hash)]
-        [(? symbol? item)
-          ; have to insert the symbol into the tree-hash
-          'todo
-          ]
-      ))
-    )
+      ; compare the list of items and check for branches
+      ; create the new node in the tree
+      ; adding the head
+      ; (let ([new-tree-hash (hash-set tree-hash head `(,head (hash) (list)))])
+      (let ([node `(,head (hash) (list))])
+        ; should have a foldl for inserting each item and inside the foldl, we should have the following
+        ; match insert elements directly if they are symbols or to recursively calll insert-fact if they are
+        ; s-exprs
+        (hash-set
+         tree-hash
+         head
+         (foldl (lambda (item node) ;this foldl will go through all the items and insert into node
+                  (match item
+                    ; call insert-fact for the second-item on the
+                    [(? list? item) (insert-fact item node)]
+                    ; have to insert the symbol into the tree-hash
+                    [(? symbol? item) 'todo]))
+                node
+                (cdr fact)))
+          (cons head ))
 
-    ; either a symbol
-    ; we add the symbol to the hash with value of itself
+      ; either a symbol
+      ; we add the symbol to the hash with value of itself
 
-    ; or another s expr
-    ; call insert-fact with passing the s-expr as fact and new-tree-hash as tree
+      ; or another s expr
+      ; call insert-fact with passing the s-expr as fact and new-tree-hash as tree
 
-    ; if the hash-key doesn't exist
-    'todo
-    )
-  ))
+      ; if the hash-key doesn't exist
+      'todo))
 
 ; will take the facts file path
 ; and return the AST which can be used to search for facts and more
@@ -86,9 +88,8 @@
 (define (slog-main facts-path)
   (define line-hash (create-line-hash facts-path))
   (define tree-hash (hash))
-  (define root-tree `(ASTroot ,tree-hash ,line-hash))
-  (foldl insert-fact root-tree (hash-values line-hash))
-
-  )
+  (define tree-list (list))
+  (define root-tree `(ASTroot ,tree-hash ,tree-list ,line-hash))
+  (foldl insert-fact root-tree (hash-values line-hash)))
 
 (slog-main "./facts.txt")
