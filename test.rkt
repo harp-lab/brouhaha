@@ -20,10 +20,10 @@
                      (displayln "\n"))])
 
     (define filename-string-ext
-      (path->string filename)) ; converting  #<path:apply.haha> to "apply.haha"
+      (path->string filename))
     (define filename-string
-      (regexp-replace #rx"[.]haha$" filename-string-ext "")) ; fname wo extension
-    (define out-dir (string-append directory "/" filename-string)) ; "tests2/" + "apply"
+      (regexp-replace #rx"[.]haha$" filename-string-ext "")) 
+    (define out-dir (string-append directory "/" filename-string))
 
     (verify-cmake (string-append out-dir "/CMakeLists.txt"))
     (verify-driver filename-string (string-append out-dir "/driver.cpp"))
@@ -33,13 +33,10 @@
             (lambda (suffix) (string-append out-dir "/output/" filename-string suffix))]
            [generate-comp-filepath
             (lambda (suffix) (string-append out-dir "/compiler-out/" filename-string suffix))]
-           [compiled-program (compile (append (read-program prelude-path) (read-program file-path)))]
-           [desugar_prg (list-ref compiled-program 0)]
-           [alphatize_prg (list-ref compiled-program 1)]
-           [anf_prg (list-ref compiled-program 2)]
-           [cps_prg (list-ref compiled-program 3)]
-           [cps_after_anf (list-ref compiled-program 4)]
-           [clo_conv_prg (list-ref compiled-program 5)])
+           [program (append (read-program prelude-path) (read-program file-path))]
+           [compiled (compile-to-alphatize program)]
+           [desugar_prg (list-ref compiled 0)]
+           [alphatize_prg (list-ref compiled 1)])
 
       (verify-dir out-dir)
       (verify-dir (string-append out-dir "/output/"))
@@ -57,12 +54,25 @@
                     (string-append (write-program-for-slog alphatize_prg) (string-append (open-slog prelude-slog) (open-slog analyze-slog)))))
         #:exists 'replace)
 
+      (define slog-path (generate-res-filepath ".slog"))
+      (define out-path (generate-res-filepath "slog-out/"))
+      (define fact-file (generate-res-filepath "slog-out/facts.txt"))
+      (define compiled-program (compile program slog-path out-path fact-file alphatize_prg))
+
+      ; Here we compile rest
+      [define anf_prg (list-ref compiled-program 0)]
+      [define cps_prg (list-ref compiled-program 1)]
+      [define cps_after_anf (list-ref compiled-program 2)]
+      [define clo_conv_prg (list-ref compiled-program 3)]
+
+      ; (string-append out-dir "/output/" "facts.txt")
+
       (for-each
        write-to
        (map
         generate-comp-filepath
         (list "_desugar.out" "_alphatize.out" "_anf.out" "_cps.out" "_cps_anf.out" "_closure.out"))
-       compiled-program)
+       (append compiled compiled-program))
 
       (define (interpret-anf-and-output prg res-file)
         (let ([result (interp prg)])

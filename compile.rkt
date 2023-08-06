@@ -7,19 +7,23 @@
          cps-convert
          closure-convert
          read-program
-         read-all)
+         read-all
+         compile-to-alphatize)
 
-(define (compile program)
-  (let* ([pr0 (desugar program)]
-         [pr1 (alphatize pr0)]
-          
+(define (compile-to-alphatize program)
+  (let* ([pr0 (desugar program)] [pr1 (alphatize pr0)])
+    (list pr0 pr1)))
 
-         [pr2 (anf-convert pr1)]
-         [pr3 (cps-convert pr2)]
-         [pr4 (alphatize pr3)]
-         [pr5 (closure-convert pr4)])
+(define (compile program slog-path out-path fact-file pr1)
 
-    (list pr0 pr1 pr2 pr3 pr4 pr5)))
+    (runslog slog-path out-path )
+
+    (let* ([pr2 (anf-convert pr1)]
+           [pr3 (cps-convert pr2)]
+           [pr4 (alphatize pr3)]
+           [pr5 (closure-convert pr4)])
+
+      (list pr2 pr3 pr4 pr5)))
 
 ; (require print-debug/print-dbg)
 (define (read-program filename)
