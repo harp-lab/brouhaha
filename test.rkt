@@ -56,7 +56,8 @@
 
       (define slog-path (generate-res-filepath ".slog"))
       (define out-path (generate-res-filepath "slog-out/"))
-      (define compiled-program (compile program slog-path out-path alphatize_prg))
+      (define fact-file (generate-res-filepath "slog-out/facts.txt"))
+      (define compiled-program (compile program slog-path out-path fact-file alphatize_prg))
 
       ; Here we compile rest
       [define anf_prg (list-ref compiled-program 0)]

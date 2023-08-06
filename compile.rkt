@@ -14,9 +14,9 @@
   (let* ([pr0 (desugar program)] [pr1 (alphatize pr0)])
     (list pr0 pr1)))
 
-(define (compile program slog-path out-path pr1)
+(define (compile program slog-path out-path fact-file pr1)
 
-    ; do some slog stuff here
+    (runslog slog-path out-path )
 
     (let* ([pr2 (anf-convert pr1)]
            [pr3 (cps-convert pr2)]
