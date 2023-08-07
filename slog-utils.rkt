@@ -48,20 +48,26 @@
 
 ; check if the first element, if it exists in the root
 (define (insert-fact fact index tree)
+  ; (define _ (p-dbg tree))
+  (define _ (p-dbg index))
+  (define temp (p-dbg fact))
   (define (insert-helper fact tree-hash index)
-    (if (cons? fact)
-        (let ([head (car fact)] [child (cadr fact)])
-          (if (hash-has-key? tree-hash head)
-              ; if the hash-key exists and the child is not a symbol
-              (hash-set tree-hash head (insert-fact child (hash-ref tree-hash head) index))
-              (let ([node `(,head (hash))])
-                (hash-set tree-hash head (insert-fact child node index)))))
-        (if (hash-has-key? tree-hash fact)
-            ; if the hash-key exists and the child is a symbol
-            (hash-set tree-hash fact (cons (hash-ref tree-hash fact) index))
-            (let ([node `(,fact (hash))]) (hash-set tree-hash fact node)))))
+    (match fact
+      [`(,head ,child ..1)
+       (if (hash-has-key? tree-hash head)
+             ; if the hash-key exists and the child is not a symbol
+             (hash-set tree-hash head (insert-fact (car child) index (hash-ref tree-hash head)))
+             (let ([node `(,head ,(hash))])
+               (hash-set tree-hash head (insert-fact (p-dbg (car child)) index node))))]
+      [(or `(,fact) (? symbol? fact) (? number? fact))
+       (if (hash-has-key? tree-hash (p-dbg fact))
+           ; if the hash-key exists and the child is a symbol
+           (hash-set tree-hash fact (cons (hash-ref tree-hash fact) index))
+           (let ([node `(,fact ,index)]) (hash-set tree-hash fact node)))]
+      ))
+  ; (match (p-dbg tree)
   (match tree
-    [`(,tree-head ,tree-hash) `(,tree-head ,(insert-helper fact tree-hash index))]
+    [`(,tree-head ,tree-hash) `(,tree-head ,(insert-helper (p-dbg fact) tree-hash index))]
     [`(,tree-head ,tree-hash ,line-hash)
      `(,tree-head ,(insert-helper fact tree-hash index) ,line-hash)]))
 
@@ -74,6 +80,6 @@
   (define root-tree `(ASTroot ,tree-hash ,line-hash))
   (define facts-list (hash-values line-hash #t))
   (define index-list (hash-keys line-hash #t))
-  (foldl insert-fact root-tree index-list facts-list))
+  (foldl insert-fact root-tree facts-list index-list))
 
-(slog-main "./facts.txt")
+(slog-main "facts.txt")
