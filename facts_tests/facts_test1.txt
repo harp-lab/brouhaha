@@ -1,0 +1,3 @@
+#74	(apply-prim (lol (ref lst)))
+#75	(apply-prim (lol (href lst)))
+'(ASTroot #hash((apply-prim . (apply-prim #hash((lol . (lol #hash((href . (href #hash((lst . (lst 75))))) (ref . (ref #hash((lst . (lst 74)))))))))))) #hash((74 . (apply-prim (lol (ref lst)))) (75 . (apply-prim (lol (href lst))))))
