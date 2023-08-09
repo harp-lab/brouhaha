@@ -1,2 +1,0 @@
-#74	(apply-prim (lol (ref lst)))
-#75	(apply-prim (lol (href lst)))

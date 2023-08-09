@@ -1,7 +1,0 @@
-#614	(define - (varparam lst) (apply-prim - (ref lst)))
-#615	(define / (varparam lst) (apply-prim / (ref lst)))
-'(ASTroot #hash((define . (define #hash((- . (- 614)) (/ . (/ 615)))))) #hash((614 . (define - (varparam lst) (apply-prim - (ref lst)))) (615 . (define / (varparam lst) (apply-prim / (ref lst))))))
-'($lst (addr '(int 1)) ($lst (addr x) ($nil 0)))
-
-
-#hash((define . (define #hash((- . (- 614)) (/ . (/ 615))))))
