@@ -4,11 +4,11 @@
 (require print-debug/print-dbg)
 ; (require string-sexpr)
 
-(define (runslog slog-path out-path fact-file)
-  ;slog-path is the generated slog file
-  ;out-path is the generated out-path
-  ;fact-file is the file holding all the eval outs
-  'todo)
+(define (runslog clean-path test-name)
+  (display "here")
+  (system "cd ../slog")
+  (define command (string-append "python3" " " clean-path " " test-name))
+  (system command))
 
 ; will read the contents of the file and return a hash-string
 ; i/p : takes the relative/absolute filepath as string
