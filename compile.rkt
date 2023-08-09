@@ -16,7 +16,7 @@
 
 (define (compile program slog-path out-path fact-file pr1)
 
-    (runslog slog-path out-path )
+    ; (runslog slog-path out-path )
 
     (let* ([pr2 (anf-convert pr1)]
            [pr3 (cps-convert pr2)]

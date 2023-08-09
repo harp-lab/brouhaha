@@ -6,7 +6,8 @@
          "interp-cps.rkt"
          "interp-closure.rkt"
          "emit-cpp.rkt"
-         "emit-slog.rkt")
+         "emit-slog.rkt"
+         "slog-utils.rkt")
 
 (define (write-to file content)
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
@@ -54,9 +55,11 @@
                     (string-append (write-program-for-slog alphatize_prg) (string-append (open-slog prelude-slog) (open-slog analyze-slog)))))
         #:exists 'replace)
 
+      (runslog "../brouhaha/clean.py" filename-string)
       (define slog-path (generate-res-filepath ".slog"))
       (define out-path (generate-res-filepath "slog-out/"))
       (define fact-file (generate-res-filepath "slog-out/facts.txt"))
+
       (define compiled-program (compile program slog-path out-path fact-file alphatize_prg))
 
       ; Here we compile rest
