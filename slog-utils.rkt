@@ -69,35 +69,35 @@
 
 (define (get-leaves tree-hash)
   ; does a traversal of the tree and return a list of all the leaves
-  ; the cadr for the parent of the leaf is the leaf value, have to check if the cadr is a number?,
-  ; if yes that is leaf value, return or add it to the list to be returned
-  ; if that is a hash, we call the function on that hash
+  ; if it is a tree, calls get-leavs on the tree and append the result of it to the index-list to be returned
+  ; if it is a list, meaning we reached the leaf, in this case, we just append the it to index-list and return
   (foldl (lambda (item index-list)
            (match (hash-ref tree-hash item '())
              [(or `(,item-tree-head ,(? hash? item-tree-hash))
                   `(,item-tree-head ,(? hash? item-tree-hash) ,_))
               (append (get-leaves item-tree-hash) index-list)]
-            ;  [(or `(,item-tree-head ,(? number? index))
-                  ; `(,item-tree-head ,(? number? index) ,_))
              [(? list? node-index-list)
               (append node-index-list index-list)] ; test when the tree only has one fact that only has one item, may be
-             ;  [_ '()]
              ))
          '()
          (hash-keys tree-hash))
   )
+
 ; takes a index list and gets the facts, but doesn't fill any sub-facts that are ref by index
 ; (define (get-facts-by-index index-list)
 
 ;   )
 
 
-; search string should be in the format
+; The search function: takes a list of symbols, one for each level of search
+; searches for each symbol in each level; gets to a sub-tree and calls the get-leaves on that sub-tree
 (define (search-facts tree items)
-  (define _ (p-dbg tree))
-  ; (define items (map string->symbol (string-split search-str "/")))
+  ; takes a tree and search items and uses the one symbol to search at each level of the list
+  ; if a symbol from the search list is not found in the level, meaning the facts being searched are not present
+  ; it returns an empty list
+  ; if we the search results directly in a leaf node, we directly return the index list from the node.
   (define (get-sub-tree tree search-items)
-    (if (null? (p-dbg search-items))
+    (if (null? search-items)
         tree
         (match tree
           [(or `(,tree-head ,(? hash? tree-hash)) `(,tree-head ,(? hash? tree-hash) ,_))
@@ -111,9 +111,5 @@
     ['() '()]
     ))
 
-; (search-facts 'todo "/apply/define/clo")
-; (define ast-root (slog-main "facts_tests/facts_test4.txt"))
 (define ast-root (read-facts "facts_tests/facts.txt"))
-; (search-facts ast-root '(apply-prim))
-; (search-facts ast-root '(apply clo lambda fixedparam))
 (search-facts ast-root '(eval))
