@@ -10,21 +10,33 @@
   ;fact-file is the file holding all the eval outs
   'todo)
 
+; will read the contents of the file and return a hash-string
+; i/p : takes the relative/absolute filepath as string
+; o/p : returns a string
 (define (file-to-hash-string file-path)
   (bytes->hex-string (sha224-bytes (file->bytes file-path))))
 
+; will read each line from the file and fold over them to create the line-hash
+; i/p : takes the filepath of the facts
+; o/p : returns a hash with all the lines from the file with slog-index as key and actual fact as val
 (define (create-line-hash file-path)
   (foldl add-line-hash (hash) (file->lines file-path)))
 
+; takes a line and a hash, and split the line into index and fact, convert index to num and 
+; uses 'read' function that converts the string in a racket s-expr
+; i/p : string-line from facts.txt and line-hash
+; o/p : returns the updated line-hash
 (define (add-line-hash line line-hash)
   (define items (string-split line "\t"))
   (define index (string->number (substring (car items) 1)))
   (hash-set line-hash index (read (open-input-string (string-replace (cadr items) "#" ".#"))))
   )
 
+; inserts a fact into the tree
+; checks if the head of the fact exists in the tree, if not creates a node and adds it to the tree
+; and continues to add subsequent facts to the new tree, if they already exist walks down till the 
+; leaf and adds a index at the bottom.
 (define (insert-fact fact index tree)
-  ; (define _ (p-dbg index))
-  ; (define temp (p-dbg fact))
   (define (insert-helper fact tree-hash index)
     (match fact
       [`(,head ,child ..1)
@@ -47,7 +59,7 @@
 ; will take the facts file path
 ; and return the AST which can be used to search for facts and more
 ; changed # in the slog facts to .# because # cannot be in a s-expr
-(define (slog-main facts-path)
+(define (read-facts facts-path)
   (define line-hash (create-line-hash facts-path))
   (define tree-hash (hash))
   (define root-tree `(ASTroot ,tree-hash ,line-hash))
@@ -101,7 +113,7 @@
 
 ; (search-facts 'todo "/apply/define/clo")
 ; (define ast-root (slog-main "facts_tests/facts_test4.txt"))
-(define ast-root (slog-main "facts_tests/facts.txt"))
+(define ast-root (read-facts "facts_tests/facts.txt"))
 ; (search-facts ast-root '(apply-prim))
 ; (search-facts ast-root '(apply clo lambda fixedparam))
 (search-facts ast-root '(eval))
