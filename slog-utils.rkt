@@ -1,7 +1,8 @@
 #lang racket
 
 (require file/sha1)
-(require print-debug/print-dbg)
+; (require print-debug/print-dbg)
+(provide (all-defined-out))
 ; (require string-sexpr)
 
 (define (runslog clean-path test-name)
@@ -105,11 +106,11 @@
                (get-sub-tree (hash-ref tree-hash (car search-items)) (cdr search-items))
                '())]
           )))
-  (match (p-dbg (get-sub-tree tree items))
+  (match (get-sub-tree tree items)
     [`(,_ ,(? hash? sub-tree-hash)) (get-leaves sub-tree-hash)]
     [(? list? index-list) index-list]
     ['() '()]
     ))
 
-(define ast-root (read-facts "facts_tests/facts.txt"))
-(search-facts ast-root '(eval))
+; (define ast-root (read-facts "tests/and/output/slog-out/facts.txt"))
+; (search-facts ast-root '(eval))

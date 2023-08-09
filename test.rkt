@@ -54,12 +54,12 @@
         (lambda () (display
                     (string-append (write-program-for-slog alphatize_prg) (string-append (open-slog prelude-slog) (open-slog analyze-slog)))))
         #:exists 'replace)
-
-      (runslog "../brouhaha/clean.py" filename-string)
       (define slog-path (generate-res-filepath ".slog"))
-      (define out-path (generate-res-filepath "slog-out/"))
-      (define fact-file (generate-res-filepath "slog-out/facts.txt"))
-
+      (define out-path (string-append out-dir "/output/slog-out/"))
+      (define fact-file (string-append out-dir "/output/slog-out" "/facts.txt"))
+      (display (~a "fact-file " fact-file " out-path " out-path " slog-path " slog-path))
+      ; (runslog "../brouhaha/clean.py" filename-string)
+      
       (define compiled-program (compile program slog-path out-path fact-file alphatize_prg))
 
       ; Here we compile rest
