@@ -3,13 +3,34 @@
 (require file/sha1)
 ; (require print-debug/print-dbg)
 (provide (all-defined-out))
+(require "utils.rkt")
 ; (require string-sexpr)
 
+; run the runslog script and output facts to a file
 (define (runslog clean-path test-name)
   (display "here")
   (system "cd ../slog")
   (define command (string-append "python3" " " clean-path " " test-name))
   (system command))
+
+; format the buffer to include the right amount of buffer arg size
+(define (arg-buffer-output buffer-size)
+  (define current-prelude (read-x-lines "prelude.hpp" 1513))
+  (define formatted-buffer (format " 
+            void *halt;
+            void *arg_buffer[~a]; // This is where the arg buffer is called
+            long numArgs;
+
+            void *fhalt()
+            {
+                // std::cout << \"In fhalt\" << std::endl;
+                std::cout << print_val(arg_buffer[2]) << std::endl;
+                // print_val(arg_buffer[2]);
+                exit(1);
+            }
+          " buffer-size))
+  (define final-prelude (append current-prelude formatted-buffer))
+  (write-to-file "prelude.hpp" final-prelude))
 
 ; will read the contents of the file and return a hash-string
 ; i/p : takes the relative/absolute filepath as string

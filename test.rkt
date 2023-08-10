@@ -57,7 +57,7 @@
       (define slog-path (generate-res-filepath ".slog"))
       (define out-path (string-append out-dir "/output/slog-out/"))
       (define fact-file (string-append out-dir "/output/slog-out" "/facts.txt"))
-      (display (~a "fact-file " fact-file " out-path " out-path " slog-path " slog-path))
+      (display (~a "fact-file " fact-file " out-path " out-path " slog-path " slog-path "\n"))
       ; (runslog "../brouhaha/clean.py" filename-string)
       
       (define compiled-program (compile program slog-path out-path fact-file alphatize_prg))
@@ -77,16 +77,19 @@
         (list "_desugar.out" "_alphatize.out" "_anf.out" "_cps.out" "_cps_anf.out" "_closure.out"))
        (append compiled compiled-program))
 
+      ; (display "Entering interp")
       (define (interpret-anf-and-output prg res-file)
         (let ([result (interp prg)])
           (write-to (generate-res-filepath res-file) result)
           result))
 
+      ; (display "Entering interp2")
       (define (interpret-cps-and-output prg res-file)
         (let ([result (interp-cps prg)])
           (write-to (generate-res-filepath res-file) result)
           result))
 
+      ; (display "Entering interp3")
       (define (interpret-clo-and-output prg res-file)
         (let ([result (interp-closure prg)])
           (write-to (generate-res-filepath res-file) result)

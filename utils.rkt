@@ -24,8 +24,20 @@
 
   (close-output-port outfile))
 
+; takes a slog file and returns it as a string
 (define (open-slog file-path)
   (file->string file-path))
+
+; read a certain amount of lines within a file
+(define (read-x-lines file-path x)
+  (define lines (file->lines file-path))
+  (take lines x))
+
+(define (write-to-file file-path content)
+  (with-output-to-file file-path
+    (lambda ()
+      (display content))
+    #:exists 'replace))
 
 ; Takes a symbol as input and returns a string that represents a C-compatible identifier
 (define (convert-id-to-c sym)

@@ -17,15 +17,16 @@
     (list pr0 pr1)))
 
 (define (compile program slog-path out-path fact-file pr1)
-    (display (~a "\n\n\n" fact-file "\n\n\n"))
+    ; (display (~a "\n\n\n" fact-file "\n\n\n"))
     (define ast-root (read-facts fact-file))
-    (define facts-list (search-facts ast-root '(eval prim equal?)))
-    (display (~a "\n\n\n" facts-list "\n\n\n"))
-    (display (~a "\n\n\n" (hash-ref (caddr ast-root) (car facts-list)) "\n\n\n"))
+    ; (display (~a "\n\n\n" facts-list "\n\n\n"))
+    ; (display (~a "\n\n\n" (hash-ref (caddr ast-root) (car facts-list)) "\n\n\n"))
     (let* ([pr2 (anf-convert pr1)]
            [pr3 (cps-convert pr2)]
            [pr4 (alphatize pr3)]
-           [pr5 (closure-convert pr4)])
+           [pr5 (closure-convert pr4 ast-root)]
+          ;  [amount (count-params slog-facts)]
+           )
 
       (list pr2 pr3 pr4 pr5)))
 
@@ -238,6 +239,7 @@
     ; [`(quote ,d) `(,(set) ,e ,(list))]
     [`(let ([,x ',dat]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
+     (pretty-print (list "241: " x dat))
      (define dx (gensym 'd))
      (list (set-remove freevars x) `(let ([,x ',dat]) ,e0+) procs+)]
     [`(let ([,x ,(? string? str)]) ,e0)
@@ -291,13 +293,19 @@
     [`(apply ,f ,x) (list (list->set `(,f ,x)) `(clo-apply ,f ,x) '())]
     [`(,f ,xs ...) (list (list->set `(,f ,@xs)) `(clo-app ,f ,@xs) '())]))
 
-(define (closure-convert program)
+(define (closure-convert program ast-root)
   (foldl (lambda (def pr+)
            (match def
              [`(define (,fx . ,xs)
                  ,body)
+                ; (define facts-list (search-facts ast-root '(eval )))
               (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body))
               (define envx (gensym '_))
+                ; (pretty-print (list freevars procs+ fx envx xs))
               `(,@pr+ ,@procs+ (proc (,fx ,envx . ,xs) ,body+))]))
          '()
          program))
+
+    ; (define facts-list (search-facts ast-root '(eval)))
+(define (count-params slog-facts)
+  'todo)
