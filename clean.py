@@ -100,12 +100,13 @@ def check_slog(slog_path, analyze_slog_path, used_functions):
 def main():
     parser = argparse.ArgumentParser(description='Find functions in prelude used by the program.')
     parser.add_argument('program_path', help='The path to the program file.')
+    parser.add_argument('out_folder_name', help='This is the name of the out folder that is inside the tests/<test_name>/output folder')
     args = parser.parse_args()
 
     slog_path = f"tests/{args.program_path}/output/{args.program_path}.slog"
     analyze_slog_path = f"analyze.slog"
     program_path = f"tests/{args.program_path}/{args.program_path}.haha"
-    out_path = f"tests/{args.program_path}/output/slog-out"
+    out_path = f"tests/{args.program_path}/output/{args.out_folder_name}"
 
     print(f"\n\nI'm going to do a sanity check so no weird errors pop up\n")
     # os.system(f"cd ../brouhaha && racket test.rkt {args.program_path} && cd ../slog")

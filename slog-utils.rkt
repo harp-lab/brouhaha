@@ -5,10 +5,10 @@
 (provide (all-defined-out))
 ; (require string-sexpr)
 
-(define (runslog clean-path test-name)
+(define (runslog clean-path test-name test-file-hash)
   (display "here")
   (system "cd ../slog")
-  (define command (string-append "python3" " " clean-path " " test-name))
+  (define command (string-append "python3" " " clean-path " " test-name " " test-file-hash))
   (system command))
 
 ; will read the contents of the file and return a hash-string
@@ -89,6 +89,9 @@
 
 ;   )
 
+
+(define (index-to-facts index-list tree)
+  (foldl (lambda (index facts-list) (append facts-list (hash-ref (caddr tree) index '()))) '() index-list))
 
 ; The search function: takes a list of symbols, one for each level of search
 ; searches for each symbol in each level; gets to a sub-tree and calls the get-leaves on that sub-tree

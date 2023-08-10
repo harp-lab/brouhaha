@@ -9,6 +9,7 @@
          "emit-slog.rkt"
          "slog-utils.rkt")
 
+
 (define (write-to file content)
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
 
@@ -55,10 +56,15 @@
                     (string-append (write-program-for-slog alphatize_prg) (string-append (open-slog prelude-slog) (open-slog analyze-slog)))))
         #:exists 'replace)
       (define slog-path (generate-res-filepath ".slog"))
-      (define out-path (string-append out-dir "/output/slog-out/"))
-      (define fact-file (string-append out-dir "/output/slog-out" "/facts.txt"))
+      (define haha-file-hash (file-to-hash-string file-path))
+      (define out-path (string-append out-dir "/output/" haha-file-hash "/"))
+      (define slog-out-dir (string-append out-dir "/output/" haha-file-hash))
+      (define fact-file (string-append slog-out-dir "/facts.txt"))
+      (cond 
+        [(not (directory-exists? slog-out-dir))
+          (runslog "../brouhaha/clean.py" filename-string haha-file-hash)]
+        )
       (display (~a "fact-file " fact-file " out-path " out-path " slog-path " slog-path))
-      ; (runslog "../brouhaha/clean.py" filename-string)
       
       (define compiled-program (compile program slog-path out-path fact-file alphatize_prg))
 

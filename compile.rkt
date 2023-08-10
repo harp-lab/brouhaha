@@ -19,9 +19,8 @@
 (define (compile program slog-path out-path fact-file pr1)
     (display (~a "\n\n\n" fact-file "\n\n\n"))
     (define ast-root (read-facts fact-file))
-    (define facts-list (search-facts ast-root '(eval prim equal?)))
+    (define facts-list (index-to-facts (search-facts ast-root '(eval)) ast-root))
     (display (~a "\n\n\n" facts-list "\n\n\n"))
-    (display (~a "\n\n\n" (hash-ref (caddr ast-root) (car facts-list)) "\n\n\n"))
     (let* ([pr2 (anf-convert pr1)]
            [pr3 (cps-convert pr2)]
            [pr4 (alphatize pr3)]
