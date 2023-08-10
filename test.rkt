@@ -83,16 +83,19 @@
         (list "_desugar.out" "_alphatize.out" "_anf.out" "_cps.out" "_cps_anf.out" "_closure.out"))
        (append compiled compiled-program))
 
+      ; (display "Entering interp")
       (define (interpret-anf-and-output prg res-file)
         (let ([result (interp prg)])
           (write-to (generate-res-filepath res-file) result)
           result))
 
+      ; (display "Entering interp2")
       (define (interpret-cps-and-output prg res-file)
         (let ([result (interp-cps prg)])
           (write-to (generate-res-filepath res-file) result)
           result))
 
+      ; (display "Entering interp3")
       (define (interpret-clo-and-output prg res-file)
         (let ([result (interp-closure prg)])
           (write-to (generate-res-filepath res-file) result)
