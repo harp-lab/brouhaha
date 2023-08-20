@@ -12,7 +12,7 @@
 (define (write-to file content)
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
 
-(define (run-program directory filename file-path prelude-path prelude-slog analyze-slog)
+(define (run-program directory filename file-path prelude-path analyze-slog)
   (with-handlers ([exn:fail? (lambda (exn)
                                (print-red "\nFailed to run: ")
                                (displayln (~a filename " with error "))
@@ -50,7 +50,7 @@
       (with-output-to-file (generate-res-filepath ".slog")
                            (lambda ()
                              (display (string-append (write-program-for-slog alphatize_prg)
-                                                     (string-append (open-slog prelude-slog)
+                                                     (string-append
                                                                     (open-slog analyze-slog)))))
                            #:exists 'replace)
       (define slog-path (generate-res-filepath ".slog"))
@@ -85,6 +85,7 @@
 
       ; (display "Entering interp")
       (define (interpret-anf-and-output prg res-file)
+        (pretty-print "Done")
         (let ([result (interp prg)])
           (write-to (generate-res-filepath res-file) result)
           result))
@@ -127,7 +128,6 @@
                                                file
                                                file-path
                                                (build-path (current-directory) "prelude.haha")
-                                               (build-path (current-directory) "prelude.slog")
                                                (build-path (current-directory) "analyze.slog")))))
                             (directory-list (build-path (current-directory) directory dir))))))
             (directory-list directory)))
@@ -141,7 +141,6 @@
                                       user-file))) ; filename in the form #<path: apply.haha>
      full-path
      (build-path (current-directory) "prelude.haha")
-     (build-path (current-directory) "prelude.slog")
      (build-path (current-directory) "analyze.slog"))))
 
 (define (main args)
