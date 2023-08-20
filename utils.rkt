@@ -34,10 +34,7 @@
   (take lines x))
 
 (define (write-to-file file-path content)
-  (with-output-to-file file-path
-    (lambda ()
-      (display content))
-    #:exists 'replace))
+  (with-output-to-file file-path (lambda () (display content)) #:exists 'replace))
 
 ; Takes a symbol as input and returns a string that represents a C-compatible identifier
 (define (convert-id-to-c sym)
@@ -61,6 +58,9 @@
 
 (define (print-green text)
   (print-color text "32"))
+
+(define (print-yellow text)
+  (print-color text "33"))
 
 (define (write-to-c file content)
   (with-output-to-file file (lambda () (display content)) #:exists 'replace))

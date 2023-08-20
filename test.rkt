@@ -9,32 +9,28 @@
          "emit-slog.rkt"
          "slog-utils.rkt")
 
-
 (define (write-to file content)
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
 
 (define (run-program directory filename file-path prelude-path prelude-slog analyze-slog)
-  (with-handlers ([exn:fail?
-                   (lambda (exn)
-                     (displayln
-                      (~a "Now running: " filename "\n" "Failed to run: " filename " with error "))
-                     (print-red (exn-message exn))
-                     (displayln "\n"))])
+  (with-handlers ([exn:fail? (lambda (exn)
+                               (print-red "\nFailed to run: ")
+                               (displayln (~a filename " with error "))
+                               (print-red (exn-message exn))
+                               (displayln "\n"))])
 
-    (define filename-string-ext
-      (path->string filename))
-    (define filename-string
-      (regexp-replace #rx"[.]haha$" filename-string-ext "")) 
+    (define filename-string-ext (path->string filename))
+    (define filename-string (regexp-replace #rx"[.]haha$" filename-string-ext ""))
     (define out-dir (string-append directory "/" filename-string))
 
     (verify-cmake (string-append out-dir "/CMakeLists.txt"))
     (verify-driver filename-string (string-append out-dir "/driver.cpp"))
     (verify-answer-file (string-append out-dir "/answer"))
 
-    (let* ([generate-res-filepath
-            (lambda (suffix) (string-append out-dir "/output/" filename-string suffix))]
-           [generate-comp-filepath
-            (lambda (suffix) (string-append out-dir "/compiler-out/" filename-string suffix))]
+    (let* ([generate-res-filepath (lambda (suffix)
+                                    (string-append out-dir "/output/" filename-string suffix))]
+           [generate-comp-filepath (lambda (suffix)
+                                     (string-append out-dir "/compiler-out/" filename-string suffix))]
            [program (append (read-program prelude-path) (read-program file-path))]
            [compiled (compile-to-alphatize program)]
            [desugar_prg (list-ref compiled 0)]
@@ -52,27 +48,31 @@
 
       ; this should use write-to in the future
       (with-output-to-file (generate-res-filepath ".slog")
-        (lambda () (display
-                    (string-append (write-program-for-slog alphatize_prg) (string-append (open-slog prelude-slog) (open-slog analyze-slog)))))
-        #:exists 'replace)
+                           (lambda ()
+                             (display (string-append (write-program-for-slog alphatize_prg)
+                                                     (string-append (open-slog prelude-slog)
+                                                                    (open-slog analyze-slog)))))
+                           #:exists 'replace)
       (define slog-path (generate-res-filepath ".slog"))
       (define haha-file-hash (file-to-hash-string file-path))
       (define out-path (string-append out-dir "/output/" haha-file-hash "/"))
       (define slog-out-dir (string-append out-dir "/output/" haha-file-hash))
       (define fact-file (string-append slog-out-dir "/facts.txt"))
-      (cond 
+      (cond
         [(not (directory-exists? slog-out-dir))
-          (runslog "../brouhaha/clean.py" filename-string haha-file-hash)]
-        )
-      (display (~a "fact-file " fact-file " out-path " out-path " slog-path " slog-path))
-      
-      (define compiled-program (compile program slog-path out-path fact-file alphatize_prg))
+         (runslog "../brouhaha/clean.py" filename-string haha-file-hash)])
+      (print-yellow "fact-file: ")
+      (display (~a fact-file " out-path " out-path " \n"))
+      (print-yellow "slog-path: ")
+      (display (~a slog-path))
+
+      (define compiled-program (compile-to-finish program slog-path out-path fact-file alphatize_prg))
 
       ; Here we compile rest
-      [define anf_prg (list-ref compiled-program 0)]
-      [define cps_prg (list-ref compiled-program 1)]
-      [define cps_after_anf (list-ref compiled-program 2)]
-      [define clo_conv_prg (list-ref compiled-program 3)]
+      (define anf_prg (list-ref compiled-program 0))
+      (define cps_prg (list-ref compiled-program 1))
+      (define cps_after_anf (list-ref compiled-program 2))
+      (define clo_conv_prg (list-ref compiled-program 3))
 
       ; (string-append out-dir "/output/" "facts.txt")
 
@@ -150,7 +150,11 @@
     [(and (= (vector-length args) 1) (directory-exists? (vector-ref args 0)))
      (read-direc (vector-ref args 0))]
     [(and (= (vector-length args) 1)
-          (file-exists? (string-append "./tests/" (vector-ref args 0) "/" (vector-ref args 0) ".haha"))) ; racket test tests/easy/easy.haha
+          (file-exists? (string-append "./tests/"
+                                       (vector-ref args 0)
+                                       "/"
+                                       (vector-ref args 0)
+                                       ".haha"))) ; racket test tests/easy/easy.haha
      (test-file (string-append "./tests/" (vector-ref args 0) "/" (vector-ref args 0) ".haha"))]
     [else (error "Invalid command line arguments. Please provide either a file or a directory.")]))
 
