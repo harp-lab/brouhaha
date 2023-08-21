@@ -318,3 +318,13 @@
 ;     (call 5 42))))
 
 ; (pretty-print (alphatize (cps-convert (anf-convert (alphatize (desugar our-call))))))
+
+(define our-call
+  `((define (call num1 num2)
+      (let ([x num1] [y num2]) x))
+    (define (brouhaha_main)
+      (call 5 42))))
+
+; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
+
+(pretty-print (anf-convert (alphatize (desugar our-call))))

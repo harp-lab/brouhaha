@@ -193,7 +193,7 @@
       ; [(or (? symbol? x) (? number? x) (? boolean? x) (? string? x)) x]
       [`(let ([,xs ,es] ...) ,body)
        `(let (prov ,exp)
-          ,(map (lambda (x e) `[,(add-prov-exp x) ,(add-prov-exp e)]) xs es)
+          ,(map (lambda (x e) `[,x ,(add-prov-exp e)]) xs es)
           ,(add-prov-exp body))]
       [`(lambda (,xs ...) ,body)
        `(lambda (prov ,exp)
@@ -211,14 +211,14 @@
        `(if (prov ,exp) ,(add-prov-exp guard) ,(add-prov-exp tb) ,(add-prov-exp fb))]
       [`(apply ,e0 ,e1) `(apply (prov ,exp) ,(add-prov-exp e0) ,(add-prov-exp e1))]
       [`',dat `',dat]
-      
+
       [(? symbol? x) x]
       ; this below should not be here
-      [(? string? y) `',y]
-      [(? integer? y) `',y]
-      [(? flonum? y) `',y]
-      [(? boolean? x) `',x]
-      [`(,es ...) `(app (prov ,exp) ,@(map add-prov-exp es))]   
+      ; [(? string? y) `',y]
+      ; [(? integer? y) `',y]
+      ; [(? flonum? y) `',y]
+      ; [(? boolean? x) `',x]
+      [`(,es ...) `(app (prov ,exp) ,@(map add-prov-exp es))]
       [_ (pretty-print (list "Exp: " exp))]))
   (define (add-prov-define def)
     ; (pretty-print (list "Add-prov-define " def))
@@ -256,7 +256,7 @@
         ,e0)
      e+]
     [_
-     (define x+ (gensym 'x))
+     (define x+ (gensym 'xy))
      `(let (prov ,e+)
         ([,x+ ,e+])
         ,x+)]))
@@ -278,7 +278,7 @@
   (match e
     ; [(? string? y) (k `',y)]
     [`',dat (k `',dat)]
-    [(or (? symbol? x) (? integer? x)) (k x)]
+    [(? symbol? x) (k x)]
     [`(lambda ,prov
         ,xs
         ,e0)
@@ -294,6 +294,7 @@
         ,e0)
      `(let ,prov
         ([,x ,(normalize rhs (lambda (x) x))])
+      ; the next let shouldn't need a prov
         ,(normalize `(let ,prov
                        ,rest
                        ,e0)
@@ -456,11 +457,12 @@
 (define (count-params slog-facts)
   'todo)
 
-
-; (define our-call
-;   `((define (call num1 num2)
-;     (let ([x num1] [y num2]) x))
-;   (define (brouhaha_main)
-;     (call 5 42))))
+(define our-call
+  `((define (call num1 num2)
+      (let ([x num1] [y num2]) x))
+    (define (brouhaha_main)
+      (call 5 42))))
 
 ; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
+
+(pretty-print (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
