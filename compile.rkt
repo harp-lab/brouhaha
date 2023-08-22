@@ -35,10 +35,10 @@
 ; (require print-debug/print-dbg)
 (define (read-program filename)
   (with-input-from-file filename
-                        (lambda ()
-                          (let ([bytes (read-bytes (file-size filename))])
-                            (with-input-from-string (bytes->string/utf-8 bytes)
-                                                    (lambda () (read-all (current-input-port))))))))
+    (lambda ()
+      (let ([bytes (read-bytes (file-size filename))])
+        (with-input-from-string (bytes->string/utf-8 bytes)
+          (lambda () (read-all (current-input-port))))))))
 
 (define (read-all in)
   (let loop ([exprs '()])
@@ -247,11 +247,14 @@
   (map anf-convert-define program))
 
 (define (normalize-anf e)
+  ;(displayln (~a "norm-anf: e: " e))
   (define e+ (normalize e (lambda (x) x)))
   ; (pretty-print (list "Hitting e+ " e+))
+  ;(displayln "-printed e+-")
+  ;(pretty-print e+)
   (match e+
     [(? symbol? x) x]
-    [`(let ,prov
+    [`(let (prov ,_)
         ([,x ,rhs])
         ,e0)
      e+]
@@ -268,7 +271,7 @@
                (lambda (anf)
                  (match anf
                    [(? symbol? x) (k x)]
-                   [else (let ([x (gensym 'a)]) `(let ([,x ,anf]) ,(k x)))]))))
+                   [else (let ([x (gensym 'a)]) `(let (prov ,anf) ([,x ,anf]) ,(k x)))]))))
 
   (define (normalize-aes es k)
     (if (null? es)
@@ -294,7 +297,7 @@
         ,e0)
      `(let ,prov
         ([,x ,(normalize rhs (lambda (x) x))])
-      ; the next let shouldn't need a prov
+        ; the next let shouldn't need a prov
         ,(normalize `(let ,prov
                        ,rest
                        ,e0)
@@ -308,6 +311,7 @@
     [`(apply-prim ,prov ,op ,e0) (normalize-ae e0 (lambda (x) (k `(apply-prim ,prov ,op ,x))))]
     [`(apply ,prov ,es ...) (normalize-aes es (lambda (xs) (k `(apply ,prov . ,xs))))]
     [`(app ,prov ,es ...) (normalize-aes es (lambda (xs) (k `(app ,prov . ,xs))))]
+    ;[`(app ,prov ,es ...) (normalize-aes es k)]
     ; [`(,es ...) (normalize-aes es k)]
     ))
 
@@ -320,13 +324,13 @@
       [`(lambda ,x ,e0)
        (define cx (gensym 'cont))
        (define x+ (gensym x))
-       `(lambda ,x+ (let ([,cx (prim car ,x+)]) (let ([,x (prim cdr ,x+)]) ,(T e0 cx))))]
+       `(lambda ,x+ (let (prov ,x+) ([,cx (prim car ,x+)]) (let (prov ,x) ([,x (prim cdr ,x+)]) ,(T e0 cx))))]
       [(? symbol? x) x]
-      [`(,prov ...) prov]
+      ; [`(,prov ...) prov]
       [`',dat `',dat]))
   (define (T e cae)
     (if (not (symbol? cae))
-        (let ([f (gensym 'f)]) `(let ([,f ,cae]) ,(T e f)))
+        (let ([f (gensym 'f)]) `(let (prov ,cae) ([,f ,cae]) ,(T e f)))
         ; (match (p-dbg e)
         (match e
           ; [(? string? x) `(,cae ,x)]
@@ -352,32 +356,37 @@
           [`(let ,prov
               ([,x (lambda ,xs ,elam)])
               ,e0)
-           `(let ([,x ,(T-ae `(lambda ,xs ,elam))]) ,(T e0 cae))]
-          [`(let ([,x ',dat]) ,e0) `(let ([,x ',dat]) ,(T e0 cae))]
+           `(let ,prov ([,x ,(T-ae `(lambda ,xs ,elam))]) ,(T e0 cae))]
+          [`(let ,prov ([,x ',dat]) ,e0) `(let ,prov ([,x ',dat]) ,(T e0 cae))]
           ; [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,(p-dbg dat)]) ,(T e0 cae))]
           ; [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,dat]) ,(T e0 cae))]
           ; [`(let ([,x ,rhs]) ,e0) (T (p-dbg rhs) `(lambda (,x) ,(T e0 cae)))]
-          [`(let ([,x ,rhs]) ,e0) (T rhs `(lambda (,x) ,(T e0 cae)))]
-          [`(if ,ae ,e0 ,e1) `(if ,(T-ae ae) ,(T e0 cae) ,(T e1 cae))]
-          [`(apply ,ae0 ,ae1)
+
+          ; thowing away prov??
+          [`(let ,prov ([,x ,rhs]) ,e0) (T rhs `(lambda (,x) ,(T e0 cae)))]
+          
+          [`(if ,prov ,ae ,e0 ,e1) `(if ,prov ,(T-ae ae) ,(T e0 cae) ,(T e1 cae))]
+          [`(apply ,prov ,ae0 ,ae1)
            (define xlst (gensym 'cps-lst))
-           `(let ([,xlst (prim cons ,cae ,(T-ae ae1))]) (apply ,(T-ae ae0) ,xlst))]
-          [`(,fae ,args ...) `(,(T-ae fae) ,cae ,@(map T-ae args))])))
+           `(let ,prov ([,xlst (prim cons ,cae ,(T-ae ae1))]) (apply ,prov ,(T-ae ae0) ,xlst))]
+          [`(app ,prov ,fae ,args ...) `(app ,prov ,(T-ae fae) ,cae ,@(map T-ae args))]
+          ; [`(,fae ,args ...) `(,(T-ae fae) ,cae ,@(map T-ae args))]
+          )))
   (define (cps-convert-def def)
     (match def
       [`(define ,prov
           (,fname ,params ...)
           ,body)
        (define k (gensym 'kont))
-       `(define (,fname ,k ,@params)
+       `(define ,prov (,fname ,k ,@params)
           ,(T body k))]
       [`(define ,prov
           (,fname . ,(? symbol? params))
           ,body)
        (define k (gensym 'kont))
-       (define newargs (gensym 'args))
-       `(define (,fname . ,params)
-          ,(T `(let ([,k (prim car ,params)]) (let ([,params (prim cdr ,params)]) ,body)) k))]))
+       `(define ,prov (,fname . ,params)
+          ,(T `(let ,prov ([,k (prim car ,params)]) (let ,prov ([,params (prim cdr ,params)]) ,body)) k))]))
+  
   (map cps-convert-def program))
 
 (define (T-bottom-up e)
@@ -465,4 +474,11 @@
 
 ; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
 
-(pretty-print (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
+; (displayln "after-alphatization: ")
+; (pretty-print (alphatize (desugar our-call)))
+; (displayln "after add-tags: ")
+; (pretty-print (add-tags (alphatize (desugar our-call))))
+; (displayln "after anf:")
+; (pretty-print (anf-convert (add-tags (alphatize (desugar our-call)))))
+(displayln "after cps:")
+(pretty-print (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))
