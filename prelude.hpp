@@ -1510,4 +1510,16 @@ std::string print_val(void *val)
     return "unknown_data_type_print_val";
 }
 
-#pragma endregion
+#pragma endregion 
+void *halt;
+void *arg_buffer[2]; // This is where the arg buffer is called
+long numArgs;
+
+void *fhalt()
+{
+    // std::cout << "In fhalt" << std::endl;
+    std::cout << print_val(arg_buffer[2]) << std::endl;
+    // print_val(arg_buffer[2]);
+    exit(1);
+}
+          

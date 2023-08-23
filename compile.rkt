@@ -16,18 +16,14 @@
 (define (compile-to-alphatize program)
   (let* ([pr0 (desugar program)] [pr1 (alphatize pr0)]) (list pr0 pr1)))
 
-(define (compile-to-finish program slog-path out-path fact-file pr1)
+(define (compile-to-finish program fact-file pr1)
   ; (define (compile-to-finish program)
-  ; (display (~a "\n\n\n" fact-file "\n\n\n"))
-  ; (define ast-root (read-facts fact-file))
-  ; (define facts-list (index-to-facts (search-facts ast-root '(eval)) ast-root))
-  ; (display (~a "\n\n\n" facts-list "\n\n\n"))
   (let* ([pr6 (add-tags program)]
          [pr2 (anf-convert pr6)]
          [pr3 (cps-convert pr2)]
          [pr4 (alphatize pr3)]
          [pr5 (closure-convert pr4)]
-         ;  [amount (count-params slog-facts)]
+         [amount (count-params pr5 fact-file)]
          )
 
     (list pr2 pr3 pr4 pr5)))
@@ -97,17 +93,6 @@
       (if (hash-has-key? env x) (gensym x) x))
     ; (pretty-print (list "This is e: " e))
     (match e
-      [`(let ,kont
-          (,prov ...)
-          ([,xs ,es] ...)
-          ,e0)
-       ;  (pretty-print (list "I hee/re: " e))
-       (define xs+ (map rename xs))
-       (define env+ (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
-       `(let ,kont
-          ,prov
-          ,(map list xs+ (map (alpha-rename env) es))
-          ,((alpha-rename env+) e0))]
       [`(let (,prov ...)
           ([,xs ,es] ...)
           ,e0)
@@ -169,14 +154,28 @@
           ,body)
        `(define (,fname ,@params)
           ,((alpha-rename (foldl (lambda (x h) (hash-set h x x)) env params)) body))]
+      [`(define ,prov (,fname ,params ...)
+          ,body)
+       `(define ,prov (,fname ,@params)
+          ,((alpha-rename (foldl (lambda (x h) (hash-set h x x)) env params)) body))]
       [`(define (,fname . ,(? symbol? params))
           ,body)
        `(define (,fname . ,params)
-          ,((alpha-rename (hash-set env params params)) body))]))
+          ,((alpha-rename (hash-set env params params)) body))]
+      [`(define ,prov (,fname . ,(? symbol? params))
+          ,body)
+       `(define ,prov (,fname . ,params)
+          ,((alpha-rename (hash-set env params params)) body))]
+      ))
   (define top-env
     (foldl (lambda (def env)
              (match def
                [`(define (,fname . ,params)
+                   ,body)
+                (when (hash-has-key? env fname)
+                  (error "Function name is already defined"))
+                (hash-set env fname fname)]
+               [`(define ,prov (,fname . ,params)
                    ,body)
                 (when (hash-has-key? env fname)
                   (error "Function name is already defined"))
@@ -392,7 +391,7 @@
 (define (T-bottom-up e)
   (match e
     ; [`(quote ,d) `(,(set) ,e ,(list))]
-    [`(let ([,x ',dat]) ,e0)
+    [`(let ,prov ([,x ',dat]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
      ;  (pretty-print (list "241: " x dat))
      (define dx (gensym 'd))
@@ -409,7 +408,7 @@
     [`(let ([,x (apply-prim ,op ,y)]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
      (list (set-remove (set-add freevars y) x) `(let ([,x (apply-prim ,op ,y)]) ,e0+) procs+)]
-    [`(let ([,x (lambda (,xs ...) ,body)]) ,e0)
+    [`(let ,prov ([,x (lambda (,xs ...) ,body)]) ,e0)
      (match-define `(,freevars ,e0+ ,procs0+) (T-bottom-up e0))
      (match-define `(,freelambda ,body+ ,procs1+) (T-bottom-up body))
      (define fx (gensym 'lam))
@@ -451,20 +450,46 @@
 (define (closure-convert program)
   (foldl (lambda (def pr+)
            (match def
-             [`(define (,fx . ,xs)
+            ;  [`(define (,fx . ,xs)
+            ;      ,body)
+            ;   ;  (pretty-print (list fx xs))
+            ;   ; (define facts-list (search-facts ast-root '(eval )))
+            ;   (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body))
+            ;   (define envx (gensym '_))
+            ;   ; (pretty-print (list freevars procs+ fx envx xs))
+            ;   `(,@pr+ ,@procs+ (proc (,fx ,envx . ,xs) ,body+))]
+             [`(define ,prov (,fx . ,xs)
                  ,body)
               ;  (pretty-print (list fx xs))
               ; (define facts-list (search-facts ast-root '(eval )))
               (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body))
               (define envx (gensym '_))
               ; (pretty-print (list freevars procs+ fx envx xs))
-              `(,@pr+ ,@procs+ (proc (,fx ,envx . ,xs) ,body+))]))
+              `(,@pr+ ,@procs+ (proc ,prov (,fx ,envx . ,xs) ,body+))]))
          '()
          program))
 
 ; (define facts-list (search-facts ast-root '(eval)))
-(define (count-params slog-facts)
-  'todo)
+(define (count-params program fact-file)
+  (define ast-root (read-facts fact-file))
+  (define (counter prov)
+    (match prov
+      [`(prov (define (brouhaha_main) (,funcname ,params ...)))
+        ; (display `(,funcname))
+        (define facts-list (search-facts ast-root `(,funcname)))
+        (display facts-list)
+        (length params)]
+      [_ 0]))
+  
+  (define (unbundle e)
+    (match e
+      [`(proc (,prov ...) 
+              (,func ,vars ...)
+              ,body) 
+        (counter prov)]
+      [_ 0]))
+  
+  (apply + (map unbundle program)))
 
 (define our-call
   `((define (call num1 num2)
@@ -480,5 +505,5 @@
 ; (pretty-print (add-tags (alphatize (desugar our-call))))
 ; (displayln "after anf:")
 ; (pretty-print (anf-convert (add-tags (alphatize (desugar our-call)))))
-(displayln "after cps:")
-(pretty-print (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))
+; (displayln "after cps:")
+(arg-buffer-output (count-params (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))) "tests/let/output/1fc3f8451aec79ec257c4f0bcfa345efc80613601edec4961441cda3/facts.txt"))

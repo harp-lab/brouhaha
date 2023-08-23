@@ -14,21 +14,21 @@
 
 ; format the buffer to include the right amount of buffer arg size
 (define (arg-buffer-output buffer-size)
-  (define current-prelude (read-x-lines "prelude.hpp" 1513))
+  (define current-prelude (open-slog "prelude_save.hpp"))
   (define formatted-buffer (format " 
-            void *halt;
-            void *arg_buffer[~a]; // This is where the arg buffer is called
-            long numArgs;
+void *halt;
+void *arg_buffer[~a]; // This is where the arg buffer is called
+long numArgs;
 
-            void *fhalt()
-            {
-                // std::cout << \"In fhalt\" << std::endl;
-                std::cout << print_val(arg_buffer[2]) << std::endl;
-                // print_val(arg_buffer[2]);
-                exit(1);
-            }
+void *fhalt()
+{
+    // std::cout << \"In fhalt\" << std::endl;
+    std::cout << print_val(arg_buffer[2]) << std::endl;
+    // print_val(arg_buffer[2]);
+    exit(1);
+}
           " buffer-size))
-  (define final-prelude (append current-prelude formatted-buffer))
+  (define final-prelude (string-append current-prelude formatted-buffer))
   (write-to-file "prelude.hpp" final-prelude))
 
 ; will read the contents of the file and return a hash-string

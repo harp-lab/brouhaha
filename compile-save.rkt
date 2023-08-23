@@ -239,7 +239,7 @@
     ; [`(quote ,d) `(,(set) ,e ,(list))]
     [`(let ([,x ',dat]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
-     (pretty-print (list "241: " x dat))
+    ;  (pretty-print (list "241: " x dat))
      (define dx (gensym 'd))
      (list (set-remove freevars x) `(let ([,x ',dat]) ,e0+) procs+)]
     [`(let ([,x ,(? string? str)]) ,e0)
@@ -293,7 +293,7 @@
     [`(apply ,f ,x) (list (list->set `(,f ,x)) `(clo-apply ,f ,x) '())]
     [`(,f ,xs ...) (list (list->set `(,f ,@xs)) `(clo-app ,f ,@xs) '())]))
 
-(define (closure-convert program ast-root)
+(define (closure-convert program)
   (foldl (lambda (def pr+)
            (match def
              [`(define (,fx . ,xs)
@@ -327,4 +327,4 @@
 
 ; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
 
-(pretty-print (anf-convert (alphatize (desugar our-call))))
+(pretty-print (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
