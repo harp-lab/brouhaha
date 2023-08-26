@@ -111,7 +111,7 @@ void *fhalt()
 
 
 (define (index-to-facts index-list tree)
-  (foldl (lambda (index facts-list) (append facts-list (hash-ref (caddr tree) index '()))) '() index-list))
+  (foldl (lambda (index facts-list) (cons (hash-ref (caddr tree) index) facts-list)) '() index-list))
 
 ; The search function: takes a list of symbols, one for each level of search
 ; searches for each symbol in each level; gets to a sub-tree and calls the get-leaves on that sub-tree
@@ -135,5 +135,8 @@ void *fhalt()
     ['() '()]
     ))
 
-; (define ast-root (read-facts "tests/and/output/slog-out/facts.txt"))
-; (search-facts ast-root '(eval))
+; (define ast-root (read-facts "tests/let/output/1fc3f8451aec79ec257c4f0bcfa345efc80613601edec4961441cda3/facts.txt"))
+; (define facts-list (search-facts ast-root '(eval)))
+; (index-to-facts facts-list ast-root)
+; (display facts-list)
+; (hash-ref (caddr ast-root) '305)

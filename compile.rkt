@@ -11,7 +11,8 @@
          compile-to-alphatize
          compile-to-finish)
 
-(require "slog-utils.rkt")
+(require "slog-utils.rkt"
+         "interp-anf.rkt")
 
 (define (compile-to-alphatize program)
   (let* ([pr0 (desugar program)] [pr1 (alphatize pr0)]) (list pr0 pr1)))
@@ -213,10 +214,10 @@
 
       [(? symbol? x) x]
       ; this below should not be here
-      ; [(? string? y) `',y]
-      ; [(? integer? y) `',y]
-      ; [(? flonum? y) `',y]
-      ; [(? boolean? x) `',x]
+      [(? string? y) `',y]
+      [(? integer? y) `',y]
+      [(? flonum? y) `',y]
+      [(? boolean? x) `',x]
       [`(,es ...) `(app (prov ,exp) ,@(map add-prov-exp es))]
       [_ (pretty-print (list "Exp: " exp))]))
   (define (add-prov-define def)
@@ -472,13 +473,24 @@
 ; (define facts-list (search-facts ast-root '(eval)))
 (define (count-params program fact-file)
   (define ast-root (read-facts fact-file))
+  (define facts-list (search-facts ast-root '(eval)))
+  (define actual-facts (index-to-facts facts-list ast-root))
+
+  (define (fact-parser funcname) 
+    (define (fact-unroll fact)
+      (match fact
+        [`(eval (app (ref call) ,params) ,env-sets ,halt)
+          (- (length params) 1)]
+        [_ 
+          0]))
+      (apply + (map fact-unroll actual-facts)))
+
   (define (counter prov)
     (match prov
       [`(prov (define (brouhaha_main) (,funcname ,params ...)))
-        ; (display `(,funcname))
-        (define facts-list (search-facts ast-root `(,funcname)))
-        (display facts-list)
-        (length params)]
+        (fact-parser funcname)
+        ; (length params)
+        ]
       [_ 0]))
   
   (define (unbundle e)
@@ -498,12 +510,10 @@
       (call 5 42))))
 
 ; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
+; (interp (count-params (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))) "tests/let/output/1fc3f8451aec79ec257c4f0bcfa345efc80613601edec4961441cda3/facts.txt"))
 
-; (displayln "after-alphatization: ")
-; (pretty-print (alphatize (desugar our-call)))
-; (displayln "after add-tags: ")
-; (pretty-print (add-tags (alphatize (desugar our-call))))
-; (displayln "after anf:")
-; (pretty-print (anf-convert (add-tags (alphatize (desugar our-call)))))
-; (displayln "after cps:")
-(arg-buffer-output (count-params (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))) "tests/let/output/1fc3f8451aec79ec257c4f0bcfa345efc80613601edec4961441cda3/facts.txt"))
+; (count-params (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))) "tests/let/output/1fc3f8451aec79ec257c4f0bcfa345efc80613601edec4961441cda3/facts.txt")
+
+
+; (interp (alphatize (desugar our-call)))
+(interp (anf-convert (add-tags (alphatize (desugar our-call)))))

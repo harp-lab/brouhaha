@@ -66,7 +66,7 @@
       (print-yellow "slog-path: ")
       (display (~a slog-path))
 
-      (define compiled-program (compile-to-finish program slog-path out-path fact-file alphatize_prg))
+      (define compiled-program (compile-to-finish program fact-file alphatize_prg))
 
       ; Here we compile rest
       (define anf_prg (list-ref compiled-program 0))

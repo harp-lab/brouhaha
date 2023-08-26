@@ -22,6 +22,7 @@
         [`() env+])))
 
   (define (eval exp env)
+    (pretty-print (list "closure"))
     (match exp
       ; [(? string? y) y]
       [`(quote ,(? string? y)) y]
@@ -32,6 +33,7 @@
       [(? symbol?) (hash-ref env exp)]
       [`(lambda ,_ ,_) `(closure ,exp ,env)]
       [`(prim halt ,lst) (hash-ref env lst)]
+
       [`(prim ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
       [`(apply-prim ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
       [`(make-closure ,ef ,xs ...)

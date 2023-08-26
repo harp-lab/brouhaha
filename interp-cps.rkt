@@ -24,6 +24,7 @@
         [`() env+])))
 
   (define (eval exp env)
+    (pretty-print (list "cps"))
     (match exp
       ; [(? string? y) y]
       [`(quote ,(? string? y)) y]
