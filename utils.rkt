@@ -68,10 +68,10 @@
 (define (verify-correctness file desugar alphatize anf cps closure)
   (cond
     [(and (equal? desugar alphatize) (equal? alphatize anf) (equal? anf cps) (equal? cps closure))
-     (print-green "Each output stage matched!")
+     (print-green "\nEach output stage matched!")
      (displayln "\n")]
     [else
-     (print-red "Your outputs did not match for ")
+     (print-red "\nYour outputs did not match for ")
      (display (~a file "\n\n"))]))
 
 (define (verify-dir out-dir)

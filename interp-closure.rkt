@@ -35,8 +35,9 @@
       [`(lambda ,_ ,_) `(closure ,exp ,env)]
       [`(prim halt ,lst) (hash-ref env lst)]
 
-      [`(prim ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
-      [`(apply-prim ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
+      [`(prim ,prov ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
+      [`(apply-prim ,prov ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
+      ; [`(apply-prim ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
       [`(make-closure ,ef ,xs ...)
        (let ([free-vals (map (lambda (x) (eval x env)) xs)])
          `(closure ,(second (eval ef env)) ,@free-vals))]

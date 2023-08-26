@@ -38,6 +38,7 @@
       [(? symbol?) (hash-ref env exp)]
       [`(prim halt ,lst) (hash-ref env lst)]
       [`(prim ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
+      [`(apply-prim ,prov ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
       [`(apply-prim ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
       [`(lambda ,_ ,_) `(closure ,exp ,env)]
       [`(if ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
@@ -68,16 +69,16 @@
           ,body)
        (eval body
              (foldl (lambda (x val env) (hash-set env x val)) (add-top-lvl (hash)) params arg-vals))]
-      ; [`(define (,name ,params ...)
-      ;     ,body)
-      ;  (eval body
-      ;        (foldl (lambda (x val env) (hash-set env x val)) (add-top-lvl (hash)) params arg-vals))]
+      [`(define (,name ,params ...)
+          ,body)
+       (eval body
+             (foldl (lambda (x val env) (hash-set env x val)) (add-top-lvl (hash)) params arg-vals))]
       [`(define ,prov (,name . ,(? symbol? params))
           ,body)
        (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]
-      ; [`(define (,name . ,(? symbol? params))
-      ;     ,body)
-      ;  (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]
+      [`(define (,name . ,(? symbol? params))
+          ,body)
+       (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]
       ))
 
   (eval `(let ([halt (lambda (lst) (prim halt lst))]) (brouhaha_main halt)) (add-top-lvl env)))

@@ -29,6 +29,7 @@
         [`() env+])))
 
   (define (eval exp env)
+    ; (pretty-print (list exp))
     (match exp
       ; [(? string? y) y]
       [`(quote ,(? string? y)) y]
@@ -37,14 +38,20 @@
       [`(quote ,(? boolean? x)) x]
       [`(quote ,(? symbol? x)) x]
       [(? symbol?) (hash-ref env exp)]
+      [`(prim ,prov ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
       [`(prim ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
+      [`(apply-prim ,prov ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
       [`(apply-prim ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
+      ; [`(apply-prim ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
       [`(lambda ,_ ,_) `(closure ,exp ,env)]
       [`(if ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
       [`(let ,prov ([,xs ,rhss] ...) ,body)
+        ; (pretty-print (list exp))
        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env))) env xs rhss))]
-      [`(let* ([,xs ,rhss] ...) ,body)
-       (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env+))) env xs rhss))]
+      [`(let ([,xs ,rhss] ...) ,body)
+       (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env))) env xs rhss))]
+      ; [`(let* ([,xs ,rhss] ...) ,body)
+      ;  (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env+))) env xs rhss))]
       [`(apply ,e0 ,e1) (appl (eval e0 env) (eval e1 env))]
       [`(app ,prov ,ef ,eas ...)
        (let ([fn-val (eval ef env)] [arg-vals (map (lambda (ea) (eval ea env)) eas)])
