@@ -1,6 +1,6 @@
 #lang racket
 
-(require "compile.rkt")
+; (require "compile.rkt")
 (provide interp-closure)
 
 (define new-ns (make-base-empty-namespace))
@@ -17,12 +17,13 @@
   (define (add-top-lvl env)
     (let loop ([env+ env] [prog+ program])
       (match prog+
+        [`((proc ,prov (,name . ,param) ,body) ,rest ...)
+         (loop (hash-set env+ name `(closure ,(first prog+))) (cdr prog+))]
         [`((proc (,name . ,param) ,body) ,rest ...)
          (loop (hash-set env+ name `(closure ,(first prog+))) (cdr prog+))]
         [`() env+])))
 
   (define (eval exp env)
-    (pretty-print (list "closure"))
     (match exp
       ; [(? string? y) y]
       [`(quote ,(? string? y)) y]
@@ -40,6 +41,9 @@
        (let ([free-vals (map (lambda (x) (eval x env)) xs)])
          `(closure ,(second (eval ef env)) ,@free-vals))]
       [`(clo-apply ,f ,x) (appl (eval f env) (eval x env))]
+      [`(clo-app app ,prov ,ef ,eas ...)
+       (let ([fn-val (eval ef env)] [arg-vals (map (lambda (ea) (eval ea env)) eas)])
+         (appl fn-val arg-vals))]
       [`(clo-app ,ef ,eas ...)
        (let ([fn-val (eval ef env)] [arg-vals (map (lambda (ea) (eval ea env)) eas)])
          (appl fn-val arg-vals))]
@@ -55,12 +59,20 @@
 
   (define (appl fn-val arg-vals)
     (match fn-val
+      [`(closure (proc ,prov (,fx ,envx ,xs ...) ,eb) ,fr-lst ...)
+       (eval eb
+             (foldl (lambda (x val env) (hash-set env x val))
+                    (hash-set (add-top-lvl env) envx fn-val)
+                    xs
+                    arg-vals))]
       [`(closure (proc (,fx ,envx ,xs ...) ,eb) ,fr-lst ...)
        (eval eb
              (foldl (lambda (x val env) (hash-set env x val))
                     (hash-set (add-top-lvl env) envx fn-val)
                     xs
                     arg-vals))]
+      [`(closure (proc ,prov (,fx ,envx . ,args) ,eb) ,fr-lst ...)
+       (eval eb (hash-set (hash-set (add-top-lvl env) envx fn-val) args arg-vals))]
       [`(closure (proc (,fx ,envx . ,args) ,eb) ,fr-lst ...)
        (eval eb (hash-set (hash-set (add-top-lvl env) envx fn-val) args arg-vals))]))
 
