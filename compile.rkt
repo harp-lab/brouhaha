@@ -12,7 +12,7 @@
          compile-to-finish)
 
 (require "slog-utils.rkt"
-         "interp-anf.rkt")
+         "interp-cps.rkt")
 
 (define (compile-to-alphatize program)
   (let* ([pr0 (desugar program)] [pr1 (alphatize pr0)]) (list pr0 pr1)))
@@ -516,4 +516,4 @@
 
 
 ; (interp (alphatize (desugar our-call)))
-(interp (anf-convert (add-tags (alphatize (desugar our-call)))))
+(interp-cps (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))
