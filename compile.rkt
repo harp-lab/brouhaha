@@ -217,16 +217,16 @@
 
       [(? symbol? x) x]
       ; this below should not be here
-      [(? string? y) `',y]
-      [(? integer? y) `',y]
-      [(? flonum? y) `',y]
-      [(? boolean? x) `',x]
+      ; [(? string? y) `',y]
+      ; [(? integer? y) `',y]
+      ; [(? flonum? y) `',y]
+      ; [(? boolean? x) `',x]
       [`(,es ...) `(app (prov ,exp) ,@(map add-prov-exp es))]
       [_ (pretty-print (list "Exp: " exp))]))
   (define (add-prov-define def)
     ; (pretty-print (list "Add-prov-define " def))
     (match def
-      [`(define (prov ,prov-data)
+      #;[`(define (prov ,prov-data)
           ,rst)
        def]
       [`(define ,params ,body)
@@ -324,14 +324,14 @@
       [`(lambda ,prov (,xs ...) ,e0)
        (define cx (gensym 'cont))
        `(lambda ,prov (,cx ,@xs) ,(T e0 cx))]
-      [`(lambda (,xs ...) ,e0)
+      [`(lambda ,prov (,xs ...) ,e0)
        (define cx (gensym 'cont))
-       `(lambda (,cx ,@xs) ,(T e0 cx))]
+       `(lambda ,prov (,cx ,@xs) ,(T e0 cx))]
       [`(lambda ,prov ,x ,e0)
        (define cx (gensym 'cont))
        (define x+ (gensym x))
        `(lambda ,x+ (let (prov ,x+) ([,cx (prim car ,x+)]) (let (prov ,x) ([,x (prim cdr ,x+)]) ,(T e0 cx))))]
-      [`(lambda ,x ,e0)
+      [`(lambda ,prov ,x ,e0)
        (define cx (gensym 'cont))
        (define x+ (gensym x))
        `(lambda ,x+ (let (prov ,x+) ([,cx (prim car ,x+)]) (let (prov ,x) ([,x (prim cdr ,x+)]) ,(T e0 cx))))]
@@ -339,7 +339,6 @@
       ; [`(,prov ...) prov]
       [`',dat `',dat]))
   (define (T e cae)
-    ; (pretty-print (list e " and " cae))
     (if (not (symbol? cae))
         (let ([f (gensym 'f)]) `(let (prov ,cae) ([,f ,cae]) ,(T e f)))
         ; (match (p-dbg e)
@@ -367,9 +366,9 @@
               ,(T e0 cae))]
 
           [`(let ,prov
-              ([,x (lambda ,xs ,elam)])
+              ([,x (lambda ,prov2 ,xs ,elam)])
               ,e0)
-           `(let ,prov ([,x ,(T-ae `(lambda ,xs ,elam))]) ,(T e0 cae))]
+           `(let ,prov ([,x ,(T-ae `(lambda ,prov2 ,xs ,elam))]) ,(T e0 cae))]
 
           [`(let ,prov ([,x ',dat]) ,e0) `(let ,prov ([,x ',dat]) ,(T e0 cae))]
           ; [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,(p-dbg dat)]) ,(T e0 cae))]
@@ -378,7 +377,7 @@
 
           ; thowing away prov??
           [`(let ,prov ([,x ,rhs]) ,e0) (T rhs `(lambda (,x) ,(T e0 cae)))]
-          
+
           [`(if ,prov ,ae ,e0 ,e1) `(if ,prov ,(T-ae ae) ,(T e0 cae) ,(T e1 cae))]
           [`(apply ,prov ,ae0 ,ae1)
            (define xlst (gensym 'cps-lst))
@@ -400,7 +399,7 @@
        (define k (gensym 'kont))
        `(define ,prov (,fname . ,params)
           ,(T `(let ,prov ([,k (prim car ,params)]) (let ,prov ([,params (prim cdr ,params)]) ,body)) k))]))
-  
+
   (map cps-convert-def program))
 
 (define (T-bottom-up e)
@@ -473,14 +472,14 @@
 (define (closure-convert program)
   (foldl (lambda (def pr+)
            (match def
-            ;  [`(define (,fx . ,xs)
-            ;      ,body)
-            ;   ;  (pretty-print (list fx xs))
-            ;   ; (define facts-list (search-facts ast-root '(eval )))
-            ;   (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body))
-            ;   (define envx (gensym '_))
-            ;   ; (pretty-print (list freevars procs+ fx envx xs))
-            ;   `(,@pr+ ,@procs+ (proc (,fx ,envx . ,xs) ,body+))]
+             ;  [`(define (,fx . ,xs)
+             ;      ,body)
+             ;   ;  (pretty-print (list fx xs))
+             ;   ; (define facts-list (search-facts ast-root '(eval )))
+             ;   (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body))
+             ;   (define envx (gensym '_))
+             ;   ; (pretty-print (list freevars procs+ fx envx xs))
+             ;   `(,@pr+ ,@procs+ (proc (,fx ,envx . ,xs) ,body+))]
              [`(define ,prov (,fx . ,xs)
                  ,body)
               ;  (pretty-print (list fx xs))
@@ -498,31 +497,31 @@
   (define facts-list (search-facts ast-root '(eval)))
   (define actual-facts (index-to-facts facts-list ast-root))
 
-  (define (fact-parser funcname) 
+  (define (fact-parser funcname)
     (define (fact-unroll fact)
       (match fact
         [`(eval (app (ref call) ,params) ,env-sets ,halt)
-          (- (length params) 1)]
-        [_ 
-          0]))
-      (apply + (map fact-unroll actual-facts)))
+         (- (length params) 1)]
+        [_
+         0]))
+    (apply + (map fact-unroll actual-facts)))
 
   (define (counter prov)
     (match prov
       [`(prov (define (brouhaha_main) (,funcname ,params ...)))
-        (fact-parser funcname)
-        ; (length params)
-        ]
+       (fact-parser funcname)
+       ; (length params)
+       ]
       [_ 0]))
-  
+
   (define (unbundle e)
     (match e
-      [`(proc (,prov ...) 
+      [`(proc (,prov ...)
               (,func ,vars ...)
-              ,body) 
-        (counter prov)]
+              ,body)
+       (counter prov)]
       [_ 0]))
-  
+
   (apply + (map unbundle program)))
 
 (define our-call
@@ -681,4 +680,4 @@
         (call))))
 
 
-(cps-convert (add-tags (alphatize (desugar our-call))))
+(pretty-print  (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))
