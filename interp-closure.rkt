@@ -32,6 +32,7 @@
       [`(quote ,(? boolean? x)) x]
       [`(quote ,(? symbol? x)) x]
       [(? symbol?) (hash-ref env exp)]
+      [`(lambda ,prov ,_ ,_) `(closure ,exp ,env)]
       [`(lambda ,_ ,_) `(closure ,exp ,env)]
       [`(prim halt ,lst) (hash-ref env lst)]
 

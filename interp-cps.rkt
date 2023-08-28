@@ -40,6 +40,7 @@
       [`(prim ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
       [`(apply-prim ,prov ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
       [`(apply-prim ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
+      [`(lambda ,prov ,_ ,_) `(closure ,exp ,env)]
       [`(lambda ,_ ,_) `(closure ,exp ,env)]
       [`(if ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
       [`(let ,prov ([,xs ,rhss] ...) ,body)

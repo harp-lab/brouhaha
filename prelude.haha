@@ -1,11 +1,18 @@
 ; Prelude is used as a way to add functionality to the language and programs as a library
 
+; (define (max . lst)
+;   (apply-prim max lst))
+; (define (abs x)
+;   (prim abs x))
+; (define (set-member? s val)
+;   (prim set-member? s val))
+; (define (set-remove s val)
+;   (prim set-remove s val))
+; (define (set-count s val)
+;   (prim set-count s val))
 
 (define (+ . lst)
   (apply-prim + lst))
-
-; (define (max . lst)
-;   (apply-prim max lst))
 
 (define (- . lst)
   (apply-prim - lst))
@@ -49,8 +56,6 @@
 (define (car lst)
   (prim car lst))
 
-; (define (abs x)
-;   (prim abs x))
 
 (define (cdr lst)
   (prim cdr lst))
@@ -135,19 +140,9 @@
 (define (list->set lst)
   (prim list->set lst)) 
 
-; (define (set-member? s val)
-;   (prim set-member? s val))
-
 (define (set-add s val)
   (prim set-add s val))
 
-; (define (set-remove s val)
-;   (prim set-remove s val))
-
-; (define (set-count s val)
-;   (prim set-count s val))
-
-; string functions
 (define (string? str)
   (prim string? str))
 
