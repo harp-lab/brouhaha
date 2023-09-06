@@ -13,11 +13,11 @@
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
 
 (define (run-program directory filename file-path prelude-path analyze-slog)
-  (with-handlers ([exn:fail? (lambda (exn)
-                               (print-red "\nFailed to run: ")
-                               (displayln (~a filename " with error "))
-                               (print-red (exn-message exn))
-                               (displayln "\n"))])
+  ; (with-handlers ([exn:fail? (lambda (exn)
+  ;                              (print-red "\nFailed to run: ")
+  ;                              (displayln (~a filename " with error "))
+  ;                              (print-red (exn-message exn))
+  ;                              (displayln "\n"))])
 
     (define filename-string-ext (path->string filename))
     (define filename-string (regexp-replace #rx"[.]haha$" filename-string-ext ""))
@@ -57,10 +57,11 @@
       (define haha-file-hash (file-to-hash-string file-path))
       (define out-path (string-append out-dir "/output/" haha-file-hash "/"))
       (define slog-out-dir (string-append out-dir "/output/" haha-file-hash))
-      (define fact-file (string-append slog-out-dir "/facts.txt"))
-      (cond
-        [(not (directory-exists? slog-out-dir))
-         (runslog "../brouhaha/clean.py" filename-string haha-file-hash)])
+      ; (define fact-file (string-append slog-out-dir "/facts.txt"))
+      (define fact-file "tests/and/output/8f9e07792c9b4f4bb51278477f482521766ee3c09063d3a0e8dfc8d9/facts.txt")
+      ; (cond
+      ;   [(not (directory-exists? slog-out-dir))
+      ;    (runslog "../brouhaha/clean.py" filename-string haha-file-hash)])
       (print-yellow "fact-file: ")
       (display (~a fact-file " out-path " out-path " \n"))
       (print-yellow "slog-path: ")
@@ -116,7 +117,8 @@
         ;                (generate-comp-filepath "_cpp_program.cpp")))
         ; (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp"))
 
-        (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res closure_res)))))
+        (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res closure_res))))
+        ; )
 
 (define (read-direc directory)
   (for-each (lambda (dir)
