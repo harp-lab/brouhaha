@@ -19,14 +19,17 @@
 (define (compile-to-alphatize program)
   (let* ([pr0 (desugar program)] [pr1 (alphatize pr0)]) (list pr0 pr1)))
 
-(define (compile-to-finish program fact-file pr1)
+(define (compile-to-finish program fact-file pr1 slog-flag)
   ; (define (compile-to-finish program)
-  (let* ([pr6 (add-tags program)]
+  (let* ([pr6 (add-tags pr1)]
          [pr2 (anf-convert pr6)]
          [pr3 (cps-convert pr2)]
          [pr4 (alphatize pr3)]
          [pr5 (closure-convert pr4)]
-         [amount (count-params pr5 fact-file)]
+         [amount (if slog-flag
+                    (count-params pr5 fact-file)
+                    'no-slog)
+                    ]
          )
 
     (list pr2 pr3 pr4 pr5)))
@@ -333,7 +336,7 @@
       [`(lambda ,prov ,x ,e0)
        (define cx (gensym 'cont))
        (define x+ (gensym x))
-       `(lambda ,x+ (let (prov ,x+) ([,cx (prim (prov ,x+) car ,x+)]) (let (prov ,x) ([,x (prim (prov ,x+) cdr ,x+)]) ,(T e0 cx))))] ; checked
+       `(lambda ,prov ,x+ (let (prov ,x+) ([,cx (prim (prov ,x+) car ,x+)]) (let (prov ,x) ([,x (prim (prov ,x+) cdr ,x+)]) ,(T e0 cx))))] ; checked
       [`(lambda ,prov ,x ,e0)
        (define cx (gensym 'cont))
        (define x+ (gensym x))
@@ -379,12 +382,12 @@
           ; [`(let ([,x ,rhs]) ,e0) (T (p-dbg rhs) `(lambda (,x) ,(T e0 cae)))]
 
           ; thowing away prov??
-          [`(let ,prov ([,x ,rhs]) ,e0) (T rhs `(lambda (,x) ,(T e0 cae)))]
+          [`(let ,prov ([,x ,rhs]) ,e0) (T rhs `(lambda ,prov (,x) ,(T e0 cae)))]
 
           [`(if ,prov ,ae ,e0 ,e1) `(if ,prov ,(T-ae ae) ,(T e0 cae) ,(T e1 cae))]
           [`(apply ,prov ,ae0 ,ae1)
            (define xlst (gensym 'cps-lst))
-           `(let ([,xlst (prim ,prov cons ,cae ,(T-ae ae1))]) (apply ,prov ,(T-ae ae0) ,xlst))]
+           `(let ,prov ([,xlst (prim ,prov cons ,cae ,(T-ae ae1))]) (apply ,prov ,(T-ae ae0) ,xlst))]
           [`(app ,prov ,fae ,args ...) 
            `(app ,prov ,(T-ae fae) ,cae ,@(map T-ae args))]
           ; [`(,fae ,args ...) `(,(T-ae fae) ,cae ,@(map T-ae args))]
@@ -437,11 +440,11 @@
      (define body++
        (cdr (foldl (lambda (x count+bdy)
                      (cons (+ 1 (car count+bdy))
-                           `(let ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
+                           `(let ,prov ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
                    (cons 1 body+)
                    envlist)))
      (list (set-remove (set-union envvars freevars) x)
-           `(let ([,x (make-closure ,fx ,@envlist)]) ,e0+)
+           `(let ,prov ([,x (make-closure ,fx ,@envlist)]) ,e0+)
            `(,@procs0+ ,@procs1+ (proc ,prov (,fx ,envx ,@xs) ,body++)))]
 
     [`(let ,prov ([,x (lambda ,prov2 ,arg ,body)]) ,e0)
@@ -454,11 +457,11 @@
      (define body++
        (cdr (foldl (lambda (x count+bdy)
                      (cons (+ 1 (car count+bdy))
-                           `(let ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
+                           `(let ,prov ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
                    (cons 1 body+)
                    envlist)))
      (list (set-remove (set-union envvars freevars) x)
-           `(let ([,x (make-closure ,fx ,@envlist)]) ,e0+)
+           `(let ,prov ([,x (make-closure ,fx ,@envlist)]) ,e0+)
            `(,@procs0+ ,@procs1+ (proc ,prov (,fx ,envx . ,arg) ,body++)))]
     [`(if ,prov ,x ,e0 ,e1)
      (match-define `(,freevars0 ,e0+ ,procs0+) (T-bottom-up e0))
@@ -471,7 +474,8 @@
     [`(apply ,prov ,f ,x) (list (list->set `(,f ,x)) `(clo-apply ,prov ,f ,x) '())]
     ;[`(apply ,f ,x) (list (list->set `(,f ,x)) `(clo-apply ,f ,x) '())]
     [`(app ,prov ,f ,xs ...) (list (list->set `(,f ,@xs)) `(clo-app ,prov ,f ,@xs) '())]
-    [`(,f ,xs ...) (list (list->set `(,f ,@xs)) `(clo-app ,f ,@xs) '())]))
+    [`(,f ,xs ...) (list (list->set `(,f ,@xs)) `(clo-app dummy_prov ,f ,@xs) '())]
+    ))
 
 (define (closure-convert program)
   (foldl (lambda (def pr+)
@@ -637,15 +641,7 @@
 ; (define (hash-ref h k)
 ;   (prim hash-ref h k))
 
-; (define (hash-set h k v)
-;   (prim hash-set h k v))
-
-; (define (hash-keys h)
-;    (prim hash-keys h))
-
-; (define (hash-has-key? h k)
-;   (prim hash-has-key? h k))
-
+; (define (hash-set h k v)(prov (lambda (a7179) (app (prov (equal? 0 (modulo x 2))) equal? kont7275 a7177 a7179)))
 ; (define (hash-count h)
 ;   (prim hash-count h))
 
@@ -693,5 +689,7 @@
 
 ; (interp-closure (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
 
-(arg-buffer-output (count-params (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))) "tests/plus/output/515cd7dead206447ea177a1b370e44696b2a5c0053cea1879f681307/facts.txt" ))
+; (arg-buffer-output (count-params (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))) "tests/plus/output/515cd7dead206447ea177a1b370e44696b2a5c0053cea1879f681307/facts.txt" ))
 ; (cps-convert (anf-convert (add-tags (alphatize (desugar our-call)))))
+
+; (clo-app dummy_prov let (prov (lambda (a7179) (app (prov (equal? 0 (modulo x 2))) equal? kont7275 a7177 a7179))) ((f7276 (lambda (a7179) (app (prov (equal? 0 (modulo x 2))) equal? kont7275 a7177 a7179)))) (app (prov (modulo x 2)) modulo f7276 x a7178))

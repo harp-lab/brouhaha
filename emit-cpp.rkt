@@ -3,7 +3,6 @@
 (require "utils.rkt")
 
 (provide emit-cpp)
-; (require print-debug/print-dbg)
 (define (emit-cpp proc_list filepath)
   ; defining cpp header files
   ; replace the old cpp file, if exists
@@ -25,9 +24,9 @@
     (define (true? x)
       (if x #t #f))
 
+    ; (match (p-dbg body)
     (match body
-
-      [`(let ([,lhs (make-closure ,ptr ,args ...)]) ,letbody)
+      [`(let ,prov ([,lhs (make-closure ,ptr ,args ...)]) ,letbody)
        (define arglength (length args))
 
        ; new-closure
@@ -64,7 +63,7 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let ([,lhs (prim ,op ,args ...)]) ,letbody)
+      [`(let ,prov ([,lhs (prim ,prov2 ,op ,args ...)]) ,letbody)
        (define line
          (format "void* ~a = prim_~a(~a);"
                  (get-c-string lhs)
@@ -75,7 +74,7 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let ([,lhs (apply-prim ,op ,arg)]) ,letbody)
+      [`(let ,prov ([,lhs (apply-prim ,prov2 ,op ,arg)]) ,letbody)
        (define line
          (format "void* ~a = apply_prim_~a(~a);"
                  (get-c-string lhs)
@@ -86,13 +85,13 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let ([,lhs (env-ref ,env ,idx)]) ,letbody)
+      [`(let ,prov ([,lhs (env-ref ,env ,idx)]) ,letbody)
        (append-line filepath "//not do dummy comment")
        (append-line filepath (format "void* ~a = (decode_clo(~a))[~a];" (get-c-string lhs) env idx))
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let ([,lhs ,val]) ,letbody)
+      [`(let ,prov ([,lhs ,val]) ,letbody)
 
        ;  (match (p-dbg val)
        (match val
@@ -139,7 +138,7 @@
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [_ (raise (format "Unknown datatype! ~a" val))])]
-      [`(if ,grd ,texp ,fexp)
+      [`(if ,prov ,grd ,texp ,fexp)
        (append-line filepath "\n//if-clause")
        (define guard (gensym 'if_guard))
 
@@ -150,7 +149,7 @@
        (convert-proc-body proc_name proc_env proc_arg fexp)
        (append-line filepath "}\n")]
 
-      [`(clo-apply ,func ,args)
+      [`(clo-apply ,prov ,func ,args)
        (append-line filepath "\n//clo-apply")
 
        (append-line filepath
@@ -166,7 +165,7 @@
        (append-line filepath "function_ptr();")
        (append-line filepath "return nullptr;")]
 
-      [`(clo-app ,func ,args ...)
+      [`(clo-app ,prov ,func ,args ...)
        (append-line filepath "\n//clo-app")
 
        (append-line filepath
@@ -188,7 +187,7 @@
   (define (convert-procs proc)
     ; (pretty-print proc)
     (match proc
-      [`(proc (,ptr ,env ,args ...) ,body)
+      [`(proc ,prov (,ptr ,env ,args ...) ,body)
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
@@ -219,7 +218,7 @@
                             (get-c-string ptr)
                             (get-c-string ptr)
                             0))]
-      [`(proc (,ptr ,env . ,arg) ,body)
+      [`(proc ,prov (,ptr ,env . ,arg) ,body)
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
