@@ -90,7 +90,7 @@
       ; (pretty-print "\nRunning Interp ANF")
       (let ([result (if interp-flag
                         (interp prg)
-                        prg)])
+                       (interp prg))])
         (write-to (generate-res-filepath res-file) result)
         result))
 
