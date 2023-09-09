@@ -112,8 +112,8 @@
       ; (pretty-print "\nRunning Interp closure")
       (let ([result (if interp-flag
                         (interp-closure prg)
-                        ; (interp-closure prg)
-                        prg
+                        (interp-closure prg)
+                        ; prg
                         )])
         (write-to (generate-res-filepath res-file) result)
         result))
@@ -132,6 +132,7 @@
 
       (if interp-flag 
           (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res closure_res)
+          ; (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res closure_res)
           (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res cps_res)
           ; 'no-verification
           ))))

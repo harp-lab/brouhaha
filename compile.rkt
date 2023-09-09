@@ -476,7 +476,7 @@
     [`(apply (prov ,@prov) ,f ,x) (list (list->set `(,f ,x)) (coverage `(clo-apply (prov ,@prov) ,f ,x)) '())]
     ;[`(apply ,f ,x) (list (list->set `(,f ,x)) `(clo-apply ,f ,x) '())]
     [`(app (prov ,@prov) ,f ,xs ...) (list (list->set `(,f ,@xs)) (coverage `(clo-app (prov ,@prov) ,f ,@xs)) '())]
-    [`(,f ,xs ...) (list (list->set `(,f ,@xs)) (coverage `(clo-app dummy_prov ,f ,@xs)) '())]
+    [`(,f ,xs ...) (list (list->set `(,f ,@xs)) (coverage `(clo-app (prov dummy) ,f ,@xs)) '())]
     ))
 
 (define (closure-convert program)
