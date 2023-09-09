@@ -17,7 +17,7 @@
   (define (add-top-lvl env)
     (let loop ([env+ env] [prog+ program])
       (match prog+
-        [`((proc ,prov (,name . ,param) ,body) ,rest ...)
+        [`((proc (prov ,prov ...) (,name . ,param) ,body) ,rest ...)
          (loop (hash-set env+ name `(closure ,(first prog+))) (cdr prog+))]
         [`((proc (,name . ,param) ,body) ,rest ...)
          (loop (hash-set env+ name `(closure ,(first prog+))) (cdr prog+))]
@@ -32,11 +32,11 @@
       [`(quote ,(? boolean? x)) x]
       [`(quote ,(? symbol? x)) x]
       [(? symbol?) (hash-ref env exp)]
-      [`(lambda ,prov ,_ ,_) `(closure ,exp ,env)]
+      [`(lambda (prov ,prov ...) ,_ ,_) `(closure ,exp ,env)]
       [`(lambda ,_ ,_) `(closure ,exp ,env)]
       [`(prim halt ,lst) (hash-ref env lst)]
-      [`(prim ,prov ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
-      [`(apply-prim ,prov ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
+      [`(prim (prov ,prov ...) ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
+      [`(apply-prim (prov ,prov ...) ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
       [`(make-closure ,ef ,xs ...)
        (let ([free-vals (map (lambda (x) (eval x env)) xs)])
          `(closure ,(second (eval ef env)) ,@free-vals))]
@@ -44,13 +44,13 @@
       [`(clo-app ,ef ,eas ...)
        (let ([fn-val (eval ef env)] [arg-vals (map (lambda (ea) (eval ea env)) eas)])
          (appl fn-val arg-vals))]
-      [`(env-ref ,prov ,enve ,index) (list-ref (eval enve env) (+ index 1))]
+      [`(env-ref (prov ,prov ...) ,enve ,index) (list-ref (eval enve env) (+ index 1))]
       [`(if ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
-      [`(let ,prov ([,xs ,rhss] ...) ,body)
+      [`(let (prov ,prov ...) ([,xs ,rhss] ...) ,body)
        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env))) env xs rhss))]
       [`(let ([,xs ,rhss] ...) ,body)
        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env))) env xs rhss))]
-      [`(app ,prov ,ef ,eas ...)
+      [`(app (prov ,prov ...) ,ef ,eas ...)
        (let ([fn-val (eval ef env)] [arg-vals (map (lambda (ea) (eval ea env)) eas)])
          (appl fn-val arg-vals))]
       [`(,ef ,eas ...)
@@ -59,7 +59,7 @@
 
   (define (appl fn-val arg-vals)
     (match fn-val
-      [`(closure (proc ,prov (,fx ,envx ,xs ...) ,eb) ,fr-lst ...)
+      [`(closure (proc (prov ,prov ...) (,fx ,envx ,xs ...) ,eb) ,fr-lst ...)
        (eval eb
              (foldl (lambda (x val env) (hash-set env x val))
                     (hash-set (add-top-lvl env) envx fn-val)
@@ -71,7 +71,7 @@
                     (hash-set (add-top-lvl env) envx fn-val)
                     xs
                     arg-vals))]
-      [`(closure (proc ,prov (,fx ,envx . ,args) ,eb) ,fr-lst ...)
+      [`(closure (proc (prov ,prov ...) (,fx ,envx . ,args) ,eb) ,fr-lst ...)
        (eval eb (hash-set (hash-set (add-top-lvl env) envx fn-val) args arg-vals))]
       [`(closure (proc (,fx ,envx . ,args) ,eb) ,fr-lst ...)
        (eval eb (hash-set (hash-set (add-top-lvl env) envx fn-val) args arg-vals))]))
