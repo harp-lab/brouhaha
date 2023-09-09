@@ -90,7 +90,9 @@
       ; (pretty-print "\nRunning Interp ANF")
       (let ([result (if interp-flag
                         (interp prg)
-                       (interp prg))])
+                        (interp prg)
+                        ; prg
+                        )])
         (write-to (generate-res-filepath res-file) result)
         result))
 
@@ -99,7 +101,9 @@
       ; (pretty-print "\nRunning Interp CPS")
       (let ([result (if interp-flag
                         (interp-cps prg)
-                        prg)])
+                        (interp-cps prg)
+                        ; prg
+                        )])
         (write-to (generate-res-filepath res-file) result)
         result))
 
@@ -108,7 +112,9 @@
       ; (pretty-print "\nRunning Interp closure")
       (let ([result (if interp-flag
                         (interp-closure prg)
-                        prg)])
+                        ; (interp-closure prg)
+                        prg
+                        )])
         (write-to (generate-res-filepath res-file) result)
         result))
 
@@ -126,7 +132,9 @@
 
       (if interp-flag 
           (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res closure_res)
-          'no-verification))))
+          (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res cps_res)
+          ; 'no-verification
+          ))))
 ; )
 
 (define (read-direc directory)

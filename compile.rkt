@@ -12,9 +12,9 @@
          compile-to-finish)
 
 (require "slog-utils.rkt"
-"interp-closure.rkt"
-"interp-cps.rkt"
-"interp-anf.rkt")
+         "interp-closure.rkt"
+         "interp-cps.rkt"
+         "interp-anf.rkt")
 
 (require "coverage/coverage.rkt")
 
@@ -29,9 +29,9 @@
          [pr4 (alphatize pr3)]
          [pr5 (closure-convert pr4)]
          [amount (if slog-flag
-                    (count-params pr5 fact-file)
-                    'no-slog)
-                    ]
+                     (count-params pr5 fact-file)
+                     'no-slog)
+                 ]
          )
 
     (list pr2 pr3 pr4 pr5)))
@@ -84,15 +84,15 @@
       [`(define (,fname ,params ...)
           ,body)
        (coverage `(define (,fname ,@params)
-          ,(desugar-exp body)))]
+                    ,(desugar-exp body)))]
       [`(define (,fname . ,(? symbol? params))
           ,body)
        (coverage `(define (,fname . ,params)
-          ,(desugar-exp body)))]
+                    ,(desugar-exp body)))]
       [`(define (,fname . ,params)
           ,body)
        (coverage `(define (,fname . vargs)
-          ,(desugar-exp (unroll-args params body))))]))
+                    ,(desugar-exp (unroll-args params body))))]))
   (map desugar-define program))
 
 (define (alphatize program)
@@ -101,63 +101,63 @@
       (if (hash-has-key? env x) (gensym x) x))
     ; (pretty-print (list "This is e: " e))
     (match e
-      [`(let (,prov ...)
+      [`(let (prov ,@prov)
           ([,xs ,es] ...)
           ,e0)
        ;  (pretty-print (list "I heere: " e))
        (define xs+ (map rename xs))
        (define env+ (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
-       (coverage `(let ,prov
-          ,(map list xs+ (map (alpha-rename env) es))
-          ,((alpha-rename env+) e0)))]
+       (coverage `(let (prov ,@prov)
+                    ,(map list xs+ (map (alpha-rename env) es))
+                    ,((alpha-rename env+) e0)))]
       [`(let ([,xs ,es] ...) ,e0)
        ;  (pretty-print (list "I there: " e))
        (define xs+ (map rename xs))
        ;  (pretty-print (list "New XS: " xs+))
        (define env+ (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
        (coverage `(let ,(map list xs+ (map (alpha-rename env) es)) ,((alpha-rename env+) e0)))]
-      [`(lambda (,prov ...)
+      [`(lambda (prov ,@prov)
           (,xs ...)
           ,e0)
        (define xs+ (map rename xs))
        (define env+ (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
-       (coverage `(lambda ,prov
-          ,xs+
-          ,((alpha-rename env+) e0)))]
+       (coverage `(lambda (prov ,@prov)
+                    ,xs+
+                    ,((alpha-rename env+) e0)))]
       [`(lambda (,xs ...) ,e0)
        (define xs+ (map rename xs))
        (define env+ (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
        (coverage `(lambda ,xs+ ,((alpha-rename env+) e0)))]
-      [`(lambda (,prov ...)
+      [`(lambda (prov ,@prov)
           ,x
           ,e0)
        (define x+ (rename x))
        (define env+ (hash-set env x x+))
-       (coverage `(lambda ,prov
-          ,x+
-          ,((alpha-rename env+) e0)))]
-      [`(lambda ,prov ,x ,e0)
+       (coverage `(lambda (prov ,@prov)
+                    ,x+
+                    ,((alpha-rename env+) e0)))]
+      [`(lambda (prov ,@prov) ,x ,e0)
        (define x+ (rename x))
        (define env+ (hash-set env x x+))
-       (coverage `(lambda ,prov ,x+ ,((alpha-rename env+) e0)))]
+       (coverage `(lambda (prov ,@prov) ,x+ ,((alpha-rename env+) e0)))]
       [`(lambda ,x ,e0)
        (define x+ (rename x))
        (define env+ (hash-set env x x+))
        (coverage `(lambda ,x+ ,((alpha-rename env+) e0)))]
-      [`(prim (,prov ...) ,op ,es ...) (coverage `(prim ,prov ,op ,@(map (alpha-rename env) es)))]
+      [`(prim (prov ,prov ...) ,op ,es ...) (coverage `(prim (prov ,@prov) ,op ,@(map (alpha-rename env) es)))]
       [`(prim ,op ,es ...) (coverage `(prim ,op ,@(map (alpha-rename env) es)))]
-      [`(apply-prim (,prov ...) ,op ,e0) (coverage `(apply-prim ,prov ,op ,((alpha-rename env) e0)))]
+      [`(apply-prim (prov ,prov ...) ,op ,e0) (coverage `(apply-prim (prov ,@prov) ,op ,((alpha-rename env) e0)))]
       [`(apply-prim ,op ,e0) (coverage `(apply-prim ,op ,((alpha-rename env) e0)))]
-      [`(if (,prov ...) ,e0 ,e1 ,e2)
-       (coverage `(if ,prov ,((alpha-rename env) e0) ,((alpha-rename env) e1) ,((alpha-rename env) e2)))]
+      [`(if (prov ,prov ...) ,e0 ,e1 ,e2)
+       (coverage `(if (prov ,@prov) ,((alpha-rename env) e0) ,((alpha-rename env) e1) ,((alpha-rename env) e2)))]
       [`(if ,e0 ,e1 ,e2)
        (coverage `(if ,((alpha-rename env) e0) ,((alpha-rename env) e1) ,((alpha-rename env) e2)))]
-      [`(apply (,prov ...) ,e0 ,e1) (coverage `(apply ,prov ,((alpha-rename env) e0) ,((alpha-rename env) e1)))]
+      [`(apply (prov ,prov ...) ,e0 ,e1) (coverage `(apply (prov ,@prov) ,((alpha-rename env) e0) ,((alpha-rename env) e1)))]
       [`(apply ,e0 ,e1) (coverage `(apply ,((alpha-rename env) e0) ,((alpha-rename env) e1)))]
       [(? symbol? x) (coverage (hash-ref env x))]
       ; [(or (? integer? x) (? boolean? x)) x] ; should this even be here?
       ; [(? string? y) `',y]
-      [`(app ,prov ,es ...) (coverage `(app ,prov ,@(map (alpha-rename env) es)))]
+      [`(app (prov ,prov ...) ,es ...) (coverage `(app (prov ,@prov) ,@(map (alpha-rename env) es)))]
       [`',dat (coverage `',dat)]
       [`(,es ...) (coverage (map (alpha-rename env) es))]))
   (define ((rename-define env) def)
@@ -165,19 +165,19 @@
       [`(define (,fname ,params ...)
           ,body)
        (coverage `(define (,fname ,@params)
-          ,((alpha-rename (foldl (lambda (x h) (hash-set h x x)) env params)) body)))]
-      [`(define ,prov (,fname ,params ...)
+                    ,((alpha-rename (foldl (lambda (x h) (hash-set h x x)) env params)) body)))]
+      [`(define (prov ,prov ...) (,fname ,params ...)
           ,body)
-       (coverage `(define ,prov (,fname ,@params)
-          ,((alpha-rename (foldl (lambda (x h) (hash-set h x x)) env params)) body)))]
+       (coverage `(define (prov ,@prov) (,fname ,@params)
+                    ,((alpha-rename (foldl (lambda (x h) (hash-set h x x)) env params)) body)))]
       [`(define (,fname . ,(? symbol? params))
           ,body)
        (coverage `(define (,fname . ,params)
-          ,((alpha-rename (hash-set env params params)) body)))]
-      [`(define ,prov (,fname . ,(? symbol? params))
+                    ,((alpha-rename (hash-set env params params)) body)))]
+      [`(define (prov ,prov ...) (,fname . ,(? symbol? params))
           ,body)
-       (coverage `(define ,prov (,fname . ,params)
-          ,((alpha-rename (hash-set env params params)) body)))]
+       (coverage `(define (prov ,@prov) (,fname . ,params)
+                    ,((alpha-rename (hash-set env params params)) body)))]
       ))
   (define top-env
     (foldl (lambda (def env)
@@ -187,7 +187,7 @@
                 (when (hash-has-key? env fname)
                   (error "Function name is already defined"))
                 (hash-set env fname fname)]
-               [`(define ,prov (,fname . ,params)
+               [`(define (prov ,prov ...) (,fname . ,params)
                    ,body)
                 (when (hash-has-key? env fname)
                   (error "Function name is already defined"))
@@ -204,17 +204,17 @@
       ; [(or (? symbol? x) (? number? x) (? boolean? x) (? string? x)) x]
       [`(let ([,xs ,es] ...) ,body)
        (coverage `(let (prov ,exp)
-          ,(map (lambda (x e) `[,x ,(add-prov-exp e)]) xs es)
-          ,(add-prov-exp body)))]
+                    ,(map (lambda (x e) `[,x ,(add-prov-exp e)]) xs es)
+                    ,(add-prov-exp body)))]
       [`(lambda (,xs ...) ,body)
        (coverage `(lambda (prov ,exp)
-          ,xs
-          ,(add-prov-exp body)))]
+                    ,xs
+                    ,(add-prov-exp body)))]
       ;  `(lambda (prov ,exp) ,@(map add-prov-exp xs) ,(add-prov-exp body))]
       [`(lambda ,x ,body)
        (coverage `(lambda (prov ,exp)
-          ,x
-          ,(add-prov-exp body)))]
+                    ,x
+                    ,(add-prov-exp body)))]
       ; `(lambda ,(prov ,exp) ,(add-prov-exp x) ,(add-prov-exp body))]
       [`(prim ,op ,es ...) (coverage `(prim (prov ,exp) ,op ,@(map add-prov-exp es)))]
       [`(apply-prim ,op ,e0) (coverage `(apply-prim (prov ,exp) ,op ,(add-prov-exp e0)))]
@@ -235,12 +235,12 @@
     ; (pretty-print (list "Add-prov-define " def))
     (match def
       #;[`(define (prov ,prov-data)
-          ,rst)
-       def]
+            ,rst)
+         def]
       [`(define ,params ,body)
        (coverage `(define (prov ,def)
-          ,params
-          ,(add-prov-exp body)))]
+                    ,params
+                    ,(add-prov-exp body)))]
       [_ (pretty-print (list "Looks like you forgot to write a catcher for this buddy: " def))]))
   (map add-prov-define program))
 
@@ -249,12 +249,12 @@
   (define (anf-convert-define def)
     ; (pretty-print (list "Hitting anf-convert-define " def))
     (match def
-      [`(define ,prov
+      [`(define (prov ,prov ...)
           ,sig
           ,body)
-       (coverage `(define ,prov
-          ,sig
-          ,(normalize-anf body)))]))
+       (coverage `(define (prov ,@prov)
+                    ,sig
+                    ,(normalize-anf body)))]))
   (map anf-convert-define program))
 
 (define (normalize-anf e)
@@ -272,8 +272,8 @@
     [_
      (define x+ (gensym 'xy))
      (coverage `(let (prov ,e+)
-        ([,x+ ,e+])
-        ,x+))]))
+                  ([,x+ ,e+])
+                  ,x+))]))
 
 (define (normalize e k)
   ; (pretty-print (list "Hitting normalize " e " and k " k))
@@ -293,35 +293,35 @@
     ; [(? string? y) (k `',y)]
     [`',dat (coverage (k `',dat))]
     [(? symbol? x) (coverage (k x))]
-    [`(lambda ,prov
+    [`(lambda (prov ,prov ...)
         ,xs
         ,e0)
-     (coverage (k `(lambda ,prov
-           ,xs
-           ,(normalize e0 (lambda (x) x)))))]
-    [`(let ,prov
+     (coverage (k `(lambda (prov ,@prov)
+                     ,xs
+                     ,(normalize e0 (lambda (x) x)))))]
+    [`(let (prov ,prov ...)
         ()
         ,e0)
      (coverage (normalize e0 k))]
-    [`(let ,prov
+    [`(let (prov ,prov ...)
         ([,x ,rhs] . ,rest)
         ,e0)
-     (coverage `(let ,prov
-        ([,x ,(normalize rhs (lambda (x) x))])
-        ; the next let shouldn't need a prov
-        ,(normalize `(let ,prov
-                       ,rest
-                       ,e0)
-                    k)))]
+     (coverage `(let (prov ,@prov)
+                  ([,x ,(normalize rhs (lambda (x) x))])
+                  ; the next let shouldn't need a prov
+                  ,(normalize `(let (prov ,@prov)
+                                 ,rest
+                                 ,e0)
+                              k)))]
     ; [`(let () ,e0) (normalize e0 k)]
     ; [`(let ([,x ,rhs] . ,rest) ,e0)
     ;  `(let ([,x ,(normalize rhs (lambda (x) x))]) ,(normalize `(let ,rest ,e0) k))]
-    [`(if ,prov ,ec ,et ,ef)
-     (coverage (normalize-ae ec (lambda (xc) (k `(if ,prov ,xc ,(normalize-anf et) ,(normalize-anf ef))))))]
-    [`(prim ,prov ,op ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(prim ,prov ,op . ,xs)))))]
-    [`(apply-prim ,prov ,op ,e0) (coverage (normalize-ae e0 (lambda (x) (k `(apply-prim ,prov ,op ,x)))))]
-    [`(apply ,prov ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(apply ,prov . ,xs)))))]
-    [`(app ,prov ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(app ,prov . ,xs)))))]
+    [`(if (prov ,prov ...) ,ec ,et ,ef)
+     (coverage (normalize-ae ec (lambda (xc) (k `(if (prov ,@prov) ,xc ,(normalize-anf et) ,(normalize-anf ef))))))]
+    [`(prim (prov ,prov ...) ,op ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(prim (prov ,@prov) ,op . ,xs)))))]
+    [`(apply-prim (prov ,prov ...) ,op ,e0) (coverage (normalize-ae e0 (lambda (x) (k `(apply-prim (prov ,@prov) ,op ,x)))))]
+    [`(apply (prov ,prov ...) ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(apply (prov ,@prov) . ,xs)))))]
+    [`(app (prov ,prov ...) ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(app (prov ,@prov) . ,xs)))))]
     ;[`(app ,prov ,es ...) (normalize-aes es k)]
     ; [`(,es ...) (normalize-aes es k)]
     ))
@@ -329,20 +329,20 @@
 (define (cps-convert program)
   (define (T-ae ae)
     (match ae
-      [`(lambda ,prov (,xs ...) ,e0)
+      [`(lambda (prov ,prov ...) (,xs ...) ,e0)
        (define cx (gensym 'cont))
-       (coverage `(lambda ,prov (,cx ,@xs) ,(T e0 cx)))] ; checked
-      [`(lambda ,prov (,xs ...) ,e0)
+       (coverage `(lambda (prov ,@prov) (,cx ,@xs) ,(T e0 cx)))] ; checked
+      [`(lambda (prov ,prov ...) (,xs ...) ,e0)
        (define cx (gensym 'cont))
-       (coverage `(lambda ,prov (,cx ,@xs) ,(T e0 cx)))] ; checked
-      [`(lambda ,prov ,x ,e0)
-       (define cx (gensym 'cont))
-       (define x+ (gensym x))
-       (coverage `(lambda ,prov ,x+ (let (prov ,x+) ([,cx (prim (prov ,x+) car ,x+)]) (let (prov ,x) ([,x (prim (prov ,x+) cdr ,x+)]) ,(T e0 cx)))))] ; checked
-      [`(lambda ,prov ,x ,e0)
+       (coverage `(lambda (prov ,@prov) (,cx ,@xs) ,(T e0 cx)))] ; checked
+      [`(lambda (prov ,prov ...) ,x ,e0)
        (define cx (gensym 'cont))
        (define x+ (gensym x))
-       (coverage `(lambda ,prov ,x+ (let (prov ,x+) ([,cx (prim (prov ,x+) car ,x+)]) (let (prov ,x) ([,x (prim (prov ,x+) cdr ,x+)]) ,(T e0 cx)))))]
+       (coverage `(lambda (prov ,@prov) ,x+ (let (prov ,x+) ([,cx (prim (prov ,x+) car ,x+)]) (let (prov ,x) ([,x (prim (prov ,x+) cdr ,x+)]) ,(T e0 cx)))))] ; checked
+      [`(lambda (prov ,prov ...) ,x ,e0)
+       (define cx (gensym 'cont))
+       (define x+ (gensym x))
+       (coverage `(lambda (prov ,@prov) ,x+ (let (prov ,x+) ([,cx (prim (prov ,x+) car ,x+)]) (let (prov ,x) ([,x (prim (prov ,x+) cdr ,x+)]) ,(T e0 cx)))))]
       [(? symbol? x) (coverage x)]
       ; [`(,prov ...) prov]
       [`',dat (coverage `',dat)]))
@@ -359,80 +359,80 @@
           ; [`(apply-prim ,prov ,op ,ae)
           ;  (define retx (gensym 'retprim))
           ;  (T `(let ,prov ([,retx (apply-prim ,prov ,op ,ae)]) ,retx) cae)]
-          [`(let ,prov
-              ([,x (apply-prim ,prov2 ,op ,ae)])
+          [`(let (prov ,prov ...)
+              ([,x (apply-prim (prov ,prov2 ...) ,op ,ae)])
               ,e0)
-           (coverage `(let ,prov
-              ([,x (apply-prim ,prov2 ,op ,(T-ae ae))])
-              ,(T e0 cae)))]
+           (coverage `(let (prov ,@prov)
+                        ([,x (apply-prim (prov ,@prov2) ,op ,(T-ae ae))])
+                        ,(T e0 cae)))]
 
-          [`(let ,prov
-              ([,x (prim ,prov2 ,op ,aes ...)])
+          [`(let (prov ,prov ...)
+              ([,x (prim (prov ,prov2 ...) ,op ,aes ...)])
               ,e0)
-           (coverage `(let ,prov
-              ([,x (prim ,prov2 ,op ,@(map T-ae aes))])
-              ,(T e0 cae)))]
+           (coverage `(let (prov ,@prov)
+                        ([,x (prim (prov ,@prov2) ,op ,@(map T-ae aes))])
+                        ,(T e0 cae)))]
 
-          [`(let ,prov
-              ([,x (lambda ,prov2 ,xs ,elam)])
+          [`(let (prov ,prov ...)
+              ([,x (lambda (prov ,prov2 ...) ,xs ,elam)])
               ,e0)
-           (coverage `(let ,prov ([,x ,(T-ae `(lambda ,prov2 ,xs ,elam))]) ,(T e0 cae)))]
+           (coverage `(let (prov ,@prov) ([,x ,(T-ae `(lambda (prov ,@prov2) ,xs ,elam))]) ,(T e0 cae)))]
 
-          [`(let ,prov ([,x ',dat]) ,e0) (coverage `(let ,prov ([,x ',dat]) ,(T e0 cae)))]
+          [`(let (prov ,prov ...) ([,x ',dat]) ,e0) (coverage `(let (prov ,@prov) ([,x ',dat]) ,(T e0 cae)))]
           ; [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,(p-dbg dat)]) ,(T e0 cae))]
           ; [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,dat]) ,(T e0 cae))]
           ; [`(let ([,x ,rhs]) ,e0) (T (p-dbg rhs) `(lambda (,x) ,(T e0 cae)))]
 
           ; thowing away prov??
-          [`(let ,prov ([,x ,rhs]) ,e0) (coverage (T rhs `(lambda ,prov (,x) ,(T e0 cae))))]
+          [`(let (prov ,prov ...) ([,x ,rhs]) ,e0) (coverage (T rhs `(lambda (prov ,@prov) (,x) ,(T e0 cae))))]
 
-          [`(if ,prov ,ae ,e0 ,e1) (coverage `(if ,prov ,(T-ae ae) ,(T e0 cae) ,(T e1 cae)))]
-          [`(apply ,prov ,ae0 ,ae1)
+          [`(if (prov ,prov ...) ,ae ,e0 ,e1) (coverage `(if (prov ,@prov) ,(T-ae ae) ,(T e0 cae) ,(T e1 cae)))]
+          [`(apply (prov ,prov ...) ,ae0 ,ae1)
            (define xlst (gensym 'cps-lst))
-           (coverage `(let ,prov ([,xlst (prim ,prov cons ,cae ,(T-ae ae1))]) (apply ,prov ,(T-ae ae0) ,xlst)))]
-          [`(app ,prov ,fae ,args ...) 
-           (coverage `(app ,prov ,(T-ae fae) ,cae ,@(map T-ae args)))]
+           (coverage `(let (prov ,@prov) ([,xlst (prim (prov ,@prov) cons ,cae ,(T-ae ae1))]) (apply (prov ,@prov) ,(T-ae ae0) ,xlst)))]
+          [`(app (prov ,prov ...) ,fae ,args ...)
+           (coverage `(app (prov ,@prov) ,(T-ae fae) ,cae ,@(map T-ae args)))]
           ; [`(,fae ,args ...) `(,(T-ae fae) ,cae ,@(map T-ae args))]
           )))
   (define (cps-convert-def def)
     (match def
-      [`(define ,prov
+      [`(define (prov ,prov ...)
           (,fname ,params ...)
           ,body)
        (define k (gensym 'kont))
-       (coverage `(define ,prov (,fname ,k ,@params)
-          ,(T body k)))]
-      [`(define ,prov
+       (coverage `(define (prov ,@prov) (,fname ,k ,@params)
+                    ,(T body k)))]
+      [`(define (prov ,prov ...)
           (,fname . ,(? symbol? params))
           ,body)
        (define k (gensym 'kont))
-       (coverage `(define ,prov (,fname . ,params)
-          ,(T `(let ,prov ([,k (prim ,prov car ,params)]) (let ,prov ([,params (prim ,prov cdr ,params)]) ,body)) k)))]))
+       (coverage `(define (prov ,@prov) (,fname . ,params)
+                    ,(T `(let (prov ,@prov) ([,k (prim (prov ,@prov) car ,params)]) (let (prov ,@prov) ([,params (prim (prov ,@prov) cdr ,params)]) ,body)) k)))]))
 
   (map cps-convert-def program))
 
 (define (T-bottom-up e)
   (match e
     ; [`(quote ,d) `(,(set) ,e ,(list))]
-    [`(let ,prov ([,x ',dat]) ,e0)
+    [`(let (prov ,prov ...) ([,x ',dat]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
      ;  (pretty-print (list "241: " x dat))
      (define dx (gensym 'd))
-     (list (set-remove freevars x) (coverage `(let ,prov ([,x ',dat]) ,e0+)) procs+)]
-    [`(let ,prov ([,x ,(? string? str)]) ,e0)
+     (list (set-remove freevars x) (coverage `(let ,(coverage `(prov ,@prov)) ([,x ',dat]) ,e0+)) procs+)]
+    [`(let (prov ,prov ...) ([,x ,(? string? str)]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
      (define dx (gensym 'd))
-     (list (set-remove freevars x) (coverage `(let ,prov ([,x ,str]) ,e0+)) procs+)]
-    [`(let ,prov ([,x (prim ,prov2 ,op ,xs ...)]) ,e0)
+     (list (set-remove freevars x) (coverage `(let (prov ,@prov) ([,x ,str]) ,e0+)) procs+)]
+    [`(let (prov ,prov ...) ([,x (prim (prov ,prov2 ...) ,op ,xs ...)]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
      (list (set-remove (set-union (list->set xs) freevars) x)
-           (coverage `(let ,prov ([,x (prim ,prov2 ,op ,@xs)]) ,e0+))
+           (coverage `(let (prov ,@prov) ([,x (prim (prov ,@prov2) ,op ,@xs)]) ,e0+))
            procs+)]
-    [`(let ,prov ([,x (apply-prim ,prov2 ,op ,y)]) ,e0)
+    [`(let (prov ,@prov) ([,x (apply-prim (prov ,@prov2) ,op ,y)]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
-     (list (set-remove (set-add freevars y) x) (coverage `(let ,prov ([,x (apply-prim ,prov2 ,op ,y)]) ,e0+)) procs+)]
+     (list (set-remove (set-add freevars y) x) (coverage `(let (prov ,@prov) ([,x (apply-prim (prov ,@prov2) ,op ,y)]) ,e0+)) procs+)]
     ; to fix
-    [`(let ,prov ([,x (lambda ,prov2 (,xs ...) ,body)]) ,e0)
+    [`(let (prov ,@prov) ([,x (lambda (prov ,@prov2) (,xs ...) ,body)]) ,e0)
      (match-define `(,freevars ,e0+ ,procs0+) (T-bottom-up e0))
      (match-define `(,freelambda ,body+ ,procs1+) (T-bottom-up body))
      (define fx (gensym 'lam))
@@ -442,14 +442,14 @@
      (define body++
        (cdr (foldl (lambda (x count+bdy)
                      (cons (+ 1 (car count+bdy))
-                           `(let ,prov ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
+                           `(let (prov ,@prov) ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
                    (cons 1 body+)
                    envlist)))
      (coverage (list (set-remove (set-union envvars freevars) x)
-           `(let ,prov ([,x (make-closure ,fx ,@envlist)]) ,e0+)
-           `(,@procs0+ ,@procs1+ (proc ,prov (,fx ,envx ,@xs) ,body++))))]
+                     `(let (prov ,@prov) ([,x (make-closure ,fx ,@envlist)]) ,e0+)
+                     `(,@procs0+ ,@procs1+ (proc (prov ,@prov) (,fx ,envx ,@xs) ,body++))))]
 
-    [`(let ,prov ([,x (lambda ,prov2 ,arg ,body)]) ,e0)
+    [`(let (prov ,@prov) ([,x (lambda (prov ,@prov2) ,arg ,body)]) ,e0)
      (match-define `(,freevars ,e0+ ,procs0+) (T-bottom-up e0))
      (match-define `(,freelambda ,body+ ,procs1+) (T-bottom-up body))
      (define fx (gensym 'lam))
@@ -459,23 +459,23 @@
      (define body++
        (cdr (foldl (lambda (x count+bdy)
                      (cons (+ 1 (car count+bdy))
-                           `(let ,prov ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
+                           `(let (prov ,@prov) ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
                    (cons 1 body+)
                    envlist)))
      (coverage (list (set-remove (set-union envvars freevars) x)
-           `(let ,prov ([,x (make-closure ,fx ,@envlist)]) ,e0+)
-           `(,@procs0+ ,@procs1+ (proc ,prov (,fx ,envx . ,arg) ,body++))))]
-    [`(if ,prov ,x ,e0 ,e1)
+                     `(let (prov ,@prov) ([,x (make-closure ,fx ,@envlist)]) ,e0+)
+                     `(,@procs0+ ,@procs1+ (proc (prov ,@prov) (,fx ,envx . ,arg) ,body++))))]
+    [`(if (prov ,@prov) ,x ,e0 ,e1)
      (match-define `(,freevars0 ,e0+ ,procs0+) (T-bottom-up e0))
      (match-define `(,freevars1 ,e1+ ,procs1+) (T-bottom-up e1))
-     (list (set-add (set-union freevars0 freevars1) x) (coverage `(if ,prov ,x ,e0+ ,e1+)) (append procs0+ procs1+))]
+     (list (set-add (set-union freevars0 freevars1) x) (coverage `(if (prov ,@prov) ,x ,e0+ ,e1+)) (append procs0+ procs1+))]
     ; [`(if ,x ,e0 ,e1)
     ;  (match-define `(,freevars0 ,e0+ ,procs0+) (T-bottom-up e0))
     ;  (match-define `(,freevars1 ,e1+ ,procs1+) (T-bottom-up e1))
     ;  (list (set-add (set-union freevars0 freevars1) x) `(if ,x ,e0+ ,e1+) (append procs0+ procs1+))]
-    [`(apply ,prov ,f ,x) (list (list->set `(,f ,x)) (coverage `(clo-apply ,prov ,f ,x)) '())]
+    [`(apply (prov ,@prov) ,f ,x) (list (list->set `(,f ,x)) (coverage `(clo-apply (prov ,@prov) ,f ,x)) '())]
     ;[`(apply ,f ,x) (list (list->set `(,f ,x)) `(clo-apply ,f ,x) '())]
-    [`(app ,prov ,f ,xs ...) (list (list->set `(,f ,@xs)) (coverage `(clo-app ,prov ,f ,@xs)) '())]
+    [`(app (prov ,@prov) ,f ,xs ...) (list (list->set `(,f ,@xs)) (coverage `(clo-app (prov ,@prov) ,f ,@xs)) '())]
     [`(,f ,xs ...) (list (list->set `(,f ,@xs)) (coverage `(clo-app dummy_prov ,f ,@xs)) '())]
     ))
 
@@ -490,14 +490,14 @@
              ;   (define envx (gensym '_))
              ;   ; (pretty-print (list freevars procs+ fx envx xs))
              ;   `(,@pr+ ,@procs+ (proc (,fx ,envx . ,xs) ,body+))]
-             [`(define ,prov (,fx . ,xs)
+             [`(define (prov ,@prov) (,fx . ,xs)
                  ,body)
               ;  (pretty-print (list fx xs))
               ; (define facts-list (search-facts ast-root '(eval )))
               (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body))
               (define envx (gensym '_))
               ; (pretty-print (list freevars procs+ fx envx xs))
-              (coverage `(,@pr+ ,@procs+ (proc ,prov (,fx ,envx . ,xs) ,body+)))]))
+              (coverage `(,@pr+ ,@procs+ (proc (prov ,@prov) (,fx ,envx . ,xs) ,body+)))]))
          '()
          program))
 
@@ -536,156 +536,156 @@
 
 (define our-call
   `((define (+ . lst)
-  (apply-prim + lst))
+      (apply-prim + lst))
 
-; (define (- . lst)
-;   (apply-prim - lst))
+    ; (define (- . lst)
+    ;   (apply-prim - lst))
 
-; (define (* . lst)
-;   (apply-prim * lst))
+    ; (define (* . lst)
+    ;   (apply-prim * lst))
 
-; (define (modulo a b)
-;   (prim modulo a b))
+    ; (define (modulo a b)
+    ;   (prim modulo a b))
 
-; (define (/ . lst)
-;   (apply-prim / lst))
+    ; (define (/ . lst)
+    ;   (apply-prim / lst))
 
-; (define (= . lst)
-;   (apply-prim = lst))
+    ; (define (= . lst)
+    ;   (apply-prim = lst))
 
-; (define (> . lst)
-;   (apply-prim > lst))
+    ; (define (> . lst)
+    ;   (apply-prim > lst))
 
-; (define (< . lst)
-;   (apply-prim < lst))
+    ; (define (< . lst)
+    ;   (apply-prim < lst))
 
-; (define (<= . lst)
-;   (apply-prim <= lst))
+    ; (define (<= . lst)
+    ;   (apply-prim <= lst))
 
-; (define (>= . lst)
-;   (apply-prim >= lst))
+    ; (define (>= . lst)
+    ;   (apply-prim >= lst))
 
-; (define (null? x)
-;   (prim null? x))
+    ; (define (null? x)
+    ;   (prim null? x))
 
-; (define (equal? x y)
-;   (prim equal? x y))
+    ; (define (equal? x y)
+    ;   (prim equal? x y))
 
-; (define (eq? x y)
-;   (prim eq? x y))
+    ; (define (eq? x y)
+    ;   (prim eq? x y))
 
-; (define (cons a b)
-;   (prim cons a b))
+    ; (define (cons a b)
+    ;   (prim cons a b))
 
-; (define (car lst)
-;   (prim car lst))
+    ; (define (car lst)
+    ;   (prim car lst))
 
 
-; (define (cdr lst)
-;   (prim cdr lst))
+    ; (define (cdr lst)
+    ;   (prim cdr lst))
 
-; (define (even? x)
-;   (equal? 0 (modulo x 2)))
+    ; (define (even? x)
+    ;   (equal? 0 (modulo x 2)))
 
-; (define (odd? x)
-;   (equal? 1 (modulo x 2)))
+    ; (define (odd? x)
+    ;   (equal? 1 (modulo x 2)))
 
-; (define (list . x)
-;   x)
-  
-; (define (float->int val)
-;   (prim inexact->exact val))
+    ; (define (list . x)
+    ;   x)
 
-; (define (int->float val)
-;   (prim exact->inexact val))
+    ; (define (float->int val)
+    ;   (prim inexact->exact val))
 
-; (define (member? x lst)
-;   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
+    ; (define (int->float val)
+    ;   (prim exact->inexact val))
 
-; (define (foldl fun acc lst)
-;   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
+    ; (define (member? x lst)
+    ;   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
 
-; (define (reverse-helper lst lst2)
-;   (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
+    ; (define (foldl fun acc lst)
+    ;   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
 
-; (define (reverse lst)
-;   (reverse-helper lst (list)))
+    ; (define (reverse-helper lst lst2)
+    ;   (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
 
-; (define (take-helper lst n lst2)
-;   (if (= n 0) (reverse lst2) (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
+    ; (define (reverse lst)
+    ;   (reverse-helper lst (list)))
 
-; (define (take lst n)
-;   (take-helper lst n (list)))
+    ; (define (take-helper lst n lst2)
+    ;   (if (= n 0) (reverse lst2) (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
 
-; (define (length lst)
-;   (if (null? lst) 0 (+ 1 (length (cdr lst)))))
+    ; (define (take lst n)
+    ;   (take-helper lst n (list)))
 
-; (define (map proc lst)
-;   (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
+    ; (define (length lst)
+    ;   (if (null? lst) 0 (+ 1 (length (cdr lst)))))
 
-; (define (filter op lst)
-;   (if (null? lst)
-;       (list)
-;       (if (op (car lst)) (cons (car lst) (filter op (cdr lst))) (filter op (cdr lst)))))
+    ; (define (map proc lst)
+    ;   (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
 
-; (define (drop lst n)
-;   (if (= n 0) lst (drop (cdr lst) (- n 1))))
+    ; (define (filter op lst)
+    ;   (if (null? lst)
+    ;       (list)
+    ;       (if (op (car lst)) (cons (car lst) (filter op (cdr lst))) (filter op (cdr lst)))))
 
-; (define (foldr proc acc lst)
-;   (if (null? lst) acc (proc (car lst) (foldr proc acc (cdr lst)))))
+    ; (define (drop lst n)
+    ;   (if (= n 0) lst (drop (cdr lst) (- n 1))))
 
-; (define (append lst1 lst2)
-;   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
+    ; (define (foldr proc acc lst)
+    ;   (if (null? lst) acc (proc (car lst) (foldr proc acc (cdr lst)))))
 
-; (define (hash . lst)
-;   (apply-prim hash lst))
+    ; (define (append lst1 lst2)
+    ;   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
 
-; (define (hash-ref h k)
-;   (prim hash-ref h k))
+    ; (define (hash . lst)
+    ;   (apply-prim hash lst))
 
-; (define (hash-set h k v)(prov (lambda (a7179) (app (prov (equal? 0 (modulo x 2))) equal? kont7275 a7177 a7179)))
-; (define (hash-count h)
-;   (prim hash-count h))
+    ; (define (hash-ref h k)
+    ;   (prim hash-ref h k))
 
-; (define (set . lst)
-;   (apply-prim set lst))
+    ; (define (hash-set h k v)(prov (lambda (a7179) (app (prov (equal? 0 (modulo x 2))) equal? kont7275 a7177 a7179)))
+    ; (define (hash-count h)
+    ;   (prim hash-count h))
 
-; (define (set->list h)
-;   (prim set->list h))
+    ; (define (set . lst)
+    ;   (apply-prim set lst))
 
-; (define (list->set lst)
-;   (prim list->set lst)) 
+    ; (define (set->list h)
+    ;   (prim set->list h))
 
-; (define (set-add s val)
-;   (prim set-add s val))
+    ; (define (list->set lst)
+    ;   (prim list->set lst))
 
-; (define (string? str)
-;   (prim string? str))
+    ; (define (set-add s val)
+    ;   (prim set-add s val))
 
-; (define (string-length str)
-;   (prim string-length str))
+    ; (define (string? str)
+    ;   (prim string? str))
 
-; (define (string-ref str pos)
-;   (prim string-ref str pos))
+    ; (define (string-length str)
+    ;   (prim string-length str))
 
-; (define (substring str start end)
-;   (prim substring str start end))
+    ; (define (string-ref str pos)
+    ;   (prim string-ref str pos))
 
-; (define (string-append s1 s2)
-;   (prim string-append s1 s2))
+    ; (define (substring str start end)
+    ;   (prim substring str start end))
 
-; (define (string->list str)
-;   (prim string->list str))
-    
-; start here
-(define (call x)
-    (+ 1 x))
+    ; (define (string-append s1 s2)
+    ;   (prim string-append s1 s2))
 
-(define (brouhaha_main)
-    (call 1))
-; end here
+    ; (define (string->list str)
+    ;   (prim string->list str))
 
-))
+    ; start here
+    (define (call x)
+      (+ 1 x))
+
+    (define (brouhaha_main)
+      (call 1))
+    ; end here
+
+    ))
 
 ; (interp (anf-convert (add-tags (alphatize (desugar our-call)))))
 
