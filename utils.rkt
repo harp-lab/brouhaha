@@ -177,7 +177,7 @@ TEST(test-name_Test, CPP_test)
 
 TEST(test-name_Test, memleak_check)
 {
-    int mem_ret = system(\"../../../dependencies/valgrind/bin/valgrind --quiet --suppressions=../../../supressions.supp --error-exitcode=10 --leak-check=full ./test-name_exec > /dev/null\");
+    int mem_ret = system(\"valgrind --quiet --suppressions=../../../supressions.supp --error-exitcode=10 --leak-check=full ./test-name_exec > /dev/null\");
     ASSERT_NE(WEXITSTATUS(mem_ret),10);
 }
 

@@ -1512,7 +1512,7 @@ std::string print_val(void *val)
 
 #pragma endregion 
 void *halt;
-void *arg_buffer[0]; // This is where the arg buffer is called
+void *arg_buffer[999]; // This is where the arg buffer is called
 long numArgs;
 
 void *fhalt()
