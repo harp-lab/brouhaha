@@ -172,7 +172,7 @@ TEST(test-name_Test, CPP_test)
     std::string answer = readFileToString(\"../../../tests/test-name/answer\");
     std::string output = executeAndGetOutput(\"./test-name_exec\");
     writeStringToFile(\"../../../tests/test-name/output/test-name_cpp_res.out\",output);
-    ASSERT_EQ(answer, output);
+    ASSERT_TRUE(racketCompare(answer, output) == true);
 }
 
 TEST(test-name_Test, memleak_check)
