@@ -40,20 +40,27 @@
       [`(make-closure ,ef ,xs ...)
        (let ([free-vals (map (lambda (x) (eval x env)) xs)])
          `(closure ,(second (eval ef env)) ,@free-vals))]
-      [`(clo-apply ,f ,x) (appl (eval f env) (eval x env))]
-      [`(clo-app ,ef ,eas ...)
+      [`(clo-apply ,prov ,f ,x) (appl (eval f env) (eval x env))]
+      [`(clo-app ,prov ,ef ,eas ...)
        (let ([fn-val (eval ef env)] [arg-vals (map (lambda (ea) (eval ea env)) eas)])
          (appl fn-val arg-vals))]
       [`(env-ref (prov ,prov ...) ,enve ,index) (list-ref (eval enve env) (+ index 1))]
-      [`(if ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
+      [`(if ,prov ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
       [`(let (prov ,prov ...) ([,xs ,rhss] ...) ,body)
+      (pretty-print "h121i")
+      (pretty-print exp)
        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env))) env xs rhss))]
       [`(let ([,xs ,rhss] ...) ,body)
+       (pretty-print "23")
+       (pretty-print exp)
        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env))) env xs rhss))]
       [`(app (prov ,prov ...) ,ef ,eas ...)
+      (pretty-print "bye")
+      (pretty-print exp)
        (let ([fn-val (eval ef env)] [arg-vals (map (lambda (ea) (eval ea env)) eas)])
          (appl fn-val arg-vals))]
       [`(,ef ,eas ...)
+        (pretty-print exp)
        (let ([fn-val (eval ef env)] [arg-vals (map (lambda (ea) (eval ea env)) eas)])
          (appl fn-val arg-vals))]))
 
@@ -76,5 +83,5 @@
       [`(closure (proc (,fx ,envx . ,args) ,eb) ,fr-lst ...)
        (eval eb (hash-set (hash-set (add-top-lvl env) envx fn-val) args arg-vals))]))
 
-  (eval `(let `([halt (make-closure halt)]) (brouhaha_main halt))
-        (add-top-lvl (hash-set env 'halt `(closure `() (proc (halt _env x) (prim halt x)))))))
+  (eval `(let ([halt (make-closure halt)]) (brouhaha_main halt))
+        (add-top-lvl (hash-set env 'halt `(closure (proc (halt _env x) (prim halt x)))))))
