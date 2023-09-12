@@ -140,3 +140,46 @@ void *fhalt()
 ; (index-to-facts facts-list ast-root)
 ; (display facts-list)
 ; (hash-ref (caddr ast-root) '305)
+
+; looks at the call-sites and returns a list of distinct number of args at call-site
+(define (params-count ast-root func-name)
+  (define call-sites (index-to-facts (search-facts ast-root `(app ref ,func-name)) ast-root))
+  (define (num-args call-site)
+    (match call-site
+    [`(app (ref ,func-name) ($lst ,params ...))
+      (length params)]
+    ))
+    (foldl (lambda (call-site acc) (cons (num-args call-site) acc)) '() call-sites)
+  )
+
+(define (count-params program fact-file)
+  (define ast-root (read-facts fact-file))
+  (define facts-list (search-facts ast-root '(eval)))
+  (define actual-facts (index-to-facts facts-list ast-root))
+
+  (define (fact-parser funcname)
+    (define (fact-unroll fact)
+      (match fact
+        [`(eval (app (ref call) ,params) ,env-sets ,halt)
+         (- (length params) 1)]
+        [_
+         0]))
+    (apply + (map fact-unroll actual-facts)))
+
+  (define (counter prov)
+    (match prov
+      [`(prov (define (brouhaha_main) (,funcname ,params ...)))
+       (fact-parser funcname)
+       ; (length params)
+       ]
+      [_ 0]))
+
+  (define (unbundle e)
+    (match e
+      [`(proc (,prov ...)
+              (,func ,vars ...)
+              ,body)
+       (counter prov)]
+      [_ 0]))
+
+  (apply + (map unbundle program)))

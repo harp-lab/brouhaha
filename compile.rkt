@@ -502,37 +502,7 @@
          program))
 
 ; (define facts-list (search-facts ast-root '(eval)))
-(define (count-params program fact-file)
-  (define ast-root (read-facts fact-file))
-  (define facts-list (search-facts ast-root '(eval)))
-  (define actual-facts (index-to-facts facts-list ast-root))
 
-  (define (fact-parser funcname)
-    (define (fact-unroll fact)
-      (match fact
-        [`(eval (app (ref call) ,params) ,env-sets ,halt)
-         (- (length params) 1)]
-        [_
-         0]))
-    (apply + (map fact-unroll actual-facts)))
-
-  (define (counter prov)
-    (match prov
-      [`(prov (define (brouhaha_main) (,funcname ,params ...)))
-       (fact-parser funcname)
-       ; (length params)
-       ]
-      [_ 0]))
-
-  (define (unbundle e)
-    (match e
-      [`(proc (,prov ...)
-              (,func ,vars ...)
-              ,body)
-       (counter prov)]
-      [_ 0]))
-
-  (apply + (map unbundle program)))
 
 (define our-call
   `((define (+ . lst)

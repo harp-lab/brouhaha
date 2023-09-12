@@ -219,10 +219,10 @@
                             (get-c-string ptr)
                             (get-c-string ptr)
                             0))]
-      [`(proc (prov ,prov ...) (,ptr ,env . ,arg) ,body)
+      [`(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)
        ; look at the call sites for the function and make a choice whether to emit or not
        ; and also if there is only one version of call-site only emit that version
-
+       (displayln (params-count ast-root func-name))
 
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
