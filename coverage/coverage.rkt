@@ -2,14 +2,15 @@
 (provide coverage)
 
 (define-syntax-rule (coverage body)
-  (let ([result body])
+  ; (let ([result body])
     ; (with-output-to-file "coverage.txt"
     ;   (lambda ()
     ;     (printf "[~a:~a] ~v = ~a~%" (syntax-source #'body) (syntax-line #'body) 'body result)
     ;     )
 
     ;   #:exists 'append)
-    result))
+    ; result)
+    body)
 
 ; (define-syntax-rule (coverage body)
 ;   (let ([result body])

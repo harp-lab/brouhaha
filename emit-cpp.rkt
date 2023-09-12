@@ -223,7 +223,10 @@
        ; look at the call sites for the function and make a choice whether to emit or not
        ; and also if there is only one version of call-site only emit that version
        (displayln (params-count ast-root func-name))
-
+       (define param-count-list (params-count ast-root func-name))
+       (cond [(= 1 (length param-count-list))
+          (covert-spl-proc proc param-count-list)]
+       )
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
@@ -265,6 +268,43 @@
                             0))])
     ;end of function definitions.
     )
+    (define (covert-spl-proc proc param-count-list)
+    (
+    (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
+
+       ; start of function definitions
+       (append-line filepath func_name)
+
+       ; uncomment these two lines for debugging!
+       ;  (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "print_arg_buffer();\n"))
+
+       (append-line filepath "//reading number of args")
+       (append-line filepath "// This is the second type of the functions")
+       ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
+       (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
+
+       (append-line filepath "//reading env")
+       (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
+
+       (append-line filepath (format "void* ~a;" arg))
+
+       (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
+       (append-line filepath "//(apply e0 e0) case")
+       (append-line filepath (format "~a = arg_buffer[2];" arg))
+       (append-line filepath "}\nelse\n{")
+
+       (append-line filepath "//building cons cell")
+       (append-line filepath (format "~a = encode_null();" arg))
+       (append-line filepath (format "for(int i = numArgs; i >= 2; i--)\n{"))
+       (append-line filepath (format "~a = prim_cons(arg_buffer[i], ~a);" arg arg))
+       (append-line filepath (format "\n}\n"))
+
+       (append-line filepath "}\n")
+
+       (convert-proc-body (get-c-string ptr) (get-c-string env) arg body)
+       (append-line filepath "}\n")
+      ))
 
   ; pulling out brouhaha main function
   (define brouhaha_main_proc (last proc_list))
