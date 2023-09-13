@@ -43,7 +43,7 @@ void *fhalt()
 (define (create-line-hash file-path)
   (foldl add-line-hash (hash) (file->lines file-path)))
 
-; takes a line and a hash, and split the line into index and fact, convert index to num and 
+; takes a line and a hash, and split the line into index and fact, convert index to num and
 ; uses 'read' function that converts the string in a racket s-expr
 ; i/p : string-line from facts.txt and line-hash
 ; o/p : returns the updated line-hash
@@ -55,7 +55,7 @@ void *fhalt()
 
 ; inserts a fact into the tree
 ; checks if the head of the fact exists in the tree, if not creates a node and adds it to the tree
-; and continues to add subsequent facts to the new tree, if they already exist walks down till the 
+; and continues to add subsequent facts to the new tree, if they already exist walks down till the
 ; leaf and adds a index at the bottom.
 (define (insert-fact fact index tree)
   (define (insert-helper fact tree-hash index)
@@ -142,19 +142,19 @@ void *fhalt()
 ; (hash-ref (caddr ast-root) '305)
 
 (define (is_var_param ast-root func)
-; (displayln "I am in is_var_param")
+  ; (displayln "I am in is_var_param")
   (define func-facts (let ([temp-facts (index-to-facts (search-facts ast-root '(define)) ast-root)])
-                          (if (null? temp-facts)
-                              'omg
-                              temp-facts)))
+                       (if (null? temp-facts)
+                           'omg
+                           temp-facts)))
   (define (check_fact func-fact)
-  (match func-fact
-    [`(define ,(? (lambda (x) (equal? x func))) (varparam ,arg) ,rest ...)
-      #t]
-    [`(define ,(? (lambda (x) (equal? x func))) (fixedparam ,args ...) ,rest ...)
-      #f]
-    [_ #f])
-  )
+    (match func-fact
+      [`(define ,(? (lambda (x) (equal? x func))) (varparam ,arg) ,rest ...)
+       #t]
+      [`(define ,(? (lambda (x) (equal? x func))) (fixedparam ,args ...) ,rest ...)
+       #f]
+      [_ #f])
+    )
   ; (displayln func)
   (define (inner_main func-facts)
     (if (null? func-facts)
@@ -162,26 +162,26 @@ void *fhalt()
         (if (check_fact (car func-facts))
             #t
             (inner_main (cdr func-facts)))
+        )
     )
-  )
   (inner_main func-facts)
-)
+  )
 
 ; looks at the call-sites and returns a list of distinct number of args at call-site
 (define (params-count ast-root func-name)
   (define call-sites (index-to-facts (search-facts ast-root `(app ref ,func-name)) ast-root))
   (define (num-args call-site)
     (match call-site
-    [`(app (ref ,func-name) ($lst ,arg ,params))
-      (count-args params 1)]
-    ))
+      [`(app (ref ,func-name) ($lst ,arg ,params))
+       (count-args params 1)]
+      ))
   (define (count-args arg-lst count)
     (match arg-lst
       [`($lst ,arg ,param)
-        (count-args param (+ count 1))]
+       (count-args param (+ count 1))]
       [_ count]
       ))
-    (set->list (list->set (foldl (lambda (call-site acc) (cons (num-args call-site) acc)) '() call-sites)))
+  (set->list (list->set (foldl (lambda (call-site acc) (cons (num-args call-site) acc)) '() call-sites)))
   )
 
 (define (count-params program fact-file)
