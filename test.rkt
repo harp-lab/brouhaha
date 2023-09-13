@@ -94,9 +94,10 @@
     (define slog-out-dir (string-append out-dir "/output/" haha-file-hash))
     (define fact-file (string-append slog-out-dir "/facts.txt"))
 
+
     (cond
       [(and (slog-flag) (not (directory-exists? slog-out-dir)))
-       (runslog "../brouhaha/clean.py" filename-string haha-file-hash)])
+       (runslog slog-path out-path)])
 
     ; (cond
     ;   [(slog-flag) (define ast-root (read-facts fact-file)) 'ast-root-created])

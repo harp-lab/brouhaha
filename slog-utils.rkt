@@ -6,10 +6,12 @@
 (require "utils.rkt")
 ; (require string-sexpr)
 
-(define (runslog clean-path test-name test-file-hash)
-  (display "here")
-  (system "cd ../slog")
-  (define command (string-append "python3" " " clean-path " " test-name " " test-file-hash))
+(define (runslog slog-path out-path)
+  (displayln "here")
+  ; (system "cd ../slog")
+  ; (define command (string-append "python3" " " clean-path " " test-name " " test-file-hash))
+  (define command (string-append "cd ../slog && " "./runslog " "-R " "-ov " "../brouhaha/" slog-path " ../brouhaha/" out-path))
+  (displayln command)
   (system command))
 
 ; format the buffer to include the right amount of buffer arg size
