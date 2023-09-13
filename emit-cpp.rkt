@@ -167,6 +167,13 @@
        (append-line filepath "return nullptr;")]
 
       [`(clo-app (prov ,prov ...) ,func ,args ...)
+      ; we can get rid of this if condition if we use the spec functions for every call
+      ; for now, it only for + with 3 arguments.
+      (if (and slog-flag (is_var_param ast-root func))
+        (convert-spl-clo-app body)
+        (begin
+        
+        ; (displayln body)
        (append-line filepath "\n//clo-app")
 
        (append-line filepath
@@ -183,8 +190,31 @@
        (append-line filepath "//assign buffer size to numArgs")
        (append-line filepath "//call next proc using a function pointer")
        (append-line filepath "function_ptr();")
-       (append-line filepath "return nullptr;")]))
-
+       (append-line filepath "return nullptr;")
+        )
+      )
+       ]
+       ))
+  (define (convert-spl-clo-app expr)
+        (displayln "Inside spec call-site emission")
+    (match expr
+      [`(clo-app (prov ,prov) ,func ,args ...)
+        (displayln (format "The SPL func is ~a with ~a args" func (length (cdr args))))
+        (append-line filepath "\n//clo-app")
+        (append-line filepath
+                    (format "arg_buffer[1]=reinterpret_cast<void*>(~a_spec~a);" (get-c-string func) (length (cdr args))))
+        (append-line filepath 
+                    (format "arg_buffer[2]=~a;" (get-c-string (car args)))) 
+        (append-line filepath
+                    (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
+        (append-line filepath
+                    (format "auto function_ptr = ~a_spec~a;"
+                            (get-c-string func) (length (cdr args))))
+        (define args-str (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg))) (symbol->string (cadr args)) (cddr args)))
+       (append-line filepath (format "function_ptr(~a);" args-str))
+       (append-line filepath "return nullptr;")
+        
+        ]))
   (define (convert-procs proc)
     ; (pretty-print proc)
     (match proc
@@ -219,13 +249,21 @@
                             (get-c-string ptr)
                             (get-c-string ptr)
                             0))]
-      [`(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)
+      [`(proc (prov ,prov ...) (,ptr ,env . ,arg) ,body)
+        ; `(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)
        ; look at the call sites for the function and make a choice whether to emit or not
        ; and also if there is only one version of call-site only emit that version
-       (displayln (params-count ast-root func-name))
-       (define param-count-list (params-count ast-root func-name))
-       (cond [(= 1 (length param-count-list))
-          (covert-spl-proc proc param-count-list)]
+       (cond
+          [slog-flag
+            (match proc
+              [`(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)
+                  (displayln (params-count ast-root func-name))
+                  (define param-count-list (params-count ast-root func-name))
+                  (foldl (lambda (x acc) (convert-spl-proc proc x)) '() param-count-list)
+              ] 
+              [_ 'proc-not-a-define]
+            ) 
+          ]
        )
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
@@ -268,44 +306,48 @@
                             0))])
     ;end of function definitions.
     )
-    (define (covert-spl-proc proc param-count-list)
-    'todo
-    ; (
-    ; (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
+    (define (convert-spl-proc proc param-count-num)
+   (match proc
+   [`(proc (prov (define (,func-name . ,prov-arg) ,func-body)) (,ptr ,env . ,arg) ,body)
+    (displayln (format "This is spec function for ~a with ~a args" func-name param-count-num))
+    (define arg-lst (build-list param-count-num (lambda (x) (gensym 'var))))
+    (define def-arg-str (string-join (foldr (lambda (arg acc) (cons (string-append "void* " (symbol->string arg)) acc)) '() arg-lst) ", ")) 
+    ; (displayln def-arg-str)
+    (define func_name (format "void* ~a_spec~a(~a) // ~a ~a" (get-c-string ptr) param-count-num def-arg-str ptr "\n{"))
 
-    ;    ; start of function definitions
-    ;    (append-line filepath func_name)
 
-    ;    ; uncomment these two lines for debugging!
-    ;    ;  (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
-    ;    ;  (append-line filepath (format "print_arg_buffer();\n"))
+       ; start of function definitions
+       (append-line filepath func_name)
 
-    ;    (append-line filepath "//reading number of args")
-    ;    (append-line filepath "// This is the second type of the functions")
-    ;    ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
-    ;    (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
+       (append-line filepath "//reading env")
+       (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
 
-    ;    (append-line filepath "//reading env")
-    ;    (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
+       (append-line filepath (format "void* ~a;" arg))
 
-    ;    (append-line filepath (format "void* ~a;" arg))
+      ;  (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
+      ;  (append-line filepath "//(apply e0 e0) case")
+      ;  (append-line filepath (format "~a = arg_buffer[2];" arg))
+      ;  (append-line filepath "}\nelse\n{")
 
-    ;    (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
-    ;    (append-line filepath "//(apply e0 e0) case")
-    ;    (append-line filepath (format "~a = arg_buffer[2];" arg))
-    ;    (append-line filepath "}\nelse\n{")
+      ;  (append-line filepath "//building cons cell")
+      ;  (append-line filepath (format "~a = encode_null();" arg))
+      ;  (append-line filepath (format "for(int i = numArgs; i >= 2; i--)\n{"))
+      ;  (append-line filepath (format "~a = prim_cons(arg_buffer[i], ~a);" arg arg))
+      ;  (append-line filepath (format "\n}\n"))
 
-    ;    (append-line filepath "//building cons cell")
-    ;    (append-line filepath (format "~a = encode_null();" arg))
-    ;    (append-line filepath (format "for(int i = numArgs; i >= 2; i--)\n{"))
-    ;    (append-line filepath (format "~a = prim_cons(arg_buffer[i], ~a);" arg arg))
-    ;    (append-line filepath (format "\n}\n"))
+       (append-line filepath (format "~a = encode_null();" arg))
+       (foldr (lambda (x acc) (append-line filepath (format "~a = prim_cons(~a, ~a);" arg x arg))) '() arg-lst)
+      ;  (append-line filepath (format "~a = prim_cons(z, ~a);" arg arg))
+      ;  (append-line filepath (format "~a = prim_cons(y, ~a);" arg arg))
+      ;  (append-line filepath (format "~a = prim_cons(x, ~a);" arg arg))
+       (append-line filepath (format "~a = prim_cons(arg_buffer[2], ~a);" arg arg))
+      ;  (append-line filepath "}\n")
 
-    ;    (append-line filepath "}\n")
-
-    ;    (convert-proc-body (get-c-string ptr) (get-c-string env) arg body)
-    ;    (append-line filepath "}\n")
-    ;   )
+       (convert-proc-body (get-c-string ptr) (get-c-string env) arg body)
+       (append-line filepath "}\n")
+   ]
+   )
+      
     )
 
   ; pulling out brouhaha main function

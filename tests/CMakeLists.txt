@@ -60,3 +60,5 @@ add_subdirectory(transitive_closure)
 add_subdirectory(hash_keys)
 add_subdirectory(letstar)
 add_subdirectory(vararg)
+
+add_subdirectory(plus)

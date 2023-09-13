@@ -1520,6 +1520,6 @@ void *fhalt()
     // std::cout << "In fhalt" << std::endl;
     std::cout << print_val(arg_buffer[2]) << std::endl;
     // print_val(arg_buffer[2]);
-    exit(1);
+    exit(0);
 }
           
