@@ -76,18 +76,22 @@
     (verify-dir (string-append out-dir "/compiler-out/"))
     (displayln (~a "Now running: " filename-string))
 
-    (displayln (~a "Emitting Slog for: "
-                   filename-string
-                   " and outputting to: "
-                   (generate-res-filepath ".slog")))
+    (cond
+      [(slog-flag)
+       (displayln (~a "Emitting Slog for: "
+                      filename-string
+                      " and outputting to: "
+                      (generate-res-filepath ".slog")))
 
-    ; this should use write-to in the future
-    (with-output-to-file (generate-res-filepath ".slog")
-      (lambda ()
-        (display (string-append (write-program-for-slog alphatize_prg)
-                                (string-append
-                                 (open-slog analyze-slog)))))
-      #:exists 'replace)
+       ; this should use write-to in the future
+       (with-output-to-file (generate-res-filepath ".slog")
+         (lambda ()
+           (display (string-append (write-program-for-slog alphatize_prg)
+                                   (string-append
+                                    (open-slog analyze-slog)))))
+         #:exists 'replace)
+       ]
+      )
     (define slog-path (generate-res-filepath ".slog"))
     (define haha-file-hash (file-to-hash-string file-path))
     (define out-path (string-append out-dir "/output/" haha-file-hash "/"))

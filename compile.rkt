@@ -92,7 +92,10 @@
       [`(define (,fname . ,params)
           ,body)
        (coverage `(define (,fname . vargs)
-                    ,(desugar-exp (unroll-args params body))))]))
+                    ,(desugar-exp (unroll-args params body))))]
+      [`(define-prim ,fname ,param-counts ...)
+       (coverage `(define-prim ,fname ,@param-counts))]
+      ))
   (map desugar-define program))
 
 (define (alphatize program)
@@ -178,6 +181,8 @@
           ,body)
        (coverage `(define (prov ,@prov) (,fname . ,params)
                     ,((alpha-rename (hash-set env params params)) body)))]
+      [`(define-prim ,fname ,param-counts ...)
+       (coverage `(define-prim ,fname ,@param-counts))]
       ))
   (define top-env
     (foldl (lambda (def env)
@@ -191,7 +196,12 @@
                    ,body)
                 (when (hash-has-key? env fname)
                   (error "Function name is already defined"))
-                (hash-set env fname fname)]))
+                (hash-set env fname fname)]
+               [`(define-prim ,fname ,params-count ...)
+                (when (hash-has-key? env fname)
+                  (error "Function name is already defined"))
+                (hash-set env fname fname)]
+               ))
            (hash)
            program))
   (map (rename-define top-env) program))
@@ -241,6 +251,8 @@
        (coverage `(define (prov ,def)
                     ,params
                     ,(add-prov-exp body)))]
+      [`(define-prim ,fname ,params-count ...)
+       (coverage `(define-prim ,fname ,@params-count))]
       [_ (pretty-print (list "Looks like you forgot to write a catcher for this buddy: " def))]))
   (map add-prov-define program))
 
@@ -254,7 +266,10 @@
           ,body)
        (coverage `(define (prov ,@prov)
                     ,sig
-                    ,(normalize-anf body)))]))
+                    ,(normalize-anf body)))]
+      [`(define-prim ,fname ,param-counts ...)
+       (coverage `(define-prim ,fname ,@param-counts))]
+      ))
   (map anf-convert-define program))
 
 (define (normalize-anf e)
@@ -383,7 +398,6 @@
           ; [`(let ([,x ,(? string? dat)]) ,e0) `(let ([,x ,dat]) ,(T e0 cae))]
           ; [`(let ([,x ,rhs]) ,e0) (T (p-dbg rhs) `(lambda (,x) ,(T e0 cae)))]
 
-          ; thowing away prov??
           [`(let (prov ,prov ...) ([,x ,rhs]) ,e0) (coverage (T rhs `(lambda (prov ,@prov) (,x) ,(T e0 cae))))]
 
           [`(if (prov ,prov ...) ,ae ,e0 ,e1) (coverage `(if (prov ,@prov) ,(T-ae ae) ,(T e0 cae) ,(T e1 cae)))]
@@ -407,7 +421,10 @@
           ,body)
        (define k (gensym 'kont))
        (coverage `(define (prov ,@prov) (,fname . ,params)
-                    ,(T `(let (prov ,@prov) ([,k (prim (prov ,@prov) car ,params)]) (let (prov ,@prov) ([,params (prim (prov ,@prov) cdr ,params)]) ,body)) k)))]))
+                    ,(T `(let (prov ,@prov) ([,k (prim (prov ,@prov) car ,params)]) (let (prov ,@prov) ([,params (prim (prov ,@prov) cdr ,params)]) ,body)) k)))]
+      [`(define-prim ,fname ,param-counts ...)
+       (coverage `(define-prim ,fname ,@param-counts))]
+      ))
 
   (map cps-convert-def program))
 
@@ -497,171 +514,9 @@
               (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body))
               (define envx (gensym '_))
               ; (pretty-print (list freevars procs+ fx envx xs))
-              (coverage `(,@pr+ ,@procs+ (proc (prov ,@prov) (,fx ,envx . ,xs) ,body+)))]))
+              (coverage `(,@pr+ ,@procs+ (proc (prov ,@prov) (,fx ,envx . ,xs) ,body+)))]
+             [`(define-prim ,fname ,param-counts ...)
+              (coverage `(,@pr+ (define-prim ,fname ,@param-counts)))]
+             ))
          '()
          program))
-
-; (define facts-list (search-facts ast-root '(eval)))
-
-
-(define our-call
-  `((define (+ . lst)
-      (apply-prim + lst))
-
-    ; (define (- . lst)
-    ;   (apply-prim - lst))
-
-    ; (define (* . lst)
-    ;   (apply-prim * lst))
-
-    ; (define (modulo a b)
-    ;   (prim modulo a b))
-
-    ; (define (/ . lst)
-    ;   (apply-prim / lst))
-
-    ; (define (= . lst)
-    ;   (apply-prim = lst))
-
-    ; (define (> . lst)
-    ;   (apply-prim > lst))
-
-    ; (define (< . lst)
-    ;   (apply-prim < lst))
-
-    ; (define (<= . lst)
-    ;   (apply-prim <= lst))
-
-    ; (define (>= . lst)
-    ;   (apply-prim >= lst))
-
-    ; (define (null? x)
-    ;   (prim null? x))
-
-    ; (define (equal? x y)
-    ;   (prim equal? x y))
-
-    ; (define (eq? x y)
-    ;   (prim eq? x y))
-
-    ; (define (cons a b)
-    ;   (prim cons a b))
-
-    ; (define (car lst)
-    ;   (prim car lst))
-
-
-    ; (define (cdr lst)
-    ;   (prim cdr lst))
-
-    ; (define (even? x)
-    ;   (equal? 0 (modulo x 2)))
-
-    ; (define (odd? x)
-    ;   (equal? 1 (modulo x 2)))
-
-    ; (define (list . x)
-    ;   x)
-
-    ; (define (float->int val)
-    ;   (prim inexact->exact val))
-
-    ; (define (int->float val)
-    ;   (prim exact->inexact val))
-
-    ; (define (member? x lst)
-    ;   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
-
-    ; (define (foldl fun acc lst)
-    ;   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
-
-    ; (define (reverse-helper lst lst2)
-    ;   (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
-
-    ; (define (reverse lst)
-    ;   (reverse-helper lst (list)))
-
-    ; (define (take-helper lst n lst2)
-    ;   (if (= n 0) (reverse lst2) (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
-
-    ; (define (take lst n)
-    ;   (take-helper lst n (list)))
-
-    ; (define (length lst)
-    ;   (if (null? lst) 0 (+ 1 (length (cdr lst)))))
-
-    ; (define (map proc lst)
-    ;   (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
-
-    ; (define (filter op lst)
-    ;   (if (null? lst)
-    ;       (list)
-    ;       (if (op (car lst)) (cons (car lst) (filter op (cdr lst))) (filter op (cdr lst)))))
-
-    ; (define (drop lst n)
-    ;   (if (= n 0) lst (drop (cdr lst) (- n 1))))
-
-    ; (define (foldr proc acc lst)
-    ;   (if (null? lst) acc (proc (car lst) (foldr proc acc (cdr lst)))))
-
-    ; (define (append lst1 lst2)
-    ;   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
-
-    ; (define (hash . lst)
-    ;   (apply-prim hash lst))
-
-    ; (define (hash-ref h k)
-    ;   (prim hash-ref h k))
-
-    ; (define (hash-set h k v)(prov (lambda (a7179) (app (prov (equal? 0 (modulo x 2))) equal? kont7275 a7177 a7179)))
-    ; (define (hash-count h)
-    ;   (prim hash-count h))
-
-    ; (define (set . lst)
-    ;   (apply-prim set lst))
-
-    ; (define (set->list h)
-    ;   (prim set->list h))
-
-    ; (define (list->set lst)
-    ;   (prim list->set lst))
-
-    ; (define (set-add s val)
-    ;   (prim set-add s val))
-
-    ; (define (string? str)
-    ;   (prim string? str))
-
-    ; (define (string-length str)
-    ;   (prim string-length str))
-
-    ; (define (string-ref str pos)
-    ;   (prim string-ref str pos))
-
-    ; (define (substring str start end)
-    ;   (prim substring str start end))
-
-    ; (define (string-append s1 s2)
-    ;   (prim string-append s1 s2))
-
-    ; (define (string->list str)
-    ;   (prim string->list str))
-
-    ; start here
-    (define (call x)
-      (+ 1 x))
-
-    (define (brouhaha_main)
-      (call 1))
-    ; end here
-
-    ))
-
-; (interp (anf-convert (add-tags (alphatize (desugar our-call)))))
-
-; (interp-closure (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
-
-; (arg-buffer-output (count-params (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))) "tests/plus/output/515cd7dead206447ea177a1b370e44696b2a5c0053cea1879f681307/facts.txt" ))
-; (cps-convert (anf-convert (add-tags (alphatize (desugar our-call)))))
-
-; (clo-app dummy_prov let (prov (lambda (a7179) (app (prov (equal? 0 (modulo x 2))) equal? kont7275 a7177 a7179))) ((f7276 (lambda (a7179) (app (prov (equal? 0 (modulo x 2))) equal? kont7275 a7177 a7179)))) (app (prov (modulo x 2)) modulo f7276 x a7178))

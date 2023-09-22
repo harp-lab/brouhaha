@@ -28,7 +28,13 @@
                fname
                fname
                (sym->qstr params)
-               (write-exp body))]))
+               (write-exp body))]
+      [`(define-prim ,fname ,param-counts ...)
+        (format "(store (addr \"~a\") (define \"~a\" (varparam dummy_param) dummy_body))\n"
+               fname
+               fname
+               )]
+      ))
   (define (write-exp exp)
     (match exp
       [`',e (format "(quote ~a)" (write-exp e))]
@@ -78,7 +84,10 @@
                      (match def
                        [`(define (,fname . ,_)
                            ,_)
-                        (format "(env-set ~a \"~a\" (addr \"~a\"))" code fname fname)]))
+                        (format "(env-set ~a \"~a\" (addr \"~a\"))" code fname fname)]
+                      [`(define-prim ,fname ,param-counts ...)
+                        (format "(env-set ~a \"~a\" (addr \"~a\"))" code fname fname)]  
+                      ))
                    "(empty)"
                    program)))
 
