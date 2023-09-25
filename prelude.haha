@@ -16,30 +16,30 @@
 
 (define (- . lst)
   (apply-prim - lst))
-
-(define (* . lst)
-  (apply-prim * lst))
-
-(define (modulo a b)
-  (prim modulo a b))
-
-(define (/ . lst)
-  (apply-prim / lst))
+;
+;(define (* . lst)
+;  (apply-prim * lst))
+;
+;(define (modulo a b)
+;  (prim modulo a b))
+;
+;(define (/ . lst)
+;  (apply-prim / lst))
 
 (define (= . lst)
   (apply-prim = lst))
-
-(define (> . lst)
-  (apply-prim > lst))
-
-(define (< . lst)
-  (apply-prim < lst))
-
-(define (<= . lst)
-  (apply-prim <= lst))
-
-(define (>= . lst)
-  (apply-prim >= lst))
+;
+;(define (> . lst)
+;  (apply-prim > lst))
+;
+;(define (< . lst)
+;  (apply-prim < lst))
+;
+;(define (<= . lst)
+;  (apply-prim <= lst))
+;
+;(define (>= . lst)
+; (apply-prim >= lst))
 
 (define (null? x)
   (prim null? x))
@@ -47,33 +47,33 @@
 (define (equal? x y)
   (prim equal? x y))
 
-(define (eq? x y)
-  (prim eq? x y))
-
+;(define (eq? x y)
+; (prim eq? x y))
+;
 (define (cons a b)
   (prim cons a b))
-
+;
 (define (car lst)
   (prim car lst))
-
-
+;
+;
 (define (cdr lst)
   (prim cdr lst))
-
-(define (even? x)
-  (equal? 0 (modulo x 2)))
-
-(define (odd? x)
-  (equal? 1 (modulo x 2)))
-
+;
+;(define (even? x)
+;  (equal? 0 (modulo x 2)))
+;
+;(define (odd? x)
+;  (equal? 1 (modulo x 2)))
+;
 (define (list . x)
   x)
-  
-(define (float->int val)
-  (prim inexact->exact val))
-
-(define (int->float val)
-  (prim exact->inexact val))
+;  
+;(define (float->int val)
+;  (prim inexact->exact val))
+;
+;(define (int->float val)
+;  (prim exact->inexact val))
 
 (define (member? x lst)
   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
@@ -113,50 +113,50 @@
 (define (append lst1 lst2)
   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
 
-(define (hash . lst)
-  (apply-prim hash lst))
-
-(define (hash-ref h k)
-  (prim hash-ref h k))
-
-(define (hash-set h k v)
-  (prim hash-set h k v))
-
-(define (hash-keys h)
-   (prim hash-keys h))
-
-(define (hash-has-key? h k)
-  (prim hash-has-key? h k))
-
-(define (hash-count h)
-  (prim hash-count h))
-
-(define (set . lst)
-  (apply-prim set lst))
-
-(define (set->list h)
-  (prim set->list h))
-
-(define (list->set lst)
-  (prim list->set lst)) 
-
-(define (set-add s val)
-  (prim set-add s val))
-
-(define (string? str)
-  (prim string? str))
-
-(define (string-length str)
-  (prim string-length str))
-
-(define (string-ref str pos)
-  (prim string-ref str pos))
-
-(define (substring str start end)
-  (prim substring str start end))
-
-(define (string-append s1 s2)
-  (prim string-append s1 s2))
-
-(define (string->list str)
-  (prim string->list str))
+;(define (hash . lst)
+;  (apply-prim hash lst))
+;
+;(define (hash-ref h k)
+;  (prim hash-ref h k))
+;
+;(define (hash-set h k v)
+;  (prim hash-set h k v))
+;
+;(define (hash-keys h)
+;   (prim hash-keys h))
+;
+;(define (hash-has-key? h k)
+;  (prim hash-has-key? h k))
+;
+;(define (hash-count h)
+;  (prim hash-count h))
+;
+;(define (set . lst)
+;  (apply-prim set lst))
+;
+;(define (set->list h)
+;  (prim set->list h))
+;
+;(define (list->set lst)
+;  (prim list->set lst)) 
+;
+;(define (set-add s val)
+;  (prim set-add s val))
+;
+;(define (string? str)
+;  (prim string? str))
+;
+;(define (string-length str)
+;  (prim string-length str))
+;
+;(define (string-ref str pos)
+;  (prim string-ref str pos))
+;
+;(define (substring str start end)
+;  (prim substring str start end))
+;
+;(define (string-append s1 s2)
+;  (prim string-append s1 s2))
+;
+;(define (string->list str)
+;  (prim string->list str))
