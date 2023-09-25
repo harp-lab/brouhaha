@@ -176,6 +176,8 @@ void *fhalt()
     (match call-site
       [`(app (ref ,func-name) ($lst ,arg ,params))
        (count-args params 1)]
+      [`(app (ref ,func-name) ($nil 0))
+        0]
       ))
   (define (count-args arg-lst count)
     (match arg-lst
