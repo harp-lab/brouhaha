@@ -30,7 +30,7 @@
                (sym->qstr params)
                (write-exp body))]
       [`(define-prim ,fname ,param-counts ...)
-        (format "(store (addr \"~a\") (define \"~a\" (varparam dummy_param) dummy_body))\n"
+        (format "(store (addr \"~a\") (define \"~a\" (varparam \"dummy_param\") \"dummy_body\"))\n"
                fname
                fname
                )]

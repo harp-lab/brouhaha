@@ -10,7 +10,7 @@
   (displayln "here")
   ; (system "cd ../slog")
   ; (define command (string-append "python3" " " clean-path " " test-name " " test-file-hash))
-  (define command (string-append "cd ../slog && " "./runslog " "-R " "-ov " "../brouhaha/" slog-path " ../brouhaha/" out-path))
+  (define command (string-append "cd ../slog && " "./runslog " "-b " "-ov " "../brouhaha/" slog-path " ../brouhaha/" out-path))
   (displayln command)
   (system command))
 
