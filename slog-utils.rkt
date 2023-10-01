@@ -2,6 +2,7 @@
 
 (require file/sha1)
 ; (require print-debug/print-dbg)
+; (require print-debug/print-dbg)
 (provide (all-defined-out))
 (require "utils.rkt")
 ; (require string-sexpr)
@@ -51,7 +52,7 @@ void *fhalt()
 ; o/p : returns the updated line-hash
 (define (add-line-hash line line-hash)
   (define items (string-split line "\t"))
-  (define index (string->number (substring (car items) 1)))
+  (define index (substring (car items) 1))
   (hash-set line-hash index (read (open-input-string (string-replace (cadr items) "#" ".#"))))
   )
 
@@ -68,7 +69,7 @@ void *fhalt()
            (hash-set tree-hash head (insert-fact (car child) index (hash-ref tree-hash head)))
            (let ([node `(,head ,(hash))])
              (hash-set tree-hash head (insert-fact (car child) index node))))]
-      [(or `(,fact) (? symbol? fact) (? number? fact))
+      [(or `(,fact) (? symbol? fact) (? number? fact) (? string? fact))
        (if (hash-has-key? tree-hash fact)
            ; if the hash-key exists and the child is a symbol
            (hash-set tree-hash fact (cons index (hash-ref tree-hash fact)))
@@ -171,7 +172,7 @@ void *fhalt()
 
 ; looks at the call-sites and returns a list of distinct number of args at call-site
 (define (params-count ast-root func-name)
-  (define call-sites (index-to-facts (search-facts ast-root `(app ref ,func-name)) ast-root))
+  (define call-sites (index-to-facts (search-facts ast-root `(app ref ,(symbol->string func-name))) ast-root))
   (define (num-args call-site)
     (match call-site
       [`(app (ref ,func-name) ($lst ,arg ,params))
@@ -219,3 +220,8 @@ void *fhalt()
       [_ 0]))
 
   (apply + (map unbundle program)))
+
+; (define sybo '+)
+; (define ast-root (read-facts "tests/plus/output/c268ba86e896ea24601d8c8c0557b9c3503c0a35a1d4b8cbb2445eb4/facts.txt"))
+; ; (displayln (index-to-facts (search-facts ast-root `(app ref ,(symbol->string sybo))) ast-root))
+; (params-count ast-root '+)
