@@ -30,10 +30,16 @@
                (sym->qstr params)
                (write-exp body))]
       [`(define-prim ,fname ,param-counts ...)
-        (format "(store (addr \"~a\") (define \"~a\" (varparam \"dummy_param\") \"dummy_body\"))\n"
-               fname
-               fname
-               )]
+        (string-append 
+              (format "(store (addr \"~a\") (define \"~a\" (varparam \"lst\") (apply-prim \"~a\" (ref \"lst\"))))\n"
+                    fname
+                    fname
+                    fname)
+              (string-append 
+                    (format "\t(prim-count \"~a\" ["
+                        fname)
+                    (foldr string-append "" (map (lambda (x) (string-append x " ")) (map number->string param-counts)))
+                    "])\n"))]
       ))
   (define (write-exp exp)
     (match exp
@@ -111,3 +117,6 @@
 
 ; (write-program-for-slog `((define (call) (if '#f '1 '2))
 ;   (define (brouhaha_main) (call))))
+
+(display (write-program-for-slog `((define-prim + 2 3))))
+
