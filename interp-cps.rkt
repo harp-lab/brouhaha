@@ -16,19 +16,28 @@
 (define (interp-cps program (env (hash)))
   (define (add-top-lvl env)
     (let loop ([env+ env] [prog+ program])
-      (match (p-dbg prog+)
+      (match prog+
         [`((define (prov ,prov ...) (,name . ,param)
              ,body)
            ,rest ...)
-         (loop (hash-set env+ name (p-dbg (first prog+))) (cdr prog+))]
+         (loop (hash-set env+ name (first prog+)) (cdr prog+))]
         [`((define-prim ,f-name
              ,params-count ...)
            ,rest ...)
-         (loop (hash-set env+ f-name `(define (prov prov) (,f-name . lst) (apply-prim (prov prov) ,f-name lst))) (cdr prog+))]
+
+         (define k (gensym 'kont))
+         (define x (gensym 'x))
+
+         (loop (hash-set env+ f-name
+                         `(define (prov prov) (,f-name . lst)
+                            (let (prov prov) ([,k (prim (prov prov) car lst)])
+                              (let (prov prov) ([lst (prim (prov prov) cdr lst)])
+                                (let (prov prov) ((,x (apply-prim (prov prov) ,f-name lst))) (,k ,x)))))) (cdr prog+))]
         [`() env+])))
 
   (define (eval exp env)
     ; (pretty-print exp)
+    ; (pretty-print env)
     (match exp
       [`(quote ,(? string? y)) y]
       [`(quote ,(? number? x)) x]
@@ -63,7 +72,8 @@
          (appl fn-val arg-vals))]))
 
   (define (appl fn-val arg-vals)
-    (match (p-dbg fn-val)
+    ; (match (p-dbg fn-val)
+    (match fn-val
       [`(closure (lambda (prov ,prov ...) (,xs ...) ,eb) ,env)
        (eval eb (foldl (lambda (x val env) (hash-set env x val)) env xs arg-vals))]
       [`(closure (lambda (,xs ...) ,eb) ,env)
@@ -76,8 +86,8 @@
       [`(define (prov ,prov ...) (,name . ,(? symbol? params))
           ,body)
        (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]
-      [`(define-prim ,f-name ,params-count ...)
-       (eval `(apply-prim (prov prov) ,f-name lst) (hash-set (add-top-lvl (hash)) 'lst arg-vals))]
+      ; [`(define-prim ,f-name ,params-count ...)
+      ;    (eval `(apply-prim (prov prov) ,f-name lst) (hash-set (add-top-lvl (hash)) 'lst arg-vals))]
       ))
 
   (eval `(let ([halt (lambda (lst) (prim halt lst))]) (brouhaha_main halt)) (add-top-lvl env)))

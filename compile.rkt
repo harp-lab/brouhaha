@@ -520,3 +520,33 @@
              ))
          '()
          program))
+
+
+
+(define our-call
+  `(
+    (define-prim + 2 3) 
+    (define-prim - 2 3 4) 
+    ; (define (+ . lst) (apply-prim + lst))
+
+    ; (define (- . lst)
+    ;   (apply-prim - lst))
+
+    ; start here
+    ; (define (brouhaha_main)
+    ;   ((lambda (a b) b) 5 6))
+
+    (define (brouhaha_main)
+      (+ 2 3 (- 4 1)))
+    ; end here
+    ))
+
+
+; just for testing purpose
+; (interp (desugar our-call))
+; (interp (alphatize (desugar our-call)))
+; (interp (add-tags (desugar our-call)))
+; (interp (anf-convert (add-tags (desugar our-call))))
+; (interp-cps (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))
+; (interp-cps (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call)))))))
+; (interp-closure (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))

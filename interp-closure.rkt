@@ -21,9 +21,28 @@
          (loop (hash-set env+ name `(closure ,(first prog+))) (cdr prog+))]
         [`((proc (,name . ,param) ,body) ,rest ...)
          (loop (hash-set env+ name `(closure ,(first prog+))) (cdr prog+))]
+
+        [`((define-prim ,f-name
+             ,params-count ...)
+           ,rest ...)
+
+         (define k (gensym 'kont))
+         (define x (gensym 'x))
+         (define y (gensym '_))
+
+         (loop (hash-set env+ f-name
+                         `(closure
+                           (proc (prov prov) (,f-name ,y . lst)
+                                 (let (prov prov) ([,k (prim (prov prov) car lst)])
+                                   (let (prov prov) ([lst (prim (prov prov) cdr lst)])
+                                     (let (prov prov) ((,x (apply-prim (prov prov) ,f-name lst)))
+                                       (clo-app (prov dummy) ,k ,x)))))))
+               (cdr prog+))]
+
         [`() env+])))
 
   (define (eval exp env)
+    ; (pretty-print exp)
     (match (coverage exp)
       ; [(? string? y) y]
       [`(quote ,(? string? y)) y]
@@ -61,10 +80,10 @@
     (match fn-val
       [`(closure (proc (prov ,prov ...) (,fx ,envx ,xs ...) ,eb) ,fr-lst ...)
        (coverage (eval eb
-             (foldl (lambda (x val env) (hash-set env x val))
-                    (hash-set (add-top-lvl env) envx fn-val)
-                    xs
-                    arg-vals)))]
+                       (foldl (lambda (x val env) (hash-set env x val))
+                              (hash-set (add-top-lvl env) envx fn-val)
+                              xs
+                              arg-vals)))]
       ; [`(closure (proc (,fx ,envx ,xs ...) ,eb) ,fr-lst ...)
       ;  (eval eb
       ;        (foldl (lambda (x val env) (hash-set env x val))
@@ -75,7 +94,7 @@
        (coverage (eval eb (hash-set (hash-set (add-top-lvl env) envx fn-val) args arg-vals)))]
       ; [`(closure (proc (,fx ,envx . ,args) ,eb) ,fr-lst ...)
       ;  (eval eb (hash-set (hash-set (add-top-lvl env) envx fn-val) args arg-vals))]
-       ))
+      ))
 
   (eval `(let (prov dummy) ([halt (make-closure halt)]) (brouhaha_main halt))
         (add-top-lvl (hash-set env 'halt `(closure (proc (prov dummy) (halt _env x) (prim halt x)))))))
