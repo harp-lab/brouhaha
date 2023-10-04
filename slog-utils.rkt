@@ -152,9 +152,9 @@ void *fhalt()
                            temp-facts)))
   (define (check_fact func-fact)
     (match func-fact
-      [`(define ,(? (lambda (x) (equal? x func))) (varparam ,arg) ,rest ...)
+      [`(define ,(? (lambda (x) (equal? x (symbol->string func)))) (varparam ,arg) ,rest ...)
        #t]
-      [`(define ,(? (lambda (x) (equal? x func))) (fixedparam ,args ...) ,rest ...)
+      [`(define ,(? (lambda (x) (equal? x (symbol->string func)))) (fixedparam ,args ...) ,rest ...)
        #f]
       [_ #f])
     )
