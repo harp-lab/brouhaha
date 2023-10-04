@@ -169,7 +169,7 @@
       [`(clo-app (prov ,prov ...) ,func ,args ...)
        ; we can get rid of this if condition if we use the spec functions for every call
        ; for now, it only for + with 3 arguments.
-       (if (and slog-flag (is_var_param ast-root func))
+       (if (and slog-flag (is_var_param ast-root func) (> (length args) 1))
            (convert-spl-clo-app body)
            (begin
 
@@ -259,7 +259,7 @@
             [`(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)
              (displayln (params-count ast-root func-name))
              (define param-count-list (params-count ast-root func-name))
-             (foldl (lambda (x acc) (convert-spl-proc proc x)) '() param-count-list)
+             (foldl (lambda (x acc) (if (not (equal? x 0)) (convert-spl-proc proc x) 'skip)) '() param-count-list)
              ]
             [_ 'proc-not-a-define]
             )
