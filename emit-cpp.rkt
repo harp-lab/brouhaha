@@ -2,7 +2,7 @@
 
 (require "utils.rkt")
 (require "slog-utils.rkt")
-
+(require print-debug/print-dbg)
 (provide emit-cpp)
 (define (emit-cpp proc_list filepath slog-flag ast-root)
   ; defining cpp header files
@@ -27,7 +27,9 @@
 
     ; (match (p-dbg body)
     (match body
-      [`(let (prov ,prov ...) ([,lhs (make-closure ,ptr ,args ...)]) ,letbody)
+      [`(let (prov ,prov ...)
+          ([,lhs (make-closure ,ptr ,args ...)])
+          ,letbody)
        (define arglength (length args))
 
        ; new-closure
@@ -64,7 +66,9 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let (prov ,prov ...) ([,lhs (prim (prov ,prov2 ...) ,op ,args ...)]) ,letbody)
+      [`(let (prov ,prov ...)
+          ([,lhs (prim (prov ,prov2 ...) ,op ,args ...)])
+          ,letbody)
        (define line
          (format "void* ~a = prim_~a(~a);"
                  (get-c-string lhs)
@@ -75,7 +79,9 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let (prov ,prov ...) ([,lhs (apply-prim (prov ,prov2 ...) ,op ,arg)]) ,letbody)
+      [`(let (prov ,prov ...)
+          ([,lhs (apply-prim (prov ,prov2 ...) ,op ,arg)])
+          ,letbody)
        (define line
          (format "void* ~a = apply_prim_~a(~a);"
                  (get-c-string lhs)
@@ -86,13 +92,17 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let (prov ,prov ...) ([,lhs (env-ref ,env ,idx)]) ,letbody)
+      [`(let (prov ,prov ...)
+          ([,lhs (env-ref ,env ,idx)])
+          ,letbody)
        (append-line filepath "//not do dummy comment")
        (append-line filepath (format "void* ~a = (decode_clo(~a))[~a];" (get-c-string lhs) env idx))
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let (prov ,prov ...) ([,lhs ,val]) ,letbody)
+      [`(let (prov ,prov ...)
+          ([,lhs ,val])
+          ,letbody)
 
        ;  (match (p-dbg val)
        (match val
@@ -169,40 +179,44 @@
       [`(clo-app (prov ,prov ...) ,func ,args ...)
        ; we can get rid of this if condition if we use the spec functions for every call
        ; for now, it only for + with 3 arguments.
-       (cond [(and slog-flag (is_var_param ast-root func) (> (length args) 1))
-              (convert-spl-clo-app body)
-              ]
-            ;  [(and slog-flag (is-define-prim ast-root func (length args)))
-            ;   (begin
-            ;     ; if the
-            ;     )
-            ;   ]
-             [else
-              (begin
+       (cond
+         [(and slog-flag (is_var_param ast-root func) (> (length args) 1)) (convert-spl-clo-app body)]
+         [(and slog-flag (is-define-prim ast-root func (- (length args) 1)))
+          (begin
+            ; if the
+            ; (displayln body)
+            (displayln "lol")
+            (append-line filepath "\n//clo-app")
+            (define args-str
+              (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
+                     (symbol->string (cadr args))
+                     (cddr args)))
+            (append-line
+             filepath
+             (p-dbg (format "apply_prim_~a_~a(~a);" (get-c-string func) (- (length args) 1) args-str)))
+            (append-line filepath "return nullptr;"))]
+         [else
+          (begin
 
-                ; (displayln body)
-                (append-line filepath "\n//clo-app")
+            ; (displayln body)
+            (append-line filepath "\n//clo-app")
 
-                (append-line filepath
-                             (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
-                (for ([i (in-range 1 (+ (length args) 1))] [item args])
-                  (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
-                (append-line filepath
-                             (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+            (append-line filepath
+                         (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
+            (for ([i (in-range 1 (+ (length args) 1))] [item args])
+              (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
+            (append-line filepath
+                         (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
 
-                (append-line filepath
-                             (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-                                     (get-c-string func)))
+            (append-line
+             filepath
+             (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                     (get-c-string func)))
 
-                (append-line filepath "//assign buffer size to numArgs")
-                (append-line filepath "//call next proc using a function pointer")
-                (append-line filepath "function_ptr();")
-                (append-line filepath "return nullptr;")
-                )
-              ]
-             )
-       ]
-      ))
+            (append-line filepath "//assign buffer size to numArgs")
+            (append-line filepath "//call next proc using a function pointer")
+            (append-line filepath "function_ptr();")
+            (append-line filepath "return nullptr;"))])]))
   (define (convert-spl-clo-app expr)
     (displayln "Inside spec call-site emission")
     (match expr
@@ -210,19 +224,19 @@
        (displayln (format "The SPL func is ~a with ~a args" func (length (cdr args))))
        (append-line filepath "\n//clo-app")
        (append-line filepath
-                    (format "arg_buffer[1]=reinterpret_cast<void*>(~a_spec~a);" (get-c-string func) (length (cdr args))))
+                    (format "arg_buffer[1]=reinterpret_cast<void*>(~a_spec~a);"
+                            (get-c-string func)
+                            (length (cdr args))))
+       (append-line filepath (format "arg_buffer[2]=~a;" (get-c-string (car args))))
+       (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
        (append-line filepath
-                    (format "arg_buffer[2]=~a;" (get-c-string (car args))))
-       (append-line filepath
-                    (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
-       (append-line filepath
-                    (format "auto function_ptr = ~a_spec~a;"
-                            (get-c-string func) (length (cdr args))))
-       (define args-str (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg))) (symbol->string (cadr args)) (cddr args)))
+                    (format "auto function_ptr = ~a_spec~a;" (get-c-string func) (length (cdr args))))
+       (define args-str
+         (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
+                (symbol->string (cadr args))
+                (cddr args)))
        (append-line filepath (format "function_ptr(~a);" args-str))
-       (append-line filepath "return nullptr;")
-
-       ]))
+       (append-line filepath "return nullptr;")]))
   (define (convert-procs proc)
     ; (pretty-print proc)
     (match proc
@@ -264,15 +278,16 @@
        (cond
          [slog-flag
           (match proc
-            [`(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)
+            [`(proc (prov (define (,func-name . ,arg)
+                            ,func-body))
+                    (,ptr ,env . ,arg)
+                    ,body)
              (displayln (params-count ast-root func-name))
              (define param-count-list (params-count ast-root func-name))
-             (foldl (lambda (x acc) (if (not (equal? x 0)) (convert-spl-proc proc x) 'skip)) '() param-count-list)
-             ]
-            [_ 'proc-not-a-define]
-            )
-          ]
-         )
+             (foldl (lambda (x acc) (if (not (equal? x 0)) (convert-spl-proc proc x) 'skip))
+                    '()
+                    param-count-list)]
+            [_ 'proc-not-a-define])])
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
@@ -311,18 +326,32 @@
                     (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
                             (get-c-string ptr)
                             (get-c-string ptr)
-                            0))])
+                            0))]
+      [`(define-prim ,func ,args ...) 'lol])
     ;end of function definitions.
     )
   (define (convert-spl-proc proc param-count-num)
     (match proc
-      [`(proc (prov (define (,func-name . ,prov-arg) ,func-body)) (,ptr ,env . ,arg) ,body)
+      [`(proc (prov (define (,func-name . ,prov-arg)
+                      ,func-body))
+              (,ptr ,env . ,arg)
+              ,body)
        (displayln (format "This is spec function for ~a with ~a args" func-name param-count-num))
        (define arg-lst (build-list param-count-num (lambda (x) (gensym 'var))))
-       (define def-arg-str (string-join (foldr (lambda (arg acc) (cons (string-append "void* " (symbol->string arg)) acc)) '() arg-lst) ", "))
+       (define def-arg-str
+         (string-join (foldr (lambda (arg acc)
+                               (cons (string-append "void* " (symbol->string arg)) acc))
+                             '()
+                             arg-lst)
+                      ", "))
        ; (displayln def-arg-str)
-       (define func_name (format "void* ~a_spec~a(~a) // ~a ~a" (get-c-string ptr) param-count-num def-arg-str ptr "\n{"))
-
+       (define func_name
+         (format "void* ~a_spec~a(~a) // ~a ~a"
+                 (get-c-string ptr)
+                 param-count-num
+                 def-arg-str
+                 ptr
+                 "\n{"))
 
        ; start of function definitions
        (append-line filepath func_name)
@@ -344,7 +373,9 @@
        ;  (append-line filepath (format "\n}\n"))
 
        (append-line filepath (format "~a = encode_null();" arg))
-       (foldr (lambda (x acc) (append-line filepath (format "~a = prim_cons(~a, ~a);" arg x arg))) '() arg-lst)
+       (foldr (lambda (x acc) (append-line filepath (format "~a = prim_cons(~a, ~a);" arg x arg)))
+              '()
+              arg-lst)
        ;  (append-line filepath (format "~a = prim_cons(z, ~a);" arg arg))
        ;  (append-line filepath (format "~a = prim_cons(y, ~a);" arg arg))
        ;  (append-line filepath (format "~a = prim_cons(x, ~a);" arg arg))
@@ -352,23 +383,19 @@
        ;  (append-line filepath "}\n")
 
        (convert-proc-body (get-c-string ptr) (get-c-string env) arg body)
-       (append-line filepath "}\n")
-       ]
-      )
-
-    )
+       (append-line filepath "}\n")]))
 
   ; pulling out brouhaha main function
-  (define brouhaha_main_proc (last proc_list))
+  ; (define brouhaha_main_proc (last proc_list))
 
   (map convert-procs proc_list)
 
   ; writing the main function.
   (append-line filepath "int main(int argc, char **argv)\n{")
 
-  (define tempPtr (gensym 'ptr))
-  (define tempEnv (gensym '_))
-  (define tempClo (gensym 'clo))
+  ; (define tempPtr (gensym 'ptr))
+  ; (define tempEnv (gensym '_))
+  ; (define tempClo (gensym 'clo))
 
   (append-line
    filepath

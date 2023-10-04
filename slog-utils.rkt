@@ -2,7 +2,7 @@
 
 (require file/sha1)
 ; (require print-debug/print-dbg)
-; (require print-debug/print-dbg)
+(require print-debug/print-dbg)
 (provide (all-defined-out))
 (require "utils.rkt")
 ; (require string-sexpr)
@@ -11,14 +11,24 @@
   (displayln "here")
   ; (system "cd ../slog")
   ; (define command (string-append "python3" " " clean-path " " test-name " " test-file-hash))
-  (define command (string-append "cd ../slog && " "./runslog " "--brouhaha " "-ov " "../brouhaha/" slog-path " ../brouhaha/" out-path))
+  (define command
+    (string-append "cd ../slog && "
+                   "./runslog "
+                   "--brouhaha "
+                   "-ov "
+                   "../brouhaha/"
+                   slog-path
+                   " ../brouhaha/"
+                   out-path))
   (displayln command)
   (system command))
 
 ; format the buffer to include the right amount of buffer arg size
 (define (arg-buffer-output buffer-size)
   (define current-prelude (open-slog "prelude_save.hpp"))
-  (define formatted-buffer (format " 
+  (define formatted-buffer
+    (format
+     "
 void *halt;
 void *arg_buffer[~a]; // This is where the arg buffer is called
 long numArgs;
@@ -30,7 +40,8 @@ void *fhalt()
     // print_val(arg_buffer[2]);
     exit(1);
 }
-          " buffer-size))
+          "
+     buffer-size))
   (define final-prelude (string-append current-prelude formatted-buffer))
   (write-to-file "prelude.hpp" final-prelude))
 
@@ -53,8 +64,7 @@ void *fhalt()
 (define (add-line-hash line line-hash)
   (define items (string-split line "\t"))
   (define index (substring (car items) 1))
-  (hash-set line-hash index (read (open-input-string (string-replace (cadr items) "#" ".#"))))
-  )
+  (hash-set line-hash index (read (open-input-string (string-replace (cadr items) "#" ".#")))))
 
 ; inserts a fact into the tree
 ; checks if the head of the fact exists in the tree, if not creates a node and adds it to the tree
@@ -73,8 +83,7 @@ void *fhalt()
        (if (hash-has-key? tree-hash fact)
            ; if the hash-key exists and the child is a symbol
            (hash-set tree-hash fact (cons index (hash-ref tree-hash fact)))
-           (let ([node `(, index)]) (hash-set tree-hash fact node)))]
-      ))
+           (let ([node `(,index)]) (hash-set tree-hash fact node)))]))
   (match tree
     [`(,tree-head ,tree-hash) `(,tree-head ,(insert-helper fact tree-hash index))]
     [`(,tree-head ,tree-hash ,line-hash)
@@ -95,23 +104,23 @@ void *fhalt()
   ; does a traversal of the tree and return a list of all the leaves
   ; if it is a tree, calls get-leavs on the tree and append the result of it to the index-list to be returned
   ; if it is a list, meaning we reached the leaf, in this case, we just append the it to index-list and return
-  (foldl (lambda (item index-list)
-           (match (hash-ref tree-hash item '())
-             [(or `(,item-tree-head ,(? hash? item-tree-hash))
-                  `(,item-tree-head ,(? hash? item-tree-hash) ,_))
-              (append (get-leaves item-tree-hash) index-list)]
-             [(? list? node-index-list)
-              (append node-index-list index-list)] ; test when the tree only has one fact that only has one item, may be
-             ))
-         '()
-         (hash-keys tree-hash))
-  )
+  (foldl
+   (lambda (item index-list)
+     (match (hash-ref tree-hash item '())
+       [(or `(,item-tree-head ,(? hash? item-tree-hash))
+            `(,item-tree-head ,(? hash? item-tree-hash) ,_))
+        (append (get-leaves item-tree-hash) index-list)]
+       [(? list? node-index-list)
+        (append node-index-list
+                index-list)] ; test when the tree only has one fact that only has one item, may be
+       ))
+   '()
+   (hash-keys tree-hash)))
 
 ; takes a index list and gets the facts, but doesn't fill any sub-facts that are ref by index
 ; (define (get-facts-by-index index-list)
 
 ;   )
-
 
 (define (index-to-facts index-list tree)
   (foldl (lambda (index facts-list) (cons (hash-ref (caddr tree) index) facts-list)) '() index-list))
@@ -130,13 +139,11 @@ void *fhalt()
           [(or `(,tree-head ,(? hash? tree-hash)) `(,tree-head ,(? hash? tree-hash) ,_))
            (if (hash-has-key? tree-hash (car search-items))
                (get-sub-tree (hash-ref tree-hash (car search-items)) (cdr search-items))
-               '())]
-          )))
+               '())])))
   (match (get-sub-tree tree items)
     [`(,_ ,(? hash? sub-tree-hash)) (get-leaves sub-tree-hash)]
     [(? list? index-list) index-list]
-    ['() '()]
-    ))
+    ['() '()]))
 
 ; (define ast-root (read-facts "tests/let/output/1fc3f8451aec79ec257c4f0bcfa345efc80613601edec4961441cda3/facts.txt"))
 ; (define facts-list (search-facts ast-root '(eval)))
@@ -146,48 +153,54 @@ void *fhalt()
 
 (define (is_var_param ast-root func)
   ; (displayln "I am in is_var_param")
-  (define func-facts (let ([temp-facts (index-to-facts (search-facts ast-root '(define)) ast-root)])
-                       (if (null? temp-facts)
-                           'omg
-                           temp-facts)))
+  (define func-facts
+    (let ([temp-facts (index-to-facts (search-facts ast-root '(define)) ast-root)])
+      (if (null? temp-facts) 'omg temp-facts)))
   (define (check_fact func-fact)
     (match func-fact
-      [`(define ,(? (lambda (x) (equal? x func))) (varparam ,arg) ,rest ...)
+      [`(define ,(? (lambda (x) (equal? x func)))
+          (varparam ,arg)
+          ,rest ...)
        #t]
-      [`(define ,(? (lambda (x) (equal? x func))) (fixedparam ,args ...) ,rest ...)
+      [`(define ,(? (lambda (x) (equal? x func)))
+          (fixedparam ,args ...)
+          ,rest ...)
        #f]
-      [_ #f])
-    )
+      [_ #f]))
   ; (displayln func)
   (define (inner_main func-facts)
-    (if (null? func-facts)
-        #f
-        (if (check_fact (car func-facts))
-            #t
-            (inner_main (cdr func-facts)))
-        )
-    )
-  (inner_main func-facts)
-  )
+    (if (null? func-facts) #f (if (check_fact (car func-facts)) #t (inner_main (cdr func-facts)))))
+  (inner_main func-facts))
+
+(define (is-define-prim ast-root func-name arg-count)
+  (displayln (format "biglol: ~a" func-name))
+  (define prim-count
+    (index-to-facts (search-facts ast-root `(prim-count ,(symbol->string func-name))) ast-root))
+  (define (match-arg-count list-args-count arg-count)
+    (match (p-dbg list-args-count)
+      [`($lst ,count ,rst) (if (equal? count arg-count) #t (match-arg-count rst arg-count))]
+      [`($nil 0) #f]))
+  (if (equal? (length prim-count) 1)
+      (match (p-dbg (car prim-count))
+        [`(prim-count ,func-name ,list-args-count)
+         (p-dbg (match-arg-count list-args-count arg-count))]
+        [_ (p-dbg #f)])
+      #f))
 
 ; looks at the call-sites and returns a list of distinct number of args at call-site
 (define (params-count ast-root func-name)
-  (define call-sites (index-to-facts (search-facts ast-root `(app ref ,(symbol->string func-name))) ast-root))
+  (define call-sites
+    (index-to-facts (search-facts ast-root `(app ref ,(symbol->string func-name))) ast-root))
   (define (num-args call-site)
     (match call-site
-      [`(app (ref ,func-name) ($lst ,arg ,params))
-       (count-args params 1)]
-      [`(app (ref ,func-name) ($nil 0))
-        0]
-      ))
+      [`(app (ref ,func-name) ($lst ,arg ,params)) (count-args params 1)]
+      [`(app (ref ,func-name) ($nil 0)) 0]))
   (define (count-args arg-lst count)
     (match arg-lst
-      [`($lst ,arg ,param)
-       (count-args param (+ count 1))]
-      [_ count]
-      ))
-  (set->list (list->set (foldl (lambda (call-site acc) (cons (num-args call-site) acc)) '() call-sites)))
-  )
+      [`($lst ,arg ,param) (count-args param (+ count 1))]
+      [_ count]))
+  (set->list
+   (list->set (foldl (lambda (call-site acc) (cons (num-args call-site) acc)) '() call-sites))))
 
 (define (count-params program fact-file)
   (define ast-root (read-facts fact-file))
@@ -197,15 +210,14 @@ void *fhalt()
   (define (fact-parser funcname)
     (define (fact-unroll fact)
       (match fact
-        [`(eval (app (ref call) ,params) ,env-sets ,halt)
-         (- (length params) 1)]
-        [_
-         0]))
+        [`(eval (app (ref call) ,params) ,env-sets ,halt) (- (length params) 1)]
+        [_ 0]))
     (apply + (map fact-unroll actual-facts)))
 
   (define (counter prov)
     (match prov
-      [`(prov (define (brouhaha_main) (,funcname ,params ...)))
+      [`(prov (define (brouhaha_main)
+                (,funcname ,params ...)))
        (fact-parser funcname)
        ; (length params)
        ]
@@ -213,10 +225,7 @@ void *fhalt()
 
   (define (unbundle e)
     (match e
-      [`(proc (,prov ...)
-              (,func ,vars ...)
-              ,body)
-       (counter prov)]
+      [`(proc (,prov ...) (,func ,vars ...) ,body) (counter prov)]
       [_ 0]))
 
   (apply + (map unbundle program)))
