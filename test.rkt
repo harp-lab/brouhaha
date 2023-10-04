@@ -164,13 +164,13 @@
           [cps_res (interpret-cps-and-output cps_prg "_cps_res.out")]
           [closure_res (interpret-clo-and-output clo_conv_prg "_closure_res.out")])
 
-      (displayln (~a "Emitting C++ for: "
-                     filename-string
-                     " and outputting to: "
-                     (generate-comp-filepath "_cpp_program.cpp")))
-      (let ([ast-root (if (slog-flag) (read-facts fact-file) 'no-slog)])
-        (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp") (slog-flag) ast-root)
-        )
+      ; (displayln (~a "Emitting C++ for: "
+      ;                filename-string
+      ;                " and outputting to: "
+      ;                (generate-comp-filepath "_cpp_program.cpp")))
+      ; (let ([ast-root (if (slog-flag) (read-facts fact-file) 'no-slog)])
+      ;   (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp") (slog-flag) ast-root)
+      ;   )
 
       (if (and (interp-anf-flag) (interp-cps-flag) (interp-closure-flag))
           (verify-correctness filename-string desugar_res alphatize_res anf_res cps_res closure_res)

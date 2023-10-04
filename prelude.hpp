@@ -634,6 +634,15 @@ void *apply_prim__u43(void *lst) //+
     return result;
 }
 
+void *apply_prim__u43_2(void *arg1, void* arg2) //+
+{
+    return add(arg1, arg2);
+}
+void *apply_prim__u43_3(void *arg1, void* arg2, void* arg3) //+
+{
+    return add(arg1, add(arg2, arg3));
+}
+
 #pragma endregion
 
 #pragma region Subtraction
@@ -727,6 +736,14 @@ void *apply_prim__u45(void *lst) //-
     return result;
 }
 
+void *apply_prim__u45_2(void *arg1, void* arg2) //-
+{
+    return sub(arg1, arg2);
+}
+void *apply_prim__u45_3(void *arg1, void* arg2, void* arg3) //-
+{
+    return sub(arg1, sub(arg2, arg3));
+}
 #pragma endregion
 
 #pragma region Multiplication
@@ -1120,7 +1137,7 @@ std::string print_set(void *s)
     const hamt<hash_struct, hash_struct> *h_set = decode_hash(s);
     const hash_struct **keys = h_set->getKeys();
     std::string ret_str = "(set";
-    for (int i = 0; i < (h_set->size() * 2); i+=2)
+    for (int i = 0; i < (h_set->size() * 2); i += 2)
     {
         ret_str += " " + print_val(keys[i]->val);
     }
@@ -1139,10 +1156,10 @@ std::string print_hash(void *h)
     std::string ret_str;
     ret_str.append("'#hash(");
     const hash_struct **keys = h_hamt->getKeys();
-    for (int i = 0; i < (h_hamt->size() * 2); i+=2)
+    for (int i = 0; i < (h_hamt->size() * 2); i += 2)
     {
         ret_str += "(" + print_val(keys[i]->val);
-        ret_str += " . " + print_val(keys[i+1]->val) + ") ";
+        ret_str += " . " + print_val(keys[i + 1]->val) + ") ";
     }
     return ret_str + ")";
     // return ret_str;
@@ -1286,7 +1303,7 @@ void *prim_hash_u45keys(void *h)
     // std::cout << "The size of the hash is: " << h_hamt->size() << std::endl;
     void *keys_cons_lst = encode_null();
     //+=2 and *2 coz getKeys returns an array that also has values.
-    for (long i = 0; i < (h_hamt->size() * 2); i+=2)
+    for (long i = 0; i < (h_hamt->size() * 2); i += 2)
     {
         keys_cons_lst = prim_cons(keys_array[i]->val, keys_cons_lst);
     }
@@ -1510,7 +1527,7 @@ std::string print_val(void *val)
     return "unknown_data_type_print_val";
 }
 
-#pragma endregion 
+#pragma endregion
 void *halt;
 void *arg_buffer[999]; // This is where the arg buffer is called
 long numArgs;
@@ -1522,4 +1539,3 @@ void *fhalt()
     // print_val(arg_buffer[2]);
     exit(0);
 }
-          

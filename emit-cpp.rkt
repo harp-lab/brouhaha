@@ -169,30 +169,38 @@
       [`(clo-app (prov ,prov ...) ,func ,args ...)
        ; we can get rid of this if condition if we use the spec functions for every call
        ; for now, it only for + with 3 arguments.
-       (if (and slog-flag (is_var_param ast-root func) (> (length args) 1))
-           (convert-spl-clo-app body)
-           (begin
+       (cond [(and slog-flag (is_var_param ast-root func) (> (length args) 1))
+              (convert-spl-clo-app body)
+              ]
+            ;  [(and slog-flag (is-define-prim ast-root func (length args)))
+            ;   (begin
+            ;     ; if the
+            ;     )
+            ;   ]
+             [else
+              (begin
 
-             ; (displayln body)
-             (append-line filepath "\n//clo-app")
+                ; (displayln body)
+                (append-line filepath "\n//clo-app")
 
-             (append-line filepath
-                          (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
-             (for ([i (in-range 1 (+ (length args) 1))] [item args])
-               (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
-             (append-line filepath
-                          (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+                (append-line filepath
+                             (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
+                (for ([i (in-range 1 (+ (length args) 1))] [item args])
+                  (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
+                (append-line filepath
+                             (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
 
-             (append-line filepath
-                          (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-                                  (get-c-string func)))
+                (append-line filepath
+                             (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                                     (get-c-string func)))
 
-             (append-line filepath "//assign buffer size to numArgs")
-             (append-line filepath "//call next proc using a function pointer")
-             (append-line filepath "function_ptr();")
-             (append-line filepath "return nullptr;")
+                (append-line filepath "//assign buffer size to numArgs")
+                (append-line filepath "//call next proc using a function pointer")
+                (append-line filepath "function_ptr();")
+                (append-line filepath "return nullptr;")
+                )
+              ]
              )
-           )
        ]
       ))
   (define (convert-spl-clo-app expr)
