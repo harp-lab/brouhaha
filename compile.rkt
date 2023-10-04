@@ -28,10 +28,10 @@
          [pr3 (cps-convert pr2)]
          [pr4 (alphatize pr3)]
          [pr5 (closure-convert pr4)]
-         [amount (if slog-flag
-                     (count-params pr5 fact-file)
-                     'no-slog)
-                 ]
+        ;  [amount (if slog-flag
+        ;              (count-params pr5 fact-file)
+        ;              'no-slog)
+        ;          ]
          )
 
     (list pr2 pr3 pr4 pr5)))
