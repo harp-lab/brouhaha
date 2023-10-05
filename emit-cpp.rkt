@@ -191,10 +191,13 @@
               (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
                      (symbol->string (cadr args))
                      (cddr args)))
+            (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);"(get-c-string func) (- (length args) 1) args-str)))
             (append-line
              filepath
-             (p-dbg (format "apply_prim_~a_~a(~a);" (get-c-string func) (- (length args) 1) args-str)))
-            (append-line filepath "return nullptr;"))]
+             (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                     (get-c-string (car args))))
+            (append-line filepath "function_ptr();")
+            (append-line filepath "return nullptr;")]
          [else
           (begin
 
