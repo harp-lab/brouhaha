@@ -55,7 +55,20 @@ void *fhalt()
 ; i/p : takes the filepath of the facts
 ; o/p : returns a hash with all the lines from the file with slog-index as key and actual fact as val
 (define (create-line-hash file-path)
-  (foldl add-line-hash (hash) (file->lines file-path)))
+
+  ; this fold removes newlines from the facts.txt file, and finally returns the non-empty fact list
+  (define not_empty_fact_list
+        (foldr (lambda (line acc) 
+            (if (not 
+                    (or (string=? line "")
+                    (regexp-match? #rx"^[ \t\n]*$" line)))
+                (cons line acc)
+                acc))
+                '()
+                (file->lines file-path)))
+
+  ; (foldl add-line-hash (hash) (file->lines file-path))
+  (foldl add-line-hash (hash) not_empty_fact_list))
 
 ; takes a line and a hash, and split the line into index and fact, convert index to num and
 ; uses 'read' function that converts the string in a racket s-expr
@@ -173,7 +186,7 @@ void *fhalt()
   (inner_main func-facts))
 
 (define (is-define-prim ast-root func-name arg-count)
-  (displayln (format "biglol: ~a" func-name))
+  ; (displayln (format "biglol: ~a" func-name))
   (define prim-count
     (index-to-facts (search-facts ast-root `(prim-count ,(symbol->string func-name))) ast-root))
   (define (match-arg-count list-args-count arg-count)

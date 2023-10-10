@@ -742,7 +742,7 @@ void *apply_prim__u45_2(void *arg1, void* arg2) //-
 }
 void *apply_prim__u45_3(void *arg1, void* arg2, void* arg3) //-
 {
-    return sub(arg1, sub(arg2, arg3));
+    return sub(sub(arg1, arg2), arg3);
 }
 #pragma endregion
 

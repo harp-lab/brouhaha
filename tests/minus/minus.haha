@@ -1,5 +1,18 @@
-(define (call)
-    (- 100 80 (- 10 2)))
+; reason of working and not working is same as plus.haha, I suppose
+
+; (define (call)
+;     (- 100 80 (- 10 2)))
+
+; (define (brouhaha_main)
+;     (call))
+
+
+(define (call x)
+    (- 100 80) ; works
+    ; (- 10 2 (- x 3)) ; doesn't work
+    ; (- 10 2 3 4 (- x 1 2 3 4)) ; works
+    
+    )
 
 (define (brouhaha_main)
-    (call))
+    (call 2))

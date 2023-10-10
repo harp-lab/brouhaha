@@ -1,5 +1,31 @@
+; works: using specific apply-prim builtin
+; but forms (+ 1 2 (+ x 3)) like this doesn't works, I guess the reason is same,
+; whenever we are the the builtins, we break the flow
 (define (call x)
-    (+ 1 2 x))
+    (+ 1 2 x) ; works
+    ; (+ 1 2 (+ x 3)) ; doesn't work
+    ; (+ 1 2 3 4 (+ x 1 2 3 4)) ; works
+    )
 
 (define (brouhaha_main)
     (call 1))
+
+; works: falls back to generic case
+; (define (call x)
+;     (+ 1 2 3 4 5 x))
+
+; (define (brouhaha_main)
+;     (call 1))
+
+
+; below case not working because, we are somehow disrupting the flow
+; for applike cases like (call), without any args
+; need to debug more...
+; like, arg_buffer[2] = apply_prim__u43_3(a8341, a8342, a8343);
+; then, what?
+
+; (define (call)
+;     (+ 100 80 10))
+
+; (define (brouhaha_main)
+;     (call))

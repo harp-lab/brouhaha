@@ -12,6 +12,7 @@
 ;   (prim set-count s val))
 
 (define-prim + 2 3)
+(define-prim - 2 3)
 
 ; (define (+ . lst)
 ;   (apply-prim + lst))
