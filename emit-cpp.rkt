@@ -191,6 +191,10 @@
                      (symbol->string (cadr args))
                      (cddr args)))
             (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);"(get-c-string func) (- (length args) 1) args-str))
+            (append-line filepath
+                         (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string (car args))))
+            (append-line filepath
+                         (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (- (length args) 1)))
             (append-line
              filepath
              (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
@@ -201,7 +205,7 @@
           (begin
 
             ; (displayln body)
-            ; 
+            ;
             (append-line filepath "\n//clo-app")
 
             (append-line filepath
@@ -249,8 +253,8 @@
        ; start of function definitions
        (append-line filepath func_name)
 
-       ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
+       ;  uncomment these two lines for debugging!
+       ; (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -297,7 +301,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -331,35 +335,40 @@
                             (get-c-string ptr)
                             0))]
 
-      [`(define-prim ,ptr ,args ...) 
+      [`(define-prim ,ptr ,args ...)
 
-        ;### required?
-        ;  (cond
-        ;    [slog-flag
-        ;     (match proc
-        ;       [`(proc (prov (define (,func-name . ,arg)
-        ;                       ,func-body))
-        ;               (,ptr ,env . ,arg)
-        ;               ,body)
-        ;        (displayln (params-count ast-root func-name))
-        ;        (define param-count-list (params-count ast-root func-name))
-        ;        (foldl (lambda (x acc) (if (not (equal? x 0)) (convert-spl-proc proc x) 'skip))
-        ;               '()
-        ;               param-count-list)]
-        ;       [_ 'proc-not-a-define])])
+       ; uncomment these two lines for debugging!
+       ; (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "print_arg_buffer();\n"))
 
 
-        (define k (gensym 'kont))
-        (define x (gensym 'x))
-        (define env (gensym '_env))
-        (define arg 'lst)
-        (define newarg (gensym arg))
+       ;### required?
+       ;  (cond
+       ;    [slog-flag
+       ;     (match proc
+       ;       [`(proc (prov (define (,func-name . ,arg)
+       ;                       ,func-body))
+       ;               (,ptr ,env . ,arg)
+       ;               ,body)
+       ;        (displayln (params-count ast-root func-name))
+       ;        (define param-count-list (params-count ast-root func-name))
+       ;        (foldl (lambda (x acc) (if (not (equal? x 0)) (convert-spl-proc proc x) 'skip))
+       ;               '()
+       ;               param-count-list)]
+       ;       [_ 'proc-not-a-define])])
 
-        (define make-generic-apply-prim-body
-                      `(let (prov prov) ([,k (prim (prov prov) car ,arg)])
-                          (let (prov prov) ([,newarg (prim (prov prov) cdr ,arg)])
-                            (let (prov prov) ((,x (apply-prim (prov prov) ,ptr ,newarg))) 
-                              (clo-app (prov prov) ,k ,x)))))
+
+       (define k (gensym 'kont))
+       (define x (gensym 'x))
+       (define env (gensym '_env))
+       (define arg 'lst)
+       (define newarg (gensym arg))
+
+       (define make-generic-apply-prim-body
+         `(let (prov prov) ([,k (prim (prov prov) car ,arg)])
+            (let (prov prov) ([,newarg (prim (prov prov) cdr ,arg)])
+              (let (prov prov) ((,x (apply-prim (prov prov) ,ptr ,newarg)))
+                (clo-app (prov prov) ,k ,x)))))
 
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
@@ -399,7 +408,7 @@
                     (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
                             (get-c-string ptr)
                             (get-c-string ptr)
-                            0))]        
+                            0))]
       )
     ;end of function definitions.
     )

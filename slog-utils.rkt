@@ -58,14 +58,14 @@ void *fhalt()
 
   ; this fold removes newlines from the facts.txt file, and finally returns the non-empty fact list
   (define not_empty_fact_list
-        (foldr (lambda (line acc) 
-            (if (not 
-                    (or (string=? line "")
-                    (regexp-match? #rx"^[ \t\n]*$" line)))
-                (cons line acc)
-                acc))
-                '()
-                (file->lines file-path)))
+    (foldr (lambda (line acc)
+             (if (not
+                  (or (string=? line "")
+                      (regexp-match? #rx"^[ \t\n]*$" line)))
+                 (cons line acc)
+                 acc))
+           '()
+           (file->lines file-path)))
 
   ; (foldl add-line-hash (hash) (file->lines file-path))
   (foldl add-line-hash (hash) not_empty_fact_list))
