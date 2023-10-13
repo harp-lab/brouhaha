@@ -6,13 +6,13 @@ project(brouhaha VERSION 0.1.0 LANGUAGES CXX)
 set(DEPENDENCIES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies)
 set(BDWGC_INCLUDE_DIR ${DEPENDENCIES_DIR}/bdwgc/include)
 set(GMP_INCLUDE_DIR ${DEPENDENCIES_DIR}/gmp/include)
-# set(VALGRIND_INCLUDE_DIR ${DEPENDENCIES_DIR}/valgrind/include)
+set(VALGRIND_INCLUDE_DIR ${DEPENDENCIES_DIR}/valgrind/include)
 set(HAMT_INCLUDE_DIR ${DEPENDENCIES_DIR}/hamt)
 
 # Set additional library directories
 set(BDWGC_LIBRARY_DIR ${DEPENDENCIES_DIR}/bdwgc/lib)
 set(GMP_LIBRARY_DIR ${DEPENDENCIES_DIR}/gmp/lib)
-# set(VALGRIND_LIBRARY_DIR ${DEPENDENCIES_DIR}/valgrind/lib)
+set(VALGRIND_LIBRARY_DIR ${DEPENDENCIES_DIR}/valgrind/lib)
 
 
 set(CMAKE_CXX_STANDARD 14) # requiring 14 as google test requires 14
@@ -67,8 +67,7 @@ find_library(gccpp_lib
     REQUIRED)
 
 # target_include_directories(brouhaha PRIVATE ${DEPENDENCIES_DIR} ${BDWGC_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${VALGRIND_INCLUDE_DIR} ${HAMT_INCLUDE_DIR})
-# target_include_directories(prelude PUBLIC ${DEPENDENCIES_DIR} ${BDWGC_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${VALGRIND_INCLUDE_DIR} ${HAMT_INCLUDE_DIR})
-target_include_directories(prelude PUBLIC ${DEPENDENCIES_DIR} ${BDWGC_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${HAMT_INCLUDE_DIR})
+target_include_directories(prelude PUBLIC ${DEPENDENCIES_DIR} ${BDWGC_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${VALGRIND_INCLUDE_DIR} ${HAMT_INCLUDE_DIR})
 # # Link libraries
 # target_link_libraries(brouhaha PRIVATE ${gmpxx_lib} ${gmp_lib} ${gc_lib} ${gccpp_lib})
 target_link_libraries(prelude PUBLIC ${gmpxx_lib} ${gmp_lib} ${gc_lib} ${gccpp_lib})

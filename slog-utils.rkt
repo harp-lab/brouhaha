@@ -185,20 +185,52 @@ void *fhalt()
     (if (null? func-facts) #f (if (check_fact (car func-facts)) #t (inner_main (cdr func-facts)))))
   (inner_main func-facts))
 
+; this function returns (function_name true/false) as a touple,
+; if the called function at a call site is one of the built-in define-prim's
+; with a specific number of argument we support.
 (define (is-define-prim ast-root func-name arg-count)
-  ; (displayln (format "biglol: ~a" func-name))
+  ; (displayln (format "is-define-prim: ~a ~a" func-name arg-count))
   (define prim-count
     (index-to-facts (search-facts ast-root `(prim-count ,(symbol->string func-name))) ast-root))
+
   (define (match-arg-count list-args-count arg-count)
     (match (p-dbg list-args-count)
       [`($lst ,count ,rst) (if (equal? count arg-count) #t (match-arg-count rst arg-count))]
       [`($nil 0) #f]))
+
   (if (equal? (length prim-count) 1)
       (match (p-dbg (car prim-count))
-        [`(prim-count ,func-name ,list-args-count)
-         (p-dbg (match-arg-count list-args-count arg-count))]
-        [_ (p-dbg #f)])
-      #f))
+        [`(prim-count ,func ,list-args-count)
+         (p-dbg `(,func-name ,(match-arg-count list-args-count arg-count)))]
+        [_ (p-dbg `(,func-name #f))])
+      `(,func-name #f)))
+
+; this function returns (function_name true/false) as a touple,
+; if the called function at a call site is actually aliasing to
+; one of the built-in define-prim's with a specific number of
+; argument we support
+(define (is-user-def-func-a-define-prim ast-root func-name arg-count)
+  ; (displayln (format "is-user-def-func-a-define-prim: ~a" func-name))
+  (define check-store-for-func
+    ; (index-to-facts (search-facts ast-root`(store (addr ,(symbol->string func-name) (define ,(symbol->string func-name))))) ast-root)
+    (index-to-facts (search-facts ast-root `(store addr ,(symbol->string func-name))) ast-root)
+    )
+
+  ; (pretty-print check-store-for-func)
+  (match check-store-for-func
+    [`((store (addr ,func) (define ,prim-func ,var-or-fixed ,rst)))
+     ; if func is one of the define-prim and rst matches with apply-prim return true
+     (match rst
+       [`(apply-prim ,op ,_)
+        ; at this point we know, op, is one of our define-prim
+        ; now let's check, if we are calling it with a specific
+        ; number of argument that we support, is so we return #t
+        ; othewise, #f
+        (is-define-prim ast-root (string->symbol op) arg-count)
+        ]
+       [_ `(,func-name #f)])]
+    [_ `(,func-name #f)]))
+
 
 ; looks at the call-sites and returns a list of distinct number of args at call-site
 (define (params-count ast-root func-name)

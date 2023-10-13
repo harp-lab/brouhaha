@@ -44,11 +44,6 @@
        (when (> (+ arglength 1) 1)
          (append-line filepath "\n//setting env list"))
 
-       ; void** raw_clo = alloc_clo(f);
-       ; raw_clo[1] = y;
-       ; raw_clo[2] = z;  // one line per env variable
-       ; void* clo = encode_clo(raw_clo);
-
        (for ([i (in-range 1 (+ arglength 1))] [item args])
 
          (when (eq? (get-c-string item) proc_name)
@@ -142,7 +137,7 @@
            (format "void* ~a = encode_str(new(GC) std::string(\"~a\"));" (get-c-string lhs) val))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
          [(? symbol?) ; Not sure what this case does or supposed to do - SK
-          (pretty-print (~a "cpb: " val))
+          ; (pretty-print (~a "cpb: " val))
           (append-line filepath
                        (format "void* ~a = encode_str(new string(\"~a\"));" (get-c-string lhs) val))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
@@ -178,19 +173,28 @@
       [`(clo-app (prov ,prov ...) ,func ,args ...)
        ; we can get rid of this if condition if we use the spec functions for every call
        ; for now, it only for + with 3 arguments.
+
+       ;  (define extract-func (is-define-prim ast-root func (- (length args) 1)))
+
+       (match-define `(,func1 ,res1) (is-define-prim ast-root func (- (length args) 1)))
+       (match-define `(,func2 ,res2) (is-user-def-func-a-define-prim ast-root func (- (length args) 1)))
+
+      ;  (displayln "---------------")
+      ;  (pretty-print `(,func1 ,res1))
+      ;  (pretty-print `(,func2 ,res2))
+      ;  (displayln "-------------")
+
        (cond
-         [(and slog-flag (is_var_param ast-root func) (> (length args) 1)) (convert-spl-clo-app body)]
-         [(and slog-flag (is-define-prim ast-root func (- (length args) 1)))
+         ;  [(and slog-flag (is_var_param ast-root func) (> (length args) 1)) (convert-spl-clo-app body)] ; this is not relevant anymore, at least for now
+         [(and slog-flag (or res1 res2))
           (begin
-            ; if the
-            ; (displayln body)
             (displayln "lol")
             (append-line filepath "\n//clo-app")
             (define args-str
               (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
                      (symbol->string (cadr args))
                      (cddr args)))
-            (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);"(get-c-string func) (- (length args) 1) args-str))
+            (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);" (get-c-string func2) (- (length args) 1) args-str))
             (append-line filepath
                          (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string (car args))))
             (append-line filepath
@@ -203,9 +207,6 @@
             (append-line filepath "return nullptr;"))]
          [else
           (begin
-
-            ; (displayln body)
-            ;
             (append-line filepath "\n//clo-app")
 
             (append-line filepath
@@ -224,6 +225,7 @@
             (append-line filepath "//call next proc using a function pointer")
             (append-line filepath "function_ptr();")
             (append-line filepath "return nullptr;"))])]))
+
   (define (convert-spl-clo-app expr)
     (displayln "Inside spec call-site emission")
     (match expr
@@ -244,6 +246,7 @@
                 (cddr args)))
        (append-line filepath (format "function_ptr(~a);" args-str))
        (append-line filepath "return nullptr;")]))
+
   (define (convert-procs proc)
     ; (pretty-print proc)
     (match proc
@@ -341,23 +344,6 @@
        ; (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
-
-       ;### required?
-       ;  (cond
-       ;    [slog-flag
-       ;     (match proc
-       ;       [`(proc (prov (define (,func-name . ,arg)
-       ;                       ,func-body))
-       ;               (,ptr ,env . ,arg)
-       ;               ,body)
-       ;        (displayln (params-count ast-root func-name))
-       ;        (define param-count-list (params-count ast-root func-name))
-       ;        (foldl (lambda (x acc) (if (not (equal? x 0)) (convert-spl-proc proc x) 'skip))
-       ;               '()
-       ;               param-count-list)]
-       ;       [_ 'proc-not-a-define])])
-
-
        (define k (gensym 'kont))
        (define x (gensym 'x))
        (define env (gensym '_env))
@@ -374,10 +360,6 @@
 
        ; start of function definitions
        (append-line filepath func_name)
-
-       ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
-       ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
        (append-line filepath "// This is the second type of the functions")
