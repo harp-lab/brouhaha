@@ -63,14 +63,21 @@
  -->
  (eval rhs env (letk body [lhs] [] bind-rest env kont))]
 
-;APPLY-PRIM CASE
-[(= e (eval (apply-prim op lst) env kont))
- -->
- (store (saddr e) (state e))
- (ret (saddr e) kont)]
+; ;APPLY-PRIM CASE
+; [(= e (eval (apply-prim op lst) env kont))
+;  -->
+;  (store (saddr e) (state e))
+;  (ret (saddr e) kont)]
 
-;PRIM CASE
-[(= e (eval (prim op [lst ...]) env kont))
+; ;PRIM CASE
+; [(= e (eval (prim op [lst ...]) env kont))
+;  -->
+;  (store (saddr e) (state e))
+;  (ret (saddr e) kont)]
+
+ [(or
+    (= e (eval (apply-prim op lst) env kont))
+    (= e (eval (prim op [lst ...]) env kont)))
  -->
  (store (saddr e) (state e))
  (ret (saddr e) kont)]
