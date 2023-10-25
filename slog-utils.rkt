@@ -165,25 +165,27 @@ void *fhalt()
 ; (hash-ref (caddr ast-root) '305)
 
 (define (is_var_param ast-root func)
-  ; (displayln "I am in is_var_param")
-  (define func-facts
-    (let ([temp-facts (index-to-facts (search-facts ast-root '(define)) ast-root)])
-      (if (null? temp-facts) 'omg temp-facts)))
-  (define (check_fact func-fact)
-    (match func-fact
-      [`(define ,(? (lambda (x) (equal? x func)))
-          (varparam ,arg)
-          ,rest ...)
-       #t]
-      [`(define ,(? (lambda (x) (equal? x func)))
-          (fixedparam ,args ...)
-          ,rest ...)
-       #f]
-      [_ #f]))
-  ; (displayln func)
-  (define (inner_main func-facts)
-    (if (null? func-facts) #f (if (check_fact (car func-facts)) #t (inner_main (cdr func-facts)))))
-  (inner_main func-facts))
+  (define func-facts (index-to-facts (search-facts ast-root '(define)) ast-root))
+  ; (pretty-print func-facts)
+
+  (let loop ([func-fact func-facts])
+    (cond
+      [(null? func-fact) #f]
+      [else
+       (match (car func-fact)
+         [`(define ,tempFunc (varparam ,arg) ,rest ...)
+
+          (if (equal? (string->symbol tempFunc) func)
+              #t
+              (loop (cdr func-fact)))]
+
+         [`(define ,tempFunc (fixedparam ,args ...) ,rest ...)
+
+          (if (equal? (string->symbol tempFunc) func)
+              #f
+              (loop (cdr func-fact)))]
+         [_ #f])
+       ])))
 
 ; this function returns (function_name true/false) as a touple,
 ; if the called function at a call site is one of the built-in define-prim's
@@ -194,15 +196,15 @@ void *fhalt()
     (index-to-facts (search-facts ast-root `(prim-count ,(symbol->string func-name))) ast-root))
 
   (define (match-arg-count list-args-count arg-count)
-    (match (p-dbg list-args-count)
+    (match list-args-count
       [`($lst ,count ,rst) (if (equal? count arg-count) #t (match-arg-count rst arg-count))]
       [`($nil 0) #f]))
 
   (if (equal? (length prim-count) 1)
-      (match (p-dbg (car prim-count))
+      (match (car prim-count)
         [`(prim-count ,func ,list-args-count)
-         (p-dbg `(,func-name ,(match-arg-count list-args-count arg-count)))]
-        [_ (p-dbg `(,func-name #f))])
+         `(,func-name ,(match-arg-count list-args-count arg-count))]
+        [_ `(,func-name #f)])
       `(,func-name #f)))
 
 ; this function returns (function_name true/false) as a touple,
@@ -275,7 +277,11 @@ void *fhalt()
 
   (apply + (map unbundle program)))
 
-; (define sybo '+)
-; (define ast-root (read-facts "tests/plus/output/c268ba86e896ea24601d8c8c0557b9c3503c0a35a1d4b8cbb2445eb4/facts.txt"))
-; ; (displayln (index-to-facts (search-facts ast-root `(app ref ,(symbol->string sybo))) ast-root))
-; (params-count ast-root '+)
+(define sybo '+)
+(define ast-root (read-facts "tests/double_inner/output/55e520758876177dcd4d38e9076e1c15e4f979994cd4d2effa249f42/facts.txt"))
+(displayln (index-to-facts (search-facts ast-root `(app ref ,(symbol->string sybo))) ast-root))
+(params-count ast-root '+)
+
+(is_var_param ast-root sybo)
+; 55e520758876177dcd4d38e9076e1c15e4f979994cd4d2effa249f42
+; 925aee401258590a198ba4de7fd7f43dc34636b0e4bd42e8008c3f43

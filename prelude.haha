@@ -13,6 +13,7 @@
 
 (define-prim + 2 3)
 (define-prim - 2 3)
+(define-prim * 2 3)
 
 ; (define (+ . lst)
 ;   (apply-prim + lst))
@@ -20,62 +21,61 @@
 ; (define (- . lst)
 ;   (apply-prim - lst))
 ;
-;(define (* . lst)
+; (define (* . lst)
 ;  (apply-prim * lst))
-;
-;(define (modulo a b)
+
+; (define (modulo a b)
 ;  (prim modulo a b))
-;
-;(define (/ . lst)
+
+; (define (/ . lst)
 ;  (apply-prim / lst))
 
 ; (define (= . lst)
-  ; (apply-prim = lst))
-;
-;(define (> . lst)
+;   (apply-prim = lst))
+
+; (define (> . lst)
 ;  (apply-prim > lst))
-;
-;(define (< . lst)
+
+; (define (< . lst)
 ;  (apply-prim < lst))
-;
-;(define (<= . lst)
+
+; (define (<= . lst)
 ;  (apply-prim <= lst))
-;
-;(define (>= . lst)
-; (apply-prim >= lst))
+
+; (define (>= . lst)
+;   (apply-prim >= lst))
 
 ; (define (null? x)
 ;   (prim null? x))
 
-; (define (equal? x y)
-;   (prim equal? x y))
+(define (equal? x y)
+  (prim equal? x y))
 
-;(define (eq? x y)
-; (prim eq? x y))
-;
+; (define (eq? x y)
+;   (prim eq? x y))
+
 (define (cons a b)
   (prim cons a b))
-;
+
 (define (car lst)
   (prim car lst))
-
 
 (define (cdr lst)
   (prim cdr lst))
 
-;(define (even? x)
+; (define (even? x)
 ;  (equal? 0 (modulo x 2)))
-;
-;(define (odd? x)
+
+; (define (odd? x)
 ;  (equal? 1 (modulo x 2)))
-;
+
 (define (list . x)
   x)
-;  
-;(define (float->int val)
+
+; (define (float->int val)
 ;  (prim inexact->exact val))
-;
-;(define (int->float val)
+
+; (define (int->float val)
 ;  (prim exact->inexact val))
 
 ; (define (member? x lst)
@@ -84,11 +84,17 @@
 ; (define (foldl fun acc lst)
 ;   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
 
+
+;worked till here
+
+; ---- didn't work after this point, but reverse implemenation is correct. Does it mean, slog has somekind of memory issue?
 ; (define (reverse-helper lst lst2)
 ;   (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
 
 ; (define (reverse lst)
 ;   (reverse-helper lst (list)))
+; ----
+
 
 ; (define (take-helper lst n lst2)
 ;   (if (= n 0) (reverse lst2) (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
@@ -116,50 +122,50 @@
 ; (define (append lst1 lst2)
 ;   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
 
-;(define (hash . lst)
+; (define (hash . lst)
 ;  (apply-prim hash lst))
-;
-;(define (hash-ref h k)
+
+; (define (hash-ref h k)
 ;  (prim hash-ref h k))
-;
-;(define (hash-set h k v)
+
+; (define (hash-set h k v)
 ;  (prim hash-set h k v))
-;
-;(define (hash-keys h)
+
+; (define (hash-keys h)
 ;   (prim hash-keys h))
-;
-;(define (hash-has-key? h k)
+
+; (define (hash-has-key? h k)
 ;  (prim hash-has-key? h k))
-;
-;(define (hash-count h)
+
+; (define (hash-count h)
 ;  (prim hash-count h))
-;
-;(define (set . lst)
+
+; (define (set . lst)
 ;  (apply-prim set lst))
-;
-;(define (set->list h)
+
+; (define (set->list h)
 ;  (prim set->list h))
-;
-;(define (list->set lst)
+
+; (define (list->set lst)
 ;  (prim list->set lst)) 
-;
-;(define (set-add s val)
+
+; (define (set-add s val)
 ;  (prim set-add s val))
-;
-;(define (string? str)
+
+; (define (string? str)
 ;  (prim string? str))
-;
-;(define (string-length str)
+
+; (define (string-length str)
 ;  (prim string-length str))
-;
-;(define (string-ref str pos)
+
+; (define (string-ref str pos)
 ;  (prim string-ref str pos))
-;
-;(define (substring str start end)
+
+; (define (substring str start end)
 ;  (prim substring str start end))
-;
-;(define (string-append s1 s2)
+
+; (define (string-append s1 s2)
 ;  (prim string-append s1 s2))
-;
-;(define (string->list str)
+
+; (define (string->list str)
 ;  (prim string->list str))

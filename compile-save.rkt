@@ -354,8 +354,8 @@
     ; (define (null? x)
     ;   (prim null? x))
 
-    ; (define (equal? x y)
-    ;   (prim equal? x y))
+    (define (equal? x y)
+      (prim equal? x y))
 
     ; (define (eq? x y)
     ;   (prim eq? x y))
@@ -474,19 +474,36 @@
     ; start here
     ; (define (brouhaha_main) ((lambda (a b) b) 5 6))
 
-    (define (call)
-      ; (+ 100 2 (- 10 6 2) 3 (- 6 4) (+ 1 2 3 4 5))
-      ; (+ 100 2 (- 6 4) (+ 10 20 30 40))
-      ; (+ 100 (- 6 4) 2)
-      (+ (+ 100 200) (- 6 4) (+ 20 30 40 50))
-      )
+    ; (define (call)
+    ;   (if (equal? 1 1)
+    ;       "wow"
+    ;       "not-wow"))
+
+    ; (define (brouhaha_main)
+    ;   (call))
+
+
+    (define (call-f f x y z)
+      ; optimization doesn't work because store facts missing
+      ;   (f (f 10 x) (f x y z) (f 10 x y z))
+
+      ; doesn't work, cz store/store-flow neither of facts exists
+      ;   (f (+ 10 x) (+ x y z) (+ 10 x y z))
+
+      ; works
+      (f x y z))
+
+    (define (intermediate x y z)
+      (call-f + x y z))
 
     (define (brouhaha_main)
-      (call))
+      (intermediate 1 2 3))
+
     ; end here
 
     ))
 
 (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
+; (pretty-print (alphatize (cps-convert (anf-convert (alphatize (desugar our-call))))))
 
 ; (interp-cps (cps-convert (anf-convert (alphatize (desugar our-call)))))

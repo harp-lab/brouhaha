@@ -118,5 +118,5 @@
 ; (write-program-for-slog `((define (call) (if '#f '1 '2))
 ;   (define (brouhaha_main) (call))))
 
-(display (write-program-for-slog `((define-prim + 2 3))))
+; (display (write-program-for-slog `((define-prim + 2 3))))
 
