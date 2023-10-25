@@ -1,13 +1,11 @@
 (define (call-f f x y z)
-  ; optimization doesn't work because store facts missing
 ;   (f (f 10 x) (f x y z) (f 10 x y z))
 
-  ; doesn't work, cz store/store-flow neither of facts exists
-  ;   (f (+ 10 x) (+ x y z) (+ 10 x y z))
+    (f (+ 10 x) (+ x y z) (+ 10 x y z))
 
-  (* 10 x y z) 
+  ; (* 10 x y z) 
   ; (f x y z) ; works
-  )
+)
 
 (define (intermediate x y z)
   (call-f + x y z))

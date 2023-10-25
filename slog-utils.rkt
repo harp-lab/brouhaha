@@ -277,11 +277,11 @@ void *fhalt()
 
   (apply + (map unbundle program)))
 
-(define sybo '+)
-(define ast-root (read-facts "tests/double_inner/output/55e520758876177dcd4d38e9076e1c15e4f979994cd4d2effa249f42/facts.txt"))
-(displayln (index-to-facts (search-facts ast-root `(app ref ,(symbol->string sybo))) ast-root))
-(params-count ast-root '+)
+; (define sybo '+)
+; (define ast-root (read-facts "tests/double_inner/output/55e520758876177dcd4d38e9076e1c15e4f979994cd4d2effa249f42/facts.txt"))
+; (displayln (index-to-facts (search-facts ast-root `(app ref ,(symbol->string sybo))) ast-root))
+; (params-count ast-root '+)
 
-(is_var_param ast-root sybo)
+; (is_var_param ast-root sybo)
 ; 55e520758876177dcd4d38e9076e1c15e4f979994cd4d2effa249f42
 ; 925aee401258590a198ba4de7fd7f43dc34636b0e4bd42e8008c3f43
