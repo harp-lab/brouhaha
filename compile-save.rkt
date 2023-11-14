@@ -321,14 +321,14 @@
 
 (define our-call
   `(
-    (define (+ . lst)
-      (apply-prim + lst))
+    ; (define (+ . lst)
+    ;   (apply-prim + lst))
 
     (define (- . lst)
       (apply-prim - lst))
 
-    ; (define (* . lst)
-    ;   (apply-prim * lst))
+    (define (* . lst)
+      (apply-prim * lst))
 
     ; (define (modulo a b)
     ;   (prim modulo a b))
@@ -336,8 +336,8 @@
     ; (define (/ . lst)
     ;   (apply-prim / lst))
 
-    ; (define (= . lst)
-    ;   (apply-prim = lst))
+    (define (= . lst)
+      (apply-prim = lst))
 
     ; (define (> . lst)
     ;   (apply-prim > lst))
@@ -483,27 +483,38 @@
     ;   (call))
 
 
-    (define (call-f f x y z)
-      ; optimization doesn't work because store facts missing
-      ;   (f (f 10 x) (f x y z) (f 10 x y z))
+    ; (define (call-f f x y z)
+    ;   ; optimization doesn't work because store facts missing
+    ;   ;   (f (f 10 x) (f x y z) (f 10 x y z))
 
-      ; doesn't work, cz store/store-flow neither of facts exists
-      ;   (f (+ 10 x) (+ x y z) (+ 10 x y z))
+    ;   ; doesn't work, cz store/store-flow neither of facts exists
+    ;   ;   (f (+ 10 x) (+ x y z) (+ 10 x y z))
 
-      ; works
-      (f x y z))
+    ;   ; works
+    ;   (f x y z))
 
-    (define (intermediate x y z)
-      (call-f + x y z))
+    ; (define (intermediate x y z)
+    ;   (call-f + x y z))
 
+    ; (define (brouhaha_main)
+    ;   (intermediate 1 2 3))
+
+    (define (fact n)
+       (let* ([zero 0]
+                [one 1])
+          (if (= zero n)
+               one
+               (* n (fact (- n one))))))
+    
     (define (brouhaha_main)
-      (intermediate 1 2 3))
+      (fact 5))
 
     ; end here
 
     ))
 
-(pretty-print (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
+; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
+(pretty-print (closure-convert (cps-convert (anf-convert (alphatize (desugar our-call))))))
 ; (pretty-print (alphatize (cps-convert (anf-convert (alphatize (desugar our-call))))))
 
 ; (interp-cps (cps-convert (anf-convert (alphatize (desugar our-call)))))

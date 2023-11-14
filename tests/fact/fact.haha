@@ -1,7 +1,9 @@
 (define (fact n)
-  (if (= 0 n)
-      1
-      (* n (fact (- n 1)))))
+  (let* ([zero 0]
+         [one 1])
+    (if (= zero n)
+        one
+        (* n (fact (- n one))))))
 
 (define (brouhaha_main)
   (fact 5))

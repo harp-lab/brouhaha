@@ -334,7 +334,7 @@
                             (get-c-string ptr)
                             0))]
       [`(proc (prov ,prov ...) (,ptr ,env . ,arg) ,body)
-      ;  (displayln (~a "im an . case proc " proc))
+       ;  (displayln (~a "im an . case proc " proc))
        ; `(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)
        ; look at the call sites for the function and make a choice whether to emit or not
        ; and also if there is only one version of call-site only emit that version

@@ -634,11 +634,20 @@ void *apply_prim__u43(void *lst) //+
     return result;
 }
 
-void *apply_prim__u43_2(void *arg1, void* arg2) //+
+void *apply_prim__u43_1(void *arg1) //+
+{
+    // adding dummy parameter
+    mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init_set_str(*tempMpzVal, "0", 10);
+    void *arg2 = encode_mpz(tempMpzVal);
+
+    return add(arg1, arg2);
+}
+void *apply_prim__u43_2(void *arg1, void *arg2) //+
 {
     return add(arg1, arg2);
 }
-void *apply_prim__u43_3(void *arg1, void* arg2, void* arg3) //+
+void *apply_prim__u43_3(void *arg1, void *arg2, void *arg3) //+
 {
     return add(arg1, add(arg2, arg3));
 }
@@ -736,14 +745,58 @@ void *apply_prim__u45(void *lst) //-
     return result;
 }
 
-void *apply_prim__u45_2(void *arg1, void* arg2) //-
+void *apply_prim__u45_1(void *arg1) //-
+{
+    // adding dummy parameter
+    int tag = get_tag(arg1);
+    if (tag == MPZ)
+    {
+        // gets the int number, multiplies it by two and store it to a new var, encodes it back to mpz
+        mpz_t *final_mpz;
+        final_mpz = decode_mpz(arg1);
+        std::string str(mpz_get_str(nullptr, 10, *final_mpz));
+
+        int num = std::stoi(str);
+
+        std::stringstream numstr;
+        numstr << num * 2;
+
+        mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init_set_str(*tempMpzVal, numstr.str().c_str(), 10);
+        void *arg2 = encode_mpz(tempMpzVal);
+
+        return sub(arg1, arg2);
+    }
+    else
+    {
+        // gets the float number, multiplies it by two and store it to a new var, encodes it back to mpz
+        mpf_t *final_mpf = decode_mpf(arg1);
+        const char *boom;
+        char buffer[1000];
+        gmp_sprintf(buffer, "%.1Ff", *final_mpf);
+        std::string str(buffer);
+
+        float num = std::stof(str);
+
+        std::stringstream numstr;
+        numstr << num * 2;
+
+        mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init_set_str(*tempMpfVal, numstr.str().c_str(), 10);
+        void *arg2 = encode_mpf(tempMpfVal);
+
+        return sub(arg1, arg2);
+    }
+}
+void *apply_prim__u45_2(void *arg1, void *arg2) //-
 {
     return sub(arg1, arg2);
 }
-void *apply_prim__u45_3(void *arg1, void* arg2, void* arg3) //-
+void *apply_prim__u45_3(void *arg1, void *arg2, void *arg3) //-
 {
     return sub(sub(arg1, arg2), arg3);
 }
+
 #pragma endregion
 
 #pragma region Multiplication

@@ -549,4 +549,5 @@
 ; (interp (anf-convert (add-tags (desugar our-call))))
 ; (interp-cps (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))
 ; (interp-cps (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call)))))))
+; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
 ; (interp-closure (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
