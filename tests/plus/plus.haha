@@ -1,8 +1,5 @@
 (define (call x)
-    ; (+ 1 2 (+ 1 2) (+ (+ 1 2) 2))
-    (+ 2.5)
-    
-    )
+    (+ 1 2))
 
 (define (brouhaha_main)
     (call 1))

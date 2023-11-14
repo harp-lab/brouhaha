@@ -3,8 +3,8 @@
 (provide write-program-for-slog)
 
 ;; This program will take in a brouhaha input and convert it to a slog-compatible database
-(define apply-prims `(+ - / * = > < <= >=))
-(define prims `(modulo null? equal? eq? cons car cdr odd? even? list float->int int->float))
+;;; (define apply-prims `(+ - / * = > < <= >=))
+;;; (define prims `(modulo null? equal? eq? cons car cdr odd? even? list float->int int->float))
 (define (member? op lst)
   (if (member op lst)
   #t
@@ -31,8 +31,7 @@
                (write-exp body))]
       [`(define-prim ,fname ,param-counts ...)
         (string-append 
-              (format "(store (addr \"~a\") (define \"~a\" (varparam \"lst\") (apply-prim \"~a\" (ref \"lst\"))))\n"
-                    fname
+              (format "(store (addr \"~a\") (define-prim \"~a\" (varparam \"lst\")))\n"
                     fname
                     fname)
               (string-append 
@@ -71,8 +70,8 @@
        (foldr string-append
               ""
               `("(if " ,(write-exp grd) " " ,(write-exp tExp) " " ,(write-exp fExp) ")"))]
-      [`(apply-prim ,op ,e1)
-       (foldr string-append "" `("(apply-prim \"" ,(~a op) "\" " ,(write-exp e1) ")"))]
+      ;;; [`(apply-prim ,op ,e1)
+      ;;;  (foldr string-append "" `("(apply-prim \"" ,(~a op) "\" " ,(write-exp e1) ")"))]
       [`(prim ,op ,es ...)
        (foldr string-append "" `("(prim \"" ,(~a op) "\" [" ,@(map write-exp es) "])"))]
       [`(apply ,e0 ,e1) 
@@ -91,7 +90,7 @@
                        [`(define (,fname . ,_)
                            ,_)
                         (format "(env-set ~a \"~a\" (addr \"~a\"))" code fname fname)]
-                      [`(define-prim ,fname ,param-counts ...)
+                       [`(define-prim ,fname ,param-counts ...)
                         (format "(env-set ~a \"~a\" (addr \"~a\"))" code fname fname)]  
                       ))
                    "(empty)"
