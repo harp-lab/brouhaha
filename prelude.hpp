@@ -819,7 +819,6 @@ void *mul_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
     if (get_tag(arg1) == MPZ)
     { // arg1 is mpz, arg2 is mpf
         mpf_t *mpf_arg1 = mpz_2_mpf(decode_mpz(arg1));
-        print_val(mpf_arg1);
         mpf_mul(*mpf_arg1, *mpf_arg1, *(decode_mpf(arg2)));
         return encode_mpf(mpf_arg1);
     }
@@ -876,6 +875,27 @@ void *apply_prim__u42(void *lst) //*
     }
 
     return result;
+}
+
+void *apply_prim__u42_1(void *arg1) //*
+{
+    // std::cout << "hererererer...mul" << std::endl;
+    // adding dummy parameter
+    mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init_set_str(*tempMpzVal, "1", 10);
+    void *arg2 = encode_mpz(tempMpzVal);
+
+    return mul(arg1, arg2);
+}
+
+void *apply_prim__u42_2(void *arg1, void *arg2) //*
+{
+    return mul(arg1, arg2);
+}
+
+void *apply_prim__u42_3(void *arg1, void *arg2, void *arg3) //*
+{
+    return mul(mul(arg1, arg2), arg3);
 }
 
 #pragma endregion

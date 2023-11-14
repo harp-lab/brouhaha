@@ -13,22 +13,20 @@
 
 (define-prim + 1 2 3)
 (define-prim - 1 2 3)
-; (define-prim * 2 3)
+(define-prim * 1 2 3)
 
 ; (define (+ . lst)
 ;   (apply-prim + lst))
 
 ; (define (- . lst)
 ;   (apply-prim - lst))
-;
-(define (* . lst)
- (apply-prim * lst))
 
-(define (modulo a b)
-  (prim modulo a b))
 
 (define (/ . lst)
   (apply-prim / lst))
+
+(define (modulo a b)
+  (prim modulo a b))
 
 (define (= . lst)
   (apply-prim = lst))

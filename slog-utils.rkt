@@ -8,7 +8,7 @@
 ; (require string-sexpr)
 
 (define (runslog slog-path out-path)
-  (displayln "here")
+  ; (displayln "here")
   ; (system "cd ../slog")
   ; (define command (string-append "python3" " " clean-path " " test-name " " test-file-hash))
   (define command
