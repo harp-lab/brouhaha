@@ -980,6 +980,28 @@ void *apply_prim__u47(void *lst) // / division
     return result;
 }
 
+// doesn't work!
+void *apply_prim__u47_1(void *arg1) // / division
+{
+    std::cout << "hererererer...div" << std::endl;
+    // adding dummy parameter
+    mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init_set_str(*tempMpzVal, "1", 10);
+    void *arg2 = encode_mpz(tempMpzVal);
+
+    return div(arg2, arg1);
+}
+
+void *apply_prim__u47_2(void *arg1, void *arg2) // / division
+{
+    return div(arg1, arg2);
+}
+
+void *apply_prim__u47_3(void *arg1, void *arg2, void *arg3) // / division
+{
+    return div(div(arg1, arg2), arg3);
+}
+
 #pragma endregion
 void *apply_prim_and(void *lst)
 {
@@ -1038,6 +1060,7 @@ bool great_equal_zero(long cmp)
 
 bool great_zero(long cmp)
 {
+     // std::cout << "hererererer...less_zero" << cmp << std::endl;
     if (cmp > 0)
     {
         return true;
@@ -1047,6 +1070,7 @@ bool great_zero(long cmp)
 
 bool less_zero(long cmp)
 {
+   
     if (cmp < 0)
     {
         return true;
@@ -1077,6 +1101,11 @@ void *compare_lst(void *lst, bool (*cmp_op)(long))
         assert_type(type_check,
                     "Error in apply_prim__u62: values in the lst are not MPT");
         mpz_t *opd1 = decode_mpz(cons_lst[0]);
+
+        // std::string str(mpz_get_str(nullptr, 10, *opd1));
+        // int num = std::stoi(str);
+        // std::cout << "hererererer...while num>> " << num << std::endl;
+
         if (counter == 0)
         {
             mpz_set(*temp_store, *opd1);
@@ -1102,16 +1131,26 @@ void *compare_lst(void *lst, bool (*cmp_op)(long))
     return encode_bool(true);
 }
 
-// Checks if the list is strictly decreasing
-void *apply_prim__u62(void *lst) // >
+void *compare_op(void *arg1, void *arg2, bool (*cmp_op)(long))
 {
-    return compare_lst(lst, *great_zero);
-}
+    int cmp_result = 0;
 
-// checks if a list is strictly increasing
-void *apply_prim__u60(void *lst) // <
-{
-    return compare_lst(lst, *less_zero);
+    mpz_t *num1 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_t *num2 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*num1);
+    mpz_init(*num2);
+
+    mpz_t *ar1 = decode_mpz(arg1);
+    mpz_t *ar2 = decode_mpz(arg2);
+
+    mpz_set(*num1, *ar1);
+    mpz_set(*num2, *ar2);
+    cmp_result = mpz_cmp(*num1, *num2);
+
+    if (cmp_op(cmp_result))
+        return encode_bool(true);
+    else
+        return encode_bool(false);
 }
 
 // checks if a list is equal
@@ -1119,17 +1158,107 @@ void *apply_prim__u61(void *lst) // =
 {
     return compare_lst(lst, *equal_zero);
 }
+void *apply_prim__u61_1(void *arg1) // =
+{
+    return encode_bool(true);
+}
+void *apply_prim__u61_2(void *arg1, void *arg2) // =
+{
+    return compare_op(arg1, arg2, *equal_zero);
+}
+void *apply_prim__u61_3(void *arg1, void *arg2, void *arg3) // =
+{
+    if (decode_bool(compare_op(arg1, arg2, *equal_zero)))
+        return compare_op(arg2, arg3, *equal_zero);
+    else
+        return encode_bool(false);
+}
+
+// Checks if the list is strictly decreasing
+void *apply_prim__u62(void *lst) // >
+{
+    return compare_lst(lst, *great_zero);
+}
+void *apply_prim__u62_1(void *arg1) // >
+{
+    return encode_bool(true);
+}
+void *apply_prim__u62_2(void *arg1, void *arg2) // >
+{
+    return compare_op(arg1, arg2, *great_zero);
+}
+void *apply_prim__u62_3(void *arg1, void *arg2, void *arg3) // >
+{
+    if (decode_bool(compare_op(arg1, arg2, *great_zero)))
+        return compare_op(arg2, arg3, *great_zero);
+    else
+        return encode_bool(false);
+}
+
+// checks if a list is strictly increasing
+void *apply_prim__u60(void *lst) // <
+{
+    return compare_lst(lst, *less_zero);
+}
+void *apply_prim__u60_1(void *arg1) // <
+{
+    return encode_bool(true);
+}
+void *apply_prim__u60_2(void *arg1, void *arg2) // <
+{
+    return compare_op(arg1, arg2, *less_zero);
+}
+void *apply_prim__u60_3(void *arg1, void *arg2, void *arg3) // <
+{
+    if (decode_bool(compare_op(arg1, arg2, *less_zero)))
+        return compare_op(arg2, arg3, *less_zero);
+    else
+        return encode_bool(false);
+    
+}
 
 // checks if elements are decreasing >=
 void *apply_prim__u62_u61(void *lst)
 {
     return compare_lst(lst, *great_equal_zero);
 }
+void *apply_prim__u62_u61_1(void *arg1) // >=
+{
+    return encode_bool(true);
+}
+void *apply_prim__u62_u61_2(void *arg1, void *arg2) // >=
+{
+    return compare_op(arg1, arg2, *great_equal_zero);
+}
+void *apply_prim__u62_u61_3(void *arg1, void *arg2, void *arg3) // >=
+{
+    // std::cout << "hererererer...apply_prim__u62_u61_3" << std::endl;
+    if (decode_bool(compare_op(arg1, arg2, *great_equal_zero)))
+        return compare_op(arg2, arg3, *great_equal_zero);
+    else
+        return encode_bool(false);
+}
 
 // checks if elements are increasing <=
 void *apply_prim__u60_u61(void *lst)
 {
     return compare_lst(lst, *less_equal_zero);
+}
+void *apply_prim__u60_u61_1(void *arg1) // <=
+{
+    return encode_bool(true);
+}
+void *apply_prim__u60_u61_2(void *arg1, void *arg2) // <=
+{
+    return compare_op(arg1, arg2, *less_equal_zero);
+}
+void *apply_prim__u60_u61_3(void *arg1, void *arg2, void *arg3) // <=
+{
+    // std::cout << "hererererer...apply_prim__u60_u61_3" << std::endl;
+    if (decode_bool(compare_op(arg1, arg2, *less_equal_zero)))
+        return compare_op(arg2, arg3, *less_equal_zero);
+    else
+        return encode_bool(false);
 }
 
 #pragma endregion
