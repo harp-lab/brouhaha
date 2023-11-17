@@ -273,30 +273,35 @@
 
        ;  (define extract-func (is-define-prim ast-root func (- (length args) 1)))
 
-       (match-define `(,func1 ,res2) (is-define-prim ast-root func))
-       (match-define `(,func2 ,res1) (check-prim-prim-arg-count ast-root func1 (- (length args) 1)))
+
+       (match-define `(,func1 ,res2) (if slog-flag
+                                         (is-define-prim ast-root func)
+                                         `(,func #f)))
+       (match-define `(,func2 ,res1) (if slog-flag
+                                         (check-prim-prim-arg-count ast-root func1 (- (length args) 1))
+                                         `(,func #f)))
 
        (cond
          ;  [(and slog-flag (is_var_param ast-root func) (> (length args) 1)) (convert-spl-clo-app body)] ; this is not relevant anymore, at least for now
-         [(and slog-flag (and res1 res2))
-          (begin
-            ; (displayln "lol")
-            (append-line filepath "\n//clo-app")
-            (define args-str
-              (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
-                     (symbol->string (cadr args))
-                     (cddr args)))
-            (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);" (get-c-string func2) (- (length args) 1) args-str))
-            (append-line filepath
-                         (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string (car args))))
-            (append-line filepath
-                         (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (- (length args) 1)))
-            (append-line
-             filepath
-             (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-                     (get-c-string (car args))))
-            (append-line filepath "function_ptr();")
-            (append-line filepath "return nullptr;"))]
+         [(and slog-flag res1 res2)
+          ; (displayln "lol")
+          (append-line filepath "\n//clo-app")
+          (define args-str
+            (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
+                   (symbol->string (cadr args))
+                   (cddr args)))
+          (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);" (get-c-string func2) (- (length args) 1) args-str))
+          (append-line filepath
+                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string (car args))))
+          (append-line filepath
+                       (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (- (length args) 1)))
+          (append-line
+           filepath
+           (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                   (get-c-string (car args))))
+          (append-line filepath "function_ptr();")
+          (append-line filepath "return nullptr;")
+          ]
          [else
           (begin
             (append-line filepath "\n//clo-app")
