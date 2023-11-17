@@ -190,7 +190,7 @@ void *fhalt()
 ; this function returns (function_name true/false) as a touple,
 ; if the called function at a call site is one of the built-in define-prim's
 ; with a specific number of argument we support.
-(define (is-define-prim ast-root func-name arg-count)
+(define (check-prim-prim-arg-count ast-root func-name arg-count)
   ; (displayln (format "is-define-prim: ~a ~a" func-name arg-count))
   (define prim-count
     (index-to-facts (search-facts ast-root `(prim-count ,(symbol->string func-name))) ast-root))
@@ -208,10 +208,10 @@ void *fhalt()
       `(,func-name #f)))
 
 ; this function returns (function_name true/false) as a touple,
-; if the called function at a call site is actually aliasing to
-; one of the built-in define-prim's with a specific number of
-; argument we support
-(define (is-user-def-func-a-define-prim ast-root func-name arg-count)
+; if the called function at a call site is
+; one of the built-in define-prim's
+; ; prim-func, is the actual built-in define-prim we are aliasing with "func-name" 
+(define (is-define-prim ast-root func-name)
   ; (displayln (format "is-user-def-func-a-define-prim: ~a" func-name))
   (define check-store-for-func
     ; (index-to-facts (search-facts ast-root`(store (addr ,(symbol->string func-name) (define ,(symbol->string func-name))))) ast-root)
@@ -220,17 +220,17 @@ void *fhalt()
 
   ; (pretty-print check-store-for-func)
   (match check-store-for-func
-    [`((store (addr ,func) (define ,prim-func ,var-or-fixed ,rst)))
+    [`((store (addr ,func) (define-prim ,prim-func ,var-or-fixed)))
      ; if func is one of the define-prim and rst matches with apply-prim return true
-     (match rst
-       [`(apply-prim ,op ,_)
-        ; at this point we know, op, is one of our define-prim
-        ; now let's check, if we are calling it with a specific
-        ; number of argument that we support, is so we return #t
-        ; othewise, #f
-        (is-define-prim ast-root (string->symbol op) arg-count)
-        ]
-       [_ `(,func-name #f)])]
+
+     ;  (match rst
+     ;    [`(apply-prim ,op ,_)
+     ;     ; at this point we know, op, is one of our define-prim
+     ;     ; now let's check, if we are calling it with a specific
+     ;     ; number of argument that we support, if so we return #t
+     ;     ; othewise, #f
+     ;     (is-define-prim ast-root (string->symbol op) arg-count)
+     `(,(string->symbol prim-func) #t)]
     [_ `(,func-name #f)]))
 
 

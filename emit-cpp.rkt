@@ -233,20 +233,39 @@
        (append-line filepath "}\n")]
 
       [`(clo-apply (prov ,prov ...) ,func ,args)
-       (append-line filepath "\n//clo-apply")
+       (displayln "I am here at clo-apply")
 
-       (append-line filepath
-                    (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
-       (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
-       (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
+       (match-define `(,temp_func ,res) (is-define-prim ast-root func))
 
-       (append-line filepath
-                    (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-                            (get-c-string func)))
+       (cond
+         [(and slog-flag res)
+          (append-line filepath "\n//clo-apply")
 
-       (append-line filepath "// call next proc using a function pointer")
-       (append-line filepath "function_ptr();")
-       (append-line filepath "return nullptr;")]
+          (append-line filepath
+                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
+          (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
+          (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
+
+
+          (append-line filepath (format "~a_fptr();" (get-c-string func)))
+          (append-line filepath "return nullptr;")]
+         [else
+          (append-line filepath "\n//clo-apply")
+
+          (append-line filepath
+                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
+          (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
+          (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
+
+          (append-line filepath
+                       (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                               (get-c-string func)))
+
+          (append-line filepath "// call next proc using a function pointer")
+          (append-line filepath "function_ptr();")
+          (append-line filepath "return nullptr;")
+          ]
+         )]
 
       [`(clo-app (prov ,prov ...) ,func ,args ...)
        ; we can get rid of this if condition if we use the spec functions for every call
@@ -254,12 +273,12 @@
 
        ;  (define extract-func (is-define-prim ast-root func (- (length args) 1)))
 
-       (match-define `(,func1 ,res1) (is-define-prim ast-root func (- (length args) 1)))
-       (match-define `(,func2 ,res2) (is-user-def-func-a-define-prim ast-root func (- (length args) 1)))
+       (match-define `(,func1 ,res2) (is-define-prim ast-root func))
+       (match-define `(,func2 ,res1) (check-prim-prim-arg-count ast-root func1 (- (length args) 1)))
 
        (cond
          ;  [(and slog-flag (is_var_param ast-root func) (> (length args) 1)) (convert-spl-clo-app body)] ; this is not relevant anymore, at least for now
-         [(and slog-flag (or res1 res2))
+         [(and slog-flag (and res1 res2))
           (begin
             ; (displayln "lol")
             (append-line filepath "\n//clo-app")

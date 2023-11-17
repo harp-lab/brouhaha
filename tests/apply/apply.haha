@@ -1,5 +1,10 @@
 (define (call)
-    (apply + (list 1 2 3 4)))
+  (let* ([res1 (apply + (list 1 2 3 4))]
+         [res2 (apply + (list 10 20))]
+         [res3 (apply * (list res1 res2))])
+         
+    (list res1 res2 res3)))
 
 (define (brouhaha_main)
-    (call))
+  (call))
+

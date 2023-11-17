@@ -1,11 +1,11 @@
 (define (call-f f x y z)
 
-    ; (f (+ 10 x) (+ x y z) (+ 10 x y z))
+    (f (f 10 x) (f x y z) (f 10 x y z))
     ;;; (+ (+ 10 x) (+ x y z) (+ 10 2)) ; fails
     ;;; (+ (+ 10 x) (+ x y z) 10) ; works
 
   ; (* 10 x y z) 
-  (f x y z) ; works
+  ; (f x y z) ; works
 )
 
 (define (intermediate x y z)
