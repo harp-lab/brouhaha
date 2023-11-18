@@ -221,6 +221,7 @@
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [_ (raise (format "Unknown datatype! ~a" val))])]
+
       [`(if (prov ,prov ...) ,grd ,texp ,fexp)
        (append-line filepath "\n//if-clause")
        (define guard (gensym 'if_guard))
@@ -233,21 +234,18 @@
        (append-line filepath "}\n")]
 
       [`(clo-apply (prov ,prov ...) ,func ,args)
-       (displayln "I am here at clo-apply")
-
-       (match-define `(,temp_func ,res) (is-define-prim ast-root func))
+       (match-define `(,builtin-func ,res) (is-define-prim ast-root func))
 
        (cond
          [(and slog-flag res)
           (append-line filepath "\n//clo-apply")
 
           (append-line filepath
-                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
+                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string builtin-func)))
           (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
           (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
 
-
-          (append-line filepath (format "~a_fptr();" (get-c-string func)))
+          (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
           (append-line filepath "return nullptr;")]
          [else
           (append-line filepath "\n//clo-apply")
@@ -268,29 +266,25 @@
          )]
 
       [`(clo-app (prov ,prov ...) ,func ,args ...)
-       ; we can get rid of this if condition if we use the spec functions for every call
-       ; for now, it only for + with 3 arguments.
 
-       ;  (define extract-func (is-define-prim ast-root func (- (length args) 1)))
-
-
-       (match-define `(,func1 ,res2) (if slog-flag
-                                         (is-define-prim ast-root func)
-                                         `(,func #f)))
-       (match-define `(,func2 ,res1) (if slog-flag
-                                         (check-prim-prim-arg-count ast-root func1 (- (length args) 1))
-                                         `(,func #f)))
+       ; builtin-func will hold, either the called builtin define-prim
+       ; or the aliased builtin define-prim by the "func" at the call-site
+       (match-define `(,builtin-func ,res1) (if slog-flag
+                                                (is-define-prim ast-root func)
+                                                `(,func #f)))
+       (match-define `(,temp-func ,res2) (if slog-flag
+                                             (check-define-prim-arg-count ast-root builtin-func (- (length args) 1))
+                                             `(,func #f)))
 
        (cond
-         ;  [(and slog-flag (is_var_param ast-root func) (> (length args) 1)) (convert-spl-clo-app body)] ; this is not relevant anymore, at least for now
+         ; builtin define-prim with a specific argument count
          [(and slog-flag res1 res2)
-          ; (displayln "lol")
           (append-line filepath "\n//clo-app")
           (define args-str
             (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
                    (symbol->string (cadr args))
                    (cddr args)))
-          (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);" (get-c-string func2) (- (length args) 1) args-str))
+          (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);" (get-c-string builtin-func) (- (length args) 1) args-str))
           (append-line filepath
                        (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string (car args))))
           (append-line filepath
@@ -300,28 +294,41 @@
            (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                    (get-c-string (car args))))
           (append-line filepath "function_ptr();")
-          (append-line filepath "return nullptr;")
-          ]
+          (append-line filepath "return nullptr;")]
+
+         ; not specific argument count, but still one of the builtin so calling that directly
+         ; instead of unpacking the closure
+         [(and slog-flag res1)
+          (append-line filepath "\n//clo-app")
+
+          (append-line filepath
+                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string builtin-func)))
+          (for ([i (in-range 1 (+ (length args) 1))] [item args])
+            (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
+          (append-line filepath
+                       (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+
+          (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
+          (append-line filepath "return nullptr;")]
+
          [else
-          (begin
-            (append-line filepath "\n//clo-app")
+          (append-line filepath "\n//clo-app")
 
-            (append-line filepath
-                         (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
-            (for ([i (in-range 1 (+ (length args) 1))] [item args])
-              (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
-            (append-line filepath
-                         (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+          (append-line filepath
+                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
+          (for ([i (in-range 1 (+ (length args) 1))] [item args])
+            (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
+          (append-line filepath
+                       (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
 
-            (append-line
-             filepath
-             (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-                     (get-c-string func)))
+          (append-line
+           filepath
+           (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                   (get-c-string func)))
 
-            (append-line filepath "//assign buffer size to numArgs")
-            (append-line filepath "//call next proc using a function pointer")
-            (append-line filepath "function_ptr();")
-            (append-line filepath "return nullptr;"))])]))
+          (append-line filepath "//call next proc using a function pointer")
+          (append-line filepath "function_ptr();")
+          (append-line filepath "return nullptr;")])]))
 
   (define (convert-procs proc)
     ; (pretty-print proc)

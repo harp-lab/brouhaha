@@ -190,7 +190,7 @@ void *fhalt()
 ; this function returns (function_name true/false) as a touple,
 ; if the called function at a call site is one of the built-in define-prim's
 ; with a specific number of argument we support.
-(define (check-prim-prim-arg-count ast-root func-name arg-count)
+(define (check-define-prim-arg-count ast-root func-name arg-count)
   ; (displayln (format "is-define-prim: ~a ~a" func-name arg-count))
   (define prim-count
     (index-to-facts (search-facts ast-root `(prim-count ,(symbol->string func-name))) ast-root))
