@@ -52,6 +52,7 @@
       [`(if (prov ,prov ...) ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
       [`(if ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
       [`(let (prov ,prov ...) ([,xs ,rhss] ...) ,body)
+
        ; (pretty-print (list exp))
        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env))) env xs rhss))]
       [`(let ([,xs ,rhss] ...) ,body)

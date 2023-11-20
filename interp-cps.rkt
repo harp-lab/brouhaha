@@ -45,7 +45,6 @@
       [`(quote ,(? boolean? x)) x]
       [`(quote ,(? symbol? x)) x]
       [(? symbol?) (hash-ref env exp)]
-
       [`(prim (prov ,prov ...) ,op ,es ...) (apply (racket-eval-in-new-ns op) (map (lambda (e) (eval e env)) es))]
       [`(prim halt ,x) (hash-ref env x)]
       [`(apply-prim (prov ,prov ...) ,op ,e0) (apply (racket-eval-in-new-ns op) (eval e0 env))]
