@@ -10,34 +10,33 @@
          read-all
          compile-to-alphatize)
 
-(require "slog-utils.rkt"
-"interp-save.rkt")
+(require "slog-utils.rkt")
 
 (define (compile-to-alphatize program)
   (let* ([pr0 (desugar program)] [pr1 (alphatize pr0)])
     (list pr0 pr1)))
 
 (define (compile program slog-path out-path fact-file pr1)
-    ; (display (~a "\n\n\n" fact-file "\n\n\n"))
-    (define ast-root (read-facts fact-file))
-    (define facts-list (index-to-facts (search-facts ast-root '(eval)) ast-root))
-    (display (~a "\n\n\n" facts-list "\n\n\n"))
-    (let* ([pr2 (anf-convert pr1)]
-           [pr3 (cps-convert pr2)]
-           [pr4 (alphatize pr3)]
-           [pr5 (closure-convert pr4 ast-root)]
-          ;  [amount (count-params slog-facts)]
-           )
+  ; (display (~a "\n\n\n" fact-file "\n\n\n"))
+  (define ast-root (read-facts fact-file))
+  (define facts-list (index-to-facts (search-facts ast-root '(eval)) ast-root))
+  (display (~a "\n\n\n" facts-list "\n\n\n"))
+  (let* ([pr2 (anf-convert pr1)]
+         [pr3 (cps-convert pr2)]
+         [pr4 (alphatize pr3)]
+         [pr5 (closure-convert pr4 ast-root)]
+         ;  [amount (count-params slog-facts)]
+         )
 
-      (list pr2 pr3 pr4 pr5)))
+    (list pr2 pr3 pr4 pr5)))
 
 ; (require print-debug/print-dbg)
 (define (read-program filename)
   (with-input-from-file filename
-                        (lambda ()
-                          (let ([bytes (read-bytes (file-size filename))])
-                            (with-input-from-string (bytes->string/utf-8 bytes)
-                                                    (lambda () (read-all (current-input-port))))))))
+    (lambda ()
+      (let ([bytes (read-bytes (file-size filename))])
+        (with-input-from-string (bytes->string/utf-8 bytes)
+          (lambda () (read-all (current-input-port))))))))
 
 (define (read-all in)
   (let loop ([exprs '()])
@@ -240,7 +239,7 @@
     ; [`(quote ,d) `(,(set) ,e ,(list))]
     [`(let ([,x ',dat]) ,e0)
      (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0))
-    ;  (pretty-print (list "241: " x dat))
+     ;  (pretty-print (list "241: " x dat))
      (define dx (gensym 'd))
      (list (set-remove freevars x) `(let ([,x ',dat]) ,e0+) procs+)]
     [`(let ([,x ,(? string? str)]) ,e0)
@@ -299,15 +298,15 @@
            (match def
              [`(define (,fx . ,xs)
                  ,body)
-                ; (define facts-list (search-facts ast-root '(eval )))
+              ; (define facts-list (search-facts ast-root '(eval )))
               (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body))
               (define envx (gensym '_))
-                ; (pretty-print (list freevars procs+ fx envx xs))
+              ; (pretty-print (list freevars procs+ fx envx xs))
               `(,@pr+ ,@procs+ (proc (,fx ,envx . ,xs) ,body+))]))
          '()
          program))
 
-    ; (define facts-list (search-facts ast-root '(eval)))
+; (define facts-list (search-facts ast-root '(eval)))
 (define (count-params slog-facts)
   'todo)
 
@@ -321,163 +320,201 @@
 ; (pretty-print (alphatize (cps-convert (anf-convert (alphatize (desugar our-call))))))
 
 (define our-call
-  `((define (+ . lst)
-  (apply-prim + lst))
+  `(
+    ; (define (+ . lst)
+    ;   (apply-prim + lst))
 
-(define (- . lst)
-  (apply-prim - lst))
+    (define (- . lst)
+      (apply-prim - lst))
 
-(define (* . lst)
-  (apply-prim * lst))
+    (define (* . lst)
+      (apply-prim * lst))
 
-(define (modulo a b)
-  (prim modulo a b))
+    ; (define (modulo a b)
+    ;   (prim modulo a b))
 
-(define (/ . lst)
-  (apply-prim / lst))
+    ; (define (/ . lst)
+    ;   (apply-prim / lst))
 
-(define (= . lst)
-  (apply-prim = lst))
+    (define (= . lst)
+      (apply-prim = lst))
 
-(define (> . lst)
-  (apply-prim > lst))
+    ; (define (> . lst)
+    ;   (apply-prim > lst))
 
-(define (< . lst)
-  (apply-prim < lst))
+    ; (define (< . lst)
+    ;   (apply-prim < lst))
 
-(define (<= . lst)
-  (apply-prim <= lst))
+    ; (define (<= . lst)
+    ;   (apply-prim <= lst))
 
-(define (>= . lst)
-  (apply-prim >= lst))
+    ; (define (>= . lst)
+    ;   (apply-prim >= lst))
 
-(define (null? x)
-  (prim null? x))
+    ; (define (null? x)
+    ;   (prim null? x))
 
-(define (equal? x y)
-  (prim equal? x y))
+    (define (equal? x y)
+      (prim equal? x y))
 
-(define (eq? x y)
-  (prim eq? x y))
+    ; (define (eq? x y)
+    ;   (prim eq? x y))
 
-(define (cons a b)
-  (prim cons a b))
+    ; (define (cons a b)
+    ;   (prim cons a b))
 
-(define (car lst)
-  (prim car lst))
+    ; (define (car lst)
+    ;   (prim car lst))
 
 
-(define (cdr lst)
-  (prim cdr lst))
+    ; (define (cdr lst)
+    ;   (prim cdr lst))
 
-(define (even? x)
-  (equal? 0 (modulo x 2)))
+    ; (define (even? x)
+    ;   (equal? 0 (modulo x 2)))
 
-(define (odd? x)
-  (equal? 1 (modulo x 2)))
+    ; (define (odd? x)
+    ;   (equal? 1 (modulo x 2)))
 
-(define (list . x)
-  x)
-  
-(define (float->int val)
-  (prim inexact->exact val))
+    ; (define (list . x)
+    ;   x)
 
-(define (int->float val)
-  (prim exact->inexact val))
+    ; (define (float->int val)
+    ;   (prim inexact->exact val))
 
-(define (member? x lst)
-  (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
+    ; (define (int->float val)
+    ;   (prim exact->inexact val))
 
-(define (foldl fun acc lst)
-  (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
+    ; (define (member? x lst)
+    ;   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
 
-(define (reverse-helper lst lst2)
-  (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
+    ; (define (foldl fun acc lst)
+    ;   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
 
-(define (reverse lst)
-  (reverse-helper lst (list)))
+    ; (define (reverse-helper lst lst2)
+    ;   (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
 
-(define (take-helper lst n lst2)
-  (if (= n 0) (reverse lst2) (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
+    ; (define (reverse lst)
+    ;   (reverse-helper lst (list)))
 
-(define (take lst n)
-  (take-helper lst n (list)))
+    ; (define (take-helper lst n lst2)
+    ;   (if (= n 0) (reverse lst2) (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
 
-(define (length lst)
-  (if (null? lst) 0 (+ 1 (length (cdr lst)))))
+    ; (define (take lst n)
+    ;   (take-helper lst n (list)))
 
-(define (map proc lst)
-  (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
+    ; (define (length lst)
+    ;   (if (null? lst) 0 (+ 1 (length (cdr lst)))))
 
-(define (filter op lst)
-  (if (null? lst)
-      (list)
-      (if (op (car lst)) (cons (car lst) (filter op (cdr lst))) (filter op (cdr lst)))))
+    ; (define (map proc lst)
+    ;   (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
 
-(define (drop lst n)
-  (if (= n 0) lst (drop (cdr lst) (- n 1))))
+    ; (define (filter op lst)
+    ;   (if (null? lst)
+    ;       (list)
+    ;       (if (op (car lst)) (cons (car lst) (filter op (cdr lst))) (filter op (cdr lst)))))
 
-(define (foldr proc acc lst)
-  (if (null? lst) acc (proc (car lst) (foldr proc acc (cdr lst)))))
+    ; (define (drop lst n)
+    ;   (if (= n 0) lst (drop (cdr lst) (- n 1))))
 
-(define (append lst1 lst2)
-  (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
+    ; (define (foldr proc acc lst)
+    ;   (if (null? lst) acc (proc (car lst) (foldr proc acc (cdr lst)))))
 
-(define (hash . lst)
-  (apply-prim hash lst))
+    ; (define (append lst1 lst2)
+    ;   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
 
-(define (hash-ref h k)
-  (prim hash-ref h k))
+    ; (define (hash . lst)
+    ;   (apply-prim hash lst))
 
-(define (hash-set h k v)
-  (prim hash-set h k v))
+    ; (define (hash-ref h k)
+    ;   (prim hash-ref h k))
 
-(define (hash-keys h)
-   (prim hash-keys h))
+    ; (define (hash-set h k v)
+    ;   (prim hash-set h k v))
 
-(define (hash-has-key? h k)
-  (prim hash-has-key? h k))
+    ; (define (hash-keys h)
+    ;   (prim hash-keys h))
 
-(define (hash-count h)
-  (prim hash-count h))
+    ; (define (hash-has-key? h k)
+    ;   (prim hash-has-key? h k))
 
-(define (set . lst)
-  (apply-prim set lst))
+    ; (define (hash-count h)
+    ;   (prim hash-count h))
 
-(define (set->list h)
-  (prim set->list h))
+    ; (define (set . lst)
+    ;   (apply-prim set lst))
 
-(define (list->set lst)
-  (prim list->set lst)) 
+    ; (define (set->list h)
+    ;   (prim set->list h))
 
-(define (set-add s val)
-  (prim set-add s val))
+    ; (define (list->set lst)
+    ;   (prim list->set lst))
 
-(define (string? str)
-  (prim string? str))
+    ; (define (set-add s val)
+    ;   (prim set-add s val))
 
-(define (string-length str)
-  (prim string-length str))
+    ; (define (string? str)
+    ;   (prim string? str))
 
-(define (string-ref str pos)
-  (prim string-ref str pos))
+    ; (define (string-length str)
+    ;   (prim string-length str))
 
-(define (substring str start end)
-  (prim substring str start end))
+    ; (define (string-ref str pos)
+    ;   (prim string-ref str pos))
 
-(define (string-append s1 s2)
-  (prim string-append s1 s2))
+    ; (define (substring str start end)
+    ;   (prim substring str start end))
 
-(define (string->list str)
-  (prim string->list str))
+    ; (define (string-append s1 s2)
+    ;   (prim string-append s1 s2))
+
+    ; (define (string->list str)
+    ;   (prim string->list str))
+
+    ; start here
+    ; (define (brouhaha_main) ((lambda (a b) b) 5 6))
+
+    ; (define (call)
+    ;   (if (equal? 1 1)
+    ;       "wow"
+    ;       "not-wow"))
+
+    ; (define (brouhaha_main)
+    ;   (call))
+
+
+    ; (define (call-f f x y z)
+    ;   ; optimization doesn't work because store facts missing
+    ;   ;   (f (f 10 x) (f x y z) (f 10 x y z))
+
+    ;   ; doesn't work, cz store/store-flow neither of facts exists
+    ;   ;   (f (+ 10 x) (+ x y z) (+ 10 x y z))
+
+    ;   ; works
+    ;   (f x y z))
+
+    ; (define (intermediate x y z)
+    ;   (call-f + x y z))
+
+    ; (define (brouhaha_main)
+    ;   (intermediate 1 2 3))
+
+    (define (fact n)
+       (let* ([zero 0]
+                [one 1])
+          (if (= zero n)
+               one
+               (* n (fact (- n one))))))
     
-; start here
-(define (brouhaha_main)
-    ((lambda (a b) b) 5 6))
-; end here
+    (define (brouhaha_main)
+      (fact 5))
 
-))
+    ; end here
 
-(interp-closure (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
+    ))
+
+; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
+(pretty-print (closure-convert (cps-convert (anf-convert (alphatize (desugar our-call))))))
+; (pretty-print (alphatize (cps-convert (anf-convert (alphatize (desugar our-call))))))
 
 ; (interp-cps (cps-convert (anf-convert (alphatize (desugar our-call)))))

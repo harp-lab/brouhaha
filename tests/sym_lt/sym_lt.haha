@@ -1,6 +1,6 @@
 ; strictly increasing
 (define (call)
-    (< 1 2 3 4 5 100))
+    (< 1 2 3))
 
 (define (brouhaha_main)
     (call))

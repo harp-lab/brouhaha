@@ -1,6 +1,6 @@
 #include <../prelude.hpp>
 #include <gtest/gtest.h>
-
+#include <../tests/testing.hpp>
 
 // TEST(HAMTTests, getKeys)
 // {
@@ -117,6 +117,14 @@ TEST(Strings, prim_string_u45_u62list)
 
     ASSERT_EQ(print_val(prim_string_u45_u62list(encode_str(s1))), "'(\"b\" \"r\" \"o\")");
     ASSERT_EQ(*s1,"bro");
+}
+
+TEST(RacketCompare, racket_compare)
+{
+    std::string* s1 = new(GC) std::string("'(1 2 3)");
+    std::string* s2 = new(GC) std::string("(list 1 2 3)");
+
+    ASSERT_TRUE(racketCompare(*s1, *s2) == true);
 }
 
 int main(int argc, char** argv)

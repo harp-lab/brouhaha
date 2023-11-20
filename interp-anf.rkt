@@ -2,7 +2,6 @@
 
 ; (require "compile.rkt")
 (provide interp)
-
 (define new-ns (make-base-empty-namespace))
 
 (parameterize ([current-namespace new-ns])
@@ -21,15 +20,20 @@
              ,body)
            ,rest ...)
          (loop (hash-set env+ name (first prog+)) (cdr prog+))]
-        [`((define ,prov 
-                   (,name . ,param)
-                   ,body)
+        [`((define ,prov
+             (,name . ,param)
+             ,body)
            ,rest ...)
          (loop (hash-set env+ name (first prog+)) (cdr prog+))]
+        [`((define-prim ,f-name
+             ,params-count ...)
+           ,rest ...)
+         (loop (hash-set env+ f-name `(define (,f-name . lst) (apply-prim ,f-name lst))) (cdr prog+))
+         ]
         [`() env+])))
 
   (define (eval exp env)
-    ; (pretty-print (list exp))
+    ; (pretty-print exp)
     (match exp
       ; [(? string? y) y]
       [`(quote ,(? string? y)) y]
@@ -48,7 +52,8 @@
       [`(if (prov ,prov ...) ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
       [`(if ,ec ,et ,ef) (let ([val (eval ec env)]) (if val (eval et env) (eval ef env)))]
       [`(let (prov ,prov ...) ([,xs ,rhss] ...) ,body)
-        ; (pretty-print (list exp))
+
+       ; (pretty-print (list exp))
        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env))) env xs rhss))]
       [`(let ([,xs ,rhss] ...) ,body)
        (eval body (foldl (lambda (x rhs env+) (hash-set env+ x (eval rhs env))) env xs rhss))]
@@ -84,6 +89,9 @@
        (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]
       [`(define (,name . ,(? symbol? params))
           ,body)
-       (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]))
+       (eval body (hash-set (add-top-lvl (hash)) params arg-vals))]
+      ; [`(define-prim ,f-name ,params-count ...)
+      ;   (eval `(apply-prim ,f-name lst) (hash-set (add-top-lvl (hash)) 'lst arg-vals))]
+      ))
 
   (eval `(brouhaha_main) (add-top-lvl env)))

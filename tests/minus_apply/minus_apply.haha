@@ -1,0 +1,8 @@
+(define (call val)
+    (- 100 80 (- 10 2) val))
+
+(define (apply-minus)
+    (apply - (list 100 80 10 2 5)))
+
+(define (brouhaha_main)
+    (call (apply-minus)))

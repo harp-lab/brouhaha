@@ -634,24 +634,6 @@ void *apply_prim__u43(void *lst) //+
     return result;
 }
 
-void *apply_prim__u43_1(void *arg1) //+
-{
-    // adding dummy parameter
-    mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init_set_str(*tempMpzVal, "0", 10);
-    void *arg2 = encode_mpz(tempMpzVal);
-
-    return add(arg1, arg2);
-}
-void *apply_prim__u43_2(void *arg1, void *arg2) //+
-{
-    return add(arg1, arg2);
-}
-void *apply_prim__u43_3(void *arg1, void *arg2, void *arg3) //+
-{
-    return add(arg1, add(arg2, arg3));
-}
-
 #pragma endregion
 
 #pragma region Subtraction
@@ -745,58 +727,6 @@ void *apply_prim__u45(void *lst) //-
     return result;
 }
 
-void *apply_prim__u45_1(void *arg1) //-
-{
-    // adding dummy parameter
-    int tag = get_tag(arg1);
-    if (tag == MPZ)
-    {
-        // gets the int number, multiplies it by two and store it to a new var, encodes it back to mpz
-        mpz_t *final_mpz;
-        final_mpz = decode_mpz(arg1);
-        std::string str(mpz_get_str(nullptr, 10, *final_mpz));
-
-        int num = std::stoi(str);
-
-        std::stringstream numstr;
-        numstr << num * 2;
-
-        mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init_set_str(*tempMpzVal, numstr.str().c_str(), 10);
-        void *arg2 = encode_mpz(tempMpzVal);
-
-        return sub(arg1, arg2);
-    }
-    else
-    {
-        // gets the float number, multiplies it by two and store it to a new var, encodes it back to mpz
-        mpf_t *final_mpf = decode_mpf(arg1);
-        const char *boom;
-        char buffer[1000];
-        gmp_sprintf(buffer, "%.1Ff", *final_mpf);
-        std::string str(buffer);
-
-        float num = std::stof(str);
-
-        std::stringstream numstr;
-        numstr << num * 2;
-
-        mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init_set_str(*tempMpfVal, numstr.str().c_str(), 10);
-        void *arg2 = encode_mpf(tempMpfVal);
-
-        return sub(arg1, arg2);
-    }
-}
-void *apply_prim__u45_2(void *arg1, void *arg2) //-
-{
-    return sub(arg1, arg2);
-}
-void *apply_prim__u45_3(void *arg1, void *arg2, void *arg3) //-
-{
-    return sub(sub(arg1, arg2), arg3);
-}
-
 #pragma endregion
 
 #pragma region Multiplication
@@ -819,6 +749,7 @@ void *mul_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
     if (get_tag(arg1) == MPZ)
     { // arg1 is mpz, arg2 is mpf
         mpf_t *mpf_arg1 = mpz_2_mpf(decode_mpz(arg1));
+        print_val(mpf_arg1);
         mpf_mul(*mpf_arg1, *mpf_arg1, *(decode_mpf(arg2)));
         return encode_mpf(mpf_arg1);
     }
@@ -875,27 +806,6 @@ void *apply_prim__u42(void *lst) //*
     }
 
     return result;
-}
-
-void *apply_prim__u42_1(void *arg1) //*
-{
-    // std::cout << "hererererer...mul" << std::endl;
-    // adding dummy parameter
-    mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init_set_str(*tempMpzVal, "1", 10);
-    void *arg2 = encode_mpz(tempMpzVal);
-
-    return mul(arg1, arg2);
-}
-
-void *apply_prim__u42_2(void *arg1, void *arg2) //*
-{
-    return mul(arg1, arg2);
-}
-
-void *apply_prim__u42_3(void *arg1, void *arg2, void *arg3) //*
-{
-    return mul(mul(arg1, arg2), arg3);
 }
 
 #pragma endregion
@@ -980,28 +890,6 @@ void *apply_prim__u47(void *lst) // / division
     return result;
 }
 
-// doesn't work!
-void *apply_prim__u47_1(void *arg1) // / division
-{
-    std::cout << "hererererer...div" << std::endl;
-    // adding dummy parameter
-    mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init_set_str(*tempMpzVal, "1", 10);
-    void *arg2 = encode_mpz(tempMpzVal);
-
-    return div(arg2, arg1);
-}
-
-void *apply_prim__u47_2(void *arg1, void *arg2) // / division
-{
-    return div(arg1, arg2);
-}
-
-void *apply_prim__u47_3(void *arg1, void *arg2, void *arg3) // / division
-{
-    return div(div(arg1, arg2), arg3);
-}
-
 #pragma endregion
 void *apply_prim_and(void *lst)
 {
@@ -1060,7 +948,6 @@ bool great_equal_zero(long cmp)
 
 bool great_zero(long cmp)
 {
-     // std::cout << "hererererer...less_zero" << cmp << std::endl;
     if (cmp > 0)
     {
         return true;
@@ -1070,7 +957,6 @@ bool great_zero(long cmp)
 
 bool less_zero(long cmp)
 {
-   
     if (cmp < 0)
     {
         return true;
@@ -1101,11 +987,6 @@ void *compare_lst(void *lst, bool (*cmp_op)(long))
         assert_type(type_check,
                     "Error in apply_prim__u62: values in the lst are not MPT");
         mpz_t *opd1 = decode_mpz(cons_lst[0]);
-
-        // std::string str(mpz_get_str(nullptr, 10, *opd1));
-        // int num = std::stoi(str);
-        // std::cout << "hererererer...while num>> " << num << std::endl;
-
         if (counter == 0)
         {
             mpz_set(*temp_store, *opd1);
@@ -1131,68 +1012,10 @@ void *compare_lst(void *lst, bool (*cmp_op)(long))
     return encode_bool(true);
 }
 
-void *compare_op(void *arg1, void *arg2, bool (*cmp_op)(long))
-{
-    int cmp_result = 0;
-
-    mpz_t *num1 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_t *num2 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*num1);
-    mpz_init(*num2);
-
-    mpz_t *ar1 = decode_mpz(arg1);
-    mpz_t *ar2 = decode_mpz(arg2);
-
-    mpz_set(*num1, *ar1);
-    mpz_set(*num2, *ar2);
-    cmp_result = mpz_cmp(*num1, *num2);
-
-    if (cmp_op(cmp_result))
-        return encode_bool(true);
-    else
-        return encode_bool(false);
-}
-
-// checks if a list is equal
-void *apply_prim__u61(void *lst) // =
-{
-    return compare_lst(lst, *equal_zero);
-}
-void *apply_prim__u61_1(void *arg1) // =
-{
-    return encode_bool(true);
-}
-void *apply_prim__u61_2(void *arg1, void *arg2) // =
-{
-    return compare_op(arg1, arg2, *equal_zero);
-}
-void *apply_prim__u61_3(void *arg1, void *arg2, void *arg3) // =
-{
-    if (decode_bool(compare_op(arg1, arg2, *equal_zero)))
-        return compare_op(arg2, arg3, *equal_zero);
-    else
-        return encode_bool(false);
-}
-
 // Checks if the list is strictly decreasing
 void *apply_prim__u62(void *lst) // >
 {
     return compare_lst(lst, *great_zero);
-}
-void *apply_prim__u62_1(void *arg1) // >
-{
-    return encode_bool(true);
-}
-void *apply_prim__u62_2(void *arg1, void *arg2) // >
-{
-    return compare_op(arg1, arg2, *great_zero);
-}
-void *apply_prim__u62_3(void *arg1, void *arg2, void *arg3) // >
-{
-    if (decode_bool(compare_op(arg1, arg2, *great_zero)))
-        return compare_op(arg2, arg3, *great_zero);
-    else
-        return encode_bool(false);
 }
 
 // checks if a list is strictly increasing
@@ -1200,21 +1023,11 @@ void *apply_prim__u60(void *lst) // <
 {
     return compare_lst(lst, *less_zero);
 }
-void *apply_prim__u60_1(void *arg1) // <
+
+// checks if a list is equal
+void *apply_prim__u61(void *lst) // =
 {
-    return encode_bool(true);
-}
-void *apply_prim__u60_2(void *arg1, void *arg2) // <
-{
-    return compare_op(arg1, arg2, *less_zero);
-}
-void *apply_prim__u60_3(void *arg1, void *arg2, void *arg3) // <
-{
-    if (decode_bool(compare_op(arg1, arg2, *less_zero)))
-        return compare_op(arg2, arg3, *less_zero);
-    else
-        return encode_bool(false);
-    
+    return compare_lst(lst, *equal_zero);
 }
 
 // checks if elements are decreasing >=
@@ -1222,43 +1035,11 @@ void *apply_prim__u62_u61(void *lst)
 {
     return compare_lst(lst, *great_equal_zero);
 }
-void *apply_prim__u62_u61_1(void *arg1) // >=
-{
-    return encode_bool(true);
-}
-void *apply_prim__u62_u61_2(void *arg1, void *arg2) // >=
-{
-    return compare_op(arg1, arg2, *great_equal_zero);
-}
-void *apply_prim__u62_u61_3(void *arg1, void *arg2, void *arg3) // >=
-{
-    // std::cout << "hererererer...apply_prim__u62_u61_3" << std::endl;
-    if (decode_bool(compare_op(arg1, arg2, *great_equal_zero)))
-        return compare_op(arg2, arg3, *great_equal_zero);
-    else
-        return encode_bool(false);
-}
 
 // checks if elements are increasing <=
 void *apply_prim__u60_u61(void *lst)
 {
     return compare_lst(lst, *less_equal_zero);
-}
-void *apply_prim__u60_u61_1(void *arg1) // <=
-{
-    return encode_bool(true);
-}
-void *apply_prim__u60_u61_2(void *arg1, void *arg2) // <=
-{
-    return compare_op(arg1, arg2, *less_equal_zero);
-}
-void *apply_prim__u60_u61_3(void *arg1, void *arg2, void *arg3) // <=
-{
-    // std::cout << "hererererer...apply_prim__u60_u61_3" << std::endl;
-    if (decode_bool(compare_op(arg1, arg2, *less_equal_zero)))
-        return compare_op(arg2, arg3, *less_equal_zero);
-    else
-        return encode_bool(false);
 }
 
 #pragma endregion
@@ -1339,7 +1120,7 @@ std::string print_set(void *s)
     const hamt<hash_struct, hash_struct> *h_set = decode_hash(s);
     const hash_struct **keys = h_set->getKeys();
     std::string ret_str = "(set";
-    for (int i = 0; i < (h_set->size() * 2); i += 2)
+    for (int i = 0; i < (h_set->size() * 2); i+=2)
     {
         ret_str += " " + print_val(keys[i]->val);
     }
@@ -1358,10 +1139,10 @@ std::string print_hash(void *h)
     std::string ret_str;
     ret_str.append("'#hash(");
     const hash_struct **keys = h_hamt->getKeys();
-    for (int i = 0; i < (h_hamt->size() * 2); i += 2)
+    for (int i = 0; i < (h_hamt->size() * 2); i+=2)
     {
         ret_str += "(" + print_val(keys[i]->val);
-        ret_str += " . " + print_val(keys[i + 1]->val) + ") ";
+        ret_str += " . " + print_val(keys[i+1]->val) + ") ";
     }
     return ret_str + ")";
     // return ret_str;
@@ -1505,7 +1286,7 @@ void *prim_hash_u45keys(void *h)
     // std::cout << "The size of the hash is: " << h_hamt->size() << std::endl;
     void *keys_cons_lst = encode_null();
     //+=2 and *2 coz getKeys returns an array that also has values.
-    for (long i = 0; i < (h_hamt->size() * 2); i += 2)
+    for (long i = 0; i < (h_hamt->size() * 2); i+=2)
     {
         keys_cons_lst = prim_cons(keys_array[i]->val, keys_cons_lst);
     }
@@ -1730,14 +1511,3 @@ std::string print_val(void *val)
 }
 
 #pragma endregion
-void *halt;
-void *arg_buffer[999]; // This is where the arg buffer is called
-long numArgs;
-
-void *fhalt()
-{
-    // std::cout << "In fhalt" << std::endl;
-    std::cout << print_val(arg_buffer[2]) << std::endl;
-    // print_val(arg_buffer[2]);
-    exit(0);
-}

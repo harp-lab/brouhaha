@@ -1,5 +1,5 @@
 tests/*/*.out
-tests/*/
+# tests/*/
 tests/*/output/*
 tests/*/compiler-out/*
 tests/*/CMakeLists.txt

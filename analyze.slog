@@ -63,17 +63,29 @@
  -->
  (eval rhs env (letk body [lhs] [] bind-rest env kont))]
 
-;APPLY-PRIM CASE
-[(= e (eval (apply-prim op lst) env kont))
- -->
- (store (saddr e) (state e))
- (ret (saddr e) kont)]
+; ;APPLY-PRIM CASE
+; [(= e (eval (apply-prim op lst) env kont))
+;  -->
+;  (store (saddr e) (state e))
+;  (ret (saddr e) kont)]
 
-;PRIM CASE
-[(= e (eval (prim op [lst ...]) env kont))
- -->
- (store (saddr e) (state e))
- (ret (saddr e) kont)]
+; ;PRIM CASE
+; [(= e (eval (prim op [lst ...]) env kont))
+;  -->
+;  (store (saddr e) (state e))
+;  (ret (saddr e) kont)]
+
+;  [(or
+;     (= e (eval (apply-prim op lst) env kont))
+;     (= e (eval (prim op [lst ...]) env kont)))
+;  -->
+;  (store (saddr e) (state e))
+;  (ret (saddr e) kont)]
+
+ [(= e (eval (prim op [lst ...]) env kont))
+  -->
+  (store (saddr e) (state e))
+  (ret (saddr e) kont)]
 
 
 ;---------------------------------------------------------------------;
@@ -144,6 +156,12 @@
 [(apply (define fname params body) args kont)
  --> 
  (apply (clo (lambda params body) {top-level-env}) args kont)]
+
+;DEFINE-PRIM HANDLING
+ [(= e (apply (define-prim fname params) args kont))
+ -->
+ (store (saddr e) (state e))
+ (ret (saddr e) kont)]
 
 
 ;FIXED ARG

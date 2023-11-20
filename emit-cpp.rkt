@@ -1,9 +1,10 @@
 #lang racket
 
 (require "utils.rkt")
-
+(require "slog-utils.rkt")
+(require print-debug/print-dbg)
 (provide emit-cpp)
-(define (emit-cpp proc_list filepath)
+(define (emit-cpp proc_list filepath slog-flag ast-root)
   ; defining cpp header files
   ; replace the old cpp file, if exists
   (append-line filepath "#include<stdio.h>" 'replace)
@@ -19,14 +20,93 @@
   ;        (loop (hash-set env+ (get-c-string name) (get-c-string name)) (cdr prog+))]
   ;       [`() env+])))
 
+
+  (define (convert-spl-clo-app expr)
+    (displayln "Inside spec call-site emission")
+    (match expr
+      [`(clo-app (prov ,prov) ,func ,args ...)
+       (displayln (format "The SPL func is ~a with ~a args" func (length (cdr args))))
+       (append-line filepath "\n//clo-app")
+       (append-line filepath
+                    (format "arg_buffer[1]=reinterpret_cast<void*>(~a_spec~a);"
+                            (get-c-string func)
+                            (length (cdr args))))
+       (append-line filepath (format "arg_buffer[2]=~a;" (get-c-string (car args))))
+       (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
+       (append-line filepath
+                    (format "auto function_ptr = ~a_spec~a;" (get-c-string func) (length (cdr args))))
+       (define args-str
+         (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
+                (symbol->string (cadr args))
+                (cddr args)))
+       (append-line filepath (format "function_ptr(~a);" args-str))
+       (append-line filepath "return nullptr;")]))
+
+  (define (convert-spl-proc proc param-count-num)
+    ; (displayln "im in conver-spl-proc")
+    (match proc
+      [`(proc (prov (define (,func-name . ,prov-arg)
+                      ,func-body))
+              (,ptr ,env . ,arg)
+              ,body)
+       (displayln (format "This is spec function for ~a with ~a args" func-name param-count-num))
+       (define arg-lst (build-list param-count-num (lambda (x) (gensym 'var))))
+       (define def-arg-str
+         (string-join (foldr (lambda (arg acc)
+                               (cons (string-append "void* " (symbol->string arg)) acc))
+                             '()
+                             arg-lst)
+                      ", "))
+       ; (displayln def-arg-str)
+       (define func_name
+         (format "void* ~a_spec~a(~a) // ~a ~a"
+                 (get-c-string ptr)
+                 param-count-num
+                 def-arg-str
+                 ptr
+                 "\n{"))
+
+       ; start of function definitions
+       (append-line filepath func_name)
+
+       (append-line filepath "//reading env")
+       (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
+
+       (append-line filepath (format "void* ~a;" arg))
+
+       ;  (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
+       ;  (append-line filepath "//(apply e0 e0) case")
+       ;  (append-line filepath (format "~a = arg_buffer[2];" arg))
+       ;  (append-line filepath "}\nelse\n{")
+
+       ;  (append-line filepath "//building cons cell")
+       ;  (append-line filepath (format "~a = encode_null();" arg))
+       ;  (append-line filepath (format "for(int i = numArgs; i >= 2; i--)\n{"))
+       ;  (append-line filepath (format "~a = prim_cons(arg_buffer[i], ~a);" arg arg))
+       ;  (append-line filepath (format "\n}\n"))
+
+       (append-line filepath (format "~a = encode_null();" arg))
+       (foldr (lambda (x acc) (append-line filepath (format "~a = prim_cons(~a, ~a);" arg x arg)))
+              '()
+              arg-lst)
+       ;  (append-line filepath (format "~a = prim_cons(z, ~a);" arg arg))
+       ;  (append-line filepath (format "~a = prim_cons(y, ~a);" arg arg))
+       ;  (append-line filepath (format "~a = prim_cons(x, ~a);" arg arg))
+       (append-line filepath (format "~a = prim_cons(arg_buffer[2], ~a);" arg arg))
+       ;  (append-line filepath "}\n")
+
+       (convert-proc-body (get-c-string ptr) (get-c-string env) arg body)
+       (append-line filepath "}\n")]))
+
   (define (convert-proc-body proc_name proc_env proc_arg body)
     ; (displayln (~a "cpb: " body))
-    (define (true? x)
-      (if x #t #f))
+    (define (true? x) (if x #t #f))
 
     ; (match (p-dbg body)
     (match body
-      [`(let ,prov ([,lhs (make-closure ,ptr ,args ...)]) ,letbody)
+      [`(let (prov ,prov ...)
+          ([,lhs (make-closure ,ptr ,args ...)])
+          ,letbody)
        (define arglength (length args))
 
        ; new-closure
@@ -41,11 +121,6 @@
 
        (when (> (+ arglength 1) 1)
          (append-line filepath "\n//setting env list"))
-
-       ; void** raw_clo = alloc_clo(f);
-       ; raw_clo[1] = y;
-       ; raw_clo[2] = z;  // one line per env variable
-       ; void* clo = encode_clo(raw_clo);
 
        (for ([i (in-range 1 (+ arglength 1))] [item args])
 
@@ -63,7 +138,9 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let ,prov ([,lhs (prim ,prov2 ,op ,args ...)]) ,letbody)
+      [`(let (prov ,prov ...)
+          ([,lhs (prim (prov ,prov2 ...) ,op ,args ...)])
+          ,letbody)
        (define line
          (format "void* ~a = prim_~a(~a);"
                  (get-c-string lhs)
@@ -74,7 +151,9 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let ,prov ([,lhs (apply-prim ,prov2 ,op ,arg)]) ,letbody)
+      [`(let (prov ,prov ...)
+          ([,lhs (apply-prim (prov ,prov2 ...) ,op ,arg)])
+          ,letbody)
        (define line
          (format "void* ~a = apply_prim_~a(~a);"
                  (get-c-string lhs)
@@ -85,13 +164,17 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let ,prov ([,lhs (env-ref ,env ,idx)]) ,letbody)
+      [`(let (prov ,prov ...)
+          ([,lhs (env-ref ,env ,idx)])
+          ,letbody)
        (append-line filepath "//not do dummy comment")
        (append-line filepath (format "void* ~a = (decode_clo(~a))[~a];" (get-c-string lhs) env idx))
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let ,prov ([,lhs ,val]) ,letbody)
+      [`(let (prov ,prov ...)
+          ([,lhs ,val])
+          ,letbody)
 
        ;  (match (p-dbg val)
        (match val
@@ -132,13 +215,14 @@
            (format "void* ~a = encode_str(new(GC) std::string(\"~a\"));" (get-c-string lhs) val))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
          [(? symbol?) ; Not sure what this case does or supposed to do - SK
-          (pretty-print (~a "cpb: " val))
+          ; (pretty-print (~a "cpb: " val))
           (append-line filepath
                        (format "void* ~a = encode_str(new string(\"~a\"));" (get-c-string lhs) val))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [_ (raise (format "Unknown datatype! ~a" val))])]
-      [`(if ,prov ,grd ,texp ,fexp)
+
+      [`(if (prov ,prov ...) ,grd ,texp ,fexp)
        (append-line filepath "\n//if-clause")
        (define guard (gensym 'if_guard))
 
@@ -149,52 +233,114 @@
        (convert-proc-body proc_name proc_env proc_arg fexp)
        (append-line filepath "}\n")]
 
-      [`(clo-apply ,prov ,func ,args)
-       (append-line filepath "\n//clo-apply")
+      [`(clo-apply (prov ,prov ...) ,func ,args)
+       (match-define `(,builtin-func ,res) (is-define-prim ast-root func))
 
-       (append-line filepath
-                    (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
-       (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
-       (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
+       (cond
+         [(and slog-flag res)
+          (append-line filepath "\n//clo-apply")
 
-       (append-line filepath
-                    (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-                            (get-c-string func)))
+          (append-line filepath
+                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string builtin-func)))
+          (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
+          (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
 
-       (append-line filepath "// call next proc using a function pointer")
-       (append-line filepath "function_ptr();")
-       (append-line filepath "return nullptr;")]
+          (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
+          (append-line filepath "return nullptr;")]
+         [else
+          (append-line filepath "\n//clo-apply")
 
-      [`(clo-app ,prov ,func ,args ...)
-       (append-line filepath "\n//clo-app")
+          (append-line filepath
+                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
+          (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
+          (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
 
-       (append-line filepath
-                    (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
-       (for ([i (in-range 1 (+ (length args) 1))] [item args])
-         (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
-       (append-line filepath
-                    (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+          (append-line filepath
+                       (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                               (get-c-string func)))
 
-       (append-line filepath
-                    (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-                            (get-c-string func)))
+          (append-line filepath "// call next proc using a function pointer")
+          (append-line filepath "function_ptr();")
+          (append-line filepath "return nullptr;")
+          ]
+         )]
 
-       (append-line filepath "//assign buffer size to numArgs")
-       (append-line filepath "//call next proc using a function pointer")
-       (append-line filepath "function_ptr();")
-       (append-line filepath "return nullptr;")]))
+      [`(clo-app (prov ,prov ...) ,func ,args ...)
+
+       ; builtin-func will hold, either the called builtin define-prim
+       ; or the aliased builtin define-prim by the "func" at the call-site
+       (match-define `(,builtin-func ,res1) (if slog-flag
+                                                (is-define-prim ast-root func)
+                                                `(,func #f)))
+       (match-define `(,temp-func ,res2) (if slog-flag
+                                             (check-define-prim-arg-count ast-root builtin-func (- (length args) 1))
+                                             `(,func #f)))
+
+       (cond
+         ; builtin define-prim with a specific argument count
+         [(and slog-flag res1 res2)
+          (append-line filepath "\n//clo-app")
+          (define args-str
+            (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
+                   (symbol->string (cadr args))
+                   (cddr args)))
+          (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);" (get-c-string builtin-func) (- (length args) 1) args-str))
+          (append-line filepath
+                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string (car args))))
+          (append-line filepath
+                       (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (- (length args) 1)))
+          (append-line
+           filepath
+           (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                   (get-c-string (car args))))
+          (append-line filepath "function_ptr();")
+          (append-line filepath "return nullptr;")]
+
+         ; not specific argument count, but still one of the builtin so calling that directly
+         ; instead of unpacking the closure
+         [(and slog-flag res1)
+          (append-line filepath "\n//clo-app")
+
+          (append-line filepath
+                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string builtin-func)))
+          (for ([i (in-range 1 (+ (length args) 1))] [item args])
+            (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
+          (append-line filepath
+                       (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+
+          (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
+          (append-line filepath "return nullptr;")]
+
+         [else
+          (append-line filepath "\n//clo-app")
+
+          (append-line filepath
+                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
+          (for ([i (in-range 1 (+ (length args) 1))] [item args])
+            (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
+          (append-line filepath
+                       (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+
+          (append-line
+           filepath
+           (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                   (get-c-string func)))
+
+          (append-line filepath "//call next proc using a function pointer")
+          (append-line filepath "function_ptr();")
+          (append-line filepath "return nullptr;")])]))
 
   (define (convert-procs proc)
     ; (pretty-print proc)
     (match proc
-      [`(proc ,prov (,ptr ,env ,args ...) ,body)
+      [`(proc (prov ,prov ...) (,ptr ,env ,args ...) ,body)
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
        (append-line filepath func_name)
 
-       ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
+       ;  uncomment these two lines for debugging!
+       ; (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -218,14 +364,39 @@
                             (get-c-string ptr)
                             (get-c-string ptr)
                             0))]
-      [`(proc ,prov (,ptr ,env . ,arg) ,body)
+      [`(proc (prov ,prov ...) (,ptr ,env . ,arg) ,body)
+       ;  (displayln (~a "im an . case proc " proc))
+       ; `(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)
+       ; look at the call sites for the function and make a choice whether to emit or not
+       ; and also if there is only one version of call-site only emit that version
+       ;
+       ; update: on 25th oct, 23: this is not required anymore, since all apply prim forms has been turned into define-prim
+       ;  (cond
+       ;    [slog-flag
+       ;     (match proc
+       ;       [`(proc (prov (define (,func-name . ,arg)
+       ;                       ,func-body))
+       ;               (,ptr ,env . ,arg)
+       ;               ,body)
+
+
+       ;        (define param-count-list (params-count ast-root ptr))
+
+       ;        (displayln (~a "im an . case proc >>>>" ))
+       ;        (displayln (~a "count: " (params-count ast-root ptr)))
+       ;        (displayln (~a "countlst: " param-count-list))
+
+       ;        (foldl (lambda (x acc) (if (not (equal? x 0)) (convert-spl-proc proc x) 'skip))
+       ;               '()
+       ;               param-count-list)]
+       ;       [_ 'proc-not-a-define])])
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -257,21 +428,75 @@
                     (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
                             (get-c-string ptr)
                             (get-c-string ptr)
-                            0))])
+                            0))]
+      [`(define-prim ,ptr ,args ...)
+
+       ; uncomment these two lines for debugging!
+       ; (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "print_arg_buffer();\n"))
+
+       (define k (gensym 'kont))
+       (define x (gensym 'x))
+       (define env (gensym '_env))
+       (define arg 'lst)
+       (define newarg (gensym arg))
+
+       (define make-generic-apply-prim-body
+         `(let (prov prov) ([,k (prim (prov prov) car ,arg)])
+            (let (prov prov) ([,newarg (prim (prov prov) cdr ,arg)])
+              (let (prov prov) ((,x (apply-prim (prov prov) ,ptr ,newarg)))
+                (clo-app (prov prov) ,k ,x)))))
+
+       (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
+
+       ; start of function definitions
+       (append-line filepath func_name)
+
+       (append-line filepath "//reading number of args")
+       (append-line filepath "// This is the second type of the functions")
+       ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
+       (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
+
+       (append-line filepath "//reading env")
+       (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
+
+       (append-line filepath (format "void* ~a;" arg))
+
+       (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
+       (append-line filepath "//(apply e0 e0) case")
+       (append-line filepath (format "~a = arg_buffer[2];" arg))
+       (append-line filepath "}\nelse\n{")
+
+       (append-line filepath "//building cons cell")
+       (append-line filepath (format "~a = encode_null();" arg))
+       (append-line filepath (format "for(int i = numArgs; i >= 2; i--)\n{"))
+       (append-line filepath (format "~a = prim_cons(arg_buffer[i], ~a);" arg arg))
+       (append-line filepath (format "\n}\n"))
+
+       (append-line filepath "}\n")
+
+       (convert-proc-body (get-c-string ptr) (get-c-string env) arg make-generic-apply-prim-body)
+       (append-line filepath "}\n")
+       (append-line filepath
+                    (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                            (get-c-string ptr)
+                            (get-c-string ptr)
+                            0))]
+      )
     ;end of function definitions.
     )
 
   ; pulling out brouhaha main function
-  (define brouhaha_main_proc (last proc_list))
+  ; (define brouhaha_main_proc (last proc_list))
 
   (map convert-procs proc_list)
 
   ; writing the main function.
   (append-line filepath "int main(int argc, char **argv)\n{")
 
-  (define tempPtr (gensym 'ptr))
-  (define tempEnv (gensym '_))
-  (define tempClo (gensym 'clo))
+  ; (define tempPtr (gensym 'ptr))
+  ; (define tempEnv (gensym '_))
+  ; (define tempClo (gensym 'clo))
 
   (append-line
    filepath

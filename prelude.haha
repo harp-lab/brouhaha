@@ -10,36 +10,47 @@
 ;   (prim set-remove s val))
 ; (define (set-count s val)
 ;   (prim set-count s val))
+; above prims never worked
 
-(define (+ . lst)
-  (apply-prim + lst))
+; (define (+ . lst)
+;   (apply-prim + lst))
 
-(define (- . lst)
-  (apply-prim - lst))
+; (define (- . lst)
+;   (apply-prim - lst))
 
-(define (* . lst)
-  (apply-prim * lst))
+; (define (/ . lst)
+;   (apply-prim / lst))
+
+; (define (= . lst)
+;   (apply-prim = lst))
+
+; (define (> . lst)
+;   (apply-prim > lst))
+
+; (define (< . lst)
+;   (apply-prim < lst))
+
+; (define (<= . lst)
+;   (apply-prim <= lst))
+
+; (define (>= . lst)
+;   (apply-prim >= lst))
+
+(define-prim + 1 2 3)
+(define-prim - 1 2 3)
+(define-prim * 1 2 3)
+(define-prim / 2 3)
+
+(define-prim = 1 2 3)
+(define-prim > 1 2 3)
+(define-prim < 1 2 3)
+(define-prim <= 1 2 3)
+(define-prim >= 1 2 3)
+
+
 
 (define (modulo a b)
   (prim modulo a b))
-
-(define (/ . lst)
-  (apply-prim / lst))
-
-(define (= . lst)
-  (apply-prim = lst))
-
-(define (> . lst)
-  (apply-prim > lst))
-
-(define (< . lst)
-  (apply-prim < lst))
-
-(define (<= . lst)
-  (apply-prim <= lst))
-
-(define (>= . lst)
-  (apply-prim >= lst))
 
 (define (null? x)
   (prim null? x))
@@ -56,7 +67,6 @@
 (define (car lst)
   (prim car lst))
 
-
 (define (cdr lst)
   (prim cdr lst))
 
@@ -66,9 +76,8 @@
 (define (odd? x)
   (equal? 1 (modulo x 2)))
 
-(define (list . x)
-  x)
-  
+(define (list . x) x)
+
 (define (float->int val)
   (prim inexact->exact val))
 
@@ -113,8 +122,10 @@
 (define (append lst1 lst2)
   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
 
-(define (hash . lst)
-  (apply-prim hash lst))
+(define-prim hash )
+
+; (define (hash . lst)
+  ; (apply-prim hash lst))
 
 (define (hash-ref h k)
   (prim hash-ref h k))
@@ -123,7 +134,7 @@
   (prim hash-set h k v))
 
 (define (hash-keys h)
-   (prim hash-keys h))
+  (prim hash-keys h))
 
 (define (hash-has-key? h k)
   (prim hash-has-key? h k))
@@ -131,14 +142,16 @@
 (define (hash-count h)
   (prim hash-count h))
 
-(define (set . lst)
-  (apply-prim set lst))
+(define-prim set )
+
+; (define (set . lst)
+;   (apply-prim set lst))
 
 (define (set->list h)
   (prim set->list h))
 
 (define (list->set lst)
-  (prim list->set lst)) 
+  (prim list->set lst))
 
 (define (set-add s val)
   (prim set-add s val))
