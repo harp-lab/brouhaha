@@ -186,6 +186,60 @@ void **alloc_clo(void *(*fptr)(), int num)
 
 #pragma endregion
 
+#pragma region ConsMethods
+
+static void *prim_cons(void *arg1, void *arg2)
+{
+    void **cell = (void **)GC_MALLOC(2 * sizeof(void *));
+    cell[0] = arg1;
+    cell[1] = arg2;
+    return encode_cons(cell);
+}
+
+// cons?
+void *prim_cons_u63(void *lst)
+{
+    if (get_tag(lst) == CONS)
+    {
+        return encode_bool(true);
+    }
+    return encode_bool(false);
+}
+
+void *prim_car(void *val)
+{
+    assert_type((prim_cons_u63(val)), "not a cons cell");
+    void **cell = decode_cons(val);
+    return cell[0];
+}
+
+void *prim_cdr(void *val)
+{
+    assert_type((prim_cons_u63(val)), "not a cons cell");
+    void **cell = decode_cons(val);
+    return cell[1];
+}
+
+std::string print_cons(void *lst)
+{
+    std::string ret_str;
+    ret_str.append("(list ");
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        ret_str.append(print_val(cons_lst[0]));
+        if (!is_cons(cons_lst[1]))
+        {
+            break;
+        }
+        ret_str.append(" ");
+        lst = cons_lst[1];
+    }
+    ret_str.append(")");
+    return ret_str;
+}
+#pragma endregion
+
 #pragma region ArithOpFunctions
 
 bool is_true(void *val)
@@ -219,6 +273,23 @@ void *mpf_equal(void *arg1, void *arg2)
         return encode_bool(true);
     }
     return encode_bool(false);
+}
+
+// casting functions
+mpf_t *mpz_2_mpf(mpz_t *val)
+{
+    mpf_t *ret_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*ret_val);
+    mpf_set_z(*ret_val, *val);
+    return ret_val;
+}
+
+mpz_t *mpf_2_mpz(mpf_t *val)
+{
+    mpz_t *ret_val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*ret_val);
+    mpz_set_f(*ret_val, *val);
+    return ret_val;
 }
 
 void *str_equal(void *arg1, void *arg2)
@@ -492,21 +563,100 @@ u64 hash_(void *val)
 
 #pragma endregion
 
-// ?? think about changes for supporting floats
-void *prim_modulo(void *arg1, void *arg2)
+// Function to check if val is an integer
+int is_integer_val(void *val)
 {
-    mpz_t *remainder = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*remainder);
-    bool type_arg1 = get_tag(arg1) == MPZ;
-    assert_type(type_arg1, "Argument 1 passed to prim_equal__u63 is not a MPZ");
-    bool type_arg2 = get_tag(arg2) == MPZ;
-    assert_type(type_arg2, "Argument 2 passed to prim_equal__u63 is not a MPZ");
+    if (get_tag(val) == MPZ)
+        return true;
+    else if (get_tag(val) == MPF)
+    {
+        mpf_t *fval = decode_mpf(val);
+        mpf_t flr;
+        mpf_init(flr);
+        mpf_floor(flr, *fval);
+        int result = mpf_cmp(*fval, flr) == 0;
+        mpf_clear(flr);
+        return result;
+    }
+    return false;
+}
 
-    mpz_t *arg1_mpz = decode_mpz(arg1);
-    mpz_t *arg2_mpz = decode_mpz(arg2);
-    mpz_mod(*remainder, *arg1_mpz, *arg2_mpz);
+void *prim_modulo(void *first, void *second)
+{
+    void *result = nullptr;
 
-    return encode_mpz(remainder);
+    if (!is_integer_val(first) || !is_integer_val(second))
+    { // to see either of the numbers has fraction in it!
+        assert_type(false, "Error in apply_prim_modulo: contract violation, expected integer!");
+    }
+    else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
+    { // both numbers are mpz
+        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init(*result);
+        mpz_mod(*result, *(decode_mpz(first)), *(decode_mpz(second)));
+        return encode_mpz(result);
+    }
+    else if (get_tag(first) == MPF && get_tag(second) == MPF)
+    { // both number are mpf
+        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_t *mpz_arg1 = mpf_2_mpz(decode_mpf(first));
+        mpz_t *mpz_arg2 = mpf_2_mpz(decode_mpf(second));
+
+        mpz_mod(*result, *mpz_arg1, *mpz_arg2);
+        return encode_mpf(mpz_2_mpf(result));
+    }
+    else if (get_tag(first) == MPZ && get_tag(second) == MPF)
+    { // first number is mpz but second is mpf
+        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_t *mpz_arg2 = mpf_2_mpz(decode_mpf(second));
+
+        mpz_mod(*result, *(decode_mpz(first)), *mpz_arg2);
+        return encode_mpf(mpz_2_mpf(result));
+    }
+    else
+    { // second number is mpz but but first is mpf
+        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_t *mpz_arg1 = mpf_2_mpz(decode_mpf(first));
+
+        mpz_mod(*result, *mpz_arg1, *(decode_mpz(second)));
+        return encode_mpf(mpz_2_mpf(result));
+    }
+
+    return result;
+}
+
+// returns length of a list
+int length_counter(void *lst)
+{
+    if (lst == NULL_VALUE)
+        return 0;
+
+    void *val = prim_car(lst);
+    void *rest = prim_cdr(lst);
+
+    if (get_tag(val) == CONS)
+        return length_counter(val) + length_counter(rest);
+    else
+        return 1 + length_counter(rest);
+}
+
+void *apply_prim_modulo(void *lst) //+
+{
+    if (length_counter(lst) > 2)
+        assert_type(false, "Error in apply_prim_modulo -> arity mismatch: more than two arguments is not supported!");
+
+    void **cons_lst = decode_cons(lst);
+    int car_tag = get_tag(cons_lst[0]);
+    bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+
+    assert_type(type_check, "Error in apply_prim_modulo -> values in the lst are not MPZ/MPF");
+
+    return prim_modulo(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
+void *apply_prim_modulo_2(void *a, void *b)
+{
+    return prim_modulo(a, b);
 }
 
 void *prim_equal_u63(void *arg1, void *arg2)
@@ -519,15 +669,15 @@ void *prim_eq_u63(void *arg1, void *arg2)
     return equal_(arg1, arg2);
 }
 
-// cons?
-void *prim_cons_u63(void *lst)
-{
-    if (get_tag(lst) == CONS)
-    {
-        return encode_bool(true);
-    }
-    return encode_bool(false);
-}
+// // cons?
+// void *prim_cons_u63(void *lst)
+// {
+//     if (get_tag(lst) == CONS)
+//     {
+//         return encode_bool(true);
+//     }
+//     return encode_bool(false);
+// }
 
 // null?
 void *prim_null_u63(void *lst)
@@ -537,15 +687,6 @@ void *prim_null_u63(void *lst)
         return encode_bool(true);
     }
     return encode_bool(false);
-}
-
-// casting functions
-mpf_t *mpz_2_mpf(mpz_t *val)
-{
-    mpf_t *ret_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*ret_val);
-    mpf_set_z(*ret_val, *val);
-    return ret_val;
 }
 
 #pragma region Addition
@@ -921,7 +1062,7 @@ void *div_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
     if (get_tag(arg1) == MPZ)
     { // arg1 is mpz, arg2 is mpf
         mpf_t *mpf_arg1 = mpz_2_mpf(decode_mpz(arg1));
-        print_val(mpf_arg1);
+        // print_val(mpf_arg1);
         mpf_div(*mpf_arg1, *mpf_arg1, *(decode_mpf(arg2)));
         return encode_mpf(mpf_arg1);
     }
@@ -1060,7 +1201,7 @@ bool great_equal_zero(long cmp)
 
 bool great_zero(long cmp)
 {
-     // std::cout << "hererererer...less_zero" << cmp << std::endl;
+    // std::cout << "hererererer...less_zero" << cmp << std::endl;
     if (cmp > 0)
     {
         return true;
@@ -1070,7 +1211,7 @@ bool great_zero(long cmp)
 
 bool less_zero(long cmp)
 {
-   
+
     if (cmp < 0)
     {
         return true;
@@ -1214,7 +1355,6 @@ void *apply_prim__u60_3(void *arg1, void *arg2, void *arg3) // <
         return compare_op(arg2, arg3, *less_zero);
     else
         return encode_bool(false);
-    
 }
 
 // checks if elements are decreasing >=
@@ -1263,49 +1403,49 @@ void *apply_prim__u60_u61_3(void *arg1, void *arg2, void *arg3) // <=
 
 #pragma endregion
 
-#pragma region ConsMethods
+// #pragma region ConsMethods
 
-static void *prim_cons(void *arg1, void *arg2)
-{
-    void **cell = (void **)GC_MALLOC(2 * sizeof(void *));
-    cell[0] = arg1;
-    cell[1] = arg2;
-    return encode_cons(cell);
-}
+// static void *prim_cons(void *arg1, void *arg2)
+// {
+//     void **cell = (void **)GC_MALLOC(2 * sizeof(void *));
+//     cell[0] = arg1;
+//     cell[1] = arg2;
+//     return encode_cons(cell);
+// }
 
-void *prim_car(void *val)
-{
-    assert_type((prim_cons_u63(val)), "not a cons cell");
-    void **cell = decode_cons(val);
-    return cell[0];
-}
+// void *prim_car(void *val)
+// {
+//     assert_type((prim_cons_u63(val)), "not a cons cell");
+//     void **cell = decode_cons(val);
+//     return cell[0];
+// }
 
-void *prim_cdr(void *val)
-{
-    assert_type((prim_cons_u63(val)), "not a cons cell");
-    void **cell = decode_cons(val);
-    return cell[1];
-}
+// void *prim_cdr(void *val)
+// {
+//     assert_type((prim_cons_u63(val)), "not a cons cell");
+//     void **cell = decode_cons(val);
+//     return cell[1];
+// }
 
-std::string print_cons(void *lst)
-{
-    std::string ret_str;
-    ret_str.append("(list ");
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        ret_str.append(print_val(cons_lst[0]));
-        if (!is_cons(cons_lst[1]))
-        {
-            break;
-        }
-        ret_str.append(" ");
-        lst = cons_lst[1];
-    }
-    ret_str.append(")");
-    return ret_str;
-}
-#pragma endregion
+// std::string print_cons(void *lst)
+// {
+//     std::string ret_str;
+//     ret_str.append("(list ");
+//     while (is_cons(lst))
+//     {
+//         void **cons_lst = decode_cons(lst);
+//         ret_str.append(print_val(cons_lst[0]));
+//         if (!is_cons(cons_lst[1]))
+//         {
+//             break;
+//         }
+//         ret_str.append(" ");
+//         lst = cons_lst[1];
+//     }
+//     ret_str.append(")");
+//     return ret_str;
+// }
+// #pragma endregion
 
 #pragma region hash-prims
 
