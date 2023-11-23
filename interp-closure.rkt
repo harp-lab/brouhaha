@@ -73,6 +73,7 @@
        (let ([fn-val (eval ef env)] [arg-vals (map (lambda (ea) (eval ea env)) eas)])
          (coverage (appl fn-val arg-vals)))]
       [`(,ef ,eas ...)
+        (pretty-print exp)
        (let ([fn-val (eval ef env)] [arg-vals (map (lambda (ea) (eval ea env)) eas)])
          (coverage (appl fn-val arg-vals)))]))
 
