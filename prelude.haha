@@ -46,15 +46,13 @@
 (define-prim < 1 2 3)
 (define-prim <= 1 2 3)
 (define-prim >= 1 2 3)
+
+; prim-ops
 (define-prim modulo 2)
+(define-prim null? 1)
 
 
-
-; (define (modulo a b)
-;   (prim modulo a b))
-
-(define (null? x)
-  (prim null? x))
+; (define (null? x) (prim null? x))
 
 (define (equal? x y)
   (prim equal? x y))
@@ -126,7 +124,7 @@
 (define-prim hash )
 
 ; (define (hash . lst)
-  ; (apply-prim hash lst))
+; (apply-prim hash lst))
 
 (define (hash-ref h k)
   (prim hash-ref h k))

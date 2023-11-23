@@ -238,6 +238,22 @@ std::string print_cons(void *lst)
     ret_str.append(")");
     return ret_str;
 }
+
+// returns length of a list
+int length_counter(void *lst)
+{
+    if (lst == NULL_VALUE)
+        return 0;
+
+    void *val = prim_car(lst);
+    void *rest = prim_cdr(lst);
+
+    if (get_tag(val) == CONS)
+        return length_counter(val) + length_counter(rest);
+    else
+        return 1 + length_counter(rest);
+}
+
 #pragma endregion
 
 #pragma region ArithOpFunctions
@@ -625,20 +641,7 @@ void *prim_modulo(void *first, void *second)
     return result;
 }
 
-// returns length of a list
-int length_counter(void *lst)
-{
-    if (lst == NULL_VALUE)
-        return 0;
 
-    void *val = prim_car(lst);
-    void *rest = prim_cdr(lst);
-
-    if (get_tag(val) == CONS)
-        return length_counter(val) + length_counter(rest);
-    else
-        return 1 + length_counter(rest);
-}
 
 void *apply_prim_modulo(void *lst) //+
 {
@@ -680,14 +683,26 @@ void *prim_eq_u63(void *arg1, void *arg2)
 // }
 
 // null?
-void *prim_null_u63(void *lst)
+void *prim_null_u63(void *item)
 {
-    if (lst == 0x0)
+    if (get_tag(item) == SPL)
     {
         return encode_bool(true);
     }
     return encode_bool(false);
 }
+
+void *apply_prim_null_u63(void *lst){
+    if (length_counter(lst) > 1)
+        assert_type(false, "Error in apply_prim_modulo -> arity mismatch: expected number of argument is 1!");
+
+    return prim_null_u63(lst);
+}
+
+void *apply_prim_null_u63_1(void *item){
+    return prim_null_u63(item);
+}
+
 
 #pragma region Addition
 void *add_mpz(void *arg1, void *arg2)
