@@ -1,8 +1,8 @@
-(define (call-foldl lst)
-    (foldl + 0 lst))
+(define (call-foldl f lst)
+    (foldl f 0 lst))
 ; (define (call-foldl lst)
 ;     (foldl (lambda (x acc) (+ acc (foldl (lambda (y in_acc) (+ in_acc y)) 0 x))) 0 lst))
 
 (define (brouhaha_main)
     ; (call-foldl (list (list 1 2 3) (list 1 2 3 4))))
-    (call-foldl (list 1 2 3 4)))
+    (call-foldl + (list 1 2 3 4)))

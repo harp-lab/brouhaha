@@ -210,28 +210,35 @@ void *fhalt()
 ; this function returns (function_name true/false) as a touple,
 ; if the called function at a call site is
 ; one of the built-in define-prim's
-; ; prim-func, is the actual built-in define-prim we are aliasing with "func-name" 
+; prim-func, is the actual built-in define-prim we are aliasing with "func-name"
 (define (is-define-prim ast-root func-name)
   ; (displayln (format "is-user-def-func-a-define-prim: ~a" func-name))
   (define check-store-for-func
-    ; (index-to-facts (search-facts ast-root`(store (addr ,(symbol->string func-name) (define ,(symbol->string func-name))))) ast-root)
     (index-to-facts (search-facts ast-root `(store addr ,(symbol->string func-name))) ast-root)
     )
-
   ; (pretty-print check-store-for-func)
+
+  ; (let loop ([func-fact check-store-for-func])
+  ;   (cond
+  ;     [(null? func-fact) (begin (displayln "here1") `(,func-name #f))]
+  ;     [(> (length check-store-for-func) 1) (begin (displayln "herer") `(,func-name #f))]
+  ;     [else
+  ;      (match (car func-fact)
+  ;        [`(store (addr ,func) (define-prim ,prim-func ,var-or-fixed))
+  ;         `(,(string->symbol prim-func) #t)]
+  ;        [_ (loop (cdr func-fact))])
+  ;      ]))
+
   (match check-store-for-func
     [`((store (addr ,func) (define-prim ,prim-func ,var-or-fixed)))
-     ; if func is one of the define-prim and rst matches with apply-prim return true
 
-     ;  (match rst
-     ;    [`(apply-prim ,op ,_)
-     ;     ; at this point we know, op, is one of our define-prim
-     ;     ; now let's check, if we are calling it with a specific
-     ;     ; number of argument that we support, if so we return #t
-     ;     ; othewise, #f
-     ;     (is-define-prim ast-root (string->symbol op) arg-count)
+     ; should be just fact per (store (addr func)), not like below
+     ;  #17305_55	(store (addr "f2") (define-prim "+" (varparam "lst")))
+     ;  #17306_56	(store (addr "f2") (define-prim "*" (varparam "lst")))
+
      `(,(string->symbol prim-func) #t)]
-    [_ `(,func-name #f)]))
+    [_
+       `(,func-name #f)]))
 
 
 ; looks at the call-sites and returns a list of distinct number of args at call-site
@@ -278,10 +285,14 @@ void *fhalt()
   (apply + (map unbundle program)))
 
 ; (define sybo '+)
-; (define ast-root (read-facts "tests/double_inner/output/55e520758876177dcd4d38e9076e1c15e4f979994cd4d2effa249f42/facts.txt"))
+; (define ast-root (read-facts "tests/apply/output/578515199c3a2906e454b88940173865172a56f9d945ed2e8b1a3836/facts.txt"))
 ; (displayln (index-to-facts (search-facts ast-root `(app ref ,(symbol->string sybo))) ast-root))
 ; (params-count ast-root '+)
 
 ; (is_var_param ast-root sybo)
-; 55e520758876177dcd4d38e9076e1c15e4f979994cd4d2effa249f42
-; 925aee401258590a198ba4de7fd7f43dc34636b0e4bd42e8008c3f43
+; (define func 'f)
+; (match-define `(,builtin-func ,res) (is-define-prim ast-root func))
+; (displayln (~a "func: " func " builtin-func: " builtin-func " res: " res))
+
+; ; 578515199c3a2906e454b88940173865172a56f9d945ed2e8b1a3836
+; ; 925aee401258590a198ba4de7fd7f43dc34636b0e4bd42e8008c3f43

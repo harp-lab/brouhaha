@@ -236,8 +236,10 @@
       [`(clo-apply (prov ,prov ...) ,func ,args)
        (match-define `(,builtin-func ,res) (is-define-prim ast-root func))
 
+
        (cond
          [(and slog-flag res)
+          ; (displayln (~a "func: " func "builtin-func: " builtin-func " res: " res))
           (append-line filepath "\n//clo-apply")
 
           (append-line filepath

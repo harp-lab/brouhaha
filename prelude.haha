@@ -46,11 +46,12 @@
 (define-prim < 1 2 3)
 (define-prim <= 1 2 3)
 (define-prim >= 1 2 3)
+(define-prim modulo 2)
 
 
 
-(define (modulo a b)
-  (prim modulo a b))
+; (define (modulo a b)
+;   (prim modulo a b))
 
 (define (null? x)
   (prim null? x))

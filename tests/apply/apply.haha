@@ -1,11 +1,16 @@
-(define (call f)
-  (let* ([res1 (apply + (list 1 2 3 4))]
-         [res2 (apply f (list 10 20))]
-         [multiplication *] ; aliasing builtin define-prim '*
-         [res3 (apply multiplication (list res1 res2))])
+(define (call-2 f f2)
+  (let* ([res1 (apply + (list 4 3 1))]
+         [res0 (apply modulo (list 28 res1))]
+         [res2 (apply f2 (list 24.0 res0))]
+         [res3 (apply f (list res2 res1))])
 
-    (list res1 res2 res3)))
+    (list res1 res0 res2 res3)))
+
+(define (call f3 f2)
+  (call-2 modulo +))
 
 (define (brouhaha_main)
-  (call +))
+  (call / *))
+
+
 
