@@ -688,18 +688,27 @@ void *apply_prim_equal_u63(void *lst)
 
 void *prim_eq_u63(void *arg1, void *arg2)
 {
+    if (is_cons(arg1) || is_cons(arg2))
+        return encode_bool(false);
+
     return equal_(arg1, arg2);
 }
 
-// // cons?
-// void *prim_cons_u63(void *lst)
-// {
-//     if (get_tag(lst) == CONS)
-//     {
-//         return encode_bool(true);
-//     }
-//     return encode_bool(false);
-// }
+void *apply_prim_eq_u63_2(void *x, void *y)
+{
+    return prim_eq_u63(x, y);
+}
+
+void *apply_prim_eq_u63(void *lst)
+{
+    if (length_counter(lst) > 2)
+        assert_type(false, "Error in apply_prim_eq_u63 -> arity mismatch: more than two arguments is not supported!");
+
+    if (is_cons(prim_car(lst)) || is_cons(prim_car(prim_cdr(lst))))
+        return encode_bool(false);
+
+    return prim_eq_u63(prim_car(lst), prim_car(prim_cdr(lst)));
+}
 
 // null?
 void *prim_null_u63(void *item)

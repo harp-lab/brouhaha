@@ -1,7 +1,7 @@
 (define (eq-test x y)
-    (if (eq? x y)
-        1
-        2))
+    ; (apply eq? (list (list 1 1) (list 1 1)))
+    (apply eq? (list 2 2))
+  )
 
 (define (brouhaha_main)
-    (eq-test 1 1))
+  (eq-test 1 1))

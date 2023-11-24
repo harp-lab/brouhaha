@@ -214,6 +214,12 @@
            filepath
            (format "void* ~a = encode_str(new(GC) std::string(\"~a\"));" (get-c-string lhs) val))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
+         [`(quote ,(? symbol? val))
+          ; SEE: turning symbol into string!, is this correct?
+          (append-line
+           filepath
+           (format "void* ~a = encode_str(new(GC) std::string(\"~a\"));" (get-c-string lhs) (symbol->string val)))
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
          [(? symbol?) ; Not sure what this case does or supposed to do - SK
           ; (pretty-print (~a "cpb: " val))
           (append-line filepath
