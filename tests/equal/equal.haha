@@ -1,0 +1,6 @@
+(define (equal-test x y)
+  (apply equal? (list (list 1 1) (list 1 1)))
+  )
+
+(define (brouhaha_main)
+  (equal-test 1 1))

@@ -248,10 +248,12 @@ int length_counter(void *lst)
     void *val = prim_car(lst);
     void *rest = prim_cdr(lst);
 
-    if (get_tag(val) == CONS)
-        return length_counter(val) + length_counter(rest);
-    else
-        return 1 + length_counter(rest);
+    // if (get_tag(val) == CONS)
+    //     return length_counter(val) + length_counter(rest);
+    // else
+    //     return 1 + length_counter(rest);
+
+    return 1 + length_counter(rest);
 }
 
 #pragma endregion
@@ -276,6 +278,7 @@ void *mpz_equal(void *arg1, void *arg2)
     {
         return encode_bool(true);
     }
+
     return encode_bool(false);
 }
 
@@ -345,8 +348,13 @@ void *cons_equal(void *arg1, void *arg2)
         {
             void **cons_arg1 = decode_cons(arg1);
             void **cons_arg2 = decode_cons(arg2);
+
+            // std::cout << print_val(cons_arg1[0]) << std::endl;
+            // std::cout << print_val(cons_arg2[0]) << std::endl;
+            // std::cout << print_val(equal_(cons_arg1[0], cons_arg2[0])) << std::endl;
+
             // comparing the car values of two cons using the equal function
-            if (!equal_(cons_arg1[0], cons_arg2[0]))
+            if (!decode_bool(equal_(cons_arg1[0], cons_arg2[0])))
             {
                 return encode_bool(false);
             }
@@ -355,7 +363,7 @@ void *cons_equal(void *arg1, void *arg2)
         }
         else
         {
-            if (equal_(arg1, arg2))
+            if (decode_bool(equal_(arg1, arg2)))
             {
                 return encode_bool(true);
             }
@@ -641,8 +649,6 @@ void *prim_modulo(void *first, void *second)
     return result;
 }
 
-
-
 void *apply_prim_modulo(void *lst) //+
 {
     if (length_counter(lst) > 2)
@@ -665,6 +671,19 @@ void *apply_prim_modulo_2(void *a, void *b)
 void *prim_equal_u63(void *arg1, void *arg2)
 {
     return equal_(arg1, arg2);
+}
+
+void *apply_prim_equal_u63_2(void *x, void *y)
+{
+    return prim_equal_u63(x, y);
+}
+
+void *apply_prim_equal_u63(void *lst)
+{
+    if (length_counter(lst) > 2)
+        assert_type(false, "Error in apply_prim_equal_u63 -> arity mismatch: more than two arguments is not supported!");
+
+    return prim_equal_u63(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
 void *prim_eq_u63(void *arg1, void *arg2)
@@ -692,17 +711,19 @@ void *prim_null_u63(void *item)
     return encode_bool(false);
 }
 
-void *apply_prim_null_u63(void *lst){
+void *apply_prim_null_u63(void *lst)
+{
+
     if (length_counter(lst) > 1)
-        assert_type(false, "Error in apply_prim_modulo -> arity mismatch: expected number of argument is 1!");
+        assert_type(false, "Error in apply_prim_null_u63 -> arity mismatch: expected number of argument is 1!");
 
     return prim_null_u63(lst);
 }
 
-void *apply_prim_null_u63_1(void *item){
+void *apply_prim_null_u63_1(void *item)
+{
     return prim_null_u63(item);
 }
-
 
 #pragma region Addition
 void *add_mpz(void *arg1, void *arg2)

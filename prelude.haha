@@ -50,12 +50,10 @@
 ; prim-ops
 (define-prim modulo 2)
 (define-prim null? 1)
+(define-prim equal? 2)
 
-
-; (define (null? x) (prim null? x))
-
-(define (equal? x y)
-  (prim equal? x y))
+; (define (equal? x y)
+;   (prim equal? x y))
 
 (define (eq? x y)
   (prim eq? x y))
