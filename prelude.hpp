@@ -256,6 +256,22 @@ int length_counter(void *lst)
     return 1 + length_counter(rest);
 }
 
+// for debugging purpose!
+void print_mpf(mpf_t *arg)
+{
+    std::cout << "-----start of print_mpf-----" << std::endl;
+    const char *boom;
+    char buffer[1000];
+    float num;
+    std::string str(buffer);
+
+    gmp_sprintf(buffer, "%.1Ff", *arg);
+    str = buffer;
+    num = std::stof(str);
+    std::cout << "num: " << num << std::endl;
+    std::cout << "-----end of print_mpf-----" << std::endl;
+}
+
 #pragma endregion
 
 #pragma region ArithOpFunctions
@@ -1765,6 +1781,206 @@ void *prim_inexact_u45_u62exact(void *val)
     mpz_init(*ret_mpz);
     mpz_set_f(*ret_mpz, *(decode_mpf(val)));
     return encode_mpz(ret_mpz);
+}
+
+void *prim_exact_u45floor(void *val) // exact-floor
+{
+    int val_tag = get_tag(val);
+    if (val_tag != MPF && val_tag != MPZ)
+    {
+        // std::cout << val_tag << std::endl;
+
+        assert_type(false, "Prim exac-floor -> contract violation: expected rational? argument!");
+    }
+
+    void *result = nullptr;
+
+    if (val_tag == MPF)
+    {
+        mpz_t *result_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init(*result_mpz);
+
+        mpf_t *flr_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*flr_val);
+        mpf_floor(*flr_val, *(decode_mpf(val)));
+        mpz_set_f(*result_mpz, *flr_val);
+
+        return encode_mpz(result_mpz);
+    }
+    else if (val_tag == MPZ)
+    {
+        // std::cout<<"here..."<<std::endl;
+        return encode_mpz(decode_mpz(val));
+    }
+
+    return result;
+}
+
+void *apply_prim_exact_u45floor_1(void *val)
+{
+    return prim_exact_u45floor(val);
+}
+
+void *apply_prim_exact_u45floor(void *lst)
+{
+    if (length_counter(lst) > 1)
+        assert_type(false, "Error in exac-floor -> arity mismatch: more than one arguments is not supported!");
+
+    void **cons_lst = decode_cons(lst);
+    int car_tag = get_tag(cons_lst[0]);
+    bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+
+    assert_type(type_check, "Error in exac-floor -> contact violation expected retional argument!");
+
+    return prim_exact_u45floor(prim_car(lst));
+}
+
+void *prim_exact_u45ceiling(void *val) // exact-ceiling
+{
+    int val_tag = get_tag(val);
+    if (val_tag != MPF && val_tag != MPZ)
+    {
+        // std::cout << val_tag << std::endl;
+
+        assert_type(false, "Prim exac-ceiling -> contract violation: expected rational? argument!");
+    }
+
+    void *result = nullptr;
+
+    if (val_tag == MPF)
+    {
+        mpz_t *result_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init(*result_mpz);
+
+        // mpf_t flr;
+        // mpf_init(flr);
+        // mpf_floor(flr, *(decode_mpf(val))); // Floor the mpf value
+
+        // mpz_set_f(*result_mpz, flr); // Convert the floored mpf to mpz
+        // mpf_clear(flr);              // Clear the mpf variable
+
+        mpf_t *ceil_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*ceil_val);
+        mpf_ceil(*ceil_val, *(decode_mpf(val)));
+        mpz_set_f(*result_mpz, *ceil_val);
+
+        return encode_mpz(result_mpz);
+    }
+    else if (val_tag == MPZ)
+    {
+        // std::cout<<"here..."<<std::endl;
+        return encode_mpz(decode_mpz(val));
+    }
+
+    return result;
+}
+
+void *apply_prim_exact_u45ceiling_1(void *val)
+{
+    return prim_exact_u45ceiling(val);
+}
+
+void *apply_prim_exact_u45ceiling(void *lst)
+{
+    if (length_counter(lst) > 1)
+        assert_type(false, "Error in exac-ceiling -> arity mismatch: more than one arguments is not supported!");
+
+    void **cons_lst = decode_cons(lst);
+    int car_tag = get_tag(cons_lst[0]);
+    bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+
+    assert_type(type_check, "Error in exac-ceiling -> contact violation expected retional argument!");
+
+    return prim_exact_u45ceiling(prim_car(lst));
+}
+
+void *prim_exact_u45round(void *val) // exact-round
+{
+    int val_tag = get_tag(val);
+    if (val_tag != MPF && val_tag != MPZ)
+    {
+        std::cout << val_tag << std::endl;
+
+        assert_type(false, "Prim exac-round -> contract violation: expected rational? argument!");
+    }
+
+    void *result = nullptr;
+    mpf_t *val_mpf = decode_mpf(val);
+
+    mpf_t *round_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*round_val);
+
+    mpf_t *half = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*half);
+    mpf_set_d(*half, 0.5);
+
+    // Check if the fractional part is exactly 0.5
+    mpf_t *float_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*float_val);
+    mpf_floor(*float_val, *val_mpf);
+    mpf_sub(*float_val, *val_mpf, *float_val);
+
+    // print_mpf(float_val);
+
+    // If fractional part = 0.5, rounding it to the nearest even integer
+    if (mpf_cmp(*float_val, *half) == 0)
+    {
+        mpz_t int_val;
+        mpz_init(int_val);
+
+        // Converting to to mpz_t, to floor the value
+        mpz_set_f(int_val, *val_mpf);
+
+        // if negative numbers
+        if (mpf_sgn(*val_mpf) < 0)
+        {
+            // takeing abs value of the floored integer
+            mpz_abs(int_val, int_val);
+            // Incrementing to get the original integer part
+            mpz_add_ui(int_val, int_val, 1);
+        }
+
+        if (mpz_even_p(int_val) != 0)
+            mpf_floor(*round_val, *val_mpf);
+        else
+            mpf_ceil(*round_val, *val_mpf);
+
+        mpz_clear(int_val);
+    }
+    else
+    {
+        mpf_t *temp = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*temp);
+        mpf_add(*temp, *val_mpf, *half);
+        mpf_floor(*round_val, *temp);
+    }
+
+    // print_mpf(round_val);
+
+    mpz_t *result_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result_mpz);
+    mpz_set_f(*result_mpz, *round_val); // Convert the rounded mpf to mpz
+
+    return encode_mpz(result_mpz);
+}
+
+void *apply_prim_exact_u45round_1(void *val)
+{
+    return prim_exact_u45round(val);
+}
+
+void *apply_prim_exact_u45round(void *lst)
+{
+    if (length_counter(lst) > 1)
+        assert_type(false, "Error in exac-round -> arity mismatch: more than one arguments is not supported!");
+
+    void **cons_lst = decode_cons(lst);
+    int car_tag = get_tag(cons_lst[0]);
+    bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+
+    assert_type(type_check, "Error in exac-round -> contact violation expected retional argument!");
+
+    return prim_exact_u45round(prim_car(lst));
 }
 
 #pragma region STRINGS

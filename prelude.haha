@@ -53,8 +53,10 @@
 (define-prim equal? 2)
 (define-prim eq? 2)
 
-; (define (eq? x y)
-;   (prim eq? x y))
+(define-prim exact-floor 1)
+(define-prim exact-ceiling 1)
+(define-prim exact-round 1)
+
 
 (define (cons a b)
   (prim cons a b))
@@ -75,6 +77,7 @@
 
 (define (float->int val)
   (prim inexact->exact val))
+
 
 (define (int->float val)
   (prim exact->inexact val))
