@@ -12,35 +12,10 @@
 ;   (prim set-count s val))
 ; above prims never worked
 
-; (define (+ . lst)
-;   (apply-prim + lst))
-
-; (define (- . lst)
-;   (apply-prim - lst))
-
-; (define (/ . lst)
-;   (apply-prim / lst))
-
-; (define (= . lst)
-;   (apply-prim = lst))
-
-; (define (> . lst)
-;   (apply-prim > lst))
-
-; (define (< . lst)
-;   (apply-prim < lst))
-
-; (define (<= . lst)
-;   (apply-prim <= lst))
-
-; (define (>= . lst)
-;   (apply-prim >= lst))
-
 (define-prim + 1 2 3)
 (define-prim - 1 2 3)
 (define-prim * 1 2 3)
 (define-prim / 2 3)
-
 (define-prim = 1 2 3)
 (define-prim > 1 2 3)
 (define-prim < 1 2 3)
@@ -52,20 +27,12 @@
 (define-prim null? 1)
 (define-prim equal? 2)
 (define-prim eq? 2)
-
 (define-prim exact-floor 1)
 (define-prim exact-ceiling 1)
 (define-prim exact-round 1)
-
-
-(define (cons a b)
-  (prim cons a b))
-
-(define (car lst)
-  (prim car lst))
-
-(define (cdr lst)
-  (prim cdr lst))
+(define-prim cons 2)
+(define-prim car 1)
+(define-prim cdr 1)
 
 (define (even? x)
   (equal? 0 (modulo x 2)))
@@ -77,7 +44,6 @@
 
 (define (float->int val)
   (prim inexact->exact val))
-
 
 (define (int->float val)
   (prim exact->inexact val))

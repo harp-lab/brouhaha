@@ -107,6 +107,34 @@ int get_tag(void *val)
     return (ptr & 7);
 }
 
+// for debugging purpose!
+void print_mpf(mpf_t *arg)
+{
+    std::cout << "-----start of print_mpf-----" << std::endl;
+    const char *boom;
+    char buffer[1000];
+    float num;
+    std::string str(buffer);
+
+    gmp_sprintf(buffer, "%.1Ff", *arg);
+    str = buffer;
+    num = std::stof(str);
+    std::cout << "num: " << num << std::endl;
+    std::cout << "-----end of print_mpf-----" << std::endl;
+}
+
+void print_mpz(mpz_t *arg)
+{
+    std::cout << "-----start of print_mpz-----" << std::endl;
+    // mpz_t *final_mpz;
+    // final_mpz = decode_mpz(arg1);
+    std::string str(mpz_get_str(nullptr, 10, *arg));
+
+    int num = std::stoi(str);
+    std::cout << "num: " << num << std::endl;
+    std::cout << "-----end of print_mpz-----" << std::endl;
+}
+
 bool is_cons(void *lst)
 {
     if (get_tag(lst) == CONS)
@@ -196,6 +224,20 @@ static void *prim_cons(void *arg1, void *arg2)
     return encode_cons(cell);
 }
 
+void *apply_prim_cons_2(void *arg1, void *arg2)
+{
+    std::cout << "here..." << std::endl;
+    void *lst = encode_null();
+
+    // mpz_t *var = (decode_mpz(arg1));
+    // mpz_t *var2 = (decode_mpz(arg2));
+    // print_mpz(var);
+    // print_mpz(var2);
+
+    // return prim_cons(arg1, prim_cons(arg2, lst));
+    return prim_cons(arg1, arg2);
+}
+
 // cons?
 void *prim_cons_u63(void *lst)
 {
@@ -213,6 +255,11 @@ void *prim_car(void *val)
     return cell[0];
 }
 
+void *apply_prim_car_1(void *arg1)
+{
+    return prim_car(arg1);
+}
+
 void *prim_cdr(void *val)
 {
     assert_type((prim_cons_u63(val)), "not a cons cell");
@@ -220,24 +267,12 @@ void *prim_cdr(void *val)
     return cell[1];
 }
 
-std::string print_cons(void *lst)
+void *apply_prim_cdr_1(void *arg1)
 {
-    std::string ret_str;
-    ret_str.append("(list ");
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        ret_str.append(print_val(cons_lst[0]));
-        if (!is_cons(cons_lst[1]))
-        {
-            break;
-        }
-        ret_str.append(" ");
-        lst = cons_lst[1];
-    }
-    ret_str.append(")");
-    return ret_str;
+    std::cout << "here cdr..." << std::endl;
+    return prim_cdr(arg1);
 }
+
 
 // returns length of a list
 int length_counter(void *lst)
@@ -256,20 +291,58 @@ int length_counter(void *lst)
     return 1 + length_counter(rest);
 }
 
-// for debugging purpose!
-void print_mpf(mpf_t *arg)
+void *apply_prim_cons(void *lst)
 {
-    std::cout << "-----start of print_mpf-----" << std::endl;
-    const char *boom;
-    char buffer[1000];
-    float num;
-    std::string str(buffer);
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in prim cons -> arity mismatch: number of arguments should be 2!");
 
-    gmp_sprintf(buffer, "%.1Ff", *arg);
-    str = buffer;
-    num = std::stof(str);
-    std::cout << "num: " << num << std::endl;
-    std::cout << "-----end of print_mpf-----" << std::endl;
+    return prim_cons(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
+void *apply_prim_car(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in prim car -> arity mismatch: number of arguments should be 1!");
+
+    // because apply of car takes exp like, (list (list 10 2))
+    return prim_car(prim_car(lst));
+}
+
+
+void *apply_prim_cdr(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in prim cdr -> arity mismatch: number of arguments should be 1!");
+
+    // because apply of cdr takes exp like, (list (list 10 2))
+    return prim_cdr(prim_car(lst));
+}
+
+std::string print_cons(void *lst)
+{
+    // std::cout << "here2..." << std::endl;
+    std::string ret_str;
+    ret_str.append("'(");
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        ret_str.append(print_val(cons_lst[0]));
+        if (!is_cons(cons_lst[1]))
+        {
+            // std::cout << "here3..." << get_tag(cons_lst[1]) << std::endl;
+            if (get_tag(cons_lst[1]) != SPL)
+            {
+                ret_str.append(" . ");
+                ret_str.append(print_val(cons_lst[1]));
+            }
+
+            break;
+        }
+        ret_str.append(" ");
+        lst = cons_lst[1];
+    }
+    ret_str.append(")");
+    return ret_str;
 }
 
 #pragma endregion
@@ -1840,8 +1913,6 @@ void *prim_exact_u45ceiling(void *val) // exact-ceiling
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        // std::cout << val_tag << std::endl;
-
         assert_type(false, "Prim exac-ceiling -> contract violation: expected rational? argument!");
     }
 
@@ -1851,13 +1922,6 @@ void *prim_exact_u45ceiling(void *val) // exact-ceiling
     {
         mpz_t *result_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
         mpz_init(*result_mpz);
-
-        // mpf_t flr;
-        // mpf_init(flr);
-        // mpf_floor(flr, *(decode_mpf(val))); // Floor the mpf value
-
-        // mpz_set_f(*result_mpz, flr); // Convert the floored mpf to mpz
-        // mpf_clear(flr);              // Clear the mpf variable
 
         mpf_t *ceil_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
         mpf_init(*ceil_val);
