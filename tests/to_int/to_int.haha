@@ -1,5 +1,7 @@
 (define (call)
-    (float->int 3.14))
+    ; (float->int 3.14)
+    (apply float->int (list 4.14))
+    )
 
 (define (brouhaha_main)
     (call))

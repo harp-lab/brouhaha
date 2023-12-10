@@ -269,10 +269,8 @@ void *prim_cdr(void *val)
 
 void *apply_prim_cdr_1(void *arg1)
 {
-    std::cout << "here cdr..." << std::endl;
     return prim_cdr(arg1);
 }
-
 
 // returns length of a list
 int length_counter(void *lst)
@@ -307,7 +305,6 @@ void *apply_prim_car(void *lst)
     // because apply of car takes exp like, (list (list 10 2))
     return prim_car(prim_car(lst));
 }
-
 
 void *apply_prim_cdr(void *lst)
 {
@@ -1374,7 +1371,7 @@ void *compare_lst(void *lst, bool (*cmp_op)(long))
         bool type_check = (get_tag(cons_lst[0]) == MPZ);
 
         assert_type(type_check,
-                    "Error in apply_prim__u62: values in the lst are not MPT");
+                    "Error in apply_prim__u62: values in the lst are not MPZ");
         mpz_t *opd1 = decode_mpz(cons_lst[0]);
 
         // std::string str(mpz_get_str(nullptr, 10, *opd1));
@@ -1686,17 +1683,21 @@ void *prim_hash_u45ref(void *h, void *k)
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "in the hash-ref function hash is not passed");
+        assert_type(false, "Error in in the hash-ref: contact violation -> First argument should be a hash!");
     }
+    
     int elem_tag = get_tag(k);
     bool type_check_key = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH);
+    
     if (!type_check_key)
     {
-        assert_type(false, "in the hash-ref function mpz_t/mpf_t/std::string is not passed");
+        assert_type(false, "Error in the hash-ref: contact violoation -> Second argument should be one of the following type: MPZ/MPF/STRING/HASH!");
     }
+    
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     const hash_struct *const key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(k);
     const hash_struct *const t = h_hamt->get(key);
+    
     if (t)
     {
         return t->val;
@@ -1706,6 +1707,20 @@ void *prim_hash_u45ref(void *h, void *k)
         return NULL_VALUE;
     }
 }
+
+void* apply_prim_hash_u45ref_2(void *arg1, void *arg2){
+    return prim_hash_u45ref(arg1, arg2);
+}
+
+void *apply_prim_hash_u45ref(void *lst){
+    // std::cout << "here..." << std::endl;
+
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in hash-ref -> arity mismatch: number of arguments should be 2!");
+
+    return prim_hash_u45ref(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
 
 void *prim_hash_u45set(void *h, void *k, void *v)
 {
@@ -1825,35 +1840,86 @@ void *prim_list_u45_u62set(void *lst)
 #pragma end region
 
 /*
-Takes a MPZ and returns MPF for that integer
+Takes a MPZ/MPF and returns MPF
 */
 void *prim_exact_u45_u62inexact(void *val)
 {
+    // std::cout << "here..." << std::endl;
     int val_tag = get_tag(val);
-    if (val_tag != MPZ)
+    if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "type passed to int->float is not an int");
+        assert_type(false, "Prim int->float -> contract violation: expected rational? argument!");
     }
-    mpf_t *ret_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*ret_mpf);
-    mpf_set_z(*ret_mpf, *(decode_mpz(val)));
-    return encode_mpf(ret_mpf);
+
+    if (val_tag == MPZ)
+    {
+        mpf_t *ret_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*ret_mpf);
+        mpf_set_z(*ret_mpf, *(decode_mpz(val)));
+        return encode_mpf(ret_mpf);
+    }
+    else if (val_tag == MPF)
+    {
+        return encode_mpf(decode_mpf(val));
+    }
+
+    return nullptr;
 }
 
+void *apply_prim_int_u45_u62float_1(void *arg)
+{
+    std::cout << "here1..." << std::endl;
+    return prim_exact_u45_u62inexact(arg);
+}
+
+void *apply_prim_int_u45_u62float(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in int->float -> arity mismatch: number of arguments should be 1!");
+
+    return prim_exact_u45_u62inexact(prim_car(lst));
+}
+
+
+
 /*
-Takes a MPF and returns MPZ for that FLOAT
+Takes a MPF/MPZ and returns MPZ
 */
 void *prim_inexact_u45_u62exact(void *val)
 {
+    // std::cout << "here..." << std::endl;
     int val_tag = get_tag(val);
-    if (val_tag != MPF)
+    if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "type passed to float->int is not an float");
+        assert_type(false, "Prim float->int -> contract violation: expected rational? argument!");
     }
-    mpz_t *ret_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*ret_mpz);
-    mpz_set_f(*ret_mpz, *(decode_mpf(val)));
-    return encode_mpz(ret_mpz);
+
+    if (val_tag == MPF)
+    {
+        mpz_t *ret_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init(*ret_mpz);
+        mpz_set_f(*ret_mpz, *(decode_mpf(val)));
+        return encode_mpz(ret_mpz);
+    }
+    else if (val_tag == MPZ)
+    {
+        return encode_mpz(decode_mpz(val));
+    }
+
+    return nullptr;
+}
+
+void *apply_prim_float_u45_u62int_1(void *arg)
+{
+    return prim_inexact_u45_u62exact(arg);
+}
+
+void *apply_prim_float_u45_u62int(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in float->int -> arity mismatch: number of arguments should be 1!");
+
+    return prim_inexact_u45_u62exact(prim_car(lst));
 }
 
 void *prim_exact_u45floor(void *val) // exact-floor

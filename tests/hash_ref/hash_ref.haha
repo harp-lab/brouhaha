@@ -1,5 +1,7 @@
 (define (call)
-    (hash-ref (hash "work" 80 10 "lmao") 10))
+    ; (hash-ref (hash "work" 80.6 10 "lmao") "work")
+    (apply hash-ref (list (hash "work" 80.9 10 "lmao") "work"))
+    )
 
 (define (brouhaha_main)
     (call))
