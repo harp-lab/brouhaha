@@ -1,0 +1,6 @@
+1. encoding/decoding for set is missing
+    exp, set->list (void *prim_set_u45_u62list(void *h)), should check if the argument passed is set or not! 
+
+    status: unsloved
+
+2. 

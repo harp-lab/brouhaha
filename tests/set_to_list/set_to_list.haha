@@ -1,0 +1,11 @@
+(define (call)
+  ; (set->list (set 1 2 2 3.5 3 4 "haha"))
+  ; (set->list (hash 1 2 2 3.5 3 4 "haha" 10))
+  ; (set->list (list 1 2 2 3.5 3 4 "haha"))
+
+  (apply set->list (list (set 1 2 2 3.5 3 4 "haha" 10)))
+  
+  )
+
+(define (brouhaha_main)
+  (call))

@@ -37,9 +37,16 @@
 (define-prim int->float 1)
 
 ; hash prims
+(define-prim hash)
 (define-prim hash-ref 2)
 (define-prim hash-set 3)
 (define-prim hash-keys 1)
+(define-prim hash-has-key? 2)
+(define-prim hash-count 1)
+
+; set prims
+(define-prim set)
+(define-prim set->list 1)
 
 (define (even? x)
   (equal? 0 (modulo x 2)))
@@ -87,21 +94,8 @@
 (define (append lst1 lst2)
   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
 
-(define-prim hash )
-
-(define (hash-has-key? h k)
-  (prim hash-has-key? h k))
-
-(define (hash-count h)
-  (prim hash-count h))
-
-(define-prim set )
-
-; (define (set . lst)
-;   (apply-prim set lst))
-
-(define (set->list h)
-  (prim set->list h))
+; (define (set->list h)
+;   (prim set->list h))
 
 (define (list->set lst)
   (prim list->set lst))

@@ -1655,7 +1655,7 @@ void *apply_prim_hash(void *lst)
 
         if (!is_cons(cons_lst[1]))
         {
-            assert_type(false, "Value isn't there");
+            assert_type(false, "Error in hash -> key does not have a value!");
         }
         void **cdr_cons_lst = decode_cons(cons_lst[1]);
 
@@ -1668,7 +1668,7 @@ void *apply_prim_hash(void *lst)
             lst = cdr_cons_lst[1];
             continue;
         }
-        assert_type(false, "Key is not one of MPZ or MPF or STRING");
+        assert_type(false, "Error in hash: contact violation -> Key should be one of the following types: MPZ/MPF/STRING!");
     }
     // std::cout << h->size() << std::endl;
     return encode_hash(h);
@@ -1683,7 +1683,7 @@ void *prim_hash_u45ref(void *h, void *k)
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "Error in in the hash-ref: contact violation -> First argument should be a hash!");
+        assert_type(false, "Error in the hash-ref: contact violation -> First argument should be a hash!");
     }
 
     int elem_tag = get_tag(k);
@@ -1729,7 +1729,7 @@ void *prim_hash_u45set(void *h, void *k, void *v)
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "Error in in the hash-set: contact violation -> First argument should be a hash!");
+        assert_type(false, "Error in the hash-set: contact violation -> First argument should be a hash!");
     }
     int key_tag = get_tag(k);
     bool type_check_key = (key_tag == MPZ) || (key_tag == MPF) || (key_tag == STRING);
@@ -1767,6 +1767,20 @@ void *prim_set_u45add(void *s, void *val)
 
 void *prim_hash_u45has_u45key_u63(void *h, void *k)
 {
+    bool type_check_hash = get_tag(h) == HASH;
+    if (!type_check_hash)
+    {
+        assert_type(false, "Error in the hash-has-key?: contact violation -> First argument should be a hash!");
+    }
+
+    int elem_tag = get_tag(k);
+    bool type_check_key = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH);
+
+    if (!type_check_key)
+    {
+        assert_type(false, "Error in the hash-has-key?: contact violoation -> Second argument should be one of the following type: MPZ/MPF/STRING/HASH!");
+    }
+
     void *ret_val = prim_hash_u45ref(h, k);
     if (ret_val)
     {
@@ -1778,6 +1792,19 @@ void *prim_hash_u45has_u45key_u63(void *h, void *k)
     }
 }
 
+void *apply_prim_hash_u45has_u45key_u63_2(void *arg1, void *arg2)
+{
+    return prim_hash_u45has_u45key_u63(arg1, arg2);
+}
+
+void *apply_prim_hash_u45has_u45key_u63(void *lst)
+{
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in hash-has-key? -> arity mismatch: number of arguments should be 2!");
+
+    return prim_hash_u45has_u45key_u63(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
 void *prim_hash_u45count(void *h)
 {
     // check if a hash
@@ -1787,6 +1814,7 @@ void *prim_hash_u45count(void *h)
     if (!type_check_hash)
     {
         assert_type(false, "in the hash-count, hash is not passed");
+        assert_type(false, "Error in the hash-count: contact violation ->  Argument should be a hash!");
     }
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     mpz_t *count = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
@@ -1794,12 +1822,25 @@ void *prim_hash_u45count(void *h)
     return encode_mpz(count);
 }
 
+void *apply_prim_hash_u45count_1(void *arg1)
+{
+    return prim_hash_u45count(arg1);
+}
+
+void *apply_prim_hash_u45count(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in hash-count -> arity mismatch: number of arguments should be 1!");
+
+    return prim_hash_u45count(prim_car(lst));
+}
+
 void *prim_hash_u45keys(void *h)
 {
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "Error in in the hash-keys: contact violation -> Argument should be a hash!");
+        assert_type(false, "Error in the hash-keys: contact violation -> Argument should be a hash!");
     }
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     const hash_struct **keys_array = h_hamt->getKeys();
@@ -1814,11 +1855,13 @@ void *prim_hash_u45keys(void *h)
     return keys_cons_lst;
 }
 
-void *apply_prim_hash_u45keys_1(void *arg){
+void *apply_prim_hash_u45keys_1(void *arg)
+{
     return prim_hash_u45keys(arg);
 }
 
-void *apply_prim_hash_u45keys(void *lst){
+void *apply_prim_hash_u45keys(void *lst)
+{
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
         assert_type(false, "Error in hash-keys -> arity mismatch: number of arguments should be 1!");
 
@@ -1844,7 +1887,7 @@ void *apply_prim_set(void *lst)
             lst = cons_lst[1];
             continue;
         }
-        assert_type(false, "Key is not one of MPZ or MPF or STRING");
+        assert_type(false, "Error in set: contact violation -> Key should be one of following types: MPZ/MPF/STRING!");
     }
     // std::cout << "the size of the set being returned is" << h->size() << std::endl;
     return encode_hash(h);
@@ -1852,7 +1895,47 @@ void *apply_prim_set(void *lst)
 
 void *prim_set_u45_u62list(void *h)
 {
+    // encoding/decoding for set is missing
+
+    int tag = get_tag(h);
+
+    if (tag == CONS)
+    {
+        // if the argument is a list, return as it is!
+        return h;
+    }
+    else if (tag == HASH)
+    {
+        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
+        if (h_hamt->whatami() == hamt_ds_type::set_type)
+        {
+            // if the argument is a set
+            return prim_hash_u45keys(h);
+        }
+
+        // otherwise shoot error, because, a hash should not be passed as an argument
+        std::cout << "here: not-set-type " << get_tag(h) << std::endl;
+        assert_type(false, "Error in set->list: contact violation -> Argument should be a set");
+    }
+    // otherwise we are assuming a set/something is passed, which is not always true!, thus shooting an error!
+
+    assert_type(false, "Error in set->list: contact violation -> Argument should be a set");
+
     return prim_hash_u45keys(h);
+}
+
+void *apply_prim_set_u45_u62list_1(void *arg)
+{
+    return prim_set_u45_u62list(arg);
+}
+
+void *apply_prim_set_u45_u62list(void *lst)
+{
+
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in set->list -> arity mismatch: number of arguments should be 1!");
+
+    return prim_set_u45_u62list(prim_car(lst));
 }
 
 void *prim_list_u45_u62set(void *lst)

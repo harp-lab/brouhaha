@@ -1,5 +1,7 @@
 (define (call)
-    (set 1 2 2 3 "haha"))
+    ; (set 1 2 2 3.5 3 "haha")
+    (apply set (list 1 2 2 3.5 3 "haha"))
+    )
 
 (define (brouhaha_main)
     (call))
