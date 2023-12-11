@@ -226,7 +226,7 @@ static void *prim_cons(void *arg1, void *arg2)
 
 void *apply_prim_cons_2(void *arg1, void *arg2)
 {
-    std::cout << "here..." << std::endl;
+    // std::cout << "here..." << std::endl;
     void *lst = encode_null();
 
     // mpz_t *var = (decode_mpz(arg1));
@@ -1685,19 +1685,19 @@ void *prim_hash_u45ref(void *h, void *k)
     {
         assert_type(false, "Error in in the hash-ref: contact violation -> First argument should be a hash!");
     }
-    
+
     int elem_tag = get_tag(k);
     bool type_check_key = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH);
-    
+
     if (!type_check_key)
     {
         assert_type(false, "Error in the hash-ref: contact violoation -> Second argument should be one of the following type: MPZ/MPF/STRING/HASH!");
     }
-    
+
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     const hash_struct *const key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(k);
     const hash_struct *const t = h_hamt->get(key);
-    
+
     if (t)
     {
         return t->val;
@@ -1708,19 +1708,18 @@ void *prim_hash_u45ref(void *h, void *k)
     }
 }
 
-void* apply_prim_hash_u45ref_2(void *arg1, void *arg2){
+void *apply_prim_hash_u45ref_2(void *arg1, void *arg2)
+{
     return prim_hash_u45ref(arg1, arg2);
 }
 
-void *apply_prim_hash_u45ref(void *lst){
-    // std::cout << "here..." << std::endl;
-
+void *apply_prim_hash_u45ref(void *lst)
+{
     if (length_counter(lst) < 2 || length_counter(lst) > 2)
         assert_type(false, "Error in hash-ref -> arity mismatch: number of arguments should be 2!");
 
     return prim_hash_u45ref(prim_car(lst), prim_car(prim_cdr(lst)));
 }
-
 
 void *prim_hash_u45set(void *h, void *k, void *v)
 {
@@ -1730,13 +1729,13 @@ void *prim_hash_u45set(void *h, void *k, void *v)
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "in the hash-set, hash is not passed");
+        assert_type(false, "Error in in the hash-set: contact violation -> First argument should be a hash!");
     }
     int key_tag = get_tag(k);
     bool type_check_key = (key_tag == MPZ) || (key_tag == MPF) || (key_tag == STRING);
     if (!type_check_key)
     {
-        assert_type(false, "in the hash-set function mpz_t/mpf_t/std::string for key is not passed");
+        assert_type(false, "Error in the hash-set: contact violoation -> Second argument should be one of the following type: MPZ/MPF/STRING!");
     }
 
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
@@ -1746,6 +1745,19 @@ void *prim_hash_u45set(void *h, void *k, void *v)
     h_hamt = h_hamt->insert(key, value);
 
     return encode_hash(h_hamt);
+}
+
+void *apply_prim_hash_u45set_3(void *arg1, void *arg2, void *arg3)
+{
+    return prim_hash_u45set(arg1, arg2, arg3);
+}
+
+void *apply_prim_hash_u45set(void *lst)
+{
+    if (length_counter(lst) < 3 || length_counter(lst) > 3)
+        assert_type(false, "Error in hash-set -> arity mismatch: number of arguments should be 3!");
+
+    return prim_hash_u45set(prim_car(lst), prim_car(prim_cdr(lst)), prim_car(prim_cdr(prim_cdr(lst))));
 }
 
 void *prim_set_u45add(void *s, void *val)
@@ -1787,7 +1799,7 @@ void *prim_hash_u45keys(void *h)
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "in the hash-keys function, hash is not passed");
+        assert_type(false, "Error in in the hash-keys: contact violation -> Argument should be a hash!");
     }
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     const hash_struct **keys_array = h_hamt->getKeys();
@@ -1800,6 +1812,17 @@ void *prim_hash_u45keys(void *h)
     }
     // std::cout << print_val(keys_cons_lst) << std::endl;
     return keys_cons_lst;
+}
+
+void *apply_prim_hash_u45keys_1(void *arg){
+    return prim_hash_u45keys(arg);
+}
+
+void *apply_prim_hash_u45keys(void *lst){
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in hash-keys -> arity mismatch: number of arguments should be 1!");
+
+    return prim_hash_u45keys(prim_car(lst));
 }
 #pragma endregion
 
@@ -1879,8 +1902,6 @@ void *apply_prim_int_u45_u62float(void *lst)
 
     return prim_exact_u45_u62inexact(prim_car(lst));
 }
-
-
 
 /*
 Takes a MPF/MPZ and returns MPZ

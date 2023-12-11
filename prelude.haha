@@ -38,6 +38,8 @@
 
 ; hash prims
 (define-prim hash-ref 2)
+(define-prim hash-set 3)
+(define-prim hash-keys 1)
 
 (define (even? x)
   (equal? 0 (modulo x 2)))
@@ -86,18 +88,6 @@
   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
 
 (define-prim hash )
-
-; (define (hash . lst)
-; (apply-prim hash lst))
-
-; (define (hash-ref h k)
-;   (prim hash-ref h k))
-
-(define (hash-set h k v)
-  (prim hash-set h k v))
-
-(define (hash-keys h)
-  (prim hash-keys h))
 
 (define (hash-has-key? h k)
   (prim hash-has-key? h k))
