@@ -1,5 +1,7 @@
 (define (call)
-    (substring "brouhaha" 4 8))
+    ; (substring "brouhaha" 4 8)
+    (apply substring (list "brouhaha" 4 8))
+    )
 
 (define (brouhaha_main)
     (call))

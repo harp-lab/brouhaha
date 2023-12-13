@@ -2299,13 +2299,27 @@ void *prim_string_u63(void *val)
     }
     return encode_bool(false);
 }
+
+void *apply_prim_string_u63_1(void *arg)
+{
+    return prim_string_u63(arg);
+}
+
+void *apply_prim_string_u63(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in string? -> arity mismatch: number of arguments should be 1!");
+
+    return prim_string_u63(prim_car(lst));
+}
+
 // takes a void* and checks if it is a string and then returns the length of it
 void *prim_string_u45length(void *val)
 {
     int tag = get_tag(val);
     if (tag != STRING)
     {
-        assert_type(false, "val passed to string_length is not a string");
+        assert_type(false, "Error in string-length -> Argument is not a string");
     }
 
     std::string *str = decode_str(val);
@@ -2313,29 +2327,57 @@ void *prim_string_u45length(void *val)
     mpz_init_set_ui(*str_len, str->length());
     return encode_mpz(str_len);
 }
+
+void *apply_prim_string_u45length_1(void *arg)
+{
+    return prim_string_u45length(arg);
+}
+
+void *apply_prim_string_u45length(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in string-length -> arity mismatch: number of arguments should be 1!");
+
+    return prim_string_u45length(prim_car(lst));
+}
+
 // takes in str and the position and returns the character at that position
 void *prim_string_u45ref(void *str_void, void *pos_void)
 {
-    assert_type((get_tag(str_void)) == STRING, "str passed to the string-ref is not a string");
-    assert_type((get_tag(pos_void)) == MPZ, "pos passed to the string-ref is not an integer");
+    assert_type((get_tag(str_void)) == STRING, "Error in string-ref -> Frist argument should be a string");
+    assert_type((get_tag(pos_void)) == MPZ, "Error in string-ref -> Second argument should be an integer");
 
     std::string *str = decode_str(str_void);
     mpz_t *pos = decode_mpz(pos_void);
 
     if (!(mpz_cmp_ui(*pos, str->length()) < 0))
     { // pos < str.length()
-        assert_type(false, "Array out of bounds exception");
+        assert_type(false, "Error in string-ref -> Index is out of range");
     }
     const char ch = str->at(mpz_get_ui(*pos));
     return encode_str(new (GC) std::string(&ch));
 }
+
+void *apply_prim_string_u45ref_2(void *arg1, void *arg2)
+{
+    return prim_string_u45ref(arg1, arg2);
+}
+
+void *apply_prim_string_u45ref(void *lst)
+{
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in string-ref -> arity mismatch: number of arguments should be 2!");
+
+    return prim_string_u45ref(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
 // takes in the str, start[inclusive] and end[exclusive]
 // and returns the substring starting from start till end
 void *prim_substring(void *str_void, void *start_void, void *end_void)
 {
-    assert_type(get_tag(str_void) == STRING, "str passed to the substring is not a string");
-    assert_type(get_tag(start_void) == MPZ, "start passed to the substring is not an integer");
-    assert_type(get_tag(end_void) == MPZ, "end passed to the substring is not an integer");
+    assert_type(get_tag(str_void) == STRING, "Error in substring -> First argument should be a string");
+    assert_type(get_tag(start_void) == MPZ, "Error in substring -> Second argument should be an integer");
+    assert_type(get_tag(end_void) == MPZ, "Error in substring -> Third argument should be an integer");
 
     std::string *str = decode_str(str_void);
     long str_len = str->length();
@@ -2344,7 +2386,7 @@ void *prim_substring(void *str_void, void *start_void, void *end_void)
 
     if (!((mpz_cmp_ui(*start, str_len) < 0) && (mpz_cmp_ui(*end, str_len) <= 0)))
     {
-        assert_type(false, "Array out of bounds exception");
+        assert_type(false, "Error in substring -> Ending index is out of range!");
     }
 
     mpz_sub(*end, *start, *end);
@@ -2355,11 +2397,26 @@ void *prim_substring(void *str_void, void *start_void, void *end_void)
     return encode_str(ret_str);
 }
 
+void *apply_prim_substring_3(void *arg1, void *arg2, void *arg3)
+{
+    return prim_substring(arg1, arg2, arg3);
+}
+
+void *apply_prim_substring(void *lst)
+{
+
+    if (length_counter(lst) < 3 || length_counter(lst) > 3)
+        assert_type(false, "Error in substring -> arity mismatch: number of arguments should be 3!");
+
+    return prim_substring(prim_car(lst), prim_car(prim_cdr(lst)), prim_car(prim_cdr(prim_cdr(lst))));
+}
+
 // takes two strings and returns the appended string
 void *prim_string_u45append(void *s1_void, void *s2_void)
 {
-    assert_type((get_tag(s1_void)) == STRING, "str passed to the string-append is not a string");
-    assert_type((get_tag(s2_void)) == STRING, "str passed to the string-append is not a string");
+    // std::cout << "here" << std::endl;
+    assert_type((get_tag(s1_void)) == STRING, "Error in string-append -> Frist argument should be a string");
+    assert_type((get_tag(s2_void)) == STRING, "Error in string-append -> Second argument should be a string");
 
     std::string *s1 = new (GC) std::string(*(decode_str(s1_void)));
     std::string *s2 = decode_str(s2_void);
@@ -2367,9 +2424,25 @@ void *prim_string_u45append(void *s1_void, void *s2_void)
     return encode_str(s1);
 }
 
+void *apply_prim_string_u45append_2(void *arg1, void *arg2)
+{
+    // std::cout << "here2" << std::endl;
+    return prim_string_u45append(arg1, arg2);
+}
+
+void *apply_prim_string_u45append(void *lst)
+{
+    // pending task: make it most robust so that it can take any numbe of strings to append!
+    // std::cout << "here3" << std::endl;
+    if (length_counter(lst) < 1)
+        assert_type(false, "Error in string-append -> arity mismatch: number of arguments should at least 1!");
+
+    return prim_string_u45append(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
 void *prim_string_u45_u62list(void *str_void)
 {
-    assert_type((get_tag(str_void)) == STRING, "str passed to the string->list is not a string");
+    assert_type((get_tag(str_void)) == STRING, "Error in string->list: Argument should be a string!");
 
     std::string *str = decode_str(str_void);
     std::string *ret_str = new (GC) std::string(*str);
@@ -2380,6 +2453,19 @@ void *prim_string_u45_u62list(void *str_void)
         lst = prim_cons(encode_str(new (GC) std::string(&c)), lst);
     }
     return lst;
+}
+
+void *apply_prim_string_u45_u62list_1(void *arg1)
+{
+    return prim_string_u45_u62list(arg1);
+}
+
+void *apply_prim_string_u45_u62list(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in string->list -> arity mismatch: number of arguments should at least 1!");
+
+    return prim_string_u45_u62list(prim_car(lst));
 }
 
 #pragma endregion

@@ -1,5 +1,7 @@
 (define (call)
-    (string-length "brouhaha"))
+    ; (string-length "brouhahaa_is_great!")
+    (apply string-length (list "brouhahaa_is_great!"))
+    )
 
 (define (brouhaha_main)
     (call))

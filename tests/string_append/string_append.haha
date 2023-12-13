@@ -1,5 +1,7 @@
 (define (call)
-    (string-append "brou" "haha"))
+    ; (string-append "brou" "haha")
+    (apply string-append (list "brou" "haha"))
+    )
 
 (define (brouhaha_main)
     (call))

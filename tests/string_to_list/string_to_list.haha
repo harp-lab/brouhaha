@@ -1,5 +1,7 @@
 (define (call)
-    (string->list "brouhaha"))
+    ; (string->list "brouhahaaaa")
+    (apply string->list (list "brouhahaaaa"))
+    )
 
 (define (brouhaha_main)
     (call))

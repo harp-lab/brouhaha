@@ -3,4 +3,5 @@
 
     status: unsloved, but its working in kludgy way!
 
-2. 
+2. string-append
+    make it most robust so that it can take any numbe of strings to append!

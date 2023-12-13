@@ -1,5 +1,9 @@
 (define (call)
-    (string? "String?"))
+    ; (string? "String?") ; does work!
+    ; (string? "String huh") ; string with spaces doesn't work
+    ; (string? (list "string"))
+    (apply string? (list "I_am_a_string"))
+    )
 
 (define (brouhaha_main)
     (call))
