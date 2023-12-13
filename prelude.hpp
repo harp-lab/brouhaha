@@ -2414,7 +2414,6 @@ void *apply_prim_substring(void *lst)
 // takes two strings and returns the appended string
 void *prim_string_u45append(void *s1_void, void *s2_void)
 {
-    // std::cout << "here" << std::endl;
     assert_type((get_tag(s1_void)) == STRING, "Error in string-append -> Frist argument should be a string");
     assert_type((get_tag(s2_void)) == STRING, "Error in string-append -> Second argument should be a string");
 
@@ -2426,18 +2425,39 @@ void *prim_string_u45append(void *s1_void, void *s2_void)
 
 void *apply_prim_string_u45append_2(void *arg1, void *arg2)
 {
-    // std::cout << "here2" << std::endl;
     return prim_string_u45append(arg1, arg2);
 }
 
 void *apply_prim_string_u45append(void *lst)
 {
-    // pending task: make it most robust so that it can take any numbe of strings to append!
-    // std::cout << "here3" << std::endl;
-    if (length_counter(lst) < 1)
-        assert_type(false, "Error in string-append -> arity mismatch: number of arguments should at least 1!");
+    void *result = nullptr;
 
-    return prim_string_u45append(prim_car(lst), prim_car(prim_cdr(lst)));
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        int car_tag = get_tag(cons_lst[0]);
+        bool type_check = (car_tag == STRING);
+
+        assert_type(type_check, "Error in string-append -> arguement should be a string!");
+
+        if (!result)
+        {
+            result = cons_lst[0];
+        }
+        else
+        {
+            result = prim_string_u45append(result, cons_lst[0]);
+        }
+
+        lst = cons_lst[1];
+    }
+
+    if (result == nullptr)
+    {
+        std::string *s1 = new (GC) std::string("");
+        return encode_str(s1);
+    }
+    return result;
 }
 
 void *prim_string_u45_u62list(void *str_void)

@@ -5,3 +5,5 @@
 
 2. string-append
     make it most robust so that it can take any numbe of strings to append!
+
+    status: solved!

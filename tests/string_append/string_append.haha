@@ -1,7 +1,8 @@
 (define (call)
-    ; (string-append "brou" "haha")
-    (apply string-append (list "brou" "haha"))
-    )
+  ; (string-append "brou" "haha")
+  ; (apply string-append (list))
+  (apply string-append (list "brou" "haha" "-a-minimal" "-racket-like-compiler!"))
+  )
 
 (define (brouhaha_main)
-    (call))
+  (call))
