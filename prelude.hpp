@@ -1762,7 +1762,43 @@ void *apply_prim_hash_u45set(void *lst)
 
 void *prim_set_u45add(void *s, void *val)
 {
+    int tag = get_tag(s);
+
+    if (tag == CONS)
+    {
+        // if the first argument is a list, append the val and return it!
+        return prim_cons(val, s);
+    }
+    else if (tag == HASH)
+    {
+        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(s);
+        if (h_hamt->whatami() == hamt_ds_type::set_type)
+        {
+            // if the argument is a set, call hash-set
+            return prim_hash_u45set(s, val, encode_bool(true));
+        }
+
+        // otherwise shoot error, because, a hash should not be passed as an argument
+        assert_type(false, "Error in set-add: contact violation -> First argument should be a set");
+    }
+    // otherwise not sure what it is, thus shooting an error!
+
+    assert_type(false, "Error in set-add: contact violation -> First argument should be a set");
+
     return prim_hash_u45set(s, val, encode_bool(true));
+}
+
+void *apply_prim_set_u45add_2(void *s, void *val)
+{
+    return prim_set_u45add(s, val);
+}
+
+void *apply_prim_set_u45add(void *lst)
+{
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in set-add -> arity mismatch: number of arguments should be 2!");
+
+    return prim_set_u45add(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
 void *prim_hash_u45has_u45key_u63(void *h, void *k)
@@ -1914,7 +1950,6 @@ void *prim_set_u45_u62list(void *h)
         }
 
         // otherwise shoot error, because, a hash should not be passed as an argument
-        std::cout << "here: not-set-type " << get_tag(h) << std::endl;
         assert_type(false, "Error in set->list: contact violation -> Argument should be a set");
     }
     // otherwise we are assuming a set/something is passed, which is not always true!, thus shooting an error!
@@ -1940,7 +1975,43 @@ void *apply_prim_set_u45_u62list(void *lst)
 
 void *prim_list_u45_u62set(void *lst)
 {
+    int tag = get_tag(lst);
+
+    if (tag == CONS)
+    {
+        // if the argument is a list, convert it to set!
+        return apply_prim_set(lst);
+    }
+    else if (tag == HASH)
+    {
+        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(lst);
+        if (h_hamt->whatami() == hamt_ds_type::set_type)
+        {
+            // if the argument is a set, return as it is!
+            return lst;
+        }
+
+        // otherwise shoot error, because, a hash should not be passed as an argument
+        assert_type(false, "Error in list->set: contact violation -> Argument should be a list");
+    }
+    // otherwise we are not sure what it is, thus shooting an error!
+
+    assert_type(false, "Error in list->set: contact violation -> Argument should be a list");
+
     return apply_prim_set(lst);
+}
+
+void *apply_prim_list_u45_u62set_1(void *arg)
+{
+    return prim_list_u45_u62set(arg);
+}
+
+void *apply_prim_list_u45_u62set(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in list->set -> arity mismatch: number of arguments should be 1!");
+
+    return prim_list_u45_u62set(prim_car(lst));
 }
 
 #pragma end region

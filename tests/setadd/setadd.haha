@@ -1,5 +1,9 @@
 (define (call)
-    (set-add (set 1 1 1 1 2) 3))
+    ; (set-add (set 1 1 1 1 2) 3)
+    ; (set-add (list 1 1 1 1 2 2 3 5) 4000)
+    ; (apply set-add (list (list 1 2 2 3.5 3 4 "haha" 10) 4000))
+    (apply set-add (list (set 1 2 2 3.5 3 4 "haha" 10) 4000))
+    )
 
 (define (brouhaha_main)
     (call))
