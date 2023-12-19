@@ -1,9 +1,6 @@
 ; Prelude is used as a way to add functionality to the language and programs as a library
 
-; (define (max . lst)
-;   (apply-prim max lst))
-; (define (abs x)
-;   (prim abs x))
+
 ; (define (set-member? s val)
 ;   (prim set-member? s val))
 ; (define (set-remove s val)
@@ -27,9 +24,6 @@
 (define-prim null? 1)
 (define-prim equal? 2)
 (define-prim eq? 2)
-(define-prim exact-floor 1)
-(define-prim exact-ceiling 1)
-(define-prim exact-round 1)
 (define-prim cons 2)
 (define-prim car 1)
 (define-prim cdr 1)
@@ -58,6 +52,12 @@
 (define-prim string-append 2)
 (define-prim string->list 1)
 
+; other new prims
+(define-prim exact-floor 1)
+(define-prim exact-ceiling 1)
+(define-prim exact-round 1)
+(define-prim absolute 1)
+(define-prim max 1)
 
 
 ;;; other predicates and HOFs

@@ -372,6 +372,7 @@
                             (get-c-string ptr)
                             (get-c-string ptr)
                             0))]
+                            
       [`(proc (prov ,prov ...) (,ptr ,env . ,arg) ,body)
        ;  (displayln (~a "im an . case proc " proc))
        ; `(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)

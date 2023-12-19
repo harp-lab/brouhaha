@@ -1,0 +1,7 @@
+(define (call)
+  ; (absolute -99.99)
+  (apply absolute (list -99.523))
+  )
+
+(define (brouhaha_main)
+  (call))

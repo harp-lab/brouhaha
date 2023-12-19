@@ -116,7 +116,9 @@ void print_mpf(mpf_t *arg)
     float num;
     std::string str(buffer);
 
-    gmp_sprintf(buffer, "%.1Ff", *arg);
+    gmp_sprintf(buffer, "%.10Ff", *arg);
+    // gmp_printf("%.*Ff\n", decimal_places, *val_mpf);
+
     str = buffer;
     num = std::stof(str);
     std::cout << "num: " << num << std::endl;
@@ -149,25 +151,25 @@ bool is_cons(void *lst)
 mpz_t *decode_mpz(void *val)
 {
     // MASK does the casting to u64
-    assert_type((get_tag(val) == MPZ), "Type error: Not MPZ");
+    assert_type((get_tag(val) == MPZ), "Error in decode_mpz -> Type error: Not MPZ");
     return reinterpret_cast<mpz_t *>(MASK(val));
 }
 mpf_t *decode_mpf(void *val)
 {
     // MASK does the casting to u64
-    assert_type((get_tag(val) == MPF), "Type error: Not MPF");
+    assert_type((get_tag(val) == MPF), "Error in decode_mpf -> Type error: Not MPF");
     return reinterpret_cast<mpf_t *>(MASK(val));
 }
 std::string *decode_str(void *val)
 {
     // MASK does the casting to u64
-    assert_type((get_tag(val) == STRING), "Type error: Not STRING");
+    assert_type((get_tag(val) == STRING), "Error in decode_str -> Type error: Not STRING");
     return reinterpret_cast<std::string *>(MASK(val));
 }
 bool decode_bool(void *val)
 {
     // MASK does the casting to u64
-    assert_type(((get_tag(val)) == SPL), "Type error : Not BOOLEAN");
+    assert_type(((get_tag(val)) == SPL), "Error in decode_bool -> Type error : Not BOOLEAN");
     u64 temp = (u64)val;
     if (temp == TRUE_VALUE)
     {
@@ -179,23 +181,23 @@ bool decode_bool(void *val)
     }
     else
     {
-        assert_type(false, "Type error : Not BOOLEAN");
+        assert_type(false, "Error in decode_bool -> Type error: Not BOOLEAN");
     }
     return false;
 }
 void **decode_cons(void *val)
 {
-    assert_type((get_tag(val) == CONS), "Type error: Not CONS");
+    assert_type((get_tag(val) == CONS), "Error in decode_cons -> Type error: Not CONS");
     return reinterpret_cast<void **>(MASK(val));
 }
 void **decode_clo(void *val)
 {
-    assert_type((get_tag(val) == CLO), "Type error: Not CLO");
+    assert_type((get_tag(val) == CLO), "Error in decode_clo -> Type error: Not CLO");
     return reinterpret_cast<void **>(MASK(val));
 }
 const hamt<hash_struct, hash_struct> *decode_hash(void *val)
 {
-    assert_type((get_tag(val) == HASH), "Type error: Not HASH");
+    assert_type((get_tag(val) == HASH), "Error in decode_hash -> Type error: Not HASH");
     return reinterpret_cast<const hamt<hash_struct, hash_struct> *>(MASK(val));
 }
 // Closure Allocation, alloc_clo
@@ -226,7 +228,6 @@ static void *prim_cons(void *arg1, void *arg2)
 
 void *apply_prim_cons_2(void *arg1, void *arg2)
 {
-    // std::cout << "here..." << std::endl;
     void *lst = encode_null();
 
     // mpz_t *var = (decode_mpz(arg1));
@@ -234,7 +235,6 @@ void *apply_prim_cons_2(void *arg1, void *arg2)
     // print_mpz(var);
     // print_mpz(var2);
 
-    // return prim_cons(arg1, prim_cons(arg2, lst));
     return prim_cons(arg1, arg2);
 }
 
@@ -250,7 +250,7 @@ void *prim_cons_u63(void *lst)
 
 void *prim_car(void *val)
 {
-    assert_type((prim_cons_u63(val)), "not a cons cell");
+    assert_type((prim_cons_u63(val)), "Error in car -> not a cons cell");
     void **cell = decode_cons(val);
     return cell[0];
 }
@@ -262,7 +262,7 @@ void *apply_prim_car_1(void *arg1)
 
 void *prim_cdr(void *val)
 {
-    assert_type((prim_cons_u63(val)), "not a cons cell");
+    assert_type((prim_cons_u63(val)), "Error in cdr -> not a cons cell");
     void **cell = decode_cons(val);
     return cell[1];
 }
@@ -326,7 +326,6 @@ std::string print_cons(void *lst)
         ret_str.append(print_val(cons_lst[0]));
         if (!is_cons(cons_lst[1]))
         {
-            // std::cout << "here3..." << get_tag(cons_lst[1]) << std::endl;
             if (get_tag(cons_lst[1]) != SPL)
             {
                 ret_str.append(" . ");
@@ -616,7 +615,7 @@ u64 hamt_hash(void *h)
 
 u64 cons_hash(void *lst)
 {
-    assert_type((get_tag(lst) == CONS), "Type passed to cons_hash is not a CONS");
+    assert_type((get_tag(lst) == CONS), "Error in cons_hash: Type passed to cons_hash is not a CONS");
     u64 *h = (u64 *)GC_MALLOC(sizeof(u64));
     *h = 0xcbf29ce484222325;
     while (is_cons(lst))
@@ -1151,7 +1150,6 @@ void *apply_prim__u42(void *lst) //*
 
 void *apply_prim__u42_1(void *arg1) //*
 {
-    // std::cout << "hererererer...mul" << std::endl;
     // adding dummy parameter
     mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
     mpz_init_set_str(*tempMpzVal, "1", 10);
@@ -1332,7 +1330,6 @@ bool great_equal_zero(long cmp)
 
 bool great_zero(long cmp)
 {
-    // std::cout << "hererererer...less_zero" << cmp << std::endl;
     if (cmp > 0)
     {
         return true;
@@ -1503,7 +1500,6 @@ void *apply_prim__u62_u61_2(void *arg1, void *arg2) // >=
 }
 void *apply_prim__u62_u61_3(void *arg1, void *arg2, void *arg3) // >=
 {
-    // std::cout << "hererererer...apply_prim__u62_u61_3" << std::endl;
     if (decode_bool(compare_op(arg1, arg2, *great_equal_zero)))
         return compare_op(arg2, arg3, *great_equal_zero);
     else
@@ -1525,7 +1521,6 @@ void *apply_prim__u60_u61_2(void *arg1, void *arg2) // <=
 }
 void *apply_prim__u60_u61_3(void *arg1, void *arg2, void *arg3) // <=
 {
-    // std::cout << "hererererer...apply_prim__u60_u61_3" << std::endl;
     if (decode_bool(compare_op(arg1, arg2, *less_equal_zero)))
         return compare_op(arg2, arg3, *less_equal_zero);
     else
@@ -1533,50 +1528,6 @@ void *apply_prim__u60_u61_3(void *arg1, void *arg2, void *arg3) // <=
 }
 
 #pragma endregion
-
-// #pragma region ConsMethods
-
-// static void *prim_cons(void *arg1, void *arg2)
-// {
-//     void **cell = (void **)GC_MALLOC(2 * sizeof(void *));
-//     cell[0] = arg1;
-//     cell[1] = arg2;
-//     return encode_cons(cell);
-// }
-
-// void *prim_car(void *val)
-// {
-//     assert_type((prim_cons_u63(val)), "not a cons cell");
-//     void **cell = decode_cons(val);
-//     return cell[0];
-// }
-
-// void *prim_cdr(void *val)
-// {
-//     assert_type((prim_cons_u63(val)), "not a cons cell");
-//     void **cell = decode_cons(val);
-//     return cell[1];
-// }
-
-// std::string print_cons(void *lst)
-// {
-//     std::string ret_str;
-//     ret_str.append("(list ");
-//     while (is_cons(lst))
-//     {
-//         void **cons_lst = decode_cons(lst);
-//         ret_str.append(print_val(cons_lst[0]));
-//         if (!is_cons(cons_lst[1]))
-//         {
-//             break;
-//         }
-//         ret_str.append(" ");
-//         lst = cons_lst[1];
-//     }
-//     ret_str.append(")");
-//     return ret_str;
-// }
-// #pragma endregion
 
 #pragma region hash-prims
 
@@ -2204,8 +2155,7 @@ void *prim_exact_u45round(void *val) // exact-round
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        std::cout << val_tag << std::endl;
-
+        // std::cout << val_tag << std::endl;
         assert_type(false, "Prim exac-round -> contract violation: expected rational? argument!");
     }
 
@@ -2404,7 +2354,6 @@ void *apply_prim_substring_3(void *arg1, void *arg2, void *arg3)
 
 void *apply_prim_substring(void *lst)
 {
-
     if (length_counter(lst) < 3 || length_counter(lst) > 3)
         assert_type(false, "Error in substring -> arity mismatch: number of arguments should be 3!");
 
@@ -2489,6 +2438,124 @@ void *apply_prim_string_u45_u62list(void *lst)
 }
 
 #pragma endregion
+
+#pragma region newprims
+void *apply_prim_absolute_1(void *val)
+{
+    int val_tag = get_tag(val);
+    if (val_tag != MPF && val_tag != MPZ)
+    {
+        std::cout << val_tag << std::endl;
+
+        assert_type(false, "Prim absolute -> contract violation: expected rational? argument!");
+    }
+
+    if (val_tag == MPZ)
+    {
+        mpz_t *val_mpz = decode_mpz(val);
+
+        if (mpz_sgn(*val_mpz) < 0)
+        {
+            mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+            mpz_init(*result);
+            mpz_abs(*result, *val_mpz);
+
+            return encode_mpz(result);
+        }
+        else
+        {
+            return val;
+        }
+    }
+    else
+    {
+        mpf_t *val_mpf = decode_mpf(val);
+
+        if (mpf_sgn(*val_mpf) < 0.0)
+        {
+            mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+            mpf_init(*result);
+            mpf_abs(*result, *val_mpf);
+
+            return encode_mpf(result);
+        }
+        else
+        {
+            return val;
+        }
+    }
+
+    return nullptr;
+}
+void *apply_prim_absolute(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in absolute -> arity mismatch: number of arguments should be 1!");
+
+    return apply_prim_absolute_1(prim_car(lst));
+}
+
+void *apply_prim_max_1(void *arg)
+{
+    return arg;
+}
+
+void *apply_prim_max(void *lst)
+{
+    if (length_counter(lst) < 1)
+        assert_type(false, "Error in max -> arity mismatch: number of arguments should be at least 1!");
+
+    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*result);
+    mpf_t *mpf_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+
+    bool is_result = false;
+
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        int car_tag = get_tag(cons_lst[0]);
+        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+
+        assert_type(type_check, "Error in max -> contact violation: argument type should be either MPZ/MPF!");
+
+        if (!is_result)
+        {
+            is_result = true;
+            if (car_tag == MPZ)
+            {
+                result = mpz_2_mpf(decode_mpz(cons_lst[0]));
+            }
+            else
+            {
+                result = decode_mpf(cons_lst[0]);
+            }
+        }
+        else
+        {
+            if (car_tag == MPZ)
+            {
+                mpf_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+            }
+            else
+            {
+                mpf_car = decode_mpf(cons_lst[0]);
+            }
+
+            if (mpf_cmp(*mpf_car, *result) > 0.0)
+            {
+                mpf_set(*result, *mpf_car);
+            }
+        }
+
+        lst = cons_lst[1];
+    }
+
+    return encode_mpf(result);
+}
+
+#pragma endregion
+
 #pragma region PRINTING
 std::string print_val(void *val)
 {
@@ -2528,7 +2595,7 @@ std::string print_val(void *val)
         mpf_t *final_mpf = decode_mpf(val);
         const char *boom;
         char buffer[1000];
-        gmp_sprintf(buffer, "%.1Ff", *final_mpf);
+        gmp_sprintf(buffer, "%.3Ff", *final_mpf);
         return std::string(buffer);
         break;
     }

@@ -2,8 +2,7 @@
     exp, set->list (void *prim_set_u45_u62list(void *h)), should check if the argument passed is set or not! 
 
     status: unsloved, but its working in kludgy way!
+2. prim_exact_u45round
+    what if the argument is an integer istead of float?
 
-2. string-append
-    make it most robust so that it can take any numbe of strings to append!
-
-    status: solved!
+    status: unsloved

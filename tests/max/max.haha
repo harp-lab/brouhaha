@@ -1,0 +1,8 @@
+(define (call)
+;   (max -9)
+;   (max 1 2 3 -9 4.2 10 8.5 7)
+  (apply max (list 1 2 3 -9 4.2 10 8.5 7))
+  )
+
+(define (brouhaha_main)
+  (call))
