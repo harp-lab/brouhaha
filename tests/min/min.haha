@@ -1,0 +1,8 @@
+(define (call)
+;   (min -9)
+;   (min 1 2 3 -9 4.2 10 8.5 7)
+  (apply min (list 1 2 3 -9 4.2 10 8.5 7))
+  )
+
+(define (brouhaha_main)
+  (call))

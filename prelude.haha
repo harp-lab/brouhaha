@@ -58,6 +58,8 @@
 (define-prim exact-round 1)
 (define-prim absolute 1)
 (define-prim max 1)
+(define-prim min 1)
+(define-prim expt 2)
 
 
 ;;; other predicates and HOFs

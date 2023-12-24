@@ -1,0 +1,9 @@
+(define (call)
+  ; (expt 2 3)
+  ; (expt 2 3.5)
+  ; (expt 2.31 3.5)
+  (apply expt (list 2.5 3.9))
+  )
+
+(define (brouhaha_main)
+  (call))

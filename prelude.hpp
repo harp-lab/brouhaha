@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <bitset>
+#include <math.h>
 
 // GMP and gc headers
 #include "gc.h"
@@ -2445,8 +2446,6 @@ void *apply_prim_absolute_1(void *val)
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        std::cout << val_tag << std::endl;
-
         assert_type(false, "Prim absolute -> contract violation: expected rational? argument!");
     }
 
@@ -2554,6 +2553,131 @@ void *apply_prim_max(void *lst)
     return encode_mpf(result);
 }
 
+void *apply_prim_min_1(void *arg)
+{
+    return arg;
+}
+
+void *apply_prim_min(void *lst)
+{
+    if (length_counter(lst) < 1)
+        assert_type(false, "Error in min -> arity mismatch: number of arguments should be at least 1!");
+
+    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*result);
+    mpf_t *mpf_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+
+    bool is_result = false;
+
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        int car_tag = get_tag(cons_lst[0]);
+        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+
+        assert_type(type_check, "Error in min -> contact violation: argument type should be either MPZ/MPF!");
+
+        if (!is_result)
+        {
+            is_result = true;
+            if (car_tag == MPZ)
+            {
+                result = mpz_2_mpf(decode_mpz(cons_lst[0]));
+            }
+            else
+            {
+                result = decode_mpf(cons_lst[0]);
+            }
+        }
+        else
+        {
+            if (car_tag == MPZ)
+            {
+                mpf_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+            }
+            else
+            {
+                mpf_car = decode_mpf(cons_lst[0]);
+            }
+
+            if (mpf_cmp(*mpf_car, *result) < 0.0)
+            {
+                mpf_set(*result, *mpf_car);
+            }
+        }
+
+        lst = cons_lst[1];
+    }
+
+    return encode_mpf(result);
+}
+
+void *apply_prim_expt_2(void *arg1, void *arg2)
+{
+    int val_tag = get_tag(arg1);
+    int val_tag2 = get_tag(arg2);
+
+    if (val_tag != MPF && val_tag != MPZ)
+    {
+        std::cout << val_tag << std::endl;
+
+        assert_type(false, "Prim expt -> contract violation: First argument should be a number!");
+    }
+
+    if (val_tag2 != MPF && val_tag2 != MPZ)
+    {
+        std::cout << val_tag2 << std::endl;
+
+        assert_type(false, "Prim expt -> contract violation: Second argument should be number!");
+    }
+
+    if (val_tag == MPZ && val_tag2 == MPZ)
+    {
+        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init(*result);
+
+        mpz_pow_ui(*result, *(decode_mpz(arg1)), (unsigned long int)mpz_get_ui(*(decode_mpz(arg2))));
+
+        return encode_mpz(result);
+    }
+    else
+    {
+        // either one of them is mpf, so convert both of them to mpf
+        mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*result);
+        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+
+        if (val_tag == MPZ)
+            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+        else
+            arg1_mpf = decode_mpf(arg1);
+
+        if (val_tag2 == MPZ)
+            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
+        else
+            arg2_mpf = decode_mpf(arg2);
+
+        // converting mpf value to double
+        double arg1_double = mpf_get_d(*arg1_mpf);
+        double arg2_double = mpf_get_d(*arg2_mpf);
+
+        mpf_set_d(*result, pow(arg1_double, arg2_double));
+
+        return encode_mpf(result);
+    }
+
+    return nullptr;
+}
+
+void *apply_prim_expt(void *lst)
+{
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in expt -> arity mismatch: number of arguments should be 2!");
+
+    return apply_prim_expt_2(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
 #pragma endregion
 
 #pragma region PRINTING
@@ -2595,7 +2719,7 @@ std::string print_val(void *val)
         mpf_t *final_mpf = decode_mpf(val);
         const char *boom;
         char buffer[1000];
-        gmp_sprintf(buffer, "%.3Ff", *final_mpf);
+        gmp_sprintf(buffer, "%.5Ff", *final_mpf);
         return std::string(buffer);
         break;
     }
