@@ -5,6 +5,7 @@
 #include <sstream>
 #include <bitset>
 #include <math.h>
+#include <random>
 
 // GMP and gc headers
 #include "gc.h"
@@ -2772,6 +2773,90 @@ void *apply_prim_quotient(void *lst)
         assert_type(false, "Error in quotient -> arity mismatch: number of arguments should be 2!");
 
     return apply_prim_quotient_2(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
+void *apply_prim_randnum_1(void *arg1) // random
+{
+    mpz_t *arg1_mpz = decode_mpz(arg1);
+
+    if (mpz_sgn(*arg1_mpz) < 0)
+        assert_type(false, "Error in randnum -> contact violation: arguments should not be less than zero!");
+
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+
+    gmp_randstate_t curstate;
+    gmp_randinit_default(curstate);
+    gmp_randseed_ui(curstate, time(NULL));
+
+    mpz_t *rangeMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    // converting arg1_mpz to unsigned long
+    mpz_init_set_ui(*rangeMpzVal, mpz_get_ui(*arg1_mpz));
+
+    mpz_urandomm(*result, curstate, *rangeMpzVal);
+
+    gmp_randclear(curstate);
+
+    return encode_mpz(result);
+}
+void *apply_prim_randnum_2(void *arg1, void *arg2) // random
+{
+    mpz_t *arg1_mpz = decode_mpz(arg1);
+    mpz_t *arg2_mpz = decode_mpz(arg2);
+
+    if (mpz_sgn(*arg1_mpz) < 0 || mpz_sgn(*arg2_mpz) < 0)
+        assert_type(false, "Error in randnum -> contact violation: arguments should not be less than zero!");
+
+    int cmp_res = mpz_cmp(*arg1_mpz, *arg2_mpz);
+
+    if (cmp_res > 0 || cmp_res == 0)
+        assert_type(false, "Error in randnum -> contact violation: First argument should be less than the second arguemnt!");
+
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+
+    gmp_randstate_t curstate;
+    gmp_randinit_default(curstate);
+    gmp_randseed_ui(curstate, time(NULL));
+
+    mpz_t *rangeMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    // converting mpz to unsigned long
+    mpz_init_set_ui(*rangeMpzVal, mpz_get_ui(*arg2_mpz) - mpz_get_ui(*arg1_mpz));
+    mpz_urandomm(*result, curstate, *rangeMpzVal);
+    mpz_add_ui(*result, *result, mpz_get_ui(*arg1_mpz));
+
+    gmp_randclear(curstate);
+
+    return encode_mpz(result);
+}
+
+void *apply_prim_randnum(void *lst) // random
+{
+    if (length_counter(lst) < 0 || length_counter(lst) > 2)
+        assert_type(false, "Error in randnum -> arity mismatch: more than 2 argument is not supported!");
+
+    if (length_counter(lst) == 0)
+    {
+        std::random_device randnum;
+        std::mt19937 gen(randnum());
+        std::uniform_real_distribution<> distr(0.0, 1.0);
+        
+        mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*result);
+        mpf_set_d(*result, distr(gen));
+
+        return encode_mpf(result);
+    }
+    else if (length_counter(lst) == 1)
+    {
+        return apply_prim_randnum_1(prim_car(lst));
+    }
+    else if (length_counter(lst) == 2)
+    {
+        return apply_prim_randnum_2(prim_car(lst), prim_car(prim_cdr(lst)));
+    }
+
+    return nullptr;
 }
 
 #pragma endregion

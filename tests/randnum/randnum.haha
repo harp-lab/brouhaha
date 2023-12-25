@@ -1,0 +1,13 @@
+(define (call)
+  ; (randnum)
+  ; (randnum 4)
+  ; (randnum 4 4)
+  ; (randnum -4)
+  ; (randnum 4 15)
+  ; (apply randnum (list 4))
+  (apply randnum (list))
+  ; (apply randnum (list 4 15))
+  )
+
+(define (brouhaha_main)
+  (call))
