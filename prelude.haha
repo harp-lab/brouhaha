@@ -60,6 +60,8 @@
 (define-prim max 1)
 (define-prim min 1)
 (define-prim expt 2)
+(define-prim remaind 2)
+(define-prim quotient 2)
 
 
 ;;; other predicates and HOFs

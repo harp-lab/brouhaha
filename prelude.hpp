@@ -2678,6 +2678,102 @@ void *apply_prim_expt(void *lst)
     return apply_prim_expt_2(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
+void *apply_prim_remaind_2(void *first, void *second)
+{
+    void *result = nullptr;
+
+    if (!is_integer_val(first) || !is_integer_val(second))
+    { // to see either of the numbers has fraction in it!
+        assert_type(false, "Error in remaind -> contract violation, expected integer!");
+    }
+    else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
+    { // both numbers are mpz
+        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init(*result);
+        mpz_tdiv_r(*result, *(decode_mpz(first)), *(decode_mpz(second)));
+        return encode_mpz(result);
+    }
+    else
+    {
+        // either one of them is mpf, so convert both of them to mpf
+        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init(*result);
+        mpz_t *arg1_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_t *arg2_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+
+        if (get_tag(first) == MPZ)
+            arg1_mpz = decode_mpz(first);
+        else
+            arg1_mpz = mpf_2_mpz(decode_mpf(first));
+
+        if (get_tag(second) == MPZ)
+            arg2_mpz = decode_mpz(second);
+        else
+            arg2_mpz = mpf_2_mpz(decode_mpf(second));
+
+        mpz_tdiv_r(*result, *arg1_mpz, *arg2_mpz);
+        return encode_mpf(mpz_2_mpf(result));
+    }
+
+    return result;
+}
+
+void *apply_prim_remaind(void *lst)
+{
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in remainder -> arity mismatch: number of arguments should be 2!");
+
+    return apply_prim_remaind_2(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
+void *apply_prim_quotient_2(void *first, void *second)
+{
+    void *result = nullptr;
+
+    if (!is_integer_val(first) || !is_integer_val(second))
+    { // to see either of the numbers has fraction in it!
+        assert_type(false, "Error in quotient -> contract violation, expected integer!");
+    }
+    else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
+    { // both numbers are mpz
+        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init(*result);
+        mpz_tdiv_q(*result, *(decode_mpz(first)), *(decode_mpz(second)));
+        return encode_mpz(result);
+    }
+    else
+    {
+        // either one of them is mpf, so convert both of them to mpf
+        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init(*result);
+        mpz_t *arg1_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_t *arg2_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+
+        if (get_tag(first) == MPZ)
+            arg1_mpz = decode_mpz(first);
+        else
+            arg1_mpz = mpf_2_mpz(decode_mpf(first));
+
+        if (get_tag(second) == MPZ)
+            arg2_mpz = decode_mpz(second);
+        else
+            arg2_mpz = mpf_2_mpz(decode_mpf(second));
+
+        mpz_tdiv_q(*result, *arg1_mpz, *arg2_mpz);
+        return encode_mpf(mpz_2_mpf(result));
+    }
+
+    return result;
+}
+
+void *apply_prim_quotient(void *lst)
+{
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in quotient -> arity mismatch: number of arguments should be 2!");
+
+    return apply_prim_quotient_2(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
 #pragma endregion
 
 #pragma region PRINTING

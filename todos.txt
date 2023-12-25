@@ -6,3 +6,8 @@
     what if the argument is an integer istead of float?
 
     status: unsloved
+3. modulo
+    for -7 3 it should return 2
+    for -7 -3 it shoul return -1
+
+    status: run test to see if it's working as expected!
