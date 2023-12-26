@@ -1,0 +1,12 @@
+(define (call)
+  ; (symbol?)
+;   (symbol? 'x)
+  ; (symbol? 'x123)
+  ; (symbol? '123)
+  ; (symbol? '123x3yz4)
+  (apply symbol? (list 'x4))
+  ; (apply symbol? (list))
+  )
+
+(define (brouhaha_main)
+  (call))

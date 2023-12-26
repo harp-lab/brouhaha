@@ -2240,6 +2240,46 @@ void *apply_prim_exact_u45round(void *lst)
     return prim_exact_u45round(prim_car(lst));
 }
 
+#pragma region SYMBOL
+bool isNum(const std::string& str) {
+    try {
+        size_t position;
+        std::stod(str, &position);
+        return position == str.size();
+    } catch (const std::invalid_argument& exp) {
+        return false;
+    } catch (const std::out_of_range& exp) {
+        return false;
+    }
+}
+
+void *prim_symbol_u63(void *val)
+{
+    if (get_tag(val) == STRING)
+    {
+        if (!isNum(*(decode_str(val))))
+            return encode_bool(true);
+        else
+            return encode_bool(false);
+    }
+    return encode_bool(false);
+}
+
+void *apply_prim_symbol_u63_1(void *arg)
+{
+    return prim_symbol_u63(arg);
+}
+
+void *apply_prim_symbol_u63(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in symbol? -> arity mismatch: number of arguments should be 1!");
+
+    return prim_symbol_u63(prim_car(lst));
+}
+
+#pragma endregion
+
 #pragma region STRINGS
 // takes in a void* and checks if the passed value is a string or not
 void *prim_string_u63(void *val)
@@ -2840,7 +2880,7 @@ void *apply_prim_randnum(void *lst) // random
         std::random_device randnum;
         std::mt19937 gen(randnum());
         std::uniform_real_distribution<> distr(0.0, 1.0);
-        
+
         mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
         mpf_init(*result);
         mpf_set_d(*result, distr(gen));

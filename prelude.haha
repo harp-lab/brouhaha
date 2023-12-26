@@ -63,6 +63,7 @@
 (define-prim remaind 2)
 (define-prim quotient 2)
 (define-prim randnum 1 2)
+(define-prim symbol? 1)
 
 
 ;;; other predicates and HOFs
