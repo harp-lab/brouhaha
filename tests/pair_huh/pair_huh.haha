@@ -1,0 +1,10 @@
+(define (call)
+  ;   (pair? (cons 1 (cons 2 3)))
+  ;   (pair? (list 1 2 3))
+  ;   (pair? "string")
+;   (apply pair? (list (list 100)))
+  (apply pair? (list 100))
+  )
+
+(define (brouhaha_main)
+  (call))

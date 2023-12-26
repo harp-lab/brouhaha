@@ -60,10 +60,12 @@
 (define-prim max 1)
 (define-prim min 1)
 (define-prim expt 2)
+(define-prim squareroot 1)
 (define-prim remaind 2)
 (define-prim quotient 2)
 (define-prim randnum 1 2)
 (define-prim symbol? 1)
+(define-prim pair? 1)
 
 
 ;;; other predicates and HOFs

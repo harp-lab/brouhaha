@@ -280,6 +280,9 @@ int length_counter(void *lst)
     if (lst == NULL_VALUE)
         return 0;
 
+    if (get_tag(lst) != CONS)
+        assert_type(false, "Error -> contact violation: expected list");
+
     void *val = prim_car(lst);
     void *rest = prim_cdr(lst);
 
@@ -809,16 +812,34 @@ void *prim_null_u63(void *item)
 
 void *apply_prim_null_u63(void *lst)
 {
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in null? -> arity mismatch: expected number of argument is 1!");
 
-    if (length_counter(lst) > 1)
-        assert_type(false, "Error in apply_prim_null_u63 -> arity mismatch: expected number of argument is 1!");
-
-    return prim_null_u63(lst);
+    return prim_null_u63(prim_car(lst));
 }
 
 void *apply_prim_null_u63_1(void *item)
 {
     return prim_null_u63(item);
+}
+
+// pair?
+void *apply_prim_pair_u63_1(void *item)
+{
+    if (get_tag(item) == CONS)
+    {
+        return encode_bool(true);
+    }
+    return encode_bool(false);
+}
+
+void *apply_prim_pair_u63(void *lst)
+{
+
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in pair? -> arity mismatch: expected number of argument is 1!");
+
+    return apply_prim_pair_u63_1(prim_car(lst));
 }
 
 #pragma region Addition
@@ -2241,14 +2262,20 @@ void *apply_prim_exact_u45round(void *lst)
 }
 
 #pragma region SYMBOL
-bool isNum(const std::string& str) {
-    try {
+bool isNum(const std::string &str)
+{
+    try
+    {
         size_t position;
         std::stod(str, &position);
         return position == str.size();
-    } catch (const std::invalid_argument& exp) {
+    }
+    catch (const std::invalid_argument &exp)
+    {
         return false;
-    } catch (const std::out_of_range& exp) {
+    }
+    catch (const std::out_of_range &exp)
+    {
         return false;
     }
 }
@@ -2660,15 +2687,11 @@ void *apply_prim_expt_2(void *arg1, void *arg2)
 
     if (val_tag != MPF && val_tag != MPZ)
     {
-        std::cout << val_tag << std::endl;
-
         assert_type(false, "Prim expt -> contract violation: First argument should be a number!");
     }
 
     if (val_tag2 != MPF && val_tag2 != MPZ)
     {
-        std::cout << val_tag2 << std::endl;
-
         assert_type(false, "Prim expt -> contract violation: Second argument should be number!");
     }
 
@@ -2717,6 +2740,44 @@ void *apply_prim_expt(void *lst)
         assert_type(false, "Error in expt -> arity mismatch: number of arguments should be 2!");
 
     return apply_prim_expt_2(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
+void *apply_prim_squareroot_1(void *arg1)
+{
+    int val_tag = get_tag(arg1);
+
+    if (val_tag != MPF && val_tag != MPZ)
+    {
+        assert_type(false, "Error in squareroot -> contract violation: First argument should be a number!");
+    }
+
+    if (val_tag == MPZ)
+    {
+        mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*result);
+        mpf_sqrt(*result, *(mpz_2_mpf(decode_mpz(arg1))));
+
+        // print_mpz(result);
+
+        return encode_mpf(result);
+    }
+    else if (val_tag == MPF){
+        mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*result);
+        mpf_sqrt(*result, *(decode_mpf(arg1)));
+
+        return encode_mpf(result);
+    }
+
+    return nullptr;
+}
+
+void *apply_prim_squareroot(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in squareroot -> arity mismatch: number of arguments should be 1!");
+
+    return apply_prim_squareroot_1(prim_car(lst));
 }
 
 void *apply_prim_remaind_2(void *first, void *second)

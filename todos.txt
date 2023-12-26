@@ -11,3 +11,8 @@
     for -7 -3 it shoul return -1
 
     status: run test to see if it's working as expected!
+
+4. Slog cannot process string with spaces
+    exp. it can process "I_am_a_string", but can't "I am a string"
+
+    status: unsloved
