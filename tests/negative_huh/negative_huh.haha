@@ -1,0 +1,10 @@
+(define (call)
+  ; (negative? 2)
+  ; (negative? 2.3)
+  ; (negative? -2.4)
+  (apply negative? (list 4))
+  ; (apply negative? (list))
+  )
+
+(define (brouhaha_main)
+  (call))

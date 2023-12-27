@@ -823,6 +823,73 @@ void *apply_prim_null_u63_1(void *item)
     return prim_null_u63(item);
 }
 
+void *apply_prim_positive_u63_1(void *val)
+{
+    int val_tag = get_tag(val);
+    if (val_tag != MPF && val_tag != MPZ)
+    {
+        assert_type(false, "Error in positive? -> contract violation: expected MPZ/MPF argument!");
+    }
+
+    if (val_tag == MPZ)
+    {
+        if (mpz_sgn(*(decode_mpz(val))) > 0)
+            return encode_bool(true);
+        else
+            return encode_bool(false);
+    }else if (val_tag == MPF)
+    {
+        if (mpf_sgn(*(decode_mpf(val))) > 0)
+            return encode_bool(true);
+        else
+            return encode_bool(false);
+    }
+    
+    return nullptr;
+}
+
+void *apply_prim_positive_u63(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in positive? -> arity mismatch: expected number of argument is 1!");
+
+    return apply_prim_positive_u63_1(prim_car(lst));
+}
+
+void *apply_prim_negative_u63_1(void *val)
+{
+    int val_tag = get_tag(val);
+    if (val_tag != MPF && val_tag != MPZ)
+    {
+        assert_type(false, "Error in negative? -> contract violation: expected MPZ/MPF argument!");
+    }
+
+    if (val_tag == MPZ)
+    {
+        if (mpz_sgn(*(decode_mpz(val))) < 0)
+            return encode_bool(true);
+        else
+            return encode_bool(false);
+    }else if (val_tag == MPF)
+    {
+        if (mpf_sgn(*(decode_mpf(val))) < 0)
+            return encode_bool(true);
+        else
+            return encode_bool(false);
+    }
+    
+    return nullptr;
+}
+
+void *apply_prim_negative_u63(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in negative? -> arity mismatch: expected number of argument is 1!");
+
+    return apply_prim_negative_u63_1(prim_car(lst));
+}
+
+
 // pair?
 void *apply_prim_pair_u63_1(void *item)
 {
@@ -2514,7 +2581,7 @@ void *apply_prim_absolute_1(void *val)
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Prim absolute -> contract violation: expected rational? argument!");
+        assert_type(false, "Error in absolute -> contract violation: expected rational? argument!");
     }
 
     if (val_tag == MPZ)
@@ -2761,7 +2828,8 @@ void *apply_prim_squareroot_1(void *arg1)
 
         return encode_mpf(result);
     }
-    else if (val_tag == MPF){
+    else if (val_tag == MPF)
+    {
         mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
         mpf_init(*result);
         mpf_sqrt(*result, *(decode_mpf(arg1)));

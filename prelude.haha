@@ -66,6 +66,8 @@
 (define-prim randnum 1 2)
 (define-prim symbol? 1)
 (define-prim pair? 1)
+(define-prim positive? 1)
+(define-prim negative? 1)
 
 
 ;;; other predicates and HOFs
