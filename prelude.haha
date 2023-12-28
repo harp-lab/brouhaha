@@ -82,9 +82,6 @@
 (define (member? x lst)
   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
 
-(define (foldl fun acc lst)
-  (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
-
 (define (reverse-helper lst lst2)
   (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
 
@@ -119,8 +116,11 @@
       lst
       (drop (cdr lst) (- n 1))))
 
-(define (foldr proc acc lst)
-  (if (null? lst) acc (proc (car lst) (foldr proc acc (cdr lst)))))
+(define (foldl fun acc lst)
+  (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
+
+(define (foldr fun acc lst)
+  (if (null? lst) acc (fun (car lst) (foldr fun acc (cdr lst)))))
 
 (define (append lst1 lst2)
   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))

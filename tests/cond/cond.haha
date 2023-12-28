@@ -11,8 +11,20 @@
 ;   (cond
 ;     [(filter even? (list 1 2 3))]) ; didn't work for slog non termination issue
 
+; works
+; (cond [(foldl + 0 (list 1 2 3))])
 
-(cond)
+; not working because of the slog bug?
+; (cond [(foldr + 0 (list 1 2 3)) => (lambda (l) (+ l l))])
+
+; working, foldl works but foldr doesn't
+(cond [(foldl + 0 (list 1 2 3)) => (lambda (l) (+ l l))])
+
+; works
+; (cond [100 => (lambda (l) (+ l l))])
+; (cond [100 => (lambda l l)])
+
+; (cond)
 )
 
 (define (brouhaha_main)

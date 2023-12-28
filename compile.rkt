@@ -80,11 +80,14 @@
 
       [`(cond) `'void]
       [`(cond [else ,e0]) (desugar-exp e0)]
+      [`(cond [,exp1 => (lambda (l) ,exp2)]) (desugar-exp `((lambda (l) ,exp2) ,exp1))] 
+      [`(cond [,exp1 => (lambda l ,exp2)]) (desugar-exp `((lambda l ,exp2) ,exp1))] 
       [`(cond [,e0 ,e1] ,es ...)
        (coverage `(if ,(desugar-exp e0)
                       ,(desugar-exp e1)
                       ,(desugar-exp `(cond ,@es))))]
-      ; [`(cond [,exp]) (desugar-exp exp)]
+                      
+      [`(cond [,exp]) (desugar-exp exp)] 
 
       [`(apply ,e0 ,e1) (coverage `(apply ,(desugar-exp e0) ,(desugar-exp e1)))]
       [`(,es ...) (coverage (map desugar-exp es))]))
