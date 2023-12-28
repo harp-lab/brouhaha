@@ -1,0 +1,19 @@
+(define (call)
+  ;   (cond
+  ;     [else 5])
+
+;   (cond
+;     [(positive? -5) "doesn't_get_here"]
+;     [(negative? 5) 'negative]
+;     [else "doesn't_get_here_either"])
+
+
+;   (cond
+;     [(filter even? (list 1 2 3))]) ; didn't work for slog non termination issue
+
+
+(cond)
+)
+
+(define (brouhaha_main)
+  (call))

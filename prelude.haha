@@ -125,4 +125,6 @@
 (define (append lst1 lst2)
   (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
 
+; ormap, andmap, both requires length to work properly. once done will impelement them.
+
 

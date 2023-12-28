@@ -28,10 +28,10 @@
          [pr3 (cps-convert pr2)]
          [pr4 (alphatize pr3)]
          [pr5 (closure-convert pr4)]
-        ;  [amount (if slog-flag
-        ;              (count-params pr5 fact-file)
-        ;              'no-slog)
-        ;          ]
+         ;  [amount (if slog-flag
+         ;              (count-params pr5 fact-file)
+         ;              'no-slog)
+         ;          ]
          )
 
     (list pr2 pr3 pr4 pr5)))
@@ -77,6 +77,15 @@
       [`(or ,e0 ,eas ...) (coverage `(if ,(desugar-exp e0) ,(desugar-exp e0) ,(desugar-exp `(or ,@eas))))]
       [`(not ,e0) (coverage `(if ,(desugar-exp e0) '#f '#t))]
       [`(if ,guard ,tr ,fl) (coverage `(if ,(desugar-exp guard) ,(desugar-exp tr) ,(desugar-exp fl)))]
+
+      [`(cond) `'void]
+      [`(cond [else ,e0]) (desugar-exp e0)]
+      [`(cond [,e0 ,e1] ,es ...)
+       (coverage `(if ,(desugar-exp e0)
+                      ,(desugar-exp e1)
+                      ,(desugar-exp `(cond ,@es))))]
+      ; [`(cond [,exp]) (desugar-exp exp)]
+
       [`(apply ,e0 ,e1) (coverage `(apply ,(desugar-exp e0) ,(desugar-exp e1)))]
       [`(,es ...) (coverage (map desugar-exp es))]))
   (define (desugar-define def)
@@ -525,8 +534,8 @@
 
 (define our-call
   `(
-    (define-prim + 2 3) 
-    (define-prim - 2 3 4) 
+    (define-prim + 2 3)
+    (define-prim - 2 3 4)
     ; (define (+ . lst) (apply-prim + lst))
 
     ; (define (- . lst)
