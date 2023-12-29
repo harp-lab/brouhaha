@@ -1,0 +1,15 @@
+(define (call)
+  ;   (set-member? (set 1 2 2 3.5 3 4 "haha") "haha")
+  ;   (set-member? (set 1 2 2 3.5 3 4 "haha" 50) "hehe")
+  ;   (set-member? (hash 1 2 2 3.5 3 4 "haha" 10) 3.5)
+  ;   (set-member? (list 1 2 2 3.5 3 4 "haha") 4)
+  ;   (set-member? (set 1 2 2 3.5 3 (hash 4 5) 4 "haha") (hash 4 5))
+  ;   (set-member? (list 1 2 2 3.5 3 (hash 4 5) 4 "haha") (hash 4 5))
+  ;   (set-member? (set 1 2 2 3.5 3 (hash 4 5) 4 "haha") (lambda x x))
+  ;   (set-member? (list 1 2 2 3.5 3 (hash 4 5) 4 "haha" (lambda x x) ) (lambda x x))
+
+  (apply set-member? (list (set 1 2 2 3.5 3 4 "haha" 10) "haha"))
+  )
+
+(define (brouhaha_main)
+  (call))

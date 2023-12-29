@@ -837,14 +837,15 @@ void *apply_prim_positive_u63_1(void *val)
             return encode_bool(true);
         else
             return encode_bool(false);
-    }else if (val_tag == MPF)
+    }
+    else if (val_tag == MPF)
     {
         if (mpf_sgn(*(decode_mpf(val))) > 0)
             return encode_bool(true);
         else
             return encode_bool(false);
     }
-    
+
     return nullptr;
 }
 
@@ -870,14 +871,15 @@ void *apply_prim_negative_u63_1(void *val)
             return encode_bool(true);
         else
             return encode_bool(false);
-    }else if (val_tag == MPF)
+    }
+    else if (val_tag == MPF)
     {
         if (mpf_sgn(*(decode_mpf(val))) < 0)
             return encode_bool(true);
         else
             return encode_bool(false);
     }
-    
+
     return nullptr;
 }
 
@@ -888,7 +890,6 @@ void *apply_prim_negative_u63(void *lst)
 
     return apply_prim_negative_u63_1(prim_car(lst));
 }
-
 
 // pair?
 void *apply_prim_pair_u63_1(void *item)
@@ -1842,6 +1843,86 @@ void *apply_prim_set_u45add(void *lst)
     return prim_set_u45add(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
+void *apply_prim_set_u45member_u63_2(void *arg1, void *arg2)
+{
+    int tag = get_tag(arg1);
+
+    if (tag != CONS && tag != HASH)
+    {
+        assert_type(false, "Error in the set-member?: contact violation -> First argument should be a set/list!");
+    }
+
+    if (tag == HASH)
+    {
+        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
+        if (h_hamt->whatami() == hamt_ds_type::set_type)
+        {
+            if (get_tag(arg2) == CLO)
+            {
+                return encode_bool(false);
+            }
+
+            // if the argument is a set
+            const hash_struct *const key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(arg2);
+            const hash_struct *const t = h_hamt->get(key);
+
+            if (t)
+            {
+                return encode_bool(true);
+            }
+            else
+            {
+                return encode_bool(false);
+            }
+        }
+
+        // otherwise shoot error, because, a hash should not be passed as an argument
+        assert_type(false, "Error in the set-member? : contact violation -> First argument should be a set/list!");
+    }
+    else if (tag == CONS)
+    {
+        void *result = nullptr;
+
+        while (is_cons(arg1))
+        {
+            void **cons_lst = decode_cons(arg1);
+            int car_tag = get_tag(cons_lst[0]);
+
+            if (!result)
+            {
+                result = cons_lst[0];
+                if (decode_bool(prim_equal_u63(result, arg2)))
+                    return encode_bool(true);
+            }
+            else
+            {
+                if (decode_bool(prim_equal_u63(arg2, cons_lst[0])))
+                    return encode_bool(true);
+            }
+
+            arg1 = cons_lst[1];
+        }
+
+        if (result == nullptr)
+        {
+            return encode_bool(false);
+        }
+        return encode_bool(false);
+    }
+    // otherwise we are assuming a set/something is passed, which is not always true!, thus shooting an error!
+
+    assert_type(false, "Error in set->list: contact violation -> Argument should be a set");
+
+    return nullptr;
+}
+void *apply_prim_set_u45member_u63(void *lst)
+{
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in set-member -> arity mismatch: number of arguments should be 2!");
+
+    return apply_prim_set_u45member_u63_2(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
 void *prim_hash_u45has_u45key_u63(void *h, void *k)
 {
     bool type_check_hash = get_tag(h) == HASH;
@@ -1954,7 +2035,7 @@ void *apply_prim_set(void *lst)
     {
         void **cons_lst = decode_cons(lst);
         int elem_tag = get_tag(cons_lst[0]);
-        bool type_check = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING);
+        bool type_check = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH);
 
         if (type_check)
         {

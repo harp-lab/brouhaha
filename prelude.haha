@@ -43,6 +43,9 @@
 (define-prim set->list 1)
 (define-prim list->set 1)
 (define-prim set-add 2)
+(define-prim set-member? 2)
+; (define-prim set-remove 2)
+; (define-prim set-count 1)
 
 ; string prims
 (define-prim string? 1)

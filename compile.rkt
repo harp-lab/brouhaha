@@ -86,7 +86,6 @@
        (coverage `(if ,(desugar-exp e0)
                       ,(desugar-exp e1)
                       ,(desugar-exp `(cond ,@es))))]
-                      
       [`(cond [,exp]) (desugar-exp exp)] 
 
       [`(apply ,e0 ,e1) (coverage `(apply ,(desugar-exp e0) ,(desugar-exp e1)))]
