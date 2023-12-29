@@ -1909,12 +1909,12 @@ void *apply_prim_set_u45member_u63_2(void *arg1, void *arg2)
         }
         return encode_bool(false);
     }
-    // otherwise we are assuming a set/something is passed, which is not always true!, thus shooting an error!
 
-    assert_type(false, "Error in set->list: contact violation -> Argument should be a set");
+    assert_type(false, "Error in set-member: contact violation -> Argument should be a set/list");
 
     return nullptr;
 }
+
 void *apply_prim_set_u45member_u63(void *lst)
 {
     if (length_counter(lst) < 2 || length_counter(lst) > 2)
@@ -2134,6 +2134,76 @@ void *apply_prim_list_u45_u62set(void *lst)
         assert_type(false, "Error in list->set -> arity mismatch: number of arguments should be 1!");
 
     return prim_list_u45_u62set(prim_car(lst));
+}
+
+void *apply_prim_set_u45remove_2(void *arg1, void *arg2)
+{
+    int tag = get_tag(arg1);
+
+    if (tag != CONS && tag != HASH)
+    {
+        assert_type(false, "Error in the set-remove: contact violation -> First argument should be a set/list!");
+    }
+
+    if (tag == HASH)
+    {
+        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
+        if (h_hamt->whatami() == hamt_ds_type::set_type)
+        {
+            if (get_tag(arg2) == CLO)
+            {
+                assert_type(false, "Error in set-remove: contact violation -> Seecond argument should be: MPZ/MPF/STRING/HASH/LIST!");
+            }
+
+            const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
+            const hash_struct **keys_array = h_hamt->getKeys();
+
+            void *keys_cons_lst = encode_null();
+
+            for (long i = 0; i < (h_hamt->size() * 2); i += 2)
+            {
+                if (!decode_bool(prim_equal_u63(arg2, keys_array[i]->val)))
+                {
+                    keys_cons_lst = prim_cons(keys_array[i]->val, keys_cons_lst);
+                }
+            }
+            // std::cout << print_val(keys_cons_lst) << std::endl;
+            return apply_prim_set(keys_cons_lst);
+        }
+
+        // otherwise shoot error, because, a hash should not be passed as an argument
+        assert_type(false, "Error in the set-member? : contact violation -> First argument should be a set/list!");
+    }
+    else if (tag == CONS)
+    {
+        void *result = nullptr;
+        void *lst = encode_null();
+
+        while (is_cons(arg1))
+        {
+            void **cons_lst = decode_cons(arg1);
+            int car_tag = get_tag(cons_lst[0]);
+
+            if (!decode_bool(prim_equal_u63(cons_lst[0], arg2)))
+                lst = prim_cons(cons_lst[0], lst);
+
+            arg1 = cons_lst[1];
+        }
+
+        return lst;
+    }
+
+    assert_type(false, "Error in set-remove: contact violation -> Argument should be a set/list");
+
+    return nullptr;
+}
+
+void *apply_prim_set_u45remove(void *lst)
+{
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in set-member -> arity mismatch: number of arguments should be 2!");
+
+    return apply_prim_set_u45remove_2(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
 #pragma end region
@@ -3157,6 +3227,11 @@ std::string print_val(void *val)
     case CONS:
     {
         return print_cons(val);
+        break;
+    }
+    case CLO:
+    {
+        return "#<procedure>";
         break;
     }
     }

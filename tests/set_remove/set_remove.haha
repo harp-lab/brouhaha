@@ -1,0 +1,18 @@
+(define (call)
+  ; (set-remove (set 1 2 2 3.5 3 4 "haha" 100) "haha")
+  ; (set-remove (set 1 2 2 3.5 3 4 "haha" 50) "hehe")
+  ; (set-remove (hash 1 2 2 3.5 3 4 "haha" 10) 3.5)
+  ; (set-remove (list 1 2 2 3.5 3 4 "haha") 4)
+  ; (set-remove (set 1 2 2 3.5 3 (hash 4 5) 4 "haha") (hash 4 5))
+  ; (set-remove (list 1 2 2 3.5 3 (hash 4 5) 4 "haha") (hash 4 5))
+  ; (set-remove (set 1 2 2 3.5 3 (hash 4 5) 4 "haha") (lambda x x))
+  ; (set-remove (list 1 2 2 3.5 3 (hash 4 5) 4 (lambda x x) "haha") 4)
+  ; (set-remove (list 1 2 2 3.5 3 (hash 4 5) 4 "haha" (lambda x x) ) (lambda x x))
+  ; (set-remove (set 1 2 2 3.5 3 (hash 4 5) 4 "haha" (lambda x x) ) (lambda x x))
+
+
+  (apply set-remove (list (set 1 2 2 3.5 3 4 "haha" 10) "haha"))
+  )
+
+(define (brouhaha_main)
+  (call))
