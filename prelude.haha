@@ -1,9 +1,5 @@
 ; Prelude is used as a way to add functionality to the language and programs as a library
 
-; (define (set-count s val)
-;   (prim set-count s val))
-; above prims never worked
-
 (define-prim + 1 2 3)
 (define-prim - 1 2 3)
 (define-prim * 1 2 3)
@@ -40,7 +36,7 @@
 (define-prim set-add 2)
 (define-prim set-member? 2)
 (define-prim set-remove 2)
-; (define-prim set-count 1)
+(define-prim set-count 1)
 
 ; string prims
 (define-prim string? 1)

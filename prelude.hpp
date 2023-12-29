@@ -1965,13 +1965,9 @@ void *apply_prim_hash_u45has_u45key_u63(void *lst)
 
 void *prim_hash_u45count(void *h)
 {
-    // check if a hash
-    //  get the count
-    //  return the mpz_t of count
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "in the hash-count, hash is not passed");
         assert_type(false, "Error in the hash-count: contact violation ->  Argument should be a hash!");
     }
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
@@ -2201,9 +2197,80 @@ void *apply_prim_set_u45remove_2(void *arg1, void *arg2)
 void *apply_prim_set_u45remove(void *lst)
 {
     if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in set-member -> arity mismatch: number of arguments should be 2!");
+        assert_type(false, "Error in set-remove -> arity mismatch: number of arguments should be 2!");
 
     return apply_prim_set_u45remove_2(prim_car(lst), prim_car(prim_cdr(lst)));
+}
+
+void *apply_prim_set_u45count_1(void *arg1)
+{
+    int tag = get_tag(arg1);
+
+    if (tag != CONS && tag != HASH)
+    {
+        assert_type(false, "Error in the set-count: contact violation -> First argument should be a set/list!");
+    }
+
+    if (tag == HASH)
+    {
+        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
+        if (h_hamt->whatami() == hamt_ds_type::set_type)
+        {
+            // const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
+            mpz_t *count = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+            mpz_init_set_ui(*count, h_hamt->size());
+            return encode_mpz(count);
+
+            // void *keys_cons_lst = encode_null();
+
+            // for (long i = 0; i < (h_hamt->size() * 2); i += 2)
+            // {
+            //     if (!decode_bool(prim_equal_u63(arg2, keys_array[i]->val)))
+            //     {
+            //         keys_cons_lst = prim_cons(keys_array[i]->val, keys_cons_lst);
+            //     }
+            // }
+            // // std::cout << print_val(keys_cons_lst) << std::endl;
+            // return apply_prim_set(keys_cons_lst);
+        }
+
+        // otherwise shoot error, because, a hash should not be passed as an argument
+        assert_type(false, "Error in the set-count: contact violation -> First argument should be a set/list!");
+    }
+    else if (tag == CONS)
+    {
+        // return length_counter(arg1);
+        mpz_t *count = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init_set_ui(*count, length_counter(arg1));
+        return encode_mpz(count);
+
+        // void *lst = encode_null();
+
+        // while (is_cons(arg1))
+        // {
+        //     void **cons_lst = decode_cons(arg1);
+        //     int car_tag = get_tag(cons_lst[0]);
+
+        //     if (!decode_bool(prim_equal_u63(cons_lst[0], arg2)))
+        //         lst = prim_cons(cons_lst[0], lst);
+
+        //     arg1 = cons_lst[1];
+        // }
+
+        // return lst;
+    }
+
+    assert_type(false, "Error in set-count: contact violation -> Argument should be a set/list");
+
+    return nullptr;
+}
+
+void *apply_prim_set_u45count(void *lst)
+{
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in set-count -> arity mismatch: number of arguments should be 2!");
+
+    return apply_prim_set_u45count_1(prim_car(lst));
 }
 
 #pragma end region
