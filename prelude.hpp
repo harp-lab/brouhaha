@@ -1315,9 +1315,229 @@ void *div(void *arg1, void *arg2)
     return 0;
 }
 
+
+void *apply_prim__u47_2(void *arg1, void *arg2) // / division
+{
+    bool is_mpf = false;
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
+
+    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)))
+    {
+        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*arg1_mpf);
+        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*arg2_mpf);
+
+        if (arg1_tag == MPZ)
+        {
+            // if first number is 0 return exactly that!
+            if (mpz_sgn(*(decode_mpz(arg1))) == 0)
+            {
+                mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+                mpz_init_set_str(*tempMpzVal, "0", 10);
+                return encode_mpz(tempMpzVal);
+            }
+
+            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+        }
+        else
+        {
+            // if first number is 0 return exactly that!
+            if (mpf_sgn(*(decode_mpf(arg1))) == 0)
+            {
+                mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+                mpf_init_set_str(*tempMpfVal, "0.0", 10);
+                return encode_mpf(tempMpfVal);
+            }
+
+            is_mpf = true;
+            arg1_mpf = decode_mpf(arg1);
+        }
+
+        if (arg2_tag == MPZ)
+        {
+            if (mpz_sgn(*(decode_mpz(arg2))) == 0)
+            {
+                assert_type(false, "Error in division -> division by zero is not allowed!");
+            }
+
+            // if first number is 0 return exactly that!
+            if (mpz_sgn(*(decode_mpz(arg2))) == 0)
+            {
+                mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+                mpz_init_set_str(*tempMpzVal, "0", 10);
+                return encode_mpz(tempMpzVal);
+            }
+
+            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
+        }
+        else
+        {
+            if (mpf_sgn(*(decode_mpf(arg2))) == 0)
+            {
+                assert_type(false, "Error in division -> division by zero is not allowed!");
+            }
+
+            // if first number is 0 return exactly that!
+            if (mpf_sgn(*(decode_mpf(arg2))) == 0)
+            {
+                mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+                mpf_init_set_str(*tempMpfVal, "0.0", 10);
+                return encode_mpf(tempMpfVal);
+            }
+
+            is_mpf = true;
+            arg2_mpf = decode_mpf(arg2);
+        }
+
+        void *res = div(encode_mpf(arg1_mpf), encode_mpf(arg2_mpf));
+
+        if (is_mpf || !is_integer_val(res))
+            return res;
+        else
+        {
+            // none of the values were mpf, and the result do no have any fractional part
+            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+            mpz_init(*ress);
+            mpz_set_f(*ress, *(decode_mpf(res)));
+            return encode_mpz(ress);
+        }
+    }
+    else
+    {
+        assert_type(false, "Error in division -> Expected argument types are: MPZ/MPF!");
+    }
+
+    return nullptr;
+}
+
+void *apply_prim__u47_3(void *arg1, void *arg2, void *arg3) // / division
+{
+    bool is_mpf = false;
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
+    int arg3_tag = get_tag(arg3);
+
+    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)) && ((arg3_tag == MPZ) || (arg3_tag == MPF)))
+    {
+        mpf_t *arg3_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*arg3_mpf);
+
+        if (arg3_tag == MPZ)
+        {
+            if (mpz_sgn(*(decode_mpz(arg3))) == 0)
+            {
+                assert_type(false, "Error in division -> division by zero is not allowed!");
+            }
+
+            // if first number is 0 return exactly that!
+            if (mpz_sgn(*(decode_mpz(arg3))) == 0)
+            {
+                mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+                mpz_init_set_str(*tempMpzVal, "0", 10);
+                return encode_mpz(tempMpzVal);
+            }
+
+            arg3_mpf = mpz_2_mpf(decode_mpz(arg3));
+        }
+        else
+        {
+            if (mpf_sgn(*(decode_mpf(arg3))) == 0)
+            {
+                assert_type(false, "Error in division -> division by zero is not allowed!");
+            }
+
+            // if first number is 0 return exactly that!
+            if (mpf_sgn(*(decode_mpf(arg3))) == 0)
+            {
+                mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+                mpf_init_set_str(*tempMpfVal, "0.0", 10);
+                return encode_mpf(tempMpfVal);
+            }
+
+            is_mpf = true;
+            arg3_mpf = decode_mpf(arg3);
+        }
+
+        void *res = div(apply_prim__u47_2(arg1, arg2), encode_mpf(arg3_mpf));
+        // void *res = div(div(encode_mpf(arg1_mpf), encode_mpf(arg2_mpf)), encode_mpf(arg3_mpf));
+
+        if (is_mpf || !is_integer_val(res))
+            return res;
+        else
+        {
+            // none of the values were mpf, and the result do no have any fractional part
+            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+            mpz_init(*ress);
+            mpz_set_f(*ress, *(decode_mpf(res)));
+            return encode_mpz(ress);
+        }
+    }
+    else
+    {
+        assert_type(false, "Error in division -> Expected argument types are: MPZ/MPF!");
+    }
+
+    return nullptr;
+}
+
+void *apply_prim__u47_1(void *arg1) // / division
+{
+    bool is_mpf = false;
+    int arg1_tag = get_tag(arg1);
+
+    if (arg1_tag == MPZ || arg1_tag == MPF)
+    {
+        if (arg1_tag == MPZ)
+        {
+            if (mpz_sgn(*(decode_mpz(arg1))) == 0)
+            {
+                assert_type(false, "Error in division -> division by zero is not allowed!");
+            }
+
+            // adding dummy parameter
+            mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+            mpz_init_set_str(*tempMpzVal, "1", 10);
+            void *arg2 = encode_mpz(tempMpzVal);
+
+            return apply_prim__u47_2(arg2, arg1);
+        }
+        else
+        {
+            if (mpf_sgn(*(decode_mpf(arg1))) == 0)
+            {
+                assert_type(false, "Error in division -> division by zero is not allowed!");
+            }
+
+            // adding dummy parameter
+            mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+            mpf_init_set_str(*tempMpfVal, "1.0", 10);
+            void *arg2 = encode_mpf(tempMpfVal);
+
+            return apply_prim__u47_2(arg2, arg1);
+        }
+    }
+    else
+    {
+        assert_type(false, "Error in division -> Expected argument types are: MPZ/MPF!");
+    }
+
+    return nullptr;
+}
+
 void *apply_prim__u47(void *lst) // / division
 {
+    if (length_counter(lst) < 1)
+        assert_type(false, "Error in division -> arity mismatch: at least 1 argument is expected!");
+
+    if (length_counter(lst) == 1)
+        return apply_prim__u47_1(prim_car(lst));
+
+ 
     void *result = nullptr;
+
+    bool is_mpf = false;
 
     while (is_cons(lst))
     {
@@ -1325,43 +1545,74 @@ void *apply_prim__u47(void *lst) // / division
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in division: values in the lst are not MPZ/MPF");
+        assert_type(type_check, "Error in division -> Expected argument types are: MPZ/MPF!");
+
+        // don't care if it's mpz/mpf, going to turn it to mpf
+
+        mpf_t *val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*val);
+
+        if (car_tag == MPZ)
+            val = mpz_2_mpf(decode_mpz(cons_lst[0]));
+        else
+        {
+            is_mpf = true;
+            val = decode_mpf(cons_lst[0]);
+        }
+
         if (!result)
         {
-            result = cons_lst[0];
+            // if first number is 0 return exactly that!
+            if (car_tag == MPZ)
+            {
+                if (mpz_sgn(*(decode_mpz(cons_lst[0]))) == 0)
+                {
+                    mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+                    mpz_init_set_str(*tempMpzVal, "0", 10);
+                    return encode_mpz(tempMpzVal);
+                }
+            }
+            else
+            {
+                if (mpf_sgn(*(decode_mpf(cons_lst[0]))) == 0)
+                {
+                    mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+                    mpf_init_set_str(*tempMpfVal, "0.0", 10);
+                    return encode_mpf(tempMpfVal);
+                }
+            }
+
+            result = encode_mpf(val);
         }
         else
         {
-            result = div(result, cons_lst[0]);
+            // if any of the number in the list is 0, exit out with an error
+            if (mpf_sgn(*val) == 0)
+            {
+                assert_type(false, "Error in division -> division by zero is not allowed!");
+            }
+
+            result = div(result, encode_mpf(val));
         }
 
         lst = cons_lst[1];
     }
 
+    // none of the values were mpf, but the result has fraction
+    if (is_mpf || !is_integer_val(result))
+        return result;
+    else
+    {
+        // none of the values were mpf, and the result do no have any fractional part
+        mpz_t *res = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init(*res);
+        mpz_set_f(*res, *(decode_mpf(result)));
+        return encode_mpz(res);
+    }
+
     return result;
 }
 
-// doesn't work!
-void *apply_prim__u47_1(void *arg1) // / division
-{
-    std::cout << "hererererer...div" << std::endl;
-    // adding dummy parameter
-    mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init_set_str(*tempMpzVal, "1", 10);
-    void *arg2 = encode_mpz(tempMpzVal);
-
-    return div(arg2, arg1);
-}
-
-void *apply_prim__u47_2(void *arg1, void *arg2) // / division
-{
-    return div(arg1, arg2);
-}
-
-void *apply_prim__u47_3(void *arg1, void *arg2, void *arg3) // / division
-{
-    return div(div(arg1, arg2), arg3);
-}
 
 #pragma endregion
 void *apply_prim_and(void *lst)
@@ -2216,22 +2467,9 @@ void *apply_prim_set_u45count_1(void *arg1)
         const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
         if (h_hamt->whatami() == hamt_ds_type::set_type)
         {
-            // const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
             mpz_t *count = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
             mpz_init_set_ui(*count, h_hamt->size());
             return encode_mpz(count);
-
-            // void *keys_cons_lst = encode_null();
-
-            // for (long i = 0; i < (h_hamt->size() * 2); i += 2)
-            // {
-            //     if (!decode_bool(prim_equal_u63(arg2, keys_array[i]->val)))
-            //     {
-            //         keys_cons_lst = prim_cons(keys_array[i]->val, keys_cons_lst);
-            //     }
-            // }
-            // // std::cout << print_val(keys_cons_lst) << std::endl;
-            // return apply_prim_set(keys_cons_lst);
         }
 
         // otherwise shoot error, because, a hash should not be passed as an argument
@@ -2239,25 +2477,9 @@ void *apply_prim_set_u45count_1(void *arg1)
     }
     else if (tag == CONS)
     {
-        // return length_counter(arg1);
         mpz_t *count = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
         mpz_init_set_ui(*count, length_counter(arg1));
         return encode_mpz(count);
-
-        // void *lst = encode_null();
-
-        // while (is_cons(arg1))
-        // {
-        //     void **cons_lst = decode_cons(arg1);
-        //     int car_tag = get_tag(cons_lst[0]);
-
-        //     if (!decode_bool(prim_equal_u63(cons_lst[0], arg2)))
-        //         lst = prim_cons(cons_lst[0], lst);
-
-        //     arg1 = cons_lst[1];
-        // }
-
-        // return lst;
     }
 
     assert_type(false, "Error in set-count: contact violation -> Argument should be a set/list");
