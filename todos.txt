@@ -3,7 +3,7 @@
 
     status: unsloved, but its working in kludgy way!
 2. prim_exact_u45round
-    what if the argument is an integer istead of float?
+    what if the argument is an integer instead of float?
 
     status: unsloved
 3. modulo

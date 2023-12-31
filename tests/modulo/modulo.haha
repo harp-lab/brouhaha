@@ -1,5 +1,12 @@
 (define (call)
-    (modulo 28 8))
+    ; (modulo 28 8)
+    ; (modulo -7 3)
+    ; (modulo -7 -3)
+    ; (modulo 7.0 3.0)
+    ; (modulo 7 3.0)
+    (modulo 7.0 3)
+    ; (apply modulo (list 28.0 8))
+    )
 
 (define (brouhaha_main)
     (call))

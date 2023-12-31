@@ -695,60 +695,89 @@ int is_integer_val(void *val)
     return false;
 }
 
+// helper function to calculate the modulo
+mpz_t *calc_modulo(mpz_t *first, mpz_t *second)
+{
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+
+    // if (mpz_sgn(*mpz_arg1) >= 0 && mpz_sgn(*second) > 0)
+    if (mpz_sgn(*second) > 0)
+    {
+        // both positive
+        mpz_mod(*result, *first, *second);
+    }
+    else if (mpz_sgn(*first) >= 0 && mpz_sgn(*second) < 0)
+    {
+        // positive, negative
+        mpz_mod(*result, *first, *second);
+        mpz_add(*result, *result, *second);
+    }
+    // else if (mpz_sgn(*first)) < 0 && mpz_sgn(*second) > 0)
+    // {
+    //     // negative, positive
+    //     mpz_mod(*result, *first), *second);
+    // }
+    else
+    {
+        // both negative
+        mpz_mod(*result, *first, *second);
+        mpz_add(*result, *result, *second);
+    }
+
+    return result;
+}
+
 void *prim_modulo(void *first, void *second)
 {
     void *result = nullptr;
 
     if (!is_integer_val(first) || !is_integer_val(second))
     { // to see either of the numbers has fraction in it!
-        assert_type(false, "Error in modulo: contract violation -> expected integer!");
+        assert_type(false, "Error in modulo: contract violation -> expected integer arguments!");
     }
     else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
     { // both numbers are mpz
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init(*result);
-        mpz_mod(*result, *(decode_mpz(first)), *(decode_mpz(second)));
-        return encode_mpz(result);
+        mpz_t *mpz_arg1 = decode_mpz(first);
+        mpz_t *mpz_arg2 = decode_mpz(second);
+
+        return encode_mpz(calc_modulo(mpz_arg1, mpz_arg2));
     }
     else if (get_tag(first) == MPF && get_tag(second) == MPF)
     { // both number are mpf
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
         mpz_t *mpz_arg1 = mpf_2_mpz(decode_mpf(first));
         mpz_t *mpz_arg2 = mpf_2_mpz(decode_mpf(second));
 
-        mpz_mod(*result, *mpz_arg1, *mpz_arg2);
-        return encode_mpf(mpz_2_mpf(result));
+        return encode_mpf(mpz_2_mpf(calc_modulo(mpz_arg1, mpz_arg2)));
     }
     else if (get_tag(first) == MPZ && get_tag(second) == MPF)
     { // first number is mpz but second is mpf
         mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
         mpz_t *mpz_arg2 = mpf_2_mpz(decode_mpf(second));
 
-        mpz_mod(*result, *(decode_mpz(first)), *mpz_arg2);
-        return encode_mpf(mpz_2_mpf(result));
+        return encode_mpf(mpz_2_mpf(calc_modulo(decode_mpz(first), mpz_arg2)));
     }
     else
     { // second number is mpz but but first is mpf
         mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
         mpz_t *mpz_arg1 = mpf_2_mpz(decode_mpf(first));
 
-        mpz_mod(*result, *mpz_arg1, *(decode_mpz(second)));
-        return encode_mpf(mpz_2_mpf(result));
+        return encode_mpf(mpz_2_mpf(calc_modulo(mpz_arg1, decode_mpz(second))));
     }
 
     return result;
 }
 
-void *apply_prim_modulo(void *lst) 
+void *apply_prim_modulo(void *lst)
 {
-    if (length_counter(lst) > 2)
-        assert_type(false, "Error in modulo -> arity mismatch: more than 2 arguments is not supported!");
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in modulo -> arity mismatch: expected number of argument is 2!");
 
     void **cons_lst = decode_cons(lst);
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    assert_type(type_check, "Error in modulo -> contact violation: The values in the list must be integers or floating-point numbers!");
+    assert_type(type_check, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
 
     return prim_modulo(prim_car(lst), prim_car(prim_cdr(lst)));
 }
@@ -1250,7 +1279,6 @@ void *apply_prim__u42(void *lst) //*
     }
 
     return result;
-
 }
 
 void *apply_prim__u42_1(void *arg1) //*
@@ -1328,7 +1356,6 @@ void *div(void *arg1, void *arg2)
     }
     return 0;
 }
-
 
 void *apply_prim__u47_2(void *arg1, void *arg2) // / division
 {
@@ -1548,7 +1575,6 @@ void *apply_prim__u47(void *lst) // / division
     if (length_counter(lst) == 1)
         return apply_prim__u47_1(prim_car(lst));
 
- 
     void *result = nullptr;
 
     bool is_mpf = false;
@@ -1626,7 +1652,6 @@ void *apply_prim__u47(void *lst) // / division
 
     return result;
 }
-
 
 #pragma endregion
 void *apply_prim_and(void *lst)
