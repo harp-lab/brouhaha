@@ -297,7 +297,7 @@ int length_counter(void *lst)
 void *apply_prim_cons(void *lst)
 {
     if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in prim cons -> arity mismatch: number of arguments should be 2!");
+        assert_type(false, "Error in cons -> arity mismatch: number of arguments should be 2!");
 
     return prim_cons(prim_car(lst), prim_car(prim_cdr(lst)));
 }
@@ -305,7 +305,7 @@ void *apply_prim_cons(void *lst)
 void *apply_prim_car(void *lst)
 {
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in prim car -> arity mismatch: number of arguments should be 1!");
+        assert_type(false, "Error in car -> arity mismatch: number of arguments should be 1!");
 
     // because apply of car takes exp like, (list (list 10 2))
     return prim_car(prim_car(lst));
@@ -314,7 +314,7 @@ void *apply_prim_car(void *lst)
 void *apply_prim_cdr(void *lst)
 {
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in prim cdr -> arity mismatch: number of arguments should be 1!");
+        assert_type(false, "Error in cdr -> arity mismatch: number of arguments should be 1!");
 
     // because apply of cdr takes exp like, (list (list 10 2))
     return prim_cdr(prim_car(lst));
@@ -620,7 +620,7 @@ u64 hamt_hash(void *h)
 
 u64 cons_hash(void *lst)
 {
-    assert_type((get_tag(lst) == CONS), "Error in cons_hash: Type passed to cons_hash is not a CONS");
+    assert_type((get_tag(lst) == CONS), "Error in cons_hash -> Type passed to cons_hash is not a CONS!");
     u64 *h = (u64 *)GC_MALLOC(sizeof(u64));
     *h = 0xcbf29ce484222325;
     while (is_cons(lst))
@@ -629,7 +629,7 @@ u64 cons_hash(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF) || (car_tag == STRING) || (car_tag == HASH) || (car_tag == CONS);
 
-        assert_type(type_check, "Error in cons_hash: values in the lst are not hashable");
+        assert_type(type_check, "Error in cons_hash -> values in the list are not hashable!");
 
         *h ^= hash_(cons_lst[0]) + 0x9e3779b9 + (*h << 6) + (*h >> 2);
 
@@ -669,7 +669,7 @@ u64 hash_(void *val)
     }
     default:
     {
-        assert_type(false, "type passed to hash_ cannot be hashed");
+        assert_type(false, "Error in hash_ -> type passed cannot be hashed!");
     }
     }
     return 0;
@@ -701,7 +701,7 @@ void *prim_modulo(void *first, void *second)
 
     if (!is_integer_val(first) || !is_integer_val(second))
     { // to see either of the numbers has fraction in it!
-        assert_type(false, "Error in apply_prim_modulo: contract violation, expected integer!");
+        assert_type(false, "Error in modulo: contract violation -> expected integer!");
     }
     else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
     { // both numbers are mpz
@@ -739,16 +739,16 @@ void *prim_modulo(void *first, void *second)
     return result;
 }
 
-void *apply_prim_modulo(void *lst) //+
+void *apply_prim_modulo(void *lst) 
 {
     if (length_counter(lst) > 2)
-        assert_type(false, "Error in apply_prim_modulo -> arity mismatch: more than two arguments is not supported!");
+        assert_type(false, "Error in modulo -> arity mismatch: more than 2 arguments is not supported!");
 
     void **cons_lst = decode_cons(lst);
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    assert_type(type_check, "Error in apply_prim_modulo -> values in the lst are not MPZ/MPF");
+    assert_type(type_check, "Error in modulo -> contact violation: The values in the list must be integers or floating-point numbers!");
 
     return prim_modulo(prim_car(lst), prim_car(prim_cdr(lst)));
 }
@@ -770,8 +770,8 @@ void *apply_prim_equal_u63_2(void *x, void *y)
 
 void *apply_prim_equal_u63(void *lst)
 {
-    if (length_counter(lst) > 2)
-        assert_type(false, "Error in apply_prim_equal_u63 -> arity mismatch: more than two arguments is not supported!");
+    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+        assert_type(false, "Error in equal? -> arity mismatch: expected number of argument is 2.");
 
     return prim_equal_u63(prim_car(lst), prim_car(prim_cdr(lst)));
 }
@@ -792,7 +792,7 @@ void *apply_prim_eq_u63_2(void *x, void *y)
 void *apply_prim_eq_u63(void *lst)
 {
     if (length_counter(lst) > 2)
-        assert_type(false, "Error in apply_prim_eq_u63 -> arity mismatch: more than two arguments is not supported!");
+        assert_type(false, "Error in eq? -> arity mismatch: expected number of argument is 2.");
 
     if (is_cons(prim_car(lst)) || is_cons(prim_car(prim_cdr(lst))))
         return encode_bool(false);
@@ -813,7 +813,7 @@ void *prim_null_u63(void *item)
 void *apply_prim_null_u63(void *lst)
 {
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in null? -> arity mismatch: expected number of argument is 1!");
+        assert_type(false, "Error in null? -> arity mismatch: expected number of argument is 1.");
 
     return prim_null_u63(prim_car(lst));
 }
@@ -828,7 +828,7 @@ void *apply_prim_positive_u63_1(void *val)
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Error in positive? -> contract violation: expected MPZ/MPF argument!");
+        assert_type(false, "Error in positive? -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
     if (val_tag == MPZ)
@@ -852,7 +852,7 @@ void *apply_prim_positive_u63_1(void *val)
 void *apply_prim_positive_u63(void *lst)
 {
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in positive? -> arity mismatch: expected number of argument is 1!");
+        assert_type(false, "Error in positive? -> arity mismatch: expected number of argument is 1.");
 
     return apply_prim_positive_u63_1(prim_car(lst));
 }
@@ -862,7 +862,7 @@ void *apply_prim_negative_u63_1(void *val)
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Error in negative? -> contract violation: expected MPZ/MPF argument!");
+        assert_type(false, "Error in negative? -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
     if (val_tag == MPZ)
@@ -886,7 +886,7 @@ void *apply_prim_negative_u63_1(void *val)
 void *apply_prim_negative_u63(void *lst)
 {
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in negative? -> arity mismatch: expected number of argument is 1!");
+        assert_type(false, "Error in negative? -> arity mismatch: expected number of argument is 1.");
 
     return apply_prim_negative_u63_1(prim_car(lst));
 }
@@ -905,7 +905,7 @@ void *apply_prim_pair_u63(void *lst)
 {
 
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in pair? -> arity mismatch: expected number of argument is 1!");
+        assert_type(false, "Error in pair? -> arity mismatch: expected number of argument is 1.");
 
     return apply_prim_pair_u63_1(prim_car(lst));
 }
@@ -973,7 +973,7 @@ void *apply_prim__u43(void *lst) //+
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in addition: values in the lst are not MPZ/MPF");
+        assert_type(type_check, "Error in addition -> contact violation: The values in the list must be integers or floating-point numbers!");
 
         if (!result)
         {
@@ -1080,7 +1080,7 @@ void *apply_prim__u45(void *lst) //-
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in subtraction: values in the lst are not MPZ/MPF");
+        assert_type(type_check, "Error in subtraction -> contact violation: The values in the list must be integers or floating-point numbers!");
 
         if (!result)
         {
@@ -1102,6 +1102,11 @@ void *apply_prim__u45(void *lst) //-
         }
 
         lst = cons_lst[1];
+    }
+
+    if (result == nullptr)
+    {
+        assert_type(false, "Error in subtraction -> arity mismatch: at least 1 argument is required!");
     }
 
     return result;
@@ -1223,7 +1228,8 @@ void *apply_prim__u42(void *lst) //*
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in multiplication: values in the lst are not MPZ/MPF");
+        assert_type(type_check, "Error in multiplication -> contact violation: The values in the list must be integers or floating-point numbers!");
+
         if (!result)
         {
             result = cons_lst[0];
@@ -1236,7 +1242,15 @@ void *apply_prim__u42(void *lst) //*
         lst = cons_lst[1];
     }
 
+    if (result == nullptr)
+    {
+        mpz_t *val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init_set_str(*val, "1", 10);
+        return encode_mpz(val);
+    }
+
     return result;
+
 }
 
 void *apply_prim__u42_1(void *arg1) //*
@@ -1406,7 +1420,7 @@ void *apply_prim__u47_2(void *arg1, void *arg2) // / division
     }
     else
     {
-        assert_type(false, "Error in division -> Expected argument types are: MPZ/MPF!");
+        assert_type(false, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
     }
 
     return nullptr;
@@ -1476,7 +1490,7 @@ void *apply_prim__u47_3(void *arg1, void *arg2, void *arg3) // / division
     }
     else
     {
-        assert_type(false, "Error in division -> Expected argument types are: MPZ/MPF!");
+        assert_type(false, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
     }
 
     return nullptr;
@@ -1520,7 +1534,7 @@ void *apply_prim__u47_1(void *arg1) // / division
     }
     else
     {
-        assert_type(false, "Error in division -> Expected argument types are: MPZ/MPF!");
+        assert_type(false, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
     }
 
     return nullptr;
@@ -1545,7 +1559,7 @@ void *apply_prim__u47(void *lst) // / division
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in division -> Expected argument types are: MPZ/MPF!");
+        assert_type(type_check, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
 
         // don't care if it's mpz/mpf, going to turn it to mpf
 
@@ -1709,8 +1723,8 @@ void *compare_lst(void *lst, bool (*cmp_op)(long))
         void **cons_lst = decode_cons(lst);
         bool type_check = (get_tag(cons_lst[0]) == MPZ);
 
-        assert_type(type_check,
-                    "Error in apply_prim__u62: values in the lst are not MPZ");
+        assert_type(type_check, "Error -> contact violation: The values in the list must be integers!");
+
         mpz_t *opd1 = decode_mpz(cons_lst[0]);
 
         // std::string str(mpz_get_str(nullptr, 10, *opd1));
@@ -1737,7 +1751,7 @@ void *compare_lst(void *lst, bool (*cmp_op)(long))
     }
     if (counter <= 1)
     {
-        assert_type(false, "Less than two numbers to compare in the list");
+        assert_type(false, "Error -> contact violation: Less than two numbers to compare in the list!");
     }
     return encode_bool(true);
 }
@@ -1913,7 +1927,7 @@ std::string print_set(void *s)
 // doesn't work now just prints the keys in a list like set
 std::string print_hash(void *h)
 {
-    assert_type(get_tag(h) == HASH, "Passed type is not a hash");
+    assert_type(get_tag(h) == HASH, "Error in print_hash -> contact violation: Passed type is not a hash.");
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     if (h_hamt->whatami() == hamt_ds_type::set_type)
     {
@@ -1948,7 +1962,7 @@ void *apply_prim_hash(void *lst)
 
         if (!is_cons(cons_lst[1]))
         {
-            assert_type(false, "Error in hash -> key does not have a value!");
+            assert_type(false, "Error in hash -> contact violation: key does not have a value!");
         }
         void **cdr_cons_lst = decode_cons(cons_lst[1]);
 
@@ -1961,7 +1975,7 @@ void *apply_prim_hash(void *lst)
             lst = cdr_cons_lst[1];
             continue;
         }
-        assert_type(false, "Error in hash: contact violation -> Key should be one of the following types: MPZ/MPF/STRING!");
+        assert_type(false, "Error in hash -> contact violation: Key should be one of the following types: integer,  floating-point number or a string");
     }
     // std::cout << h->size() << std::endl;
     return encode_hash(h);
@@ -1984,7 +1998,7 @@ void *prim_hash_u45ref(void *h, void *k)
 
     if (!type_check_key)
     {
-        assert_type(false, "Error in the hash-ref: contact violoation -> Second argument should be one of the following type: MPZ/MPF/STRING/HASH!");
+        assert_type(false, "Error in the hash-ref: contact violoation -> Second argument should be one of the following type: integer, floating-point number, string or a hash!");
     }
 
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
@@ -2028,7 +2042,7 @@ void *prim_hash_u45set(void *h, void *k, void *v)
     bool type_check_key = (key_tag == MPZ) || (key_tag == MPF) || (key_tag == STRING);
     if (!type_check_key)
     {
-        assert_type(false, "Error in the hash-set: contact violoation -> Second argument should be one of the following type: MPZ/MPF/STRING!");
+        assert_type(false, "Error in the hash-set: contact violoation -> Second argument should be one of the following type: integer, floating-point numbers or a string");
     }
 
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
@@ -2100,7 +2114,7 @@ void *apply_prim_set_u45member_u63_2(void *arg1, void *arg2)
 
     if (tag != CONS && tag != HASH)
     {
-        assert_type(false, "Error in the set-member?: contact violation -> First argument should be a set/list!");
+        assert_type(false, "Error in the set-member? -> contact violation: First argument should be a set or a list");
     }
 
     if (tag == HASH)
@@ -2128,7 +2142,7 @@ void *apply_prim_set_u45member_u63_2(void *arg1, void *arg2)
         }
 
         // otherwise shoot error, because, a hash should not be passed as an argument
-        assert_type(false, "Error in the set-member? : contact violation -> First argument should be a set/list!");
+        assert_type(false, "Error in the set-member? -> contact violation: First argument should be a set or a list");
     }
     else if (tag == CONS)
     {
@@ -2161,7 +2175,7 @@ void *apply_prim_set_u45member_u63_2(void *arg1, void *arg2)
         return encode_bool(false);
     }
 
-    assert_type(false, "Error in set-member: contact violation -> Argument should be a set/list");
+    assert_type(false, "Error in set-member -> contact violation: Argument should be a set or a list");
 
     return nullptr;
 }
@@ -2179,7 +2193,7 @@ void *prim_hash_u45has_u45key_u63(void *h, void *k)
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "Error in the hash-has-key?: contact violation -> First argument should be a hash!");
+        assert_type(false, "Error in the hash-has-key? -> contact violation: First argument should be a hash");
     }
 
     int elem_tag = get_tag(k);
@@ -2187,7 +2201,7 @@ void *prim_hash_u45has_u45key_u63(void *h, void *k)
 
     if (!type_check_key)
     {
-        assert_type(false, "Error in the hash-has-key?: contact violoation -> Second argument should be one of the following type: MPZ/MPF/STRING/HASH!");
+        assert_type(false, "Error in the hash-has-key? -> contact violoation: Second argument should be one of the following type: integer, floating-point number, string or a hash");
     }
 
     void *ret_val = prim_hash_u45ref(h, k);
@@ -2219,7 +2233,7 @@ void *prim_hash_u45count(void *h)
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "Error in the hash-count: contact violation ->  Argument should be a hash!");
+        assert_type(false, "Error in the hash-count -> contact violation: argument should be a hash");
     }
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     mpz_t *count = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
@@ -2245,7 +2259,7 @@ void *prim_hash_u45keys(void *h)
     bool type_check_hash = get_tag(h) == HASH;
     if (!type_check_hash)
     {
-        assert_type(false, "Error in the hash-keys: contact violation -> Argument should be a hash!");
+        assert_type(false, "Error in the hash-keys -> contact violation: argument should be a hash");
     }
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     const hash_struct **keys_array = h_hamt->getKeys();
@@ -2292,7 +2306,7 @@ void *apply_prim_set(void *lst)
             lst = cons_lst[1];
             continue;
         }
-        assert_type(false, "Error in set: contact violation -> Key should be one of following types: MPZ/MPF/STRING!");
+        assert_type(false, "Error in set -> contact violation: key should be one of following types: integer, floating-point number or a string");
     }
     // std::cout << "the size of the set being returned is" << h->size() << std::endl;
     return encode_hash(h);
@@ -2319,11 +2333,11 @@ void *prim_set_u45_u62list(void *h)
         }
 
         // otherwise shoot error, because, a hash should not be passed as an argument
-        assert_type(false, "Error in set->list: contact violation -> Argument should be a set");
+        assert_type(false, "Error in set->list -> contact violation: argument should be a set");
     }
     // otherwise we are assuming a set/something is passed, which is not always true!, thus shooting an error!
 
-    assert_type(false, "Error in set->list: contact violation -> Argument should be a set");
+    assert_type(false, "Error in set->list -> contact violation: argument should be a set");
 
     return prim_hash_u45keys(h);
 }
@@ -2361,11 +2375,11 @@ void *prim_list_u45_u62set(void *lst)
         }
 
         // otherwise shoot error, because, a hash should not be passed as an argument
-        assert_type(false, "Error in list->set: contact violation -> Argument should be a list");
+        assert_type(false, "Error in list->set -> contact violation: argument should be a list");
     }
     // otherwise we are not sure what it is, thus shooting an error!
 
-    assert_type(false, "Error in list->set: contact violation -> Argument should be a list");
+    assert_type(false, "Error in list->set -> contact violation: argument should be a list");
 
     return apply_prim_set(lst);
 }
@@ -2389,7 +2403,7 @@ void *apply_prim_set_u45remove_2(void *arg1, void *arg2)
 
     if (tag != CONS && tag != HASH)
     {
-        assert_type(false, "Error in the set-remove: contact violation -> First argument should be a set/list!");
+        assert_type(false, "Error in the set-remove -> contact violation: first argument should be a set or a list");
     }
 
     if (tag == HASH)
@@ -2399,7 +2413,7 @@ void *apply_prim_set_u45remove_2(void *arg1, void *arg2)
         {
             if (get_tag(arg2) == CLO)
             {
-                assert_type(false, "Error in set-remove: contact violation -> Seecond argument should be: MPZ/MPF/STRING/HASH/LIST!");
+                assert_type(false, "Error in set-remove -> contact violation: seecond argument should be: integer, floating-point number, string, hash or a list");
             }
 
             const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
@@ -2419,7 +2433,7 @@ void *apply_prim_set_u45remove_2(void *arg1, void *arg2)
         }
 
         // otherwise shoot error, because, a hash should not be passed as an argument
-        assert_type(false, "Error in the set-member? : contact violation -> First argument should be a set/list!");
+        assert_type(false, "Error in the set-member? -> contact violation: first argument should be a set or a list");
     }
     else if (tag == CONS)
     {
@@ -2440,7 +2454,7 @@ void *apply_prim_set_u45remove_2(void *arg1, void *arg2)
         return lst;
     }
 
-    assert_type(false, "Error in set-remove: contact violation -> Argument should be a set/list");
+    assert_type(false, "Error in set-remove -> contact violation: argument should be a set or a list");
 
     return nullptr;
 }
@@ -2459,7 +2473,7 @@ void *apply_prim_set_u45count_1(void *arg1)
 
     if (tag != CONS && tag != HASH)
     {
-        assert_type(false, "Error in the set-count: contact violation -> First argument should be a set/list!");
+        assert_type(false, "Error in the set-count -> contact violation: first argument should be a set or a list");
     }
 
     if (tag == HASH)
@@ -2473,7 +2487,7 @@ void *apply_prim_set_u45count_1(void *arg1)
         }
 
         // otherwise shoot error, because, a hash should not be passed as an argument
-        assert_type(false, "Error in the set-count: contact violation -> First argument should be a set/list!");
+        assert_type(false, "Error in the set-count -> contact violation: first argument should be a set or a list");
     }
     else if (tag == CONS)
     {
@@ -2482,7 +2496,7 @@ void *apply_prim_set_u45count_1(void *arg1)
         return encode_mpz(count);
     }
 
-    assert_type(false, "Error in set-count: contact violation -> Argument should be a set/list");
+    assert_type(false, "Error in set-count -> contact violation: argument should be a set or a list");
 
     return nullptr;
 }
@@ -2506,7 +2520,7 @@ void *prim_exact_u45_u62inexact(void *val)
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Prim int->float -> contract violation: expected rational? argument!");
+        assert_type(false, "Prim int->float -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
     if (val_tag == MPZ)
@@ -2547,7 +2561,7 @@ void *prim_inexact_u45_u62exact(void *val)
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Prim float->int -> contract violation: expected rational? argument!");
+        assert_type(false, "Error in float->int -> contract violation: expected integers or floating-point numbers as  argument!");
     }
 
     if (val_tag == MPF)
@@ -2585,7 +2599,7 @@ void *prim_exact_u45floor(void *val) // exact-floor
     {
         // std::cout << val_tag << std::endl;
 
-        assert_type(false, "Prim exac-floor -> contract violation: expected rational? argument!");
+        assert_type(false, "Prim exact-floor -> contract violation: expected integers or floating-point numbers as  argument!");
     }
 
     void *result = nullptr;
@@ -2619,13 +2633,13 @@ void *apply_prim_exact_u45floor_1(void *val)
 void *apply_prim_exact_u45floor(void *lst)
 {
     if (length_counter(lst) > 1)
-        assert_type(false, "Error in exac-floor -> arity mismatch: more than one arguments is not supported!");
+        assert_type(false, "Error in exact-floor -> arity mismatch: more than 1 argument is not supported!");
 
     void **cons_lst = decode_cons(lst);
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    assert_type(type_check, "Error in exac-floor -> contact violation expected retional argument!");
+    assert_type(type_check, "Error in exact-floor -> contact violation: expected integers or floating-point numbers as argument!");
 
     return prim_exact_u45floor(prim_car(lst));
 }
@@ -2635,7 +2649,7 @@ void *prim_exact_u45ceiling(void *val) // exact-ceiling
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Prim exac-ceiling -> contract violation: expected rational? argument!");
+        assert_type(false, "Prim exact-ceiling -> contract violation: expected integers or floating-point numbers as  argument!");
     }
 
     void *result = nullptr;
@@ -2669,13 +2683,13 @@ void *apply_prim_exact_u45ceiling_1(void *val)
 void *apply_prim_exact_u45ceiling(void *lst)
 {
     if (length_counter(lst) > 1)
-        assert_type(false, "Error in exac-ceiling -> arity mismatch: more than one arguments is not supported!");
+        assert_type(false, "Error in exact-ceiling -> arity mismatch: more than 1 argument is not supported!");
 
     void **cons_lst = decode_cons(lst);
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    assert_type(type_check, "Error in exac-ceiling -> contact violation expected retional argument!");
+    assert_type(type_check, "Error in exact-ceiling -> contact violation: expected integers or floating-point numbers as argument!");
 
     return prim_exact_u45ceiling(prim_car(lst));
 }
@@ -2686,7 +2700,7 @@ void *prim_exact_u45round(void *val) // exact-round
     if (val_tag != MPF && val_tag != MPZ)
     {
         // std::cout << val_tag << std::endl;
-        assert_type(false, "Prim exac-round -> contract violation: expected rational? argument!");
+        assert_type(false, "Prim exact-round -> contract violation: expected integers or floating-point numbers as  argument!");
     }
 
     void *result = nullptr;
@@ -2757,13 +2771,13 @@ void *apply_prim_exact_u45round_1(void *val)
 void *apply_prim_exact_u45round(void *lst)
 {
     if (length_counter(lst) > 1)
-        assert_type(false, "Error in exac-round -> arity mismatch: more than one arguments is not supported!");
+        assert_type(false, "Error in exact-round -> arity mismatch: more than 1 argument is not supported!");
 
     void **cons_lst = decode_cons(lst);
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    assert_type(type_check, "Error in exac-round -> contact violation expected retional argument!");
+    assert_type(type_check, "Error in exact-round -> contact violation: expected integers or floating-point numbers as argument!");
 
     return prim_exact_u45round(prim_car(lst));
 }
@@ -2845,7 +2859,7 @@ void *prim_string_u45length(void *val)
     int tag = get_tag(val);
     if (tag != STRING)
     {
-        assert_type(false, "Error in string-length -> Argument is not a string");
+        assert_type(false, "Error in string-length -> contact violation: argument is not a string");
     }
 
     std::string *str = decode_str(val);
@@ -2870,15 +2884,15 @@ void *apply_prim_string_u45length(void *lst)
 // takes in str and the position and returns the character at that position
 void *prim_string_u45ref(void *str_void, void *pos_void)
 {
-    assert_type((get_tag(str_void)) == STRING, "Error in string-ref -> Frist argument should be a string");
-    assert_type((get_tag(pos_void)) == MPZ, "Error in string-ref -> Second argument should be an integer");
+    assert_type((get_tag(str_void)) == STRING, "Error in string-ref -> contact violation: frist argument should be a string");
+    assert_type((get_tag(pos_void)) == MPZ, "Error in string-ref -> contact violation: second argument should be an integer");
 
     std::string *str = decode_str(str_void);
     mpz_t *pos = decode_mpz(pos_void);
 
     if (!(mpz_cmp_ui(*pos, str->length()) < 0))
     { // pos < str.length()
-        assert_type(false, "Error in string-ref -> Index is out of range");
+        assert_type(false, "Error in string-ref -> exception: index is out of range");
     }
     const char ch = str->at(mpz_get_ui(*pos));
     return encode_str(new (GC) std::string(&ch));
@@ -2901,9 +2915,9 @@ void *apply_prim_string_u45ref(void *lst)
 // and returns the substring starting from start till end
 void *prim_substring(void *str_void, void *start_void, void *end_void)
 {
-    assert_type(get_tag(str_void) == STRING, "Error in substring -> First argument should be a string");
-    assert_type(get_tag(start_void) == MPZ, "Error in substring -> Second argument should be an integer");
-    assert_type(get_tag(end_void) == MPZ, "Error in substring -> Third argument should be an integer");
+    assert_type(get_tag(str_void) == STRING, "Error in substring -> contact violation: first argument should be a string");
+    assert_type(get_tag(start_void) == MPZ, "Error in substring -> contact violation: second argument should be an integer");
+    assert_type(get_tag(end_void) == MPZ, "Error in substring -> contact violation: third argument should be an integer");
 
     std::string *str = decode_str(str_void);
     long str_len = str->length();
@@ -2912,7 +2926,7 @@ void *prim_substring(void *str_void, void *start_void, void *end_void)
 
     if (!((mpz_cmp_ui(*start, str_len) < 0) && (mpz_cmp_ui(*end, str_len) <= 0)))
     {
-        assert_type(false, "Error in substring -> Ending index is out of range!");
+        assert_type(false, "Error in substring -> exception: ending index is out of range!");
     }
 
     mpz_sub(*end, *start, *end);
@@ -2939,8 +2953,8 @@ void *apply_prim_substring(void *lst)
 // takes two strings and returns the appended string
 void *prim_string_u45append(void *s1_void, void *s2_void)
 {
-    assert_type((get_tag(s1_void)) == STRING, "Error in string-append -> Frist argument should be a string");
-    assert_type((get_tag(s2_void)) == STRING, "Error in string-append -> Second argument should be a string");
+    assert_type((get_tag(s1_void)) == STRING, "Error in string-append -> contact violation: frist argument should be a string");
+    assert_type((get_tag(s2_void)) == STRING, "Error in string-append -> contact violation: second argument should be a string");
 
     std::string *s1 = new (GC) std::string(*(decode_str(s1_void)));
     std::string *s2 = decode_str(s2_void);
@@ -2963,7 +2977,7 @@ void *apply_prim_string_u45append(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == STRING);
 
-        assert_type(type_check, "Error in string-append -> arguement should be a string!");
+        assert_type(type_check, "Error in string-append -> contact violation: arguement should be a string!");
 
         if (!result)
         {
@@ -2987,7 +3001,7 @@ void *apply_prim_string_u45append(void *lst)
 
 void *prim_string_u45_u62list(void *str_void)
 {
-    assert_type((get_tag(str_void)) == STRING, "Error in string->list: Argument should be a string!");
+    assert_type((get_tag(str_void)) == STRING, "Error in string->list -> contact violation: argument should be a string");
 
     std::string *str = decode_str(str_void);
     std::string *ret_str = new (GC) std::string(*str);
@@ -3008,7 +3022,7 @@ void *apply_prim_string_u45_u62list_1(void *arg1)
 void *apply_prim_string_u45_u62list(void *lst)
 {
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in string->list -> arity mismatch: number of arguments should at least 1!");
+        assert_type(false, "Error in string->list -> arity mismatch: number of arguments should be at least 1!");
 
     return prim_string_u45_u62list(prim_car(lst));
 }
@@ -3021,7 +3035,7 @@ void *apply_prim_absolute_1(void *val)
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Error in absolute -> contract violation: expected rational? argument!");
+        assert_type(false, "Error in absolute -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
     if (val_tag == MPZ)
@@ -3091,7 +3105,7 @@ void *apply_prim_max(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in max -> contact violation: argument type should be either MPZ/MPF!");
+        assert_type(type_check, "Error in max -> contact violation: argument type should be either integers or floating-point numbers!");
 
         if (!is_result)
         {
@@ -3150,7 +3164,7 @@ void *apply_prim_min(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in min -> contact violation: argument type should be either MPZ/MPF!");
+        assert_type(type_check, "Error in min -> contact violation: argument type should be either integers or floating-point numbers!");
 
         if (!is_result)
         {
@@ -3194,12 +3208,12 @@ void *apply_prim_expt_2(void *arg1, void *arg2)
 
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Prim expt -> contract violation: First argument should be a number!");
+        assert_type(false, "Error in expt -> contract violation: first argument should be integers or floating-point numbers!");
     }
 
     if (val_tag2 != MPF && val_tag2 != MPZ)
     {
-        assert_type(false, "Prim expt -> contract violation: Second argument should be number!");
+        assert_type(false, "Error in expt -> contract violation: second argument should be integers or floating-point numbers!");
     }
 
     if (val_tag == MPZ && val_tag2 == MPZ)
@@ -3255,7 +3269,7 @@ void *apply_prim_squareroot_1(void *arg1)
 
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Error in squareroot -> contract violation: First argument should be a number!");
+        assert_type(false, "Error in squareroot -> contract violation: first argument should be integers or floating-point numbers!");
     }
 
     if (val_tag == MPZ)
@@ -3294,7 +3308,7 @@ void *apply_prim_remaind_2(void *first, void *second)
 
     if (!is_integer_val(first) || !is_integer_val(second))
     { // to see either of the numbers has fraction in it!
-        assert_type(false, "Error in remaind -> contract violation, expected integer!");
+        assert_type(false, "Error in remaind -> contact violation: expected integer argument!");
     }
     else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
     { // both numbers are mpz
@@ -3331,7 +3345,7 @@ void *apply_prim_remaind_2(void *first, void *second)
 void *apply_prim_remaind(void *lst)
 {
     if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in remainder -> arity mismatch: number of arguments should be 2!");
+        assert_type(false, "Error in remaind -> arity mismatch: number of arguments should be 2!");
 
     return apply_prim_remaind_2(prim_car(lst), prim_car(prim_cdr(lst)));
 }
@@ -3342,7 +3356,7 @@ void *apply_prim_quotient_2(void *first, void *second)
 
     if (!is_integer_val(first) || !is_integer_val(second))
     { // to see either of the numbers has fraction in it!
-        assert_type(false, "Error in quotient -> contract violation, expected integer!");
+        assert_type(false, "Error in quotient -> contact violation: expected integer argument!");
     }
     else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
     { // both numbers are mpz
@@ -3389,7 +3403,7 @@ void *apply_prim_randnum_1(void *arg1) // random
     mpz_t *arg1_mpz = decode_mpz(arg1);
 
     if (mpz_sgn(*arg1_mpz) < 0)
-        assert_type(false, "Error in randnum -> contact violation: arguments should not be less than zero!");
+        assert_type(false, "Error in randnum -> arity mismatch: arguments should not be less than zero!");
 
     mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
     mpz_init(*result);
@@ -3419,7 +3433,7 @@ void *apply_prim_randnum_2(void *arg1, void *arg2) // random
     int cmp_res = mpz_cmp(*arg1_mpz, *arg2_mpz);
 
     if (cmp_res > 0 || cmp_res == 0)
-        assert_type(false, "Error in randnum -> contact violation: First argument should be less than the second arguemnt!");
+        assert_type(false, "Error in randnum -> contact violation: first argument should be less than the second argument!");
 
     mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
     mpz_init(*result);

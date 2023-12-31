@@ -16,3 +16,9 @@
     exp. it can process "I_am_a_string", but can't "I am a string"
 
     status: unsloved
+
+5. compare_lst (> and other logical operators)
+    only supporting mpz! it should support floating point as well
+    also what about 1 argument?
+
+    status: unsloved
