@@ -1720,7 +1720,6 @@ bool great_zero(long cmp)
 
 bool less_zero(long cmp)
 {
-
     if (cmp < 0)
     {
         return true;
@@ -1739,65 +1738,88 @@ bool equal_zero(long cmp)
 
 void *compare_lst(void *lst, bool (*cmp_op)(long))
 {
-    int cmp_result = 0;
-    long counter = 0;
-    mpz_t *temp_store = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*temp_store);
+    if (length_counter(lst) < 1)
+        assert_type(false, "Error -> arity mismatch: number of arguments should be at least 1!");
+
+    mpf_t *old_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*old_car);
+    mpf_t *mpf_new_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*mpf_new_car);
+
+    bool iteration_one = false;
+    int cmp_res = 0;
+
     while (is_cons(lst))
     {
         void **cons_lst = decode_cons(lst);
-        bool type_check = (get_tag(cons_lst[0]) == MPZ);
+        int car_tag = get_tag(cons_lst[0]);
+        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error -> contact violation: The values in the list must be integers!");
+        assert_type(type_check, "Error -> contact violation: argument type should be either integers or floating-point numbers!");
 
-        mpz_t *opd1 = decode_mpz(cons_lst[0]);
-
-        // std::string str(mpz_get_str(nullptr, 10, *opd1));
-        // int num = std::stoi(str);
-        // std::cout << "hererererer...while num>> " << num << std::endl;
-
-        if (counter == 0)
+        if (!iteration_one)
         {
-            mpz_set(*temp_store, *opd1);
-            lst = cons_lst[1];
-            counter++;
-            continue;
+            iteration_one = true;
+            if (car_tag == MPZ)
+                old_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+            else
+                old_car = decode_mpf(cons_lst[0]);
+        }
+        else
+        {
+            if (car_tag == MPZ)
+                mpf_new_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+            else
+                mpf_new_car = decode_mpf(cons_lst[0]);
+
+            cmp_res = mpf_cmp(*old_car, *mpf_new_car);
+
+            if (cmp_op(cmp_res))
+                mpf_set(*old_car, *mpf_new_car);
+            else
+                return encode_bool(false);
         }
 
-        cmp_result = mpz_cmp(*temp_store, *opd1);
-        if (cmp_op(cmp_result))
-        {
-            mpz_set(*temp_store, *opd1);
-            lst = cons_lst[1];
-            counter++;
-            continue;
-        }
-        return encode_bool(false);
+        lst = cons_lst[1];
     }
-    if (counter <= 1)
-    {
-        assert_type(false, "Error -> contact violation: Less than two numbers to compare in the list!");
-    }
+
     return encode_bool(true);
 }
 
 void *compare_op(void *arg1, void *arg2, bool (*cmp_op)(long))
 {
-    int cmp_result = 0;
+    int cmp_res = 0;
 
-    mpz_t *num1 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_t *num2 = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*num1);
-    mpz_init(*num2);
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
 
-    mpz_t *ar1 = decode_mpz(arg1);
-    mpz_t *ar2 = decode_mpz(arg2);
+    bool type_check = (arg1_tag == MPZ) || (arg1_tag == MPF);
 
-    mpz_set(*num1, *ar1);
-    mpz_set(*num2, *ar2);
-    cmp_result = mpz_cmp(*num1, *num2);
+    assert_type(type_check, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
 
-    if (cmp_op(cmp_result))
+    bool type_check2 = (arg2_tag == MPZ) || (arg2_tag == MPF);
+
+    assert_type(type_check2, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
+
+
+    mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*arg1_mpf);
+    mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*arg2_mpf);
+
+    if (arg1_tag == MPZ)
+        arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+    else
+        arg1_mpf = decode_mpf(arg1);
+
+    if (arg2_tag == MPZ)
+        arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
+    else
+        arg2_mpf = decode_mpf(arg2);
+
+    cmp_res = mpf_cmp(*arg1_mpf, *arg2_mpf);
+
+    if (cmp_op(cmp_res))
         return encode_bool(true);
     else
         return encode_bool(false);
@@ -2624,7 +2646,7 @@ void *prim_exact_u45floor(void *val) // exact-floor
     {
         // std::cout << val_tag << std::endl;
 
-        assert_type(false, "Prim exact-floor -> contract violation: expected integers or floating-point numbers as  argument!");
+        assert_type(false, "Prim exact-floor -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
     void *result = nullptr;

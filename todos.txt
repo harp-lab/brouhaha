@@ -6,19 +6,8 @@
     what if the argument is an integer instead of float?
 
     status: unsloved
-3. modulo
-    for -7 3 it should return 2
-    for -7 -3 it shoul return -1
 
-    status: run test to see if it's working as expected!
-
-4. Slog cannot process string with spaces
+3. Slog cannot process string with spaces
     exp. it can process "I_am_a_string", but can't "I am a string"
-
-    status: unsloved
-
-5. compare_lst (> and other logical operators)
-    only supporting mpz! it should support floating point as well
-    also what about 1 argument?
 
     status: unsloved

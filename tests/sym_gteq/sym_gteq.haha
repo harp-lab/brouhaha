@@ -1,6 +1,8 @@
 ; decreasing
 (define (call)
-    (>= 100 90 80))
+    ; (>= 100 90 80)
+    (>= 100 90 80.5 70.0 70)
+    )
 
 (define (brouhaha_main)
     (call))
