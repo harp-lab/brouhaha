@@ -1,6 +1,7 @@
 (define (call)
     ; (exact-floor 4.5)
-    (apply exact-floor (list 3.5))
+    (exact-floor 4)
+    ; (apply exact-floor (list 3.5))
     )
 
 (define (brouhaha_main)

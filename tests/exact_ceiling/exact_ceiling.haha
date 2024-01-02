@@ -1,5 +1,6 @@
 (define (call)
     ; (exact-ceiling 3.5)
+    ; (exact-ceiling 3)
     (apply exact-ceiling (list -4.1))
     )
 

@@ -1,13 +1,9 @@
-1. encoding/decoding for set is missing
-    exp, set->list (void *prim_set_u45_u62list(void *h)), should check if the argument passed is set or not! 
-
-    status: unsloved, but its working in kludgy way!
-2. prim_exact_u45round
-    what if the argument is an integer instead of float?
+1. Slog cannot process string with spaces
+    exp. it can process "I_am_a_string", but can't "I am a string"
 
     status: unsloved
 
-3. Slog cannot process string with spaces
-    exp. it can process "I_am_a_string", but can't "I am a string"
-
+2. Slog non-termination issue
+    exp. doesn't terminate for tests like, length, map, foldr
+    
     status: unsloved

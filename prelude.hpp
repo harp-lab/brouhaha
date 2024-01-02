@@ -2563,11 +2563,10 @@ Takes a MPZ/MPF and returns MPF
 */
 void *prim_exact_u45_u62inexact(void *val)
 {
-    // std::cout << "here..." << std::endl;
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Prim int->float -> contract violation: expected integers or floating-point numbers as argument!");
+        assert_type(false, "Error in int->float -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
     if (val_tag == MPZ)
@@ -2579,7 +2578,7 @@ void *prim_exact_u45_u62inexact(void *val)
     }
     else if (val_tag == MPF)
     {
-        return encode_mpf(decode_mpf(val));
+        return val;
     }
 
     return nullptr;
@@ -2587,14 +2586,13 @@ void *prim_exact_u45_u62inexact(void *val)
 
 void *apply_prim_int_u45_u62float_1(void *arg)
 {
-    std::cout << "here1..." << std::endl;
     return prim_exact_u45_u62inexact(arg);
 }
 
 void *apply_prim_int_u45_u62float(void *lst)
 {
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in int->float -> arity mismatch: number of arguments should be 1!");
+        assert_type(false, "Error in int->float -> arity mismatch: number of arguments should be 1.");
 
     return prim_exact_u45_u62inexact(prim_car(lst));
 }
@@ -2604,11 +2602,10 @@ Takes a MPF/MPZ and returns MPZ
 */
 void *prim_inexact_u45_u62exact(void *val)
 {
-    // std::cout << "here..." << std::endl;
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Error in float->int -> contract violation: expected integers or floating-point numbers as  argument!");
+        assert_type(false, "Error in float->int -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
     if (val_tag == MPF)
@@ -2620,7 +2617,7 @@ void *prim_inexact_u45_u62exact(void *val)
     }
     else if (val_tag == MPZ)
     {
-        return encode_mpz(decode_mpz(val));
+        return val;
     }
 
     return nullptr;
@@ -2634,7 +2631,7 @@ void *apply_prim_float_u45_u62int_1(void *arg)
 void *apply_prim_float_u45_u62int(void *lst)
 {
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in float->int -> arity mismatch: number of arguments should be 1!");
+        assert_type(false, "Error in float->int -> arity mismatch: number of arguments should be 1.");
 
     return prim_inexact_u45_u62exact(prim_car(lst));
 }
@@ -2646,7 +2643,7 @@ void *prim_exact_u45floor(void *val) // exact-floor
     {
         // std::cout << val_tag << std::endl;
 
-        assert_type(false, "Prim exact-floor -> contract violation: expected integers or floating-point numbers as argument!");
+        assert_type(false, "Error in exact-floor -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
     void *result = nullptr;
@@ -2666,7 +2663,7 @@ void *prim_exact_u45floor(void *val) // exact-floor
     else if (val_tag == MPZ)
     {
         // std::cout<<"here..."<<std::endl;
-        return encode_mpz(decode_mpz(val));
+        return val;
     }
 
     return result;
@@ -2679,8 +2676,8 @@ void *apply_prim_exact_u45floor_1(void *val)
 
 void *apply_prim_exact_u45floor(void *lst)
 {
-    if (length_counter(lst) > 1)
-        assert_type(false, "Error in exact-floor -> arity mismatch: more than 1 argument is not supported!");
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in exact-floor -> arity mismatch: number of argument should be 1.");
 
     void **cons_lst = decode_cons(lst);
     int car_tag = get_tag(cons_lst[0]);
@@ -2696,7 +2693,7 @@ void *prim_exact_u45ceiling(void *val) // exact-ceiling
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Prim exact-ceiling -> contract violation: expected integers or floating-point numbers as  argument!");
+        assert_type(false, "Error in exact-ceiling -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
     void *result = nullptr;
@@ -2715,8 +2712,7 @@ void *prim_exact_u45ceiling(void *val) // exact-ceiling
     }
     else if (val_tag == MPZ)
     {
-        // std::cout<<"here..."<<std::endl;
-        return encode_mpz(decode_mpz(val));
+        return val;
     }
 
     return result;
@@ -2729,8 +2725,8 @@ void *apply_prim_exact_u45ceiling_1(void *val)
 
 void *apply_prim_exact_u45ceiling(void *lst)
 {
-    if (length_counter(lst) > 1)
-        assert_type(false, "Error in exact-ceiling -> arity mismatch: more than 1 argument is not supported!");
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in exact-ceiling -> arity mismatch: number of argument should be 1.");
 
     void **cons_lst = decode_cons(lst);
     int car_tag = get_tag(cons_lst[0]);
@@ -2747,8 +2743,12 @@ void *prim_exact_u45round(void *val) // exact-round
     if (val_tag != MPF && val_tag != MPZ)
     {
         // std::cout << val_tag << std::endl;
-        assert_type(false, "Prim exact-round -> contract violation: expected integers or floating-point numbers as  argument!");
+        assert_type(false, "Error in exact-round -> contract violation: expected integers or floating-point numbers as argument!");
     }
+
+    // passed value is mpz, so return exactly that! 
+    if (val_tag == MPZ)
+        return val; 
 
     void *result = nullptr;
     mpf_t *val_mpf = decode_mpf(val);
@@ -2817,8 +2817,8 @@ void *apply_prim_exact_u45round_1(void *val)
 
 void *apply_prim_exact_u45round(void *lst)
 {
-    if (length_counter(lst) > 1)
-        assert_type(false, "Error in exact-round -> arity mismatch: more than 1 argument is not supported!");
+    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+        assert_type(false, "Error in exact-round -> arity mismatch: number of argument should be 1.");
 
     void **cons_lst = decode_cons(lst);
     int car_tag = get_tag(cons_lst[0]);
