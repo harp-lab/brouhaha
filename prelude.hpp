@@ -216,6 +216,24 @@ void **alloc_clo(void *(*fptr)(), int num)
     return obj;
 }
 
+bool is_null_val(void *val)
+{
+    assert_type(((get_tag(val)) == SPL), "Error in decode_bool -> Type error: Unknown Datatype!");
+    u64 temp = (u64)val;
+    if (temp != TRUE_VALUE && temp != FALSE_VALUE)
+    {
+        // means its null value = empty list = '()
+        // kludgy of doing this!
+        // null and booleans should have had their own cases
+        // but unfortunately we took that path, when we didn't consider this issue might arise
+        // that we won't be able differentiate between booleans and nulls
+        // an SPL could be anything right? not just boolean!
+        return true;
+    }
+
+    return false;
+}
+
 #pragma endregion
 
 #pragma region ConsMethods
@@ -322,9 +340,8 @@ void *apply_prim_cdr(void *lst)
 
 std::string print_cons(void *lst)
 {
-    // std::cout << "here2..." << std::endl;
     std::string ret_str;
-    ret_str.append("'(");
+    ret_str.append("(list ");
     while (is_cons(lst))
     {
         void **cons_lst = decode_cons(lst);
@@ -1801,7 +1818,6 @@ void *compare_op(void *arg1, void *arg2, bool (*cmp_op)(long))
 
     assert_type(type_check2, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
 
-
     mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
     mpf_init(*arg1_mpf);
     mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
@@ -2746,9 +2762,9 @@ void *prim_exact_u45round(void *val) // exact-round
         assert_type(false, "Error in exact-round -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
-    // passed value is mpz, so return exactly that! 
+    // passed value is mpz, return exactly that!
     if (val_tag == MPZ)
-        return val; 
+        return val;
 
     void *result = nullptr;
     mpf_t *val_mpf = decode_mpf(val);
@@ -3537,7 +3553,17 @@ std::string print_val(void *val)
     switch (get_tag(val))
     {
     case SPL:
-        if (decode_bool(val))
+        if (is_null_val(val))
+        {
+            // kludgy of doing this!
+            // null and booleans should have had their own cases
+            // but unfortunately we took that path, when we didn't consider this issue might arise
+            // that we won't be able differentiate between booleans and nulls
+            // an SPL could be anything right? not just boolean!
+            return "(list)";
+        }
+        // now we are certain that it has to be a boolean value, well at least for now!
+        else if (decode_bool(val))
         {
             return "#t";
         }

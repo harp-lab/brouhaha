@@ -7,3 +7,21 @@
     exp. doesn't terminate for tests like, length, map, foldr
     
     status: unsloved
+
+3. Looks like buggy code
+std::string print_val(void *val)
+{
+    switch (get_tag(val))
+    {
+    case SPL:
+        if (decode_bool(val)) // SPL fine, but it does not have to be bool right?--in that case, decode_bool will generate error instead of returning true/false 
+        {
+            return "#t";
+        }
+        else
+        {
+            return "#f";
+        }
+        break;
+
+    status: unsloved

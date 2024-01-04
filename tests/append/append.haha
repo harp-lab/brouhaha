@@ -1,0 +1,7 @@
+(define (call)
+  (append (list 1 2) (list 3 4))
+;   (apply append (list (list 1 2) (list 3 4)))
+  )
+
+(define (brouhaha_main)
+  (call))
