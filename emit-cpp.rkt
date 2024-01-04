@@ -2,7 +2,7 @@
 
 (require "utils.rkt")
 (require "slog-utils.rkt")
-(require print-debug/print-dbg)
+; (require print-debug/print-dbg)
 (provide emit-cpp)
 (define (emit-cpp proc_list filepath slog-flag ast-root)
   ; defining cpp header files
@@ -24,8 +24,8 @@
   (define (convert-spl-clo-app expr)
     (displayln "Inside spec call-site emission")
     (match expr
-      [`(clo-app (prov ,prov) ,func ,args ...)
-       (displayln (format "The SPL func is ~a with ~a args" func (length (cdr args))))
+      [`(clo-app ,func ,args ...)
+      ;  (displayln (format "The SPL func is ~a with ~a args" func (length (cdr args))))
        (append-line filepath "\n//clo-app")
        (append-line filepath
                     (format "arg_buffer[1]=reinterpret_cast<void*>(~a_spec~a);"
@@ -45,11 +45,8 @@
   (define (convert-spl-proc proc param-count-num)
     ; (displayln "im in conver-spl-proc")
     (match proc
-      [`(proc (prov (define (,func-name . ,prov-arg)
-                      ,func-body))
-              (,ptr ,env . ,arg)
-              ,body)
-       (displayln (format "This is spec function for ~a with ~a args" func-name param-count-num))
+      [`(proc (,ptr ,env . ,arg) ,body)
+      ;  (displayln (format "This is spec function for ~a with ~a args" func-name param-count-num))
        (define arg-lst (build-list param-count-num (lambda (x) (gensym 'var))))
        (define def-arg-str
          (string-join (foldr (lambda (arg acc)
@@ -99,14 +96,11 @@
        (append-line filepath "}\n")]))
 
   (define (convert-proc-body proc_name proc_env proc_arg body)
-    ; (displayln (~a "cpb: " body))
     (define (true? x) (if x #t #f))
 
     ; (match (p-dbg body)
     (match body
-      [`(let (prov ,prov ...)
-          ([,lhs (make-closure ,ptr ,args ...)])
-          ,letbody)
+      [`(let ([,lhs (make-closure ,ptr ,args ...)]) ,letbody)
        (define arglength (length args))
 
        ; new-closure
@@ -138,9 +132,7 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let (prov ,prov ...)
-          ([,lhs (prim (prov ,prov2 ...) ,op ,args ...)])
-          ,letbody)
+      [`(let ([,lhs (prim ,op ,args ...)]) ,letbody)
        (define line
          (format "void* ~a = prim_~a(~a);"
                  (get-c-string lhs)
@@ -151,9 +143,7 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let (prov ,prov ...)
-          ([,lhs (apply-prim (prov ,prov2 ...) ,op ,arg)])
-          ,letbody)
+      [`(let ([,lhs (apply-prim ,op ,arg)]) ,letbody)
        (define line
          (format "void* ~a = apply_prim_~a(~a);"
                  (get-c-string lhs)
@@ -164,18 +154,13 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let (prov ,prov ...)
-          ([,lhs (env-ref ,env ,idx)])
-          ,letbody)
+      [`(let ([,lhs (env-ref ,env ,idx)]) ,letbody)
        (append-line filepath "//not do dummy comment")
        (append-line filepath (format "void* ~a = (decode_clo(~a))[~a];" (get-c-string lhs) env idx))
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      [`(let (prov ,prov ...)
-          ([,lhs ,val])
-          ,letbody)
-
+      [`(let ([,lhs ,val]) ,letbody)
        ;  (match (p-dbg val)
        (match val
          [`(quote ,(? flonum? val))
@@ -227,7 +212,7 @@
 
          [_ (raise (format "Unknown datatype! ~a" val))])]
 
-      [`(if (prov ,prov ...) ,grd ,texp ,fexp)
+      [`(if ,grd ,texp ,fexp)
        (append-line filepath "\n//if-clause")
        (define guard (gensym 'if_guard))
 
@@ -238,7 +223,7 @@
        (convert-proc-body proc_name proc_env proc_arg fexp)
        (append-line filepath "}\n")]
 
-      [`(clo-apply (prov ,prov ...) ,func ,args)
+      [`(clo-apply ,func ,args)
        (match-define `(,builtin-func ,res) (is-define-prim ast-root func))
 
 
@@ -272,7 +257,7 @@
           ]
          )]
 
-      [`(clo-app (prov ,prov ...) ,func ,args ...)
+      [`(clo-app ,func ,args ...)
 
        ; builtin-func will hold, either the called builtin define-prim
        ; or the aliased builtin define-prim by the "func" at the call-site
@@ -340,14 +325,14 @@
   (define (convert-procs proc)
     ; (pretty-print proc)
     (match proc
-      [`(proc (prov ,prov ...) (,ptr ,env ,args ...) ,body)
+      [`(proc (,ptr ,env ,args ...) ,body)
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
        (append-line filepath func_name)
 
        ;  uncomment these two lines for debugging!
-       ; (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
+       ;(append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -372,7 +357,7 @@
                             (get-c-string ptr)
                             0))]
                             
-      [`(proc (prov ,prov ...) (,ptr ,env . ,arg) ,body)
+      [`(proc (,ptr ,env . ,arg) ,body)
        ;  (displayln (~a "im an . case proc " proc))
        ; `(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)
        ; look at the call sites for the function and make a choice whether to emit or not
@@ -404,7 +389,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ; (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
+       ;(append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -438,11 +423,6 @@
                             (get-c-string ptr)
                             0))]
       [`(define-prim ,ptr ,args ...)
-
-       ; uncomment these two lines for debugging!
-       ; (append-line filepath (format "cout<<\"In ~a_fptr\"<<endl;" (get-c-string ptr)))
-       ;  (append-line filepath (format "print_arg_buffer();\n"))
-
        (define k (gensym 'kont))
        (define x (gensym 'x))
        (define env (gensym '_env))
@@ -450,15 +430,19 @@
        (define newarg (gensym arg))
 
        (define make-generic-apply-prim-body
-         `(let (prov prov) ([,k (prim (prov prov) car ,arg)])
-            (let (prov prov) ([,newarg (prim (prov prov) cdr ,arg)])
-              (let (prov prov) ((,x (apply-prim (prov prov) ,ptr ,newarg)))
-                (clo-app (prov prov) ,k ,x)))))
+         `(let ([,k (prim car ,arg)])
+            (let ([,newarg (prim cdr ,arg)])
+              (let ((,x (apply-prim ,ptr ,newarg)))
+                (clo-app ,k ,x)))))
 
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
        (append-line filepath func_name)
+
+       ; uncomment these two lines for debugging!
+       ;(append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
        (append-line filepath "// This is the second type of the functions")
