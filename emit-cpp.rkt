@@ -25,7 +25,7 @@
     (displayln "Inside spec call-site emission")
     (match expr
       [`(clo-app ,func ,args ...)
-      ;  (displayln (format "The SPL func is ~a with ~a args" func (length (cdr args))))
+       ;  (displayln (format "The SPL func is ~a with ~a args" func (length (cdr args))))
        (append-line filepath "\n//clo-app")
        (append-line filepath
                     (format "arg_buffer[1]=reinterpret_cast<void*>(~a_spec~a);"
@@ -46,7 +46,7 @@
     ; (displayln "im in conver-spl-proc")
     (match proc
       [`(proc (,ptr ,env . ,arg) ,body)
-      ;  (displayln (format "This is spec function for ~a with ~a args" func-name param-count-num))
+       ;  (displayln (format "This is spec function for ~a with ~a args" func-name param-count-num))
        (define arg-lst (build-list param-count-num (lambda (x) (gensym 'var))))
        (define def-arg-str
          (string-join (foldr (lambda (arg acc)
@@ -203,7 +203,7 @@
            filepath
            (format "void* ~a = encode_str(new(GC) std::string(\"~a\"));" (get-c-string lhs) (symbol->string val)))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
-          
+
          [(? symbol?) ; Not sure what this case does or supposed to do - SK
           ; (pretty-print (~a "cpb: " val))
           (append-line filepath
@@ -332,7 +332,7 @@
        (append-line filepath func_name)
 
        ;  uncomment these two lines for debugging!
-       ;(append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -356,7 +356,7 @@
                             (get-c-string ptr)
                             (get-c-string ptr)
                             0))]
-                            
+
       [`(proc (,ptr ,env . ,arg) ,body)
        ;  (displayln (~a "im an . case proc " proc))
        ; `(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)
@@ -389,7 +389,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;(append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -441,7 +441,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;(append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")

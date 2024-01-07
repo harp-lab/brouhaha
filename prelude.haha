@@ -64,7 +64,7 @@
 (define-prim negative? 1)
 
 
-;;; other predicates and HOFs
+;; other predicates and HOFs
 (define (list . x) x)
 
 (define (even? x)

@@ -434,159 +434,27 @@
 ;   `(
 ;     (define-prim + 1 2 3)
 ;     (define-prim - 1 2 3)
-;     (define-prim * 1 2 3)
-;     (define-prim / 1 2 3)
-;     (define-prim = 1 2 3)
-;     (define-prim > 1 2 3)
+;     ; (define-prim > 1 2 3)
 ;     (define-prim < 1 2 3)
-;     (define-prim <= 1 2 3)
-;     (define-prim >= 1 2 3)
 
-;     ; prim-ops
-;     (define-prim modulo 2)
-;     (define-prim null? 1)
-;     (define-prim equal? 2)
-;     (define-prim eq? 2)
-;     (define-prim cons 2)
-;     (define-prim car 1)
-;     (define-prim cdr 1)
-;     (define-prim float->int 1)
-;     (define-prim int->float 1)
-
-;     ; hash prims
-;     (define-prim hash)
-;     (define-prim hash-ref 2)
-;     (define-prim hash-set 3)
-;     (define-prim hash-keys 1)
-;     (define-prim hash-has-key? 2)
-;     (define-prim hash-count 1)
-
-;     ; set prims
-;     (define-prim set)
-;     (define-prim set->list 1)
-;     (define-prim list->set 1)
-;     (define-prim set-add 2)
-;     (define-prim set-member? 2)
-;     (define-prim set-remove 2)
-;     (define-prim set-count 1)
-
-;     ; string prims
-;     (define-prim string? 1)
-;     (define-prim string-length 1)
-;     (define-prim string-ref 2)
-;     (define-prim substring 3)
-;     (define-prim string-append 2)
-;     (define-prim string->list 1)
-
-;     ; other new prims
-;     (define-prim exact-floor 1)
-;     (define-prim exact-ceiling 1)
-;     (define-prim exact-round 1)
-;     (define-prim absolute 1)
-;     (define-prim max 1)
-;     (define-prim min 1)
-;     (define-prim expt 2)
-;     (define-prim squareroot 1)
-;     (define-prim remaind 2)
-;     (define-prim quotient 2)
-;     (define-prim randnum 1 2)
-;     (define-prim symbol? 1)
-;     (define-prim pair? 1)
-;     (define-prim positive? 1)
-;     (define-prim negative? 1)
-
-
-;     ;;; other predicates and HOFs
 ;     (define (list . x) x)
 
-;     (define (even? x)
-;       (equal? 0 (modulo x 2)))
+;     (define (do-minus n)
+;       (if (< n 3.0)
+;           n
+;           10.0
+;           )
+;       )
+;     (define (call n)
+;       ; (+ (do-minus 2 1.0) (do-minus 2 2.0))
+;       ;  (+ (do-minus (- 4.0 1.0)) (do-minus (- 2.0 1.0)))
+;       (+ (do-minus 3.0) (do-minus 1.0))
 
-;     (define (odd? x)
-;       (equal? 1 (modulo x 2)))
 
-;     (define (member? x lst)
-;       (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
-
-;     (define (reverse-helper lst lst2)
-;       (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
-
-;     (define (reverse lst)
-;       (reverse-helper lst (list)))
-
-;     (define (take-helper lst n lst2)
-;       (if (= n 0)
-;           (reverse lst2)
-;           (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
-
-;     (define (take lst n)
-;       (take-helper lst n (list)))
-
-;     (define (length lst)
-;       (if (null? lst)
-;           0
-;           (+ 1 (length (cdr lst)))))
-
-;     (define (map proc lst)
-;       (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
-
-;     (define (filter op lst)
-;       (if (null? lst)
-;           (list)
-;           (if (op (car lst))
-;               (cons (car lst) (filter op (cdr lst)))
-;               (filter op (cdr lst)))))
-
-;     (define (drop lst n)
-;       (if (= n 0)
-;           lst
-;           (drop (cdr lst) (- n 1))))
-
-;     (define (foldl fun acc lst)
-;       (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
-
-;     (define (foldr fun acc lst)
-;       (if (null? lst) acc (fun (car lst) (foldr fun acc (cdr lst)))))
-
-;     (define (append lst1 lst2)
-;       (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
-
-;     (define (ok? row dist placed)
-;       (if (null? placed)
-;           #t
-;           (and (not (= (car placed) (+ row dist)))
-;                (not (= (car placed) (- row dist)))
-;                (ok? row (+ dist 1) (cdr placed)))))
-
-;     (define (q-helper stack count)
-;       (if (null? stack)
-;           count
-;           (let* ((state (car stack))
-;                  (x (car state))
-;                  (y (car (cdr state)))
-;                  (z (car (cdr (cdr state)))))
-
-;             (if (null? x)
-;                 (if (null? y)
-;                     (q-helper (cdr stack) (+ count 1))
-;                     (q-helper (cdr stack) count))
-;                 (q-helper (cons (list (cdr x) (cons (car x) y) z)
-;                                 (if (ok? (car x) 1 z)
-;                                     (cons (list (append (cdr x) y) (list) (cons (car x) z))
-;                                           (cdr stack))
-;                                     (cdr stack)))
-;                           count))
-;             )))
-
-;     (define (iota1 n l)
-;       (if (= n 0) l (iota1 (- n 1) (cons n l))))
-
-;     (define (nqueens n)
-;       (q-helper (list (list (iota1 n (list)) (list) (list))) 0)
 ;       )
 
 ;     (define (brouhaha_main)
-;       (nqueens 5))
+;       (call 10.0))
 
 ;     ))
 
@@ -600,4 +468,4 @@
 ; (interp-cps (alphatize (cps-convert (anf-convert (alphatize (desugar our-call))))))
 ; (interp-closure (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
 
-; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (add-tags (alphatize (desugar our-call))))))))
+; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))

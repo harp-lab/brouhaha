@@ -112,31 +112,29 @@ int get_tag(void *val)
 // for debugging purpose!
 void print_mpf(mpf_t *arg)
 {
-    std::cout << "-----start of print_mpf-----" << std::endl;
+    // std::cout << "-----start of print_mpf-----" << std::endl;
     const char *boom;
     char buffer[1000];
     float num;
     std::string str(buffer);
 
     gmp_sprintf(buffer, "%.10Ff", *arg);
-    // gmp_printf("%.*Ff\n", decimal_places, *val_mpf);
 
-    str = buffer;
-    num = std::stof(str);
-    std::cout << "num: " << num << std::endl;
-    std::cout << "-----end of print_mpf-----" << std::endl;
+    std::cout << "num: " << std::string(buffer) << std::endl;
+
+    // std::cout << "-----end of print_mpf-----" << std::endl;
 }
 
 void print_mpz(mpz_t *arg)
 {
-    std::cout << "-----start of print_mpz-----" << std::endl;
+    // std::cout << "-----start of print_mpz-----" << std::endl;
     // mpz_t *final_mpz;
     // final_mpz = decode_mpz(arg1);
     std::string str(mpz_get_str(nullptr, 10, *arg));
 
     int num = std::stoi(str);
     std::cout << "num: " << num << std::endl;
-    std::cout << "-----end of print_mpz-----" << std::endl;
+    // std::cout << "-----end of print_mpz-----" << std::endl;
 }
 
 bool is_cons(void *lst)
@@ -223,7 +221,7 @@ bool is_null_val(void *val)
     if (temp != TRUE_VALUE && temp != FALSE_VALUE)
     {
         // means its null value = empty list = '()
-        // kludgy of doing this!
+        // kludgy way of doing this!
         // null and booleans should have had their own cases
         // but unfortunately we took that path, when we didn't consider this issue might arise
         // that we won't be able differentiate between booleans and nulls
@@ -249,11 +247,6 @@ static void *prim_cons(void *arg1, void *arg2)
 void *apply_prim_cons_2(void *arg1, void *arg2)
 {
     void *lst = encode_null();
-
-    // mpz_t *var = (decode_mpz(arg1));
-    // mpz_t *var2 = (decode_mpz(arg2));
-    // print_mpz(var);
-    // print_mpz(var2);
 
     return prim_cons(arg1, arg2);
 }
@@ -985,9 +978,69 @@ void *add_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
     return encode_mpf(mpf_arg2);
 }
 
+void *add(void *arg1, void *arg2)
+{
+    bool is_mpf = false;
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
+
+    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)))
+    {
+        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*arg1_mpf);
+        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*arg2_mpf);
+
+        if (arg1_tag == MPZ)
+        {
+            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+        }
+        else
+        {
+            is_mpf = true;
+            arg1_mpf = decode_mpf(arg1);
+        }
+
+        if (arg2_tag == MPZ)
+        {
+            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
+        }
+        else
+        {
+            is_mpf = true;
+            arg2_mpf = decode_mpf(arg2);
+        }
+
+        mpf_t *res1 = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*res1);
+        mpf_add(*res1, *arg1_mpf, *arg2_mpf);
+
+        void *res = encode_mpf(res1);
+
+        if (is_mpf || !is_integer_val(res))
+        {
+            return res;
+        }
+        else
+        {
+            // none of the values were mpf, and the result do no have any fractional part
+            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+            mpz_init(*ress);
+            mpz_set_f(*ress, *(decode_mpf(res)));
+            return encode_mpz(ress);
+        }
+    }
+    else
+    {
+        assert_type(false, "Error in plus -> contact violation: The values in the list must be integers or floating-point numbers!");
+    }
+
+    return nullptr;
+}
+
 // takes in two number?, gets the tags,  does the castings as required and adds them.
 // the numbers could be mpz_t or mpf_t, if different, mpz_t gets casted to mpf_t
-void *add(void *arg1, void *arg2)
+void *add_old(void *arg1, void *arg2)
 {
     int arg1_tag = get_tag(arg1);
     int arg2_tag = get_tag(arg2);
@@ -1096,6 +1149,66 @@ void *sub_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
 // the numbers could be mpz_t or mpf_t, if different, mpz_t gets casted to mpf_t
 void *sub(void *arg1, void *arg2)
 {
+    bool is_mpf = false;
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
+
+    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)))
+    {
+        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*arg1_mpf);
+        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*arg2_mpf);
+
+        if (arg1_tag == MPZ)
+        {
+            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+        }
+        else
+        {
+            is_mpf = true;
+            arg1_mpf = decode_mpf(arg1);
+        }
+
+        if (arg2_tag == MPZ)
+        {
+            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
+        }
+        else
+        {
+            is_mpf = true;
+            arg2_mpf = decode_mpf(arg2);
+        }
+
+        mpf_t *res1 = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*res1);
+        mpf_sub(*res1, *arg1_mpf, *arg2_mpf);
+
+        void *res = encode_mpf(res1);
+
+        if (is_mpf || !is_integer_val(res))
+        {
+            return res;
+        }
+        else
+        {
+            // none of the values were mpf, and the result do no have any fractional part
+            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+            mpz_init(*ress);
+            mpz_set_f(*ress, *(decode_mpf(res)));
+            return encode_mpz(ress);
+        }
+    }
+    else
+    {
+        assert_type(false, "Error in minus -> contact violation: The values in the list must be integers or floating-point numbers!");
+    }
+
+    return nullptr;
+}
+
+void *sub_old(void *arg1, void *arg2)
+{
     int arg1_tag = get_tag(arg1);
     int arg2_tag = get_tag(arg2);
     if (arg1_tag == arg2_tag)
@@ -1114,48 +1227,6 @@ void *sub(void *arg1, void *arg2)
         return sub_mpz_mpf(arg1, arg2);
     }
     return 0;
-}
-
-void *apply_prim__u45(void *lst) //-
-{
-    void *result = nullptr;
-
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int car_tag = get_tag(cons_lst[0]);
-        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
-
-        assert_type(type_check, "Error in subtraction -> contact violation: The values in the list must be integers or floating-point numbers!");
-
-        if (!result)
-        {
-            if (!is_cons(cons_lst))
-            {
-                // mpz_t* ret_val = (mpz)
-                // ?? this has to be changed to return the - value of the car, as it is the only element
-                result = cons_lst[0];
-            }
-            else
-            {
-
-                result = cons_lst[0];
-            }
-        }
-        else
-        {
-            result = sub(result, cons_lst[0]);
-        }
-
-        lst = cons_lst[1];
-    }
-
-    if (result == nullptr)
-    {
-        assert_type(false, "Error in subtraction -> arity mismatch: at least 1 argument is required!");
-    }
-
-    return result;
 }
 
 void *apply_prim__u45_1(void *arg1) //-
@@ -1210,6 +1281,42 @@ void *apply_prim__u45_3(void *arg1, void *arg2, void *arg3) //-
     return sub(sub(arg1, arg2), arg3);
 }
 
+void *apply_prim__u45(void *lst) //-
+{
+
+    if (length_counter(lst) == 1)
+        return apply_prim__u45_1(lst);
+
+    void *result = nullptr;
+
+    while (is_cons(lst))
+    {
+        void **cons_lst = decode_cons(lst);
+        int car_tag = get_tag(cons_lst[0]);
+        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+
+        assert_type(type_check, "Error in subtraction -> contact violation: The values in the list must be integers or floating-point numbers!");
+
+        if (!result)
+        {
+            result = cons_lst[0];
+        }
+        else
+        {
+            result = sub(result, cons_lst[0]);
+        }
+
+        lst = cons_lst[1];
+    }
+
+    if (result == nullptr)
+    {
+        assert_type(false, "Error in subtraction -> arity mismatch: at least 1 argument is required!");
+    }
+
+    return result;
+}
+
 #pragma endregion
 
 #pragma region Multiplication
@@ -1246,6 +1353,7 @@ void *mul(void *arg1, void *arg2)
 {
     int arg1_tag = get_tag(arg1);
     int arg2_tag = get_tag(arg2);
+
     if (arg1_tag == arg2_tag)
     {
         if (arg1_tag == MPZ)
@@ -1420,14 +1528,6 @@ void *apply_prim__u47_2(void *arg1, void *arg2) // / division
                 assert_type(false, "Error in division -> division by zero is not allowed!");
             }
 
-            // if first number is 0 return exactly that!
-            if (mpz_sgn(*(decode_mpz(arg2))) == 0)
-            {
-                mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-                mpz_init_set_str(*tempMpzVal, "0", 10);
-                return encode_mpz(tempMpzVal);
-            }
-
             arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
         }
         else
@@ -1435,14 +1535,6 @@ void *apply_prim__u47_2(void *arg1, void *arg2) // / division
             if (mpf_sgn(*(decode_mpf(arg2))) == 0)
             {
                 assert_type(false, "Error in division -> division by zero is not allowed!");
-            }
-
-            // if first number is 0 return exactly that!
-            if (mpf_sgn(*(decode_mpf(arg2))) == 0)
-            {
-                mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-                mpf_init_set_str(*tempMpfVal, "0.0", 10);
-                return encode_mpf(tempMpfVal);
             }
 
             is_mpf = true;
@@ -1489,14 +1581,6 @@ void *apply_prim__u47_3(void *arg1, void *arg2, void *arg3) // / division
                 assert_type(false, "Error in division -> division by zero is not allowed!");
             }
 
-            // if first number is 0 return exactly that!
-            if (mpz_sgn(*(decode_mpz(arg3))) == 0)
-            {
-                mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-                mpz_init_set_str(*tempMpzVal, "0", 10);
-                return encode_mpz(tempMpzVal);
-            }
-
             arg3_mpf = mpz_2_mpf(decode_mpz(arg3));
         }
         else
@@ -1504,14 +1588,6 @@ void *apply_prim__u47_3(void *arg1, void *arg2, void *arg3) // / division
             if (mpf_sgn(*(decode_mpf(arg3))) == 0)
             {
                 assert_type(false, "Error in division -> division by zero is not allowed!");
-            }
-
-            // if first number is 0 return exactly that!
-            if (mpf_sgn(*(decode_mpf(arg3))) == 0)
-            {
-                mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-                mpf_init_set_str(*tempMpfVal, "0.0", 10);
-                return encode_mpf(tempMpfVal);
             }
 
             is_mpf = true;
@@ -1778,16 +1854,40 @@ void *compare_lst(void *lst, bool (*cmp_op)(long))
         {
             iteration_one = true;
             if (car_tag == MPZ)
-                old_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+            {
+                // old_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                mpf_t *temp_mpf;
+                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
+
+                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+                mpf_set(*old_car, *temp_mpf);
+
+                mpf_clear(*temp_mpf);
+            }
             else
-                old_car = decode_mpf(cons_lst[0]);
+            {
+                // old_car = decode_mpf(cons_lst[0]);
+                mpf_set(*old_car, *decode_mpf(cons_lst[0]));
+            }
         }
         else
         {
             if (car_tag == MPZ)
-                mpf_new_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+            {
+                // mpf_new_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+
+                mpf_t *temp_mpf;
+                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
+                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+
+                mpf_set(*mpf_new_car, *temp_mpf);
+                mpf_clear(*temp_mpf);
+            }
             else
-                mpf_new_car = decode_mpf(cons_lst[0]);
+            {
+                // mpf_new_car = decode_mpf(cons_lst[0]);
+                mpf_set(*mpf_new_car, *decode_mpf(cons_lst[0]));
+            }
 
             cmp_res = mpf_cmp(*old_car, *mpf_new_car);
 
@@ -2657,8 +2757,6 @@ void *prim_exact_u45floor(void *val) // exact-floor
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        // std::cout << val_tag << std::endl;
-
         assert_type(false, "Error in exact-floor -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
@@ -2678,7 +2776,6 @@ void *prim_exact_u45floor(void *val) // exact-floor
     }
     else if (val_tag == MPZ)
     {
-        // std::cout<<"here..."<<std::endl;
         return val;
     }
 
@@ -3175,22 +3272,36 @@ void *apply_prim_max(void *lst)
             is_result = true;
             if (car_tag == MPZ)
             {
-                result = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                // result = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                mpf_t *temp_mpf;
+                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
+                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+
+                mpf_set(*result, *temp_mpf);
+                mpf_clear(*temp_mpf);
             }
             else
             {
-                result = decode_mpf(cons_lst[0]);
+                // result = decode_mpf(cons_lst[0]);
+                mpf_set(*result, *decode_mpf(cons_lst[0]));
             }
         }
         else
         {
             if (car_tag == MPZ)
             {
-                mpf_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                // mpf_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                mpf_t *temp_mpf;
+                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
+                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+
+                mpf_set(*mpf_car, *temp_mpf);
+                mpf_clear(*temp_mpf);
             }
             else
             {
-                mpf_car = decode_mpf(cons_lst[0]);
+                // mpf_car = decode_mpf(cons_lst[0]);
+                mpf_set(*mpf_car, *decode_mpf(cons_lst[0]));
             }
 
             if (mpf_cmp(*mpf_car, *result) > 0.0)
@@ -3218,6 +3329,7 @@ void *apply_prim_min(void *lst)
     mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
     mpf_init(*result);
     mpf_t *mpf_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*mpf_car);
 
     bool is_result = false;
 
@@ -3234,22 +3346,36 @@ void *apply_prim_min(void *lst)
             is_result = true;
             if (car_tag == MPZ)
             {
-                result = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                // result = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                mpf_t *temp_mpf;
+                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
+                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+
+                mpf_set(*result, *temp_mpf);
+                mpf_clear(*temp_mpf);
             }
             else
             {
-                result = decode_mpf(cons_lst[0]);
+                // result = decode_mpf(cons_lst[0]);
+                mpf_set(*result, *decode_mpf(cons_lst[0]));
             }
         }
         else
         {
             if (car_tag == MPZ)
             {
-                mpf_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                // mpf_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                mpf_t *temp_mpf;
+                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
+                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+
+                mpf_set(*mpf_car, *temp_mpf);
+                mpf_clear(*temp_mpf);
             }
             else
             {
-                mpf_car = decode_mpf(cons_lst[0]);
+                // mpf_car = decode_mpf(cons_lst[0]);
+                mpf_set(*mpf_car, *decode_mpf(cons_lst[0]));
             }
 
             if (mpf_cmp(*mpf_car, *result) < 0.0)
@@ -3340,8 +3466,6 @@ void *apply_prim_squareroot_1(void *arg1)
         mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
         mpf_init(*result);
         mpf_sqrt(*result, *(mpz_2_mpf(decode_mpz(arg1))));
-
-        // print_mpz(result);
 
         return encode_mpf(result);
     }
