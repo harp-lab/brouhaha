@@ -3190,12 +3190,12 @@ void *apply_prim_string_u45_u62list(void *lst)
 #pragma endregion
 
 #pragma region newprims
-void *apply_prim_absolute_1(void *val)
+void *apply_prim_abs_1(void *val)
 {
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Error in absolute -> contract violation: expected integers or floating-point numbers as argument!");
+        assert_type(false, "Error in abs -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
     if (val_tag == MPZ)
@@ -3235,12 +3235,12 @@ void *apply_prim_absolute_1(void *val)
 
     return nullptr;
 }
-void *apply_prim_absolute(void *lst)
+void *apply_prim_abs(void *lst)
 {
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in absolute -> arity mismatch: number of arguments should be 1!");
+        assert_type(false, "Error in abs -> arity mismatch: number of arguments should be 1!");
 
-    return apply_prim_absolute_1(prim_car(lst));
+    return apply_prim_abs_1(prim_car(lst));
 }
 
 void *apply_prim_max_1(void *arg)
@@ -3452,13 +3452,13 @@ void *apply_prim_expt(void *lst)
     return apply_prim_expt_2(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
-void *apply_prim_squareroot_1(void *arg1)
+void *apply_prim_sqrt_1(void *arg1)
 {
     int val_tag = get_tag(arg1);
 
     if (val_tag != MPF && val_tag != MPZ)
     {
-        assert_type(false, "Error in squareroot -> contract violation: first argument should be integers or floating-point numbers!");
+        assert_type(false, "Error in sqrt -> contract violation: first argument should be integers or floating-point numbers!");
     }
 
     if (val_tag == MPZ)
@@ -3481,21 +3481,21 @@ void *apply_prim_squareroot_1(void *arg1)
     return nullptr;
 }
 
-void *apply_prim_squareroot(void *lst)
+void *apply_prim_sqrt(void *lst)
 {
     if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in squareroot -> arity mismatch: number of arguments should be 1!");
+        assert_type(false, "Error in sqrt -> arity mismatch: number of arguments should be 1!");
 
-    return apply_prim_squareroot_1(prim_car(lst));
+    return apply_prim_sqrt_1(prim_car(lst));
 }
 
-void *apply_prim_remaind_2(void *first, void *second)
+void *apply_prim_remainder_2(void *first, void *second)
 {
     void *result = nullptr;
 
     if (!is_integer_val(first) || !is_integer_val(second))
     { // to see either of the numbers has fraction in it!
-        assert_type(false, "Error in remaind -> contact violation: expected integer argument!");
+        assert_type(false, "Error in remainder -> contact violation: expected integer argument!");
     }
     else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
     { // both numbers are mpz
@@ -3529,12 +3529,12 @@ void *apply_prim_remaind_2(void *first, void *second)
     return result;
 }
 
-void *apply_prim_remaind(void *lst)
+void *apply_prim_remainder(void *lst)
 {
     if (length_counter(lst) < 2 || length_counter(lst) > 2)
         assert_type(false, "Error in remaind -> arity mismatch: number of arguments should be 2!");
 
-    return apply_prim_remaind_2(prim_car(lst), prim_car(prim_cdr(lst)));
+    return apply_prim_remainder_2(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
 void *apply_prim_quotient_2(void *first, void *second)
@@ -3585,12 +3585,12 @@ void *apply_prim_quotient(void *lst)
     return apply_prim_quotient_2(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
-void *apply_prim_randnum_1(void *arg1) // random
+void *apply_prim_random_1(void *arg1) // random
 {
     mpz_t *arg1_mpz = decode_mpz(arg1);
 
     if (mpz_sgn(*arg1_mpz) < 0)
-        assert_type(false, "Error in randnum -> arity mismatch: arguments should not be less than zero!");
+        assert_type(false, "Error in random -> arity mismatch: arguments should not be less than zero!");
 
     mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
     mpz_init(*result);
@@ -3609,18 +3609,18 @@ void *apply_prim_randnum_1(void *arg1) // random
 
     return encode_mpz(result);
 }
-void *apply_prim_randnum_2(void *arg1, void *arg2) // random
+void *apply_prim_random_2(void *arg1, void *arg2) // random
 {
     mpz_t *arg1_mpz = decode_mpz(arg1);
     mpz_t *arg2_mpz = decode_mpz(arg2);
 
     if (mpz_sgn(*arg1_mpz) < 0 || mpz_sgn(*arg2_mpz) < 0)
-        assert_type(false, "Error in randnum -> contact violation: arguments should not be less than zero!");
+        assert_type(false, "Error in random -> contact violation: arguments should not be less than zero!");
 
     int cmp_res = mpz_cmp(*arg1_mpz, *arg2_mpz);
 
     if (cmp_res > 0 || cmp_res == 0)
-        assert_type(false, "Error in randnum -> contact violation: first argument should be less than the second argument!");
+        assert_type(false, "Error in random -> contact violation: first argument should be less than the second argument!");
 
     mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
     mpz_init(*result);
@@ -3640,15 +3640,15 @@ void *apply_prim_randnum_2(void *arg1, void *arg2) // random
     return encode_mpz(result);
 }
 
-void *apply_prim_randnum(void *lst) // random
+void *apply_prim_random(void *lst) // random
 {
     if (length_counter(lst) < 0 || length_counter(lst) > 2)
-        assert_type(false, "Error in randnum -> arity mismatch: more than 2 argument is not supported!");
+        assert_type(false, "Error in random -> arity mismatch: more than 2 argument is not supported!");
 
     if (length_counter(lst) == 0)
     {
-        std::random_device randnum;
-        std::mt19937 gen(randnum());
+        std::random_device random;
+        std::mt19937 gen(random());
         std::uniform_real_distribution<> distr(0.0, 1.0);
 
         mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
@@ -3659,11 +3659,11 @@ void *apply_prim_randnum(void *lst) // random
     }
     else if (length_counter(lst) == 1)
     {
-        return apply_prim_randnum_1(prim_car(lst));
+        return apply_prim_random_1(prim_car(lst));
     }
     else if (length_counter(lst) == 2)
     {
-        return apply_prim_randnum_2(prim_car(lst), prim_car(prim_cdr(lst)));
+        return apply_prim_random_2(prim_car(lst), prim_car(prim_cdr(lst)));
     }
 
     return nullptr;

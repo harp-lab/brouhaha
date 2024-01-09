@@ -152,7 +152,8 @@ void *fhalt()
           [(or `(,tree-head ,(? hash? tree-hash)) `(,tree-head ,(? hash? tree-hash) ,_))
            (if (hash-has-key? tree-hash (car search-items))
                (get-sub-tree (hash-ref tree-hash (car search-items)) (cdr search-items))
-               '())])))
+               '())]
+        [_ '()])))
   (match (get-sub-tree tree items)
     [`(,_ ,(? hash? sub-tree-hash)) (get-leaves sub-tree-hash)]
     [(? list? index-list) index-list]

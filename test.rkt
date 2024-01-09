@@ -168,7 +168,7 @@
                      filename-string
                      " and outputting to: "
                      (generate-comp-filepath "_cpp_program.cpp")))
-      (let ([ast-root (if (slog-flag) (read-facts fact-file) 'no-slog)])
+      (let ([ast-root (if (slog-flag) (read-facts fact-file) '() )])
         (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp") (slog-flag) ast-root)
         )
 

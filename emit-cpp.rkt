@@ -13,87 +13,10 @@
   (append-line filepath (string-append "#include " "\"../../prelude.hpp\""))
   ; (append-line filepath "using namespace std;\n" )
 
-  ; (define top-lvl-procs
-  ;   (let loop ([env+ env] [prog+ proc_list])
-  ;     (match prog+
-  ;       [`((proc (,name . ,param) ,body) ,rest ...)
-  ;        (loop (hash-set env+ (get-c-string name) (get-c-string name)) (cdr prog+))]
-  ;       [`() env+])))
-
-
-  (define (convert-spl-clo-app expr)
-    (displayln "Inside spec call-site emission")
-    (match expr
-      [`(clo-app ,func ,args ...)
-       ;  (displayln (format "The SPL func is ~a with ~a args" func (length (cdr args))))
-       (append-line filepath "\n//clo-app")
-       (append-line filepath
-                    (format "arg_buffer[1]=reinterpret_cast<void*>(~a_spec~a);"
-                            (get-c-string func)
-                            (length (cdr args))))
-       (append-line filepath (format "arg_buffer[2]=~a;" (get-c-string (car args))))
-       (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
-       (append-line filepath
-                    (format "auto function_ptr = ~a_spec~a;" (get-c-string func) (length (cdr args))))
-       (define args-str
-         (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
-                (symbol->string (cadr args))
-                (cddr args)))
-       (append-line filepath (format "function_ptr(~a);" args-str))
-       (append-line filepath "return nullptr;")]))
-
-  (define (convert-spl-proc proc param-count-num)
-    ; (displayln "im in conver-spl-proc")
-    (match proc
-      [`(proc (,ptr ,env . ,arg) ,body)
-       ;  (displayln (format "This is spec function for ~a with ~a args" func-name param-count-num))
-       (define arg-lst (build-list param-count-num (lambda (x) (gensym 'var))))
-       (define def-arg-str
-         (string-join (foldr (lambda (arg acc)
-                               (cons (string-append "void* " (symbol->string arg)) acc))
-                             '()
-                             arg-lst)
-                      ", "))
-       ; (displayln def-arg-str)
-       (define func_name
-         (format "void* ~a_spec~a(~a) // ~a ~a"
-                 (get-c-string ptr)
-                 param-count-num
-                 def-arg-str
-                 ptr
-                 "\n{"))
-
-       ; start of function definitions
-       (append-line filepath func_name)
-
-       (append-line filepath "//reading env")
-       (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
-
-       (append-line filepath (format "void* ~a;" arg))
-
-       ;  (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
-       ;  (append-line filepath "//(apply e0 e0) case")
-       ;  (append-line filepath (format "~a = arg_buffer[2];" arg))
-       ;  (append-line filepath "}\nelse\n{")
-
-       ;  (append-line filepath "//building cons cell")
-       ;  (append-line filepath (format "~a = encode_null();" arg))
-       ;  (append-line filepath (format "for(int i = numArgs; i >= 2; i--)\n{"))
-       ;  (append-line filepath (format "~a = prim_cons(arg_buffer[i], ~a);" arg arg))
-       ;  (append-line filepath (format "\n}\n"))
-
-       (append-line filepath (format "~a = encode_null();" arg))
-       (foldr (lambda (x acc) (append-line filepath (format "~a = prim_cons(~a, ~a);" arg x arg)))
-              '()
-              arg-lst)
-       ;  (append-line filepath (format "~a = prim_cons(z, ~a);" arg arg))
-       ;  (append-line filepath (format "~a = prim_cons(y, ~a);" arg arg))
-       ;  (append-line filepath (format "~a = prim_cons(x, ~a);" arg arg))
-       (append-line filepath (format "~a = prim_cons(arg_buffer[2], ~a);" arg arg))
-       ;  (append-line filepath "}\n")
-
-       (convert-proc-body (get-c-string ptr) (get-c-string env) arg body)
-       (append-line filepath "}\n")]))
+  (define conflicting_c++_prims '#hash((abs . abs_brouhaha)
+                                       (random . random_brouhaha)
+                                       (remainder . remainder_brouhaha)
+                                       (sqrt . sqrt_brouhaha)))
 
   (define (convert-proc-body proc_name proc_env proc_arg body)
     (define (true? x) (if x #t #f))
@@ -121,9 +44,18 @@
          (when (eq? (get-c-string item) proc_name)
            (append-line
             filepath
-            (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" proc_name proc_name 0)))
+            (if (hash-has-key? conflicting_c++_prims (get-c-string item))
+                (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" (hash-ref conflicting_c++_prims (get-c-string item)) proc_name 0)
+                (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" proc_name proc_name 0))
+            ))
 
-         (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item))))
+         (if (hash-has-key? conflicting_c++_prims (get-c-string item))
+             (append-line filepath (format "~a[~a] = ~a;" cloName i (hash-ref conflicting_c++_prims (get-c-string item))))
+             (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item)))
+             )
+         ;  (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item)))
+
+         )
 
        (append-line filepath (format "void* ~a = encode_clo(~a);" (get-c-string lhs) cloName))
 
@@ -225,7 +157,6 @@
 
       [`(clo-apply ,func ,args)
        (match-define `(,builtin-func ,res) (is-define-prim ast-root func))
-
 
        (cond
          [(and slog-flag res)
@@ -351,38 +282,19 @@
 
        (append-line filepath "}\n")
 
-       (append-line filepath
-                    (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
-                            (get-c-string ptr)
-                            (get-c-string ptr)
-                            0))]
+       (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
+           (append-line filepath
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (hash-ref conflicting_c++_prims (get-c-string ptr))
+                                (get-c-string ptr)
+                                0))
+           (append-line filepath
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (get-c-string ptr)
+                                (get-c-string ptr)
+                                0)))]
 
       [`(proc (,ptr ,env . ,arg) ,body)
-       ;  (displayln (~a "im an . case proc " proc))
-       ; `(proc (prov (define (,func-name . ,arg) ,func-body)) (,ptr ,env . ,arg) ,body)
-       ; look at the call sites for the function and make a choice whether to emit or not
-       ; and also if there is only one version of call-site only emit that version
-       ;
-       ; update: on 25th oct, 23: this is not required anymore, since all apply prim forms has been turned into define-prim
-       ;  (cond
-       ;    [slog-flag
-       ;     (match proc
-       ;       [`(proc (prov (define (,func-name . ,arg)
-       ;                       ,func-body))
-       ;               (,ptr ,env . ,arg)
-       ;               ,body)
-
-
-       ;        (define param-count-list (params-count ast-root ptr))
-
-       ;        (displayln (~a "im an . case proc >>>>" ))
-       ;        (displayln (~a "count: " (params-count ast-root ptr)))
-       ;        (displayln (~a "countlst: " param-count-list))
-
-       ;        (foldl (lambda (x acc) (if (not (equal? x 0)) (convert-spl-proc proc x) 'skip))
-       ;               '()
-       ;               param-count-list)]
-       ;       [_ 'proc-not-a-define])])
        (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
@@ -417,11 +329,19 @@
 
        (convert-proc-body (get-c-string ptr) (get-c-string env) arg body)
        (append-line filepath "}\n")
-       (append-line filepath
-                    (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
-                            (get-c-string ptr)
-                            (get-c-string ptr)
-                            0))]
+
+       (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
+           (append-line filepath
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (hash-ref conflicting_c++_prims (get-c-string ptr))
+                                (get-c-string ptr)
+                                0))
+           (append-line filepath
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (get-c-string ptr)
+                                (get-c-string ptr)
+                                0)))]
+
       [`(define-prim ,ptr ,args ...)
        (define k (gensym 'kont))
        (define x (gensym 'x))
@@ -469,12 +389,19 @@
 
        (convert-proc-body (get-c-string ptr) (get-c-string env) arg make-generic-apply-prim-body)
        (append-line filepath "}\n")
-       (append-line filepath
-                    (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
-                            (get-c-string ptr)
-                            (get-c-string ptr)
-                            0))]
-      )
+
+       (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
+           (append-line filepath
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (hash-ref conflicting_c++_prims (get-c-string ptr))
+                                (get-c-string ptr)
+                                0))
+           (append-line filepath
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (get-c-string ptr)
+                                (get-c-string ptr)
+                                0)))]
+      ) ;end of match
     ;end of function definitions.
     )
 

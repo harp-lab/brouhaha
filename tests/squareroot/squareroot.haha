@@ -1,9 +1,0 @@
-(define (call)
-  ; (squareroot 2)
-  ; (squareroot 2.3)
-  ; (squareroot 2.0)
-  (apply squareroot (list 4))
-  )
-
-(define (brouhaha_main)
-  (call))

@@ -6,7 +6,7 @@
 (define (remove-multiples n l)
   (if (null? l)
       (list)
-      (if (= (remaind (car l) n) 0)
+      (if (= (remainder (car l) n) 0)
           (remove-multiples n (cdr l))
           (cons (car l)
                 (remove-multiples n (cdr l))))))

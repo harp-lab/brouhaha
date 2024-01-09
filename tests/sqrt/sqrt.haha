@@ -1,0 +1,9 @@
+(define (call)
+  ; (sqrt 2)
+  ; (sqrt 2.3)
+  ; (sqrt 2.0)
+  (apply sqrt (list 24.0))
+  )
+
+(define (brouhaha_main)
+  (call))
