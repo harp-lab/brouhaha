@@ -73,6 +73,11 @@
 (define (odd? x)
   (equal? 1 (modulo x 2)))
 
+(define (list-ref lst n)
+  (if (= 0 n)
+      (car lst)
+      (list-ref (cdr lst) (- n 1))))
+
 (define (member? x lst)
   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
 

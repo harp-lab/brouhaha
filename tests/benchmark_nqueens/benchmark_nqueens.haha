@@ -1,3 +1,7 @@
+;;; Source: https://www.larcenists.org/benchmarksAboutR7.html
+;;; NQUEENS -- Compute number of solutions to 8-queens problem.
+
+
 (define (ok? row dist placed)
   (if (null? placed)
       #t

@@ -1,3 +1,6 @@
+;;; Source: https://www.larcenists.org/benchmarksAboutR7.html
+;;; PRIMES -- Compute primes less than n, written by Eric Mohr.
+
 (define  (interval-list m n)
   (if (> m n)
       (list)
