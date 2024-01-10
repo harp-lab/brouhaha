@@ -78,22 +78,14 @@
       (car lst)
       (list-ref (cdr lst) (- n 1))))
 
+(define (member item lst)
+  (cond
+    [(or (null? item) (null? lst)) #f]
+    [(equal? item (car lst)) lst]
+    [else (member item (cdr lst))]))
+
 (define (member? x lst)
   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
-
-(define (reverse-helper lst lst2)
-  (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
-
-(define (reverse lst)
-  (reverse-helper lst (list)))
-
-(define (take-helper lst n lst2)
-  (if (= n 0)
-      (reverse lst2)
-      (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
-
-(define (take lst n)
-  (take-helper lst n (list)))
 
 (define (length lst)
   (if (null? lst)
@@ -121,8 +113,27 @@
 (define (foldr fun acc lst)
   (if (null? lst) acc (fun (car lst) (foldr fun acc (cdr lst)))))
 
-(define (append lst1 lst2)
-  (if (null? lst1) lst2 (cons (car lst1) (append (cdr lst1) lst2))))
+(define (append1 lhs rhs)
+  (if (null? lhs)
+      rhs
+      (cons (car lhs)
+            (append1 (cdr lhs) rhs))))
+
+(define (reverse lst)
+  (if (null? lst)
+      lst
+      (append1 (reverse (cdr lst)) (list (car lst)))))
+
+(define (append xs . x)
+  (foldl append1 (list) (reverse (append1 (list xs) x))))
+
+(define (take-helper lst n lst2)
+  (if (= n 0)
+      (reverse lst2)
+      (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
+
+(define (take lst n)
+  (take-helper lst n (list)))
 
 ; ormap, andmap, both requires length to work properly. once done will impelement them.
 

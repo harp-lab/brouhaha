@@ -214,24 +214,6 @@ void **alloc_clo(void *(*fptr)(), int num)
     return obj;
 }
 
-bool is_null_val(void *val)
-{
-    assert_type(((get_tag(val)) == SPL), "Error in decode_bool -> Type error: Unknown Datatype!");
-    u64 temp = (u64)val;
-    if (temp != TRUE_VALUE && temp != FALSE_VALUE)
-    {
-        // means its null value = empty list = '()
-        // kludgy way of doing this!
-        // null and booleans should have had their own cases
-        // but unfortunately we took that path, when we didn't consider this issue might arise
-        // that we won't be able differentiate between booleans and nulls
-        // an SPL could be anything right? not just boolean!
-        return true;
-    }
-
-    return false;
-}
-
 #pragma endregion
 
 #pragma region ConsMethods
@@ -305,6 +287,24 @@ int length_counter(void *lst)
     return 1 + length_counter(rest);
 }
 
+bool is_null_val(void *val)
+{
+    // assert_type(((get_tag(val)) == SPL), "Error in decode_bool -> Type error: Unknown Datatype!");
+    u64 temp = (u64)val;
+    if (temp != TRUE_VALUE && temp != FALSE_VALUE && val == NULL_VALUE)
+    {
+        // means its null value = empty list = '()
+        // kludgy way of doing this!
+        // null and booleans should have had their own cases
+        // but unfortunately we took that path, when we didn't consider this issue might arise
+        // that we won't be able differentiate between booleans and nulls
+        // an SPL could be anything right? not just boolean!
+        return true;
+    }
+
+    return false;
+}
+
 void *apply_prim_cons(void *lst)
 {
     if (length_counter(lst) < 2 || length_counter(lst) > 2)
@@ -362,6 +362,18 @@ std::string print_cons(void *lst)
 
 bool is_true(void *val)
 {
+    if (is_null_val(val))
+    {
+        // kludgy way of doing this!
+        // null and booleans should have had their own cases
+        // but unfortunately we took that path, when we didn't consider this issue might arise
+        // that we won't be able differentiate between booleans and nulls
+        // an SPL could be anything right? not just boolean!
+        return true;
+    }else if (get_tag(val) == CONS){
+        return true;
+    }
+    
     return decode_bool(val);
 }
 

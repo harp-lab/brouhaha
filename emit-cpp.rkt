@@ -16,7 +16,9 @@
   (define conflicting_c++_prims '#hash((abs . abs_brouhaha)
                                        (random . random_brouhaha)
                                        (remainder . remainder_brouhaha)
-                                       (sqrt . sqrt_brouhaha)))
+                                       (sqrt . sqrt_brouhaha)
+                                       (for . for_brouhaha)
+                                       ))
 
   (define (convert-proc-body proc_name proc_env proc_arg body)
     (define (true? x) (if x #t #f))
@@ -263,7 +265,7 @@
        (append-line filepath func_name)
 
        ;  uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+        ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -301,7 +303,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+        ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
@@ -361,7 +363,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+        ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
 
        (append-line filepath "//reading number of args")
