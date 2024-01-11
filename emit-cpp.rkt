@@ -171,7 +171,8 @@
           (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
 
           (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
-          (append-line filepath "return nullptr;")]
+          ; (append-line filepath "return nullptr;")
+          ]
          [else
           (append-line filepath "\n//clo-apply")
 
@@ -186,7 +187,7 @@
 
           (append-line filepath "// call next proc using a function pointer")
           (append-line filepath "function_ptr();")
-          (append-line filepath "return nullptr;")
+          ; (append-line filepath "return nullptr;")
           ]
          )]
 
@@ -219,7 +220,8 @@
            (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                    (get-c-string (car args))))
           (append-line filepath "function_ptr();")
-          (append-line filepath "return nullptr;")]
+          ; (append-line filepath "return nullptr;")
+          ]
 
          ; not specific argument count, but still one of the builtin so calling that directly
          ; instead of unpacking the closure
@@ -234,7 +236,8 @@
                        (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
 
           (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
-          (append-line filepath "return nullptr;")]
+          ; (append-line filepath "return nullptr;")
+          ]
 
          [else
           (append-line filepath "\n//clo-app")
@@ -253,13 +256,14 @@
 
           (append-line filepath "//call next proc using a function pointer")
           (append-line filepath "function_ptr();")
-          (append-line filepath "return nullptr;")])]))
+          ; (append-line filepath "return nullptr;")
+          ])]))
 
   (define (convert-procs proc)
     ; (pretty-print proc)
     (match proc
       [`(proc (,ptr ,env ,args ...) ,body)
-       (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
+       (define func_name (format "void ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
        (append-line filepath func_name)
@@ -297,7 +301,7 @@
                                 0)))]
 
       [`(proc (,ptr ,env . ,arg) ,body)
-       (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
+       (define func_name (format "void ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
        (append-line filepath func_name)
@@ -357,7 +361,7 @@
               (let ((,x (apply-prim ,ptr ,newarg)))
                 (clo-app ,k ,x)))))
 
-       (define func_name (format "void* ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
+       (define func_name (format "void ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
        (append-line filepath func_name)
@@ -438,7 +442,7 @@
   (append-line filepath "function_ptr();")
 
   ; (append-line filepath "arg_buffer.clear();")
-  (append-line filepath "return 0;")
+  ; (append-line filepath "return 0;")
 
   (append-line filepath "}\n")
   ;end of main function.

@@ -201,7 +201,7 @@ const hamt<hash_struct, hash_struct> *decode_hash(void *val)
     return reinterpret_cast<const hamt<hash_struct, hash_struct> *>(MASK(val));
 }
 // Closure Allocation, alloc_clo
-void **alloc_clo(void *(*fptr)(), int num)
+void **alloc_clo(void (*fptr)(), int num)
 {
     void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
     obj[0] = 0;
@@ -3755,7 +3755,7 @@ void *halt;
 void *arg_buffer[999]; // This is where the arg buffer is called
 long numArgs;
 
-void *fhalt()
+void fhalt()
 {
     // std::cout << "In fhalt" << std::endl;
     std::cout << print_val(arg_buffer[2]) << std::endl;

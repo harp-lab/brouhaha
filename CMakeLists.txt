@@ -18,6 +18,9 @@ set(VALGRIND_LIBRARY_DIR ${DEPENDENCIES_DIR}/valgrind/lib)
 set(CMAKE_CXX_STANDARD 14) # requiring 14 as google test requires 14
 set(CMAKE_CXX_STANDARD_REQUIRED ON) # Not sure what this does
 set(CMAKE_CXX_EXTENSIONS OFF) # Not sure what this does
+set(CMAKE_CXX_FLAGS_RELEASE "-O3") # for release builds
+set(CMAKE_CXX_FLAGS_DEBUG "-O2") # for debug builds
+
 
 include(FetchContent)
 

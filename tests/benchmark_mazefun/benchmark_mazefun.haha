@@ -1,3 +1,4 @@
+;;; Source: https://www.larcenists.org/benchmarksAboutR7.html
 ;;; MAZEFUN -- Constructs a maze in a purely functional way,
 ;;; written by Marc Feeley.
 
