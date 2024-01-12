@@ -7,15 +7,57 @@
 ;----------------------------------------------------------------------;
 
 
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;FREE VARIABLES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+;REF VARIABLES
+(free x ?(ref x))
+
+;LAMBDAS (NOT COMPLETE)
+[(free x eb)
+ (=/= x y)
+ -->
+ (free x ?(lambda y eb))]
+
+;APPL
+[(or (free x ef) (free x ea))
+ -->
+ (free x ?(appl ef ea))]
+
+;IF EXPRESSIONS
+[(or (free x guard) (free x tExp) (free x fExp))
+ -->
+ (free x ?(if guard tExp fExp))]
+
+;APP
+[(free x ef)
+ -->
+ (free x ?(app ef eas))]
+
+(do-free ?(app ef eas) eas)
+
+[(do-free app [ea eas ...])
+ -->
+ (do-free app eas)]
+
+[(do-free app [ea eas ...])
+ (= app (app ef _))
+ (free x ea)
+ -->
+ (free x app)]
+ 
 
 ;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;START RULE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
 [(define "brouhaha_main" (fixedparam []) body)
  -->
- (eval body {top-level-env} (halt))]
+ (eval body [] (halt))]
 
-
+(tick ?(do-tick [] call) [call]) 
+; (tick ?(do-tick [x] call) [call x])
+; (tick ?(do-tick [x y] call) [call x y])
+; (tick ?(do-tick [x y z] call) [call x y])
 
 
 ;----------------------------------------------------------------------;
@@ -35,7 +77,7 @@
 ;FUNCTION AND VARIABLE REFERENCES
 [(eval (ref x) env kont)
  -->
- (ret {env-map env x} kont)]
+ (ret {store (addr env x)} kont)]
 
 ;LAMBDA AND FUNC
 [(eval e env kont)
@@ -45,13 +87,15 @@
  (ret (addr e) kont)]
 
 ;APP AND APPLY
-[(eval (app ef [eas ...]) env kont)
+[(eval call env kont)
+ (= call (app ef [eas ...]))
  -->
- (eval ef env (appk [] eas env kont))]
+ (eval ef env (appk call [] eas env kont))]
 
-[(eval (appl ef ea) env kont)
+[(eval call env kont)
+ (= call (appl ef ea))
  -->
- (eval ef env (applak ea env kont))]
+ (eval ef env (applak call ea env kont))]
 
 ;IF CASE
 [(eval (if guard tExp fExp) env kont)
@@ -82,38 +126,38 @@
 ;  (store (saddr e) (state e))
 ;  (ret (saddr e) kont)]
 
- [(= e (eval (prim op [lst ...]) env kont))
-  -->
-  (store (saddr e) (state e))
-  (ret (saddr e) kont)]
+;  [(= e (eval (prim op [lst ...]) env kont))
+;   -->
+;   (store (saddr e) (state e))
+;   (ret (saddr e) kont)]
 
 
 ;---------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;RET CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;---------------------------------------------------------------------;
 ;LAMBDA AND FUNC
-[(ret a (appk [as ...] [ea0 ea-rest ...] env kont))
+[(ret a (appk call [as ...] [ea0 ea-rest ...] env kont))
  -->
- (eval ea0 env (appk [as ... a] [ea-rest ...] env kont))]
+ (eval ea0 env (appk call [as ... a] [ea-rest ...] env kont))]
 
-[(ret a (appk [af as ...] [] env kont))
+[(ret a (appk call [af as ...] [] env kont))
  (store af vf)
  -->
- (apply vf (fixedarg [as ... a]) kont)]
+ (apply call env vf (fixedarg [as ... a]) kont)]
 
-[(ret af (appk [] [] env kont))
+[(ret af (appk call [] [] env kont))
  (store af vf)
  -->
- (apply vf (fixedarg []) kont)]
+ (apply call env vf (fixedarg []) kont)]
 
-[(ret af (applak ea env kont))
+[(ret af (applak call ea env kont))
  -->
- (eval ea env (applfk af kont))]
+ (eval ea env (applfk call af kont))]
 
-[(ret a (applfk af kont))
+[(ret a (applfk call af kont))
  (store af vf)
  -->
- (apply vf (vararg a) kont)]
+ (apply call vf (vararg a) kont)]
 
 [(ret a (kaddr eb))
  -->
@@ -153,39 +197,40 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;APPLY CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;---------------------------------------------------------------------;
 ;DEFINE --> CLOSURE
-[(apply (define fname params body) args kont)
+[(apply call (define fname params body) args kont)
  --> 
- (apply (clo (lambda params body) {top-level-env}) args kont)]
+ (apply call (clo (lambda params body) {top-level-env}) args kont)]
 
 ;DEFINE-PRIM HANDLING
- [(= e (apply (define-prim fname params) args kont))
+ [(= e (apply _ (define-prim fname params) args kont))
  -->
  (store (saddr e) (state e))
  (ret (saddr e) kont)]
 
 
 ;FIXED ARG
-[(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) kont)
+[(apply call env (clo (lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) kont)
  --> 
  (store (kaddr eb) kont)
  (do-fixed-prop-all xs as)
  (eval eb {ext-all !(do-ext-all envlam xs)} (kaddr eb))]
 
- [(apply (clo (lambda (varparam x) eb) envlam) (fixedarg [as ...]) kont)
+ [(apply call env (clo (lambda (varparam x) eb) envlam) (fixedarg [as ...]) kont)
  --> 
  (store (kaddr eb) kont)
  (store (addr x) (list-of as))
- (eval eb (env-set envlam x (addr x)) (kaddr eb))]
-
+ (= envtick {tick !(do-tick env e)})
+ (eval eb envtick (kaddr eb))]
+;store-flow (envlam x) to (envtick x)
 
  ;VARIADIC ARG
-[(apply (clo (lambda (varparam x) eb) envlam) (vararg a) kont)
+[(apply call (clo (lambda (varparam x) eb) envlam) (vararg a) kont)
  --> 
  (store (kaddr eb) kont)
  (store-flow a (addr x))
  (eval eb {ext-all !(do-ext-all envlam [x])} (kaddr eb))]
 
-[(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) (vararg a) kont)
+[(apply call (clo (lambda (fixedparam [xs ...]) eb) envlam) (vararg a) kont)
  (store a (list-of as))
  --> 
  (store (kaddr eb) kont)
