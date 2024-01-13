@@ -113,19 +113,20 @@
 (define (foldr fun acc lst)
   (if (null? lst) acc (fun (car lst) (foldr fun acc (cdr lst)))))
 
+(define (reverse-helper lst lst2)
+  (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
+
+(define (reverse lst)
+  (reverse-helper lst (list)))
+
 (define (append1 lhs rhs)
   (if (null? lhs)
       rhs
       (cons (car lhs)
             (append1 (cdr lhs) rhs))))
 
-(define (reverse lst)
-  (if (null? lst)
-      lst
-      (append1 (reverse (cdr lst)) (list (car lst)))))
-
 (define (append xs . x)
-  (foldl append1 (list) (reverse (append1 (list xs) x))))
+  (foldr append1 (list) (append1 (list xs) x)))
 
 (define (take-helper lst n lst2)
   (if (= n 0)
