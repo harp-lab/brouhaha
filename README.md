@@ -13,6 +13,10 @@ Before you get started with Brouhaha, ensure that you have the following install
 
 * C++: You should have a C++ compiler installed. If not, you can download it from [here](https://clang.llvm.org/)
 * Racket: You will need Racket to run the compiler and interpreter. If not installed, you can download it from [here](https://racket-lang.org)
+* Untar the dependencies tar file. 
+```sh
+tar -xvf dependencies.tar.xz
+```
 
 # Your first program
 Factorial example:
