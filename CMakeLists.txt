@@ -21,6 +21,13 @@ set(CMAKE_CXX_EXTENSIONS OFF) # Not sure what this does
 set(CMAKE_CXX_FLAGS_RELEASE "-O3") # for release builds
 set(CMAKE_CXX_FLAGS_DEBUG "-O2") # for debug builds
 
+# for profiling
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
+# set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
+
+# set(CMAKE_BUILD_TYPE Debug)
+
 
 include(FetchContent)
 

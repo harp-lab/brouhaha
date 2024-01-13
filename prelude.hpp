@@ -120,7 +120,7 @@ void print_mpf(mpf_t *arg)
 
     gmp_sprintf(buffer, "%.10Ff", *arg);
 
-    std::cout << "num: " << std::string(buffer) << std::endl;
+    std::cout << "print_mpf: val: " << std::string(buffer) << std::endl;
 
     // std::cout << "-----end of print_mpf-----" << std::endl;
 }
@@ -133,7 +133,7 @@ void print_mpz(mpz_t *arg)
     std::string str(mpz_get_str(nullptr, 10, *arg));
 
     int num = std::stoi(str);
-    std::cout << "num: " << num << std::endl;
+    std::cout << "print_mpz: val: " << num << std::endl;
     // std::cout << "-----end of print_mpz-----" << std::endl;
 }
 
@@ -370,10 +370,12 @@ bool is_true(void *val)
         // that we won't be able differentiate between booleans and nulls
         // an SPL could be anything right? not just boolean!
         return true;
-    }else if (get_tag(val) == CONS){
+    }
+    else if (get_tag(val) == CONS)
+    {
         return true;
     }
-    
+
     return decode_bool(val);
 }
 
@@ -774,14 +776,12 @@ void *prim_modulo(void *first, void *second)
     }
     else if (get_tag(first) == MPZ && get_tag(second) == MPF)
     { // first number is mpz but second is mpf
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
         mpz_t *mpz_arg2 = mpf_2_mpz(decode_mpf(second));
 
         return encode_mpf(mpz_2_mpf(calc_modulo(decode_mpz(first), mpz_arg2)));
     }
     else
     { // second number is mpz but but first is mpf
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
         mpz_t *mpz_arg1 = mpf_2_mpz(decode_mpf(first));
 
         return encode_mpf(mpz_2_mpf(calc_modulo(mpz_arg1, decode_mpz(second))));
@@ -1247,41 +1247,17 @@ void *apply_prim__u45_1(void *arg1) //-
     int tag = get_tag(arg1);
     if (tag == MPZ)
     {
-        // gets the int number, multiplies it by two and store it to a new var, encodes it back to mpz
-        mpz_t *final_mpz;
-        final_mpz = decode_mpz(arg1);
-        std::string str(mpz_get_str(nullptr, 10, *final_mpz));
+        mpz_t *final_mpz = decode_mpz(arg1);
+        mpz_neg(*final_mpz, *final_mpz);
 
-        int num = std::stoi(str);
-
-        std::stringstream numstr;
-        numstr << num * 2;
-
-        mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init_set_str(*tempMpzVal, numstr.str().c_str(), 10);
-        void *arg2 = encode_mpz(tempMpzVal);
-
-        return sub(arg1, arg2);
+        return encode_mpz(final_mpz);
     }
     else
     {
-        // gets the float number, multiplies it by two and store it to a new var, encodes it back to mpz
         mpf_t *final_mpf = decode_mpf(arg1);
-        const char *boom;
-        char buffer[1000];
-        gmp_sprintf(buffer, "%.1Ff", *final_mpf);
-        std::string str(buffer);
+        mpf_neg(*final_mpf, *final_mpf);
 
-        float num = std::stof(str);
-
-        std::stringstream numstr;
-        numstr << num * 2;
-
-        mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init_set_str(*tempMpfVal, numstr.str().c_str(), 10);
-        void *arg2 = encode_mpf(tempMpfVal);
-
-        return sub(arg1, arg2);
+        return encode_mpf(final_mpf);
     }
 }
 void *apply_prim__u45_2(void *arg1, void *arg2) //-
@@ -1297,7 +1273,7 @@ void *apply_prim__u45(void *lst) //-
 {
 
     if (length_counter(lst) == 1)
-        return apply_prim__u45_1(lst);
+        return apply_prim__u45_1(prim_car(lst));
 
     void *result = nullptr;
 
@@ -3268,6 +3244,7 @@ void *apply_prim_max(void *lst)
     mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
     mpf_init(*result);
     mpf_t *mpf_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*mpf_car);
 
     bool is_result = false;
 
@@ -3285,9 +3262,8 @@ void *apply_prim_max(void *lst)
             if (car_tag == MPZ)
             {
                 // result = mpz_2_mpf(decode_mpz(cons_lst[0]));
-                mpf_t *temp_mpf;
                 mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
-                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+                mpf_t *temp_mpf = mpz_2_mpf(temp_mpz_ptr);
 
                 mpf_set(*result, *temp_mpf);
                 mpf_clear(*temp_mpf);
@@ -3303,9 +3279,8 @@ void *apply_prim_max(void *lst)
             if (car_tag == MPZ)
             {
                 // mpf_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
-                mpf_t *temp_mpf;
                 mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
-                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+                mpf_t *temp_mpf = mpz_2_mpf(temp_mpz_ptr);
 
                 mpf_set(*mpf_car, *temp_mpf);
                 mpf_clear(*temp_mpf);
