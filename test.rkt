@@ -97,6 +97,7 @@
     (define out-path (string-append out-dir "/output/" haha-file-hash "/"))
     (define slog-out-dir (string-append out-dir "/output/" haha-file-hash))
     (define fact-file (string-append slog-out-dir "/facts.txt"))
+    (define cpp-file (generate-comp-filepath "_cpp_program.cpp"))
 
 
     (cond
@@ -109,6 +110,9 @@
     (display (~a fact-file " out-path " out-path " \n"))
     (print-yellow "slog-path: ")
     (display (~a slog-path))
+    (print-yellow "\nC++ path: ")
+    (display (~a cpp-file))
+    (display "\n")
 
     (define compiled-program (compile-to-finish program fact-file alphatize_prg (slog-flag)))
     ; (define compiled-program (compile-to-finish compiled fact-file alphatize_prg (slog-flag)))
@@ -164,10 +168,10 @@
           [cps_res (interpret-cps-and-output cps_prg "_cps_res.out")]
           [closure_res (interpret-clo-and-output clo_conv_prg "_closure_res.out")])
 
-      (displayln (~a "Emitting C++ for: "
-                     filename-string
-                     " and outputting to: "
-                     (generate-comp-filepath "_cpp_program.cpp")))
+      ;;; (displayln (~a "\nEmitting C++ for: "
+      ;;;                filename-string
+      ;;;                " and outputting to: "
+      ;;;                (generate-comp-filepath "_cpp_program.cpp")))
       (let ([ast-root (if (slog-flag) (read-facts fact-file) '() )])
         (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp") (slog-flag) ast-root)
         )
