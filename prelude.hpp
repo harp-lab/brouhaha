@@ -146,19 +146,23 @@ bool is_cons(void *lst)
 mpz_t *decode_mpz(void *val)
 {
     // MASK does the casting to u64
-    assert_type((get_tag(val) == MPZ), "Error in decode_mpz -> Type error: Not MPZ");
+    if (get_tag(val) != MPZ)
+        assert_type(false, "Error in decode_mpz -> Type error: Not MPZ");
+
     return reinterpret_cast<mpz_t *>(MASK(val));
 }
 mpf_t *decode_mpf(void *val)
 {
     // MASK does the casting to u64
-    assert_type((get_tag(val) == MPF), "Error in decode_mpf -> Type error: Not MPF");
+    if (get_tag(val) != MPF)
+        assert_type(false, "Error in decode_mpf -> Type error: Not MPF");
     return reinterpret_cast<mpf_t *>(MASK(val));
 }
 std::string *decode_str(void *val)
 {
     // MASK does the casting to u64
-    assert_type((get_tag(val) == STRING), "Error in decode_str -> Type error: Not STRING");
+    if (get_tag(val) != STRING)
+        assert_type(false, "Error in decode_str -> Type error: Not STRING");
     return reinterpret_cast<std::string *>(MASK(val));
 }
 bool decode_bool(void *val)
@@ -182,17 +186,20 @@ bool decode_bool(void *val)
 }
 void **decode_cons(void *val)
 {
-    assert_type((get_tag(val) == CONS), "Error in decode_cons -> Type error: Not CONS");
+    if (get_tag(val) != CONS)
+        assert_type(false, "Error in decode_cons -> Type error: Not CONS");
     return reinterpret_cast<void **>(MASK(val));
 }
 void **decode_clo(void *val)
 {
-    assert_type((get_tag(val) == CLO), "Error in decode_clo -> Type error: Not CLO");
+    if (get_tag(val) != CLO)
+        assert_type(false, "Error in decode_clo -> Type error: Not CLO");
     return reinterpret_cast<void **>(MASK(val));
 }
 const hamt<hash_struct, hash_struct> *decode_hash(void *val)
 {
-    assert_type((get_tag(val) == HASH), "Error in decode_hash -> Type error: Not HASH");
+    if (get_tag(val) != HASH)
+        assert_type(false, "Error in decode_hash -> Type error: Not HASH");
     return reinterpret_cast<const hamt<hash_struct, hash_struct> *>(MASK(val));
 }
 // Closure Allocation, alloc_clo
@@ -286,7 +293,6 @@ int length_counter(void *lst)
 
 bool is_null_val(void *val)
 {
-    // assert_type(((get_tag(val)) == SPL), "Error in decode_bool -> Type error: Unknown Datatype!");
     u64 temp = (u64)val;
     if (temp != TRUE_VALUE && temp != FALSE_VALUE && val == NULL_VALUE)
     {
@@ -308,7 +314,12 @@ void *apply_prim_cons(void *lst)
     if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in cons -> arity mismatch: number of arguments should be 2!");
 
-    return prim_cons(prim_car(lst), prim_car(prim_cdr(lst)));
+    void **cons_lst = decode_cons(lst);
+
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
+
+    return prim_cons(car, cadr);
 }
 
 void *apply_prim_car(void *lst)
@@ -462,10 +473,6 @@ void *cons_equal(void *arg1, void *arg2)
         {
             void **cons_arg1 = decode_cons(arg1);
             void **cons_arg2 = decode_cons(arg2);
-
-            // std::cout << print_val(cons_arg1[0]) << std::endl;
-            // std::cout << print_val(cons_arg2[0]) << std::endl;
-            // std::cout << print_val(equal_(cons_arg1[0], cons_arg2[0])) << std::endl;
 
             // comparing the car values of two cons using the equal function
             if (!decode_bool(equal_(cons_arg1[0], cons_arg2[0])))
@@ -794,11 +801,11 @@ void *apply_prim_modulo(void *lst)
 
     void **cons_lst = decode_cons(lst);
 
-    void* car = cons_lst[0];
-    void* cadr = prim_car(cons_lst[1]);
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
 
     if (!is_integer_val(car) || !is_integer_val(cadr))
-    { 
+    {
         assert_type(false, "Error in modulo: contract violation -> expected integer arguments!");
     }
 
@@ -808,7 +815,7 @@ void *apply_prim_modulo(void *lst)
 void *apply_prim_modulo_2(void *a, void *b)
 {
     if (!is_integer_val(a) || !is_integer_val(b))
-    { 
+    {
         assert_type(false, "Error in modulo: contract violation -> expected integer arguments!");
     }
 
@@ -832,8 +839,8 @@ void *apply_prim_equal_u63(void *lst)
         assert_type(false, "Error in equal? -> arity mismatch: expected number of argument is 2.");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cadr = prim_car(cons_lst[1]);
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
 
     return prim_equal_u63(car, cadr);
 }
@@ -857,8 +864,8 @@ void *apply_prim_eq_u63(void *lst)
         assert_type(false, "Error in eq? -> arity mismatch: expected number of argument is 2.");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cadr = prim_car(cons_lst[1]);
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
 
     if (is_cons(car) || is_cons(cadr))
         return encode_bool(false);
@@ -1102,7 +1109,8 @@ void *apply_prim__u43(void *lst) //+
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in addition -> contact violation: The values in the list must be integers or floating-point numbers!");
+        if (!type_check)
+            assert_type(false, "Error in addition -> contact violation: The values in the list must be integers or floating-point numbers!");
 
         if (!result)
         {
@@ -1132,7 +1140,7 @@ void *apply_prim__u43_1(void *arg1) //+
     if (arg1_tag == MPZ || arg1_tag == MPF)
         return arg1;
 
-    assert_type(false, "Error in plus -> contact violation: The values in the list must be integers or floating-point numbers!");
+    assert_type(false, "Error in addition -> contact violation: The values in the list must be integers or floating-point numbers!");
 
     return nullptr;
 }
@@ -1311,7 +1319,8 @@ void *apply_prim__u45(void *lst) //-
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in subtraction -> contact violation: The values in the list must be integers or floating-point numbers!");
+        if (!type_check)
+            assert_type(false, "Error in subtraction -> contact violation: The values in the list must be integers or floating-point numbers!");
 
         if (!result)
         {
@@ -1398,7 +1407,8 @@ void *apply_prim__u42(void *lst) //*
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in multiplication -> contact violation: The values in the list must be integers or floating-point numbers!");
+        if (!type_check)
+            assert_type(false, "Error in multiplication -> contact violation: The values in the list must be integers or floating-point numbers!");
 
         if (!result)
         {
@@ -1696,7 +1706,8 @@ void *apply_prim__u47(void *lst) // / division
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
+        if (!type_check)
+            assert_type(false, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
 
         // don't care if it's mpz/mpf, going to turn it to mpf
 
@@ -1866,7 +1877,8 @@ void *compare_lst(void *lst, bool (*cmp_op)(long))
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error -> contact violation: argument type should be either integers or floating-point numbers!");
+        if (!type_check)
+            assert_type(false, "Error -> contact violation: argument type should be either integers or floating-point numbers!");
 
         if (!iteration_one)
         {
@@ -1930,11 +1942,13 @@ void *compare_op(void *arg1, void *arg2, bool (*cmp_op)(long))
 
     bool type_check = (arg1_tag == MPZ) || (arg1_tag == MPF);
 
-    assert_type(type_check, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
+    if (!type_check)
+        assert_type(false, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
 
     bool type_check2 = (arg2_tag == MPZ) || (arg2_tag == MPF);
 
-    assert_type(type_check2, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
+    if (!type_check2)
+        assert_type(false, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
 
     mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
     mpf_init(*arg1_mpf);
@@ -2108,7 +2122,9 @@ std::string print_set(void *s)
 // doesn't work now just prints the keys in a list like set
 std::string print_hash(void *h)
 {
-    assert_type(get_tag(h) == HASH, "Error in print_hash -> contact violation: Passed type is not a hash.");
+    if (get_tag(h) != HASH)
+        assert_type(false, "Error in print_hash -> contact violation: Passed type is not a hash.");
+
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     if (h_hamt->whatami() == hamt_ds_type::set_type)
     {
@@ -2208,8 +2224,8 @@ void *apply_prim_hash_u45ref(void *lst)
         assert_type(false, "Error in hash-ref -> arity mismatch: number of arguments should be 2!");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cadr = prim_car(cons_lst[1]);
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
 
     return prim_hash_u45ref(car, cadr);
 }
@@ -2252,9 +2268,9 @@ void *apply_prim_hash_u45set(void *lst)
         assert_type(false, "Error in hash-set -> arity mismatch: number of arguments should be 3!");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cdr = cons_lst[1];
-    void* cadr = prim_car(cdr);
+    void *car = cons_lst[0];
+    void *cdr = cons_lst[1];
+    void *cadr = prim_car(cdr);
 
     return prim_hash_u45set(car, cadr, prim_car(prim_cdr(cdr)));
     // return prim_hash_u45set(prim_car(lst), prim_car(prim_cdr(lst)), prim_car(prim_cdr(prim_cdr(lst))));
@@ -2300,8 +2316,8 @@ void *apply_prim_set_u45add(void *lst)
         assert_type(false, "Error in set-add -> arity mismatch: number of arguments should be 2!");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cadr = prim_car(cons_lst[1]);
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
 
     return prim_set_u45add(car, cadr);
 }
@@ -2426,8 +2442,8 @@ void *apply_prim_hash_u45has_u45key_u63(void *lst)
         assert_type(false, "Error in hash-has-key? -> arity mismatch: number of arguments should be 2!");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cadr = prim_car(cons_lst[1]);
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
 
     return prim_hash_u45has_u45key_u63(car, cadr);
 }
@@ -2673,8 +2689,8 @@ void *apply_prim_set_u45remove(void *lst)
         assert_type(false, "Error in set-remove -> arity mismatch: number of arguments should be 2!");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cadr = prim_car(cons_lst[1]);
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
 
     return apply_prim_set_u45remove_2(car, cadr);
 }
@@ -2849,7 +2865,8 @@ void *apply_prim_exact_u45floor(void *lst)
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    assert_type(type_check, "Error in exact-floor -> contact violation: expected integers or floating-point numbers as argument!");
+    if (!type_check)
+        assert_type(false, "Error in exact-floor -> contact violation: expected integers or floating-point numbers as argument!");
 
     return prim_exact_u45floor(prim_car(lst));
 }
@@ -2899,7 +2916,8 @@ void *apply_prim_exact_u45ceiling(void *lst)
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    assert_type(type_check, "Error in exact-ceiling -> contact violation: expected integers or floating-point numbers as argument!");
+    if (!type_check)
+        assert_type(false, "Error in exact-ceiling -> contact violation: expected integers or floating-point numbers as argument!");
 
     return prim_exact_u45ceiling(prim_car(lst));
 }
@@ -2991,7 +3009,8 @@ void *apply_prim_exact_u45round(void *lst)
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    assert_type(type_check, "Error in exact-round -> contact violation: expected integers or floating-point numbers as argument!");
+    if (!type_check)
+        assert_type(false, "Error in exact-round -> contact violation: expected integers or floating-point numbers as argument!");
 
     return prim_exact_u45round(prim_car(lst));
 }
@@ -3101,8 +3120,11 @@ void *apply_prim_string_u45length(void *lst)
 // takes in str and the position and returns the character at that position
 void *prim_string_u45ref(void *str_void, void *pos_void)
 {
-    assert_type((get_tag(str_void)) == STRING, "Error in string-ref -> contact violation: frist argument should be a string");
-    assert_type((get_tag(pos_void)) == MPZ, "Error in string-ref -> contact violation: second argument should be an integer");
+    if (get_tag(str_void) != STRING)
+        assert_type(false, "Error in string-ref -> contact violation: frist argument should be a string");
+
+    if (get_tag(pos_void) != MPZ)
+        assert_type(false, "Error in string-ref -> contact violation: second argument should be an integer");
 
     std::string *str = decode_str(str_void);
     mpz_t *pos = decode_mpz(pos_void);
@@ -3127,8 +3149,8 @@ void *apply_prim_string_u45ref(void *lst)
         assert_type(false, "Error in string-ref -> arity mismatch: number of arguments should be 2!");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cadr = prim_car(cons_lst[1]);
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
 
     return prim_string_u45ref(car, cadr);
 }
@@ -3137,9 +3159,14 @@ void *apply_prim_string_u45ref(void *lst)
 // and returns the substring starting from start till end
 void *prim_substring(void *str_void, void *start_void, void *end_void)
 {
-    assert_type(get_tag(str_void) == STRING, "Error in substring -> contact violation: first argument should be a string");
-    assert_type(get_tag(start_void) == MPZ, "Error in substring -> contact violation: second argument should be an integer");
-    assert_type(get_tag(end_void) == MPZ, "Error in substring -> contact violation: third argument should be an integer");
+    if (get_tag(str_void) != STRING)
+        assert_type(false, "Error in substring -> contact violation: first argument should be a string");
+
+    if (get_tag(start_void) != MPZ)
+        assert_type(false, "Error in substring -> contact violation: second argument should be an integer");
+
+    if (get_tag(end_void) != MPZ)
+        assert_type(false, "Error in substring -> contact violation: third argument should be an integer");
 
     std::string *str = decode_str(str_void);
     long str_len = str->length();
@@ -3171,9 +3198,9 @@ void *apply_prim_substring(void *lst)
         assert_type(false, "Error in substring -> arity mismatch: number of arguments should be 3!");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cdr = cons_lst[1];
-    void* cadr = prim_car(cdr);
+    void *car = cons_lst[0];
+    void *cdr = cons_lst[1];
+    void *cadr = prim_car(cdr);
 
     return prim_substring(car, cadr, prim_car(prim_cdr(cdr)));
 }
@@ -3181,8 +3208,11 @@ void *apply_prim_substring(void *lst)
 // takes two strings and returns the appended string
 void *prim_string_u45append(void *s1_void, void *s2_void)
 {
-    assert_type((get_tag(s1_void)) == STRING, "Error in string-append -> contact violation: frist argument should be a string");
-    assert_type((get_tag(s2_void)) == STRING, "Error in string-append -> contact violation: second argument should be a string");
+    if (get_tag(s1_void) != STRING)
+        assert_type(false, "Error in string-append -> contact violation: frist argument should be a string");
+
+    if (get_tag(s2_void) != STRING)
+        assert_type(false, "Error in string-append -> contact violation: second argument should be a string");
 
     std::string *s1 = new (GC) std::string(*(decode_str(s1_void)));
     std::string *s2 = decode_str(s2_void);
@@ -3205,7 +3235,8 @@ void *apply_prim_string_u45append(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == STRING);
 
-        assert_type(type_check, "Error in string-append -> contact violation: arguement should be a string!");
+        if (!type_check)
+            assert_type(false, "Error in string-append -> contact violation: arguement should be a string!");
 
         if (!result)
         {
@@ -3229,7 +3260,8 @@ void *apply_prim_string_u45append(void *lst)
 
 void *prim_string_u45_u62list(void *str_void)
 {
-    assert_type((get_tag(str_void)) == STRING, "Error in string->list -> contact violation: argument should be a string");
+    if (get_tag(str_void) != STRING)
+        assert_type(false, "Error in string->list -> contact violation: argument should be a string");
 
     std::string *str = decode_str(str_void);
     std::string *ret_str = new (GC) std::string(*str);
@@ -3237,7 +3269,7 @@ void *prim_string_u45_u62list(void *str_void)
     void *lst = encode_null();
     for (char c : *ret_str)
     {
-        lst = prim_cons(encode_str(new (GC) std::string(&c)), lst);
+        lst = prim_cons(encode_str(new (GC) std::string(1, c)), lst);
     }
     return lst;
 }
@@ -3335,7 +3367,8 @@ void *apply_prim_max(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in max -> contact violation: argument type should be either integers or floating-point numbers!");
+        if (!type_check)
+            assert_type(false, "Error in max -> contact violation: argument type should be either integers or floating-point numbers!");
 
         if (!is_result)
         {
@@ -3409,7 +3442,8 @@ void *apply_prim_min(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        assert_type(type_check, "Error in min -> contact violation: argument type should be either integers or floating-point numbers!");
+        if(!type_check)
+            assert_type(false, "Error in min -> contact violation: argument type should be either integers or floating-point numbers!");
 
         if (!is_result)
         {
@@ -3521,8 +3555,8 @@ void *apply_prim_expt(void *lst)
         assert_type(false, "Error in expt -> arity mismatch: number of arguments should be 2!");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cadr = prim_car(cons_lst[1]);
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
 
     return apply_prim_expt_2(car, cadr);
 }
@@ -3612,8 +3646,8 @@ void *apply_prim_remainder(void *lst)
         assert_type(false, "Error in remaind -> arity mismatch: number of arguments should be 2!");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cadr = prim_car(cons_lst[1]);
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
 
     return apply_prim_remainder_2(car, cadr);
 }
@@ -3665,8 +3699,8 @@ void *apply_prim_quotient(void *lst)
         assert_type(false, "Error in quotient -> arity mismatch: number of arguments should be 2!");
 
     void **cons_lst = decode_cons(lst);
-    void* car = cons_lst[0];
-    void* cadr = prim_car(cons_lst[1]);
+    void *car = cons_lst[0];
+    void *cadr = prim_car(cons_lst[1]);
 
     return apply_prim_quotient_2(car, cadr);
 }

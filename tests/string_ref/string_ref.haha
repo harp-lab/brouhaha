@@ -1,6 +1,6 @@
 (define (call)
-    ; (string-ref "brouhaha" 4)
-    (apply string-ref (list "brouhaha" 4))
+    (string-ref "brouhaha" 4.5)
+    ; (apply string-ref (list "brouhaha" 4))
     )
 
 (define (brouhaha_main)
