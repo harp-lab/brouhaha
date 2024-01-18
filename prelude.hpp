@@ -118,20 +118,17 @@ void print_mpf(mpf_t *arg)
 
     gmp_sprintf(buffer, "%.10Ff", *arg);
 
-    std::cout << "num: " << std::string(buffer) << std::endl;
-
+    std::cout << "print_mpf: val: " << std::string(buffer) << std::endl;
     // std::cout << "-----end of print_mpf-----" << std::endl;
 }
 
 void print_mpz(mpz_t *arg)
 {
     // std::cout << "-----start of print_mpz-----" << std::endl;
-    // mpz_t *final_mpz;
-    // final_mpz = decode_mpz(arg1);
     std::string str(mpz_get_str(nullptr, 10, *arg));
 
     int num = std::stoi(str);
-    std::cout << "num: " << num << std::endl;
+    std::cout << "print_mpz: val: " << num << std::endl;
     // std::cout << "-----end of print_mpz-----" << std::endl;
 }
 
@@ -241,7 +238,9 @@ void *prim_cons_u63(void *lst)
 
 void *prim_car(void *val)
 {
-    assert_type((prim_cons_u63(val)), "Error in car -> not a cons cell");
+    if (get_tag(val) != CONS)
+        assert_type(false, "Error in car -> contract violation: not a cons cell");
+
     void **cell = decode_cons(val);
     return cell[0];
 }
@@ -253,7 +252,9 @@ void *apply_prim_car_1(void *arg1)
 
 void *prim_cdr(void *val)
 {
-    assert_type((prim_cons_u63(val)), "Error in cdr -> not a cons cell");
+    if (get_tag(val) != CONS)
+        assert_type(false, "Error in cdr -> contract violation: not a cons cell");
+
     void **cell = decode_cons(val);
     return cell[1];
 }
@@ -272,7 +273,7 @@ int length_counter(void *lst)
     if (get_tag(lst) != CONS)
         assert_type(false, "Error -> contact violation: expected list");
 
-    void *val = prim_car(lst);
+    // void *val = prim_car(lst);
     void *rest = prim_cdr(lst);
 
     // if (get_tag(val) == CONS)
@@ -303,7 +304,8 @@ bool is_null_val(void *val)
 
 void *apply_prim_cons(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in cons -> arity mismatch: number of arguments should be 2!");
 
     return prim_cons(prim_car(lst), prim_car(prim_cdr(lst)));
@@ -311,7 +313,8 @@ void *apply_prim_cons(void *lst)
 
 void *apply_prim_car(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in car -> arity mismatch: number of arguments should be 1!");
 
     // because apply of car takes exp like, (list (list 10 2))
@@ -320,7 +323,8 @@ void *apply_prim_car(void *lst)
 
 void *apply_prim_cdr(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in cdr -> arity mismatch: number of arguments should be 1!");
 
     // because apply of cdr takes exp like, (list (list 10 2))
@@ -366,10 +370,12 @@ bool is_true(void *val)
         // that we won't be able differentiate between booleans and nulls
         // an SPL could be anything right? not just boolean!
         return true;
-    }else if (get_tag(val) == CONS){
+    }
+    else if (get_tag(val) == CONS)
+    {
         return true;
     }
-    
+
     return decode_bool(val);
 }
 
@@ -786,7 +792,8 @@ void *prim_modulo(void *first, void *second)
 
 void *apply_prim_modulo(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in modulo -> arity mismatch: expected number of argument is 2!");
 
     void **cons_lst = decode_cons(lst);
@@ -815,7 +822,8 @@ void *apply_prim_equal_u63_2(void *x, void *y)
 
 void *apply_prim_equal_u63(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in equal? -> arity mismatch: expected number of argument is 2.");
 
     return prim_equal_u63(prim_car(lst), prim_car(prim_cdr(lst)));
@@ -857,7 +865,8 @@ void *prim_null_u63(void *item)
 
 void *apply_prim_null_u63(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in null? -> arity mismatch: expected number of argument is 1.");
 
     return prim_null_u63(prim_car(lst));
@@ -896,7 +905,8 @@ void *apply_prim_positive_u63_1(void *val)
 
 void *apply_prim_positive_u63(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in positive? -> arity mismatch: expected number of argument is 1.");
 
     return apply_prim_positive_u63_1(prim_car(lst));
@@ -930,7 +940,8 @@ void *apply_prim_negative_u63_1(void *val)
 
 void *apply_prim_negative_u63(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in negative? -> arity mismatch: expected number of argument is 1.");
 
     return apply_prim_negative_u63_1(prim_car(lst));
@@ -948,8 +959,8 @@ void *apply_prim_pair_u63_1(void *item)
 
 void *apply_prim_pair_u63(void *lst)
 {
-
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in pair? -> arity mismatch: expected number of argument is 1.");
 
     return apply_prim_pair_u63_1(prim_car(lst));
@@ -1655,10 +1666,11 @@ void *apply_prim__u47_1(void *arg1) // / division
 
 void *apply_prim__u47(void *lst) // / division
 {
-    if (length_counter(lst) < 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1)
         assert_type(false, "Error in division -> arity mismatch: at least 1 argument is expected!");
 
-    if (length_counter(lst) == 1)
+    if (len_cnt == 1)
         return apply_prim__u47_1(prim_car(lst));
 
     void *result = nullptr;
@@ -2178,7 +2190,8 @@ void *apply_prim_hash_u45ref_2(void *arg1, void *arg2)
 
 void *apply_prim_hash_u45ref(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in hash-ref -> arity mismatch: number of arguments should be 2!");
 
     return prim_hash_u45ref(prim_car(lst), prim_car(prim_cdr(lst)));
@@ -2217,7 +2230,8 @@ void *apply_prim_hash_u45set_3(void *arg1, void *arg2, void *arg3)
 
 void *apply_prim_hash_u45set(void *lst)
 {
-    if (length_counter(lst) < 3 || length_counter(lst) > 3)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 3 || len_cnt > 3)
         assert_type(false, "Error in hash-set -> arity mismatch: number of arguments should be 3!");
 
     return prim_hash_u45set(prim_car(lst), prim_car(prim_cdr(lst)), prim_car(prim_cdr(prim_cdr(lst))));
@@ -2258,7 +2272,8 @@ void *apply_prim_set_u45add_2(void *s, void *val)
 
 void *apply_prim_set_u45add(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in set-add -> arity mismatch: number of arguments should be 2!");
 
     return prim_set_u45add(prim_car(lst), prim_car(prim_cdr(lst)));
@@ -2338,7 +2353,8 @@ void *apply_prim_set_u45member_u63_2(void *arg1, void *arg2)
 
 void *apply_prim_set_u45member_u63(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in set-member -> arity mismatch: number of arguments should be 2!");
 
     return apply_prim_set_u45member_u63_2(prim_car(lst), prim_car(prim_cdr(lst)));
@@ -2378,7 +2394,8 @@ void *apply_prim_hash_u45has_u45key_u63_2(void *arg1, void *arg2)
 
 void *apply_prim_hash_u45has_u45key_u63(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in hash-has-key? -> arity mismatch: number of arguments should be 2!");
 
     return prim_hash_u45has_u45key_u63(prim_car(lst), prim_car(prim_cdr(lst)));
@@ -2404,7 +2421,8 @@ void *apply_prim_hash_u45count_1(void *arg1)
 
 void *apply_prim_hash_u45count(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in hash-count -> arity mismatch: number of arguments should be 1!");
 
     return prim_hash_u45count(prim_car(lst));
@@ -2437,7 +2455,8 @@ void *apply_prim_hash_u45keys_1(void *arg)
 
 void *apply_prim_hash_u45keys(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in hash-keys -> arity mismatch: number of arguments should be 1!");
 
     return prim_hash_u45keys(prim_car(lst));
@@ -2505,8 +2524,8 @@ void *apply_prim_set_u45_u62list_1(void *arg)
 
 void *apply_prim_set_u45_u62list(void *lst)
 {
-
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in set->list -> arity mismatch: number of arguments should be 1!");
 
     return prim_set_u45_u62list(prim_car(lst));
@@ -2547,7 +2566,8 @@ void *apply_prim_list_u45_u62set_1(void *arg)
 
 void *apply_prim_list_u45_u62set(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in list->set -> arity mismatch: number of arguments should be 1!");
 
     return prim_list_u45_u62set(prim_car(lst));
@@ -2617,7 +2637,8 @@ void *apply_prim_set_u45remove_2(void *arg1, void *arg2)
 
 void *apply_prim_set_u45remove(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in set-remove -> arity mismatch: number of arguments should be 2!");
 
     return apply_prim_set_u45remove_2(prim_car(lst), prim_car(prim_cdr(lst)));
@@ -2659,7 +2680,8 @@ void *apply_prim_set_u45count_1(void *arg1)
 
 void *apply_prim_set_u45count(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in set-count -> arity mismatch: number of arguments should be 2!");
 
     return apply_prim_set_u45count_1(prim_car(lst));
@@ -2700,7 +2722,8 @@ void *apply_prim_int_u45_u62float_1(void *arg)
 
 void *apply_prim_int_u45_u62float(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in int->float -> arity mismatch: number of arguments should be 1.");
 
     return prim_exact_u45_u62inexact(prim_car(lst));
@@ -2739,7 +2762,8 @@ void *apply_prim_float_u45_u62int_1(void *arg)
 
 void *apply_prim_float_u45_u62int(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in float->int -> arity mismatch: number of arguments should be 1.");
 
     return prim_inexact_u45_u62exact(prim_car(lst));
@@ -2782,7 +2806,8 @@ void *apply_prim_exact_u45floor_1(void *val)
 
 void *apply_prim_exact_u45floor(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in exact-floor -> arity mismatch: number of argument should be 1.");
 
     void **cons_lst = decode_cons(lst);
@@ -2831,7 +2856,8 @@ void *apply_prim_exact_u45ceiling_1(void *val)
 
 void *apply_prim_exact_u45ceiling(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in exact-ceiling -> arity mismatch: number of argument should be 1.");
 
     void **cons_lst = decode_cons(lst);
@@ -2848,7 +2874,6 @@ void *prim_exact_u45round(void *val) // exact-round
     int val_tag = get_tag(val);
     if (val_tag != MPF && val_tag != MPZ)
     {
-        // std::cout << val_tag << std::endl;
         assert_type(false, "Error in exact-round -> contract violation: expected integers or floating-point numbers as argument!");
     }
 
@@ -2923,7 +2948,8 @@ void *apply_prim_exact_u45round_1(void *val)
 
 void *apply_prim_exact_u45round(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in exact-round -> arity mismatch: number of argument should be 1.");
 
     void **cons_lst = decode_cons(lst);
@@ -2973,7 +2999,8 @@ void *apply_prim_symbol_u63_1(void *arg)
 
 void *apply_prim_symbol_u63(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in symbol? -> arity mismatch: number of arguments should be 1!");
 
     return prim_symbol_u63(prim_car(lst));
@@ -3000,7 +3027,8 @@ void *apply_prim_string_u63_1(void *arg)
 
 void *apply_prim_string_u63(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in string? -> arity mismatch: number of arguments should be 1!");
 
     return prim_string_u63(prim_car(lst));
@@ -3028,7 +3056,8 @@ void *apply_prim_string_u45length_1(void *arg)
 
 void *apply_prim_string_u45length(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in string-length -> arity mismatch: number of arguments should be 1!");
 
     return prim_string_u45length(prim_car(lst));
@@ -3058,7 +3087,8 @@ void *apply_prim_string_u45ref_2(void *arg1, void *arg2)
 
 void *apply_prim_string_u45ref(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in string-ref -> arity mismatch: number of arguments should be 2!");
 
     return prim_string_u45ref(prim_car(lst), prim_car(prim_cdr(lst)));
@@ -3097,7 +3127,8 @@ void *apply_prim_substring_3(void *arg1, void *arg2, void *arg3)
 
 void *apply_prim_substring(void *lst)
 {
-    if (length_counter(lst) < 3 || length_counter(lst) > 3)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 3 || len_cnt > 3)
         assert_type(false, "Error in substring -> arity mismatch: number of arguments should be 3!");
 
     return prim_substring(prim_car(lst), prim_car(prim_cdr(lst)), prim_car(prim_cdr(prim_cdr(lst))));
@@ -3174,7 +3205,8 @@ void *apply_prim_string_u45_u62list_1(void *arg1)
 
 void *apply_prim_string_u45_u62list(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in string->list -> arity mismatch: number of arguments should be at least 1!");
 
     return prim_string_u45_u62list(prim_car(lst));
@@ -3230,7 +3262,8 @@ void *apply_prim_abs_1(void *val)
 }
 void *apply_prim_abs(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in abs -> arity mismatch: number of arguments should be 1!");
 
     return apply_prim_abs_1(prim_car(lst));
@@ -3439,7 +3472,8 @@ void *apply_prim_expt_2(void *arg1, void *arg2)
 
 void *apply_prim_expt(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in expt -> arity mismatch: number of arguments should be 2!");
 
     return apply_prim_expt_2(prim_car(lst), prim_car(prim_cdr(lst)));
@@ -3476,7 +3510,8 @@ void *apply_prim_sqrt_1(void *arg1)
 
 void *apply_prim_sqrt(void *lst)
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in sqrt -> arity mismatch: number of arguments should be 1!");
 
     return apply_prim_sqrt_1(prim_car(lst));
@@ -3524,7 +3559,8 @@ void *apply_prim_remainder_2(void *first, void *second)
 
 void *apply_prim_remainder(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in remaind -> arity mismatch: number of arguments should be 2!");
 
     return apply_prim_remainder_2(prim_car(lst), prim_car(prim_cdr(lst)));
@@ -3572,7 +3608,8 @@ void *apply_prim_quotient_2(void *first, void *second)
 
 void *apply_prim_quotient(void *lst)
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in quotient -> arity mismatch: number of arguments should be 2!");
 
     return apply_prim_quotient_2(prim_car(lst), prim_car(prim_cdr(lst)));
@@ -3635,10 +3672,11 @@ void *apply_prim_random_2(void *arg1, void *arg2) // random
 
 void *apply_prim_random(void *lst) // random
 {
-    if (length_counter(lst) < 0 || length_counter(lst) > 2)
+    int len_cnt = length_counter(lst);
+    if (len_cnt > 2)
         assert_type(false, "Error in random -> arity mismatch: more than 2 argument is not supported!");
 
-    if (length_counter(lst) == 0)
+    if (len_cnt == 0)
     {
         std::random_device random;
         std::mt19937 gen(random());
@@ -3650,11 +3688,11 @@ void *apply_prim_random(void *lst) // random
 
         return encode_mpf(result);
     }
-    else if (length_counter(lst) == 1)
+    else if (len_cnt == 1)
     {
         return apply_prim_random_1(prim_car(lst));
     }
-    else if (length_counter(lst) == 2)
+    else if (len_cnt == 2)
     {
         return apply_prim_random_2(prim_car(lst), prim_car(prim_cdr(lst)));
     }

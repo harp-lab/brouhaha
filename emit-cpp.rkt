@@ -33,7 +33,7 @@
 
        ;  (define ptrName (gensym 'ptr))
        (define cloName (gensym 'clo))
-       
+
        (append-line filepath (format "void** ~a = alloc_clo(~a_fptr, ~a);" cloName ptr arglength))
 
        (when (> (+ arglength 1) 1)
@@ -280,7 +280,7 @@
        (append-line filepath func_name)
 
        ;  uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -322,7 +322,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -387,7 +387,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 

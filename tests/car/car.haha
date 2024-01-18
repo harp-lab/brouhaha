@@ -1,5 +1,6 @@
 (define (call)
     ; (car (list 1 2))
+    ; (car 5)
     (apply car (list (list 10 2)))
     )
 
