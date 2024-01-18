@@ -113,14 +113,12 @@ int get_tag(void *val)
 void print_mpf(mpf_t *arg)
 {
     // std::cout << "-----start of print_mpf-----" << std::endl;
-    const char *boom;
     char buffer[1000];
-    float num;
     std::string str(buffer);
 
     gmp_sprintf(buffer, "%.10Ff", *arg);
 
-    std::cout << "print_mpf: val: " << std::string(buffer) << std::endl;
+    std::cout << "num: " << std::string(buffer) << std::endl;
 
     // std::cout << "-----end of print_mpf-----" << std::endl;
 }
@@ -133,7 +131,7 @@ void print_mpz(mpz_t *arg)
     std::string str(mpz_get_str(nullptr, 10, *arg));
 
     int num = std::stoi(str);
-    std::cout << "print_mpz: val: " << num << std::endl;
+    std::cout << "num: " << num << std::endl;
     // std::cout << "-----end of print_mpz-----" << std::endl;
 }
 
@@ -151,32 +149,25 @@ bool is_cons(void *lst)
 mpz_t *decode_mpz(void *val)
 {
     // MASK does the casting to u64
-    if (get_tag(val) != MPZ)
-        assert_type(false, "Error in decode_mpz -> Type error: Not MPZ");
-
+    assert_type((get_tag(val) == MPZ), "Error in decode_mpz -> Type error: Not MPZ");
     return reinterpret_cast<mpz_t *>(MASK(val));
 }
 mpf_t *decode_mpf(void *val)
 {
     // MASK does the casting to u64
-    if (get_tag(val) != MPF)
-        assert_type(false, "Error in decode_mpf -> Type error: Not MPF");
-
+    assert_type((get_tag(val) == MPF), "Error in decode_mpf -> Type error: Not MPF");
     return reinterpret_cast<mpf_t *>(MASK(val));
 }
 std::string *decode_str(void *val)
 {
     // MASK does the casting to u64
-    if (get_tag(val) != STRING)
-        assert_type(false, "Error in decode_str -> Type error: Not STRING");
+    assert_type((get_tag(val) == STRING), "Error in decode_str -> Type error: Not STRING");
     return reinterpret_cast<std::string *>(MASK(val));
 }
 bool decode_bool(void *val)
 {
     // MASK does the casting to u64
-    if (get_tag(val) != SPL)
-        assert_type(false, "Error in decode_bool -> Type error : Not BOOLEAN");
-
+    assert_type(((get_tag(val)) == SPL), "Error in decode_bool -> Type error : Not BOOLEAN");
     u64 temp = (u64)val;
     if (temp == TRUE_VALUE)
     {
@@ -194,20 +185,17 @@ bool decode_bool(void *val)
 }
 void **decode_cons(void *val)
 {
-    if (get_tag(val) != CONS)
-        assert_type(false, "Error in decode_cons -> Type error: Not CONS");
+    assert_type((get_tag(val) == CONS), "Error in decode_cons -> Type error: Not CONS");
     return reinterpret_cast<void **>(MASK(val));
 }
 void **decode_clo(void *val)
 {
-    if (get_tag(val) != CLO)
-        assert_type(false, "Error in decode_clo -> Type error: Not CLO");
+    assert_type((get_tag(val) == CLO), "Error in decode_clo -> Type error: Not CLO");
     return reinterpret_cast<void **>(MASK(val));
 }
 const hamt<hash_struct, hash_struct> *decode_hash(void *val)
 {
-    if (get_tag(val) != HASH)
-        assert_type(false, "Error in decode_hash -> Type error: Not HASH");
+    assert_type((get_tag(val) == HASH), "Error in decode_hash -> Type error: Not HASH");
     return reinterpret_cast<const hamt<hash_struct, hash_struct> *>(MASK(val));
 }
 // Closure Allocation, alloc_clo
@@ -238,7 +226,6 @@ static void *prim_cons(void *arg1, void *arg2)
 
 void *apply_prim_cons_2(void *arg1, void *arg2)
 {
-    // void *lst = encode_null();
     return prim_cons(arg1, arg2);
 }
 
@@ -254,40 +241,26 @@ void *prim_cons_u63(void *lst)
 
 void *prim_car(void *val)
 {
-    if (get_tag(val) != CONS)
-        assert_type(false, "Error in car -> not a cons cell");
-
+    assert_type((prim_cons_u63(val)), "Error in car -> not a cons cell");
     void **cell = decode_cons(val);
     return cell[0];
 }
 
 void *apply_prim_car_1(void *arg1)
 {
-    // return prim_car(arg1);
-    if (get_tag(arg1) != CONS)
-        assert_type(false, "Error in car -> not a cons cell");
-
-    void **cell = decode_cons(arg1);
-    return cell[0];
+    return prim_car(arg1);
 }
 
 void *prim_cdr(void *val)
 {
-    if (get_tag(val) != CONS)
-        assert_type(false, "Error in cdr -> not a cons cell");
-
+    assert_type((prim_cons_u63(val)), "Error in cdr -> not a cons cell");
     void **cell = decode_cons(val);
     return cell[1];
 }
 
 void *apply_prim_cdr_1(void *arg1)
 {
-    // return prim_cdr(arg1);
-    if (get_tag(arg1) != CONS)
-        assert_type(false, "Error in cdr -> not a cons cell");
-
-    void **cell = decode_cons(arg1);
-    return cell[1];
+    return prim_cdr(arg1);
 }
 
 // returns length of a list
@@ -299,15 +272,15 @@ int length_counter(void *lst)
     if (get_tag(lst) != CONS)
         assert_type(false, "Error -> contact violation: expected list");
 
-    // void *val = prim_car(lst);
-    // void *rest = prim_cdr(lst);
+    void *val = prim_car(lst);
+    void *rest = prim_cdr(lst);
 
     // if (get_tag(val) == CONS)
     //     return length_counter(val) + length_counter(rest);
     // else
     //     return 1 + length_counter(rest);
 
-    return 1 + length_counter(prim_cdr(lst));
+    return 1 + length_counter(rest);
 }
 
 bool is_null_val(void *val)
@@ -393,12 +366,10 @@ bool is_true(void *val)
         // that we won't be able differentiate between booleans and nulls
         // an SPL could be anything right? not just boolean!
         return true;
-    }
-    else if (get_tag(val) == CONS)
-    {
+    }else if (get_tag(val) == CONS){
         return true;
     }
-
+    
     return decode_bool(val);
 }
 
@@ -667,9 +638,7 @@ u64 hamt_hash(void *h)
 
 u64 cons_hash(void *lst)
 {
-    if (get_tag(lst) != CONS)
-        assert_type(false, "Error in cons_hash -> Type passed to cons_hash is not a CONS cell!");
-
+    assert_type((get_tag(lst) == CONS), "Error in cons_hash -> Type passed to cons_hash is not a CONS!");
     u64 *h = (u64 *)GC_MALLOC(sizeof(u64));
     *h = 0xcbf29ce484222325;
     while (is_cons(lst))
@@ -678,8 +647,7 @@ u64 cons_hash(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF) || (car_tag == STRING) || (car_tag == HASH) || (car_tag == CONS);
 
-        if (!type_check)
-            assert_type(false, "Error in cons_hash -> values in the list are not hashable!");
+        assert_type(type_check, "Error in cons_hash -> values in the list are not hashable!");
 
         *h ^= hash_(cons_lst[0]) + 0x9e3779b9 + (*h << 6) + (*h >> 2);
 
@@ -825,8 +793,7 @@ void *apply_prim_modulo(void *lst)
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    if (!type_check)
-        assert_type(type_check, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
+    assert_type(type_check, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
 
     return prim_modulo(prim_car(lst), prim_car(prim_cdr(lst)));
 }
@@ -843,7 +810,7 @@ void *prim_equal_u63(void *arg1, void *arg2)
 
 void *apply_prim_equal_u63_2(void *x, void *y)
 {
-    return equal_(x, y);
+    return prim_equal_u63(x, y);
 }
 
 void *apply_prim_equal_u63(void *lst)
@@ -862,13 +829,9 @@ void *prim_eq_u63(void *arg1, void *arg2)
     return equal_(arg1, arg2);
 }
 
-void *apply_prim_eq_u63_2(void *arg1, void *arg2)
+void *apply_prim_eq_u63_2(void *x, void *y)
 {
-    // return prim_eq_u63(x, y);
-    if (is_cons(arg1) || is_cons(arg2))
-        return encode_bool(false);
-
-    return equal_(arg1, arg2);
+    return prim_eq_u63(x, y);
 }
 
 void *apply_prim_eq_u63(void *lst)
@@ -879,7 +842,7 @@ void *apply_prim_eq_u63(void *lst)
     if (is_cons(prim_car(lst)) || is_cons(prim_car(prim_cdr(lst))))
         return encode_bool(false);
 
-    return apply_prim_eq_u63_2(prim_car(lst), prim_car(prim_cdr(lst)));
+    return prim_eq_u63(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
 // null?
@@ -1115,8 +1078,7 @@ void *apply_prim__u43(void *lst) //+
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        if (!type_check)
-            assert_type(false, "Error in addition -> contact violation: The values in the list must be integers or floating-point numbers!");
+        assert_type(type_check, "Error in addition -> contact violation: The values in the list must be integers or floating-point numbers!");
 
         if (!result)
         {
@@ -1325,8 +1287,7 @@ void *apply_prim__u45(void *lst) //-
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        if (!type_check)
-            assert_type(false, "Error in subtraction -> contact violation: The values in the list must be integers or floating-point numbers!");
+        assert_type(type_check, "Error in subtraction -> contact violation: The values in the list must be integers or floating-point numbers!");
 
         if (!result)
         {
@@ -1413,8 +1374,7 @@ void *apply_prim__u42(void *lst) //*
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        if (!type_check)
-            assert_type(false, "Error in multiplication -> contact violation: The values in the list must be integers or floating-point numbers!");
+        assert_type(type_check, "Error in multiplication -> contact violation: The values in the list must be integers or floating-point numbers!");
 
         if (!result)
         {
@@ -1595,7 +1555,6 @@ void *apply_prim__u47_2(void *arg1, void *arg2) // / division
 
     return nullptr;
 }
-
 void *apply_prim__u47_3(void *arg1, void *arg2, void *arg3) // / division
 {
     bool is_mpf = false;
@@ -1712,8 +1671,7 @@ void *apply_prim__u47(void *lst) // / division
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        if (!type_check)
-            assert_type(false, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
+        assert_type(type_check, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
 
         // don't care if it's mpz/mpf, going to turn it to mpf
 
@@ -1883,8 +1841,7 @@ void *compare_lst(void *lst, bool (*cmp_op)(long))
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        if (!type_check)
-            assert_type(false, "Error -> contact violation: argument type should be either integers or floating-point numbers!");
+        assert_type(type_check, "Error -> contact violation: argument type should be either integers or floating-point numbers!");
 
         if (!iteration_one)
         {
@@ -1948,13 +1905,11 @@ void *compare_op(void *arg1, void *arg2, bool (*cmp_op)(long))
 
     bool type_check = (arg1_tag == MPZ) || (arg1_tag == MPF);
 
-    if (!type_check)
-        assert_type(false, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
+    assert_type(type_check, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
 
     bool type_check2 = (arg2_tag == MPZ) || (arg2_tag == MPF);
 
-    if (!type_check2)
-        assert_type(false, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
+    assert_type(type_check2, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
 
     mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
     mpf_init(*arg1_mpf);
@@ -2128,9 +2083,7 @@ std::string print_set(void *s)
 // doesn't work now just prints the keys in a list like set
 std::string print_hash(void *h)
 {
-    if (get_tag(h) != HASH)
-        assert_type(false, "Error in print_hash -> contact violation: Passed type is not a hash.");
-
+    assert_type(get_tag(h) == HASH, "Error in print_hash -> contact violation: Passed type is not a hash.");
     const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
     if (h_hamt->whatami() == hamt_ds_type::set_type)
     {
@@ -2836,8 +2789,7 @@ void *apply_prim_exact_u45floor(void *lst)
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    if (!type_check)
-        assert_type(false, "Error in exact-floor -> contact violation: expected integers or floating-point numbers as argument!");
+    assert_type(type_check, "Error in exact-floor -> contact violation: expected integers or floating-point numbers as argument!");
 
     return prim_exact_u45floor(prim_car(lst));
 }
@@ -2886,8 +2838,7 @@ void *apply_prim_exact_u45ceiling(void *lst)
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    if (!type_check)
-        assert_type(false, "Error in exact-ceiling -> contact violation: expected integers or floating-point numbers as argument!");
+    assert_type(type_check, "Error in exact-ceiling -> contact violation: expected integers or floating-point numbers as argument!");
 
     return prim_exact_u45ceiling(prim_car(lst));
 }
@@ -2979,8 +2930,7 @@ void *apply_prim_exact_u45round(void *lst)
     int car_tag = get_tag(cons_lst[0]);
     bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    if (!type_check)
-        assert_type(false, "Error in exact-round -> contact violation: expected integers or floating-point numbers as argument!");
+    assert_type(type_check, "Error in exact-round -> contact violation: expected integers or floating-point numbers as argument!");
 
     return prim_exact_u45round(prim_car(lst));
 }
@@ -3087,11 +3037,8 @@ void *apply_prim_string_u45length(void *lst)
 // takes in str and the position and returns the character at that position
 void *prim_string_u45ref(void *str_void, void *pos_void)
 {
-    if (get_tag(str_void) != STRING)
-        assert_type(false, "Error in string-ref -> contact violation: frist argument should be a string");
-
-    if (get_tag(pos_void) != MPZ)
-        assert_type(false, "Error in string-ref -> contact violation: second argument should be an integer");
+    assert_type((get_tag(str_void)) == STRING, "Error in string-ref -> contact violation: frist argument should be a string");
+    assert_type((get_tag(pos_void)) == MPZ, "Error in string-ref -> contact violation: second argument should be an integer");
 
     std::string *str = decode_str(str_void);
     mpz_t *pos = decode_mpz(pos_void);
@@ -3121,14 +3068,9 @@ void *apply_prim_string_u45ref(void *lst)
 // and returns the substring starting from start till end
 void *prim_substring(void *str_void, void *start_void, void *end_void)
 {
-    if (get_tag(str_void) != STRING)
-        assert_type(false, "Error in substring -> contact violation: first argument should be a string");
-
-    if (get_tag(str_void) != MPZ)
-        assert_type(false, "Error in substring -> contact violation: second argument should be an integer");
-
-    if (get_tag(end_void) != MPZ)
-        assert_type(false, "Error in substring -> contact violation: third argument should be an integer");
+    assert_type(get_tag(str_void) == STRING, "Error in substring -> contact violation: first argument should be a string");
+    assert_type(get_tag(start_void) == MPZ, "Error in substring -> contact violation: second argument should be an integer");
+    assert_type(get_tag(end_void) == MPZ, "Error in substring -> contact violation: third argument should be an integer");
 
     std::string *str = decode_str(str_void);
     long str_len = str->length();
@@ -3164,11 +3106,8 @@ void *apply_prim_substring(void *lst)
 // takes two strings and returns the appended string
 void *prim_string_u45append(void *s1_void, void *s2_void)
 {
-    if (get_tag(s1_void) != STRING)
-        assert_type(false, "Error in string-append -> contact violation: frist argument should be a string");
-
-    if (get_tag(s2_void) != STRING)
-        assert_type(false, "Error in string-append -> contact violation: second argument should be a string");
+    assert_type((get_tag(s1_void)) == STRING, "Error in string-append -> contact violation: frist argument should be a string");
+    assert_type((get_tag(s2_void)) == STRING, "Error in string-append -> contact violation: second argument should be a string");
 
     std::string *s1 = new (GC) std::string(*(decode_str(s1_void)));
     std::string *s2 = decode_str(s2_void);
@@ -3191,8 +3130,7 @@ void *apply_prim_string_u45append(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == STRING);
 
-        if (!type_check)
-            assert_type(false, "Error in string-append -> contact violation: arguement should be a string!");
+        assert_type(type_check, "Error in string-append -> contact violation: arguement should be a string!");
 
         if (!result)
         {
@@ -3216,8 +3154,7 @@ void *apply_prim_string_u45append(void *lst)
 
 void *prim_string_u45_u62list(void *str_void)
 {
-    if (get_tag(str_void) != STRING)
-        assert_type(false, "Error in string->list -> contact violation: argument should be a string");
+    assert_type((get_tag(str_void)) == STRING, "Error in string->list -> contact violation: argument should be a string");
 
     std::string *str = decode_str(str_void);
     std::string *ret_str = new (GC) std::string(*str);
@@ -3312,7 +3249,6 @@ void *apply_prim_max(void *lst)
     mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
     mpf_init(*result);
     mpf_t *mpf_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*mpf_car);
 
     bool is_result = false;
 
@@ -3322,8 +3258,7 @@ void *apply_prim_max(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        if (!type_check)
-            assert_type(false, "Error in max -> contact violation: argument type should be either integers or floating-point numbers!");
+        assert_type(type_check, "Error in max -> contact violation: argument type should be either integers or floating-point numbers!");
 
         if (!is_result)
         {
@@ -3331,8 +3266,9 @@ void *apply_prim_max(void *lst)
             if (car_tag == MPZ)
             {
                 // result = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                mpf_t *temp_mpf;
                 mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
-                mpf_t *temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
 
                 mpf_set(*result, *temp_mpf);
                 mpf_clear(*temp_mpf);
@@ -3348,8 +3284,9 @@ void *apply_prim_max(void *lst)
             if (car_tag == MPZ)
             {
                 // mpf_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                mpf_t *temp_mpf;
                 mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
-                mpf_t *temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
 
                 mpf_set(*mpf_car, *temp_mpf);
                 mpf_clear(*temp_mpf);
@@ -3395,8 +3332,7 @@ void *apply_prim_min(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        if (!type_check)
-            assert_type(false, "Error in min -> contact violation: argument type should be either integers or floating-point numbers!");
+        assert_type(type_check, "Error in min -> contact violation: argument type should be either integers or floating-point numbers!");
 
         if (!is_result)
         {
@@ -3731,13 +3667,12 @@ void *apply_prim_random(void *lst) // random
 #pragma region PRINTING
 std::string print_val(void *val)
 {
-    std::cout << "In print_val" << std::endl;
     switch (get_tag(val))
     {
     case SPL:
         if (is_null_val(val))
         {
-            // kludgy of doing this!
+            // kludgy way of doing this!
             // null and booleans should have had their own cases
             // but unfortunately we took that path, when we didn't consider this issue might arise
             // that we won't be able differentiate between booleans and nulls
@@ -3776,7 +3711,6 @@ std::string print_val(void *val)
     case MPF:
     {
         mpf_t *final_mpf = decode_mpf(val);
-        const char *boom;
         char buffer[1000];
         gmp_sprintf(buffer, "%.5Ff", *final_mpf);
         return std::string(buffer);
@@ -3804,8 +3738,7 @@ unsigned long long call_counter = 0;
 
 void fhalt()
 {
-    std::cout << "In fhalt" << std::endl;
-    std::cout << "call_counter: " << call_counter << std::endl;
+    // std::cout << "In fhalt" << std::endl;
     std::cout << print_val(arg_buffer[2]) << std::endl;
     // print_val(arg_buffer[2]);
     exit(0);

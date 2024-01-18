@@ -25,4 +25,4 @@
 
 
 (define (brouhaha_main)
-  (primes<= 500))
+  (primes<= 1000))

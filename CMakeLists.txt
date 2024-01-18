@@ -20,16 +20,18 @@ set(CMAKE_CXX_STANDARD 14) # requiring 14 as google test requires 14
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # used to control whether or not compiler-specific extensions are enabled when compiling the C++ code.
 set(CMAKE_CXX_EXTENSIONS OFF)
-# set(CMAKE_CXX_FLAGS_RELEASE "-O3") # for release builds
+set(CMAKE_CXX_FLAGS_RELEASE "-O3") # for release builds
 # Add compiler flags for optimization and inlining
 # set(CMAKE_CXX_FLAGS_RELEASE "-O3 -finline-functions")
-set(CMAKE_CXX_FLAGS_DEBUG "-O2") # for debug builds
+# set(CMAKE_CXX_FLAGS_DEBUG "-O2") # for debug builds
+# set(CMAKE_CXX_FLAGS_DEBUG "-00") # for debug builds
 
 # for profiling
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
 # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
 # set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
 
+# set(CMAKE_BUILD_TYPE Debug)
 
 include(FetchContent)
 
@@ -47,6 +49,7 @@ enable_testing()
 
 add_library(prelude prelude.hpp)
 set_target_properties(prelude PROPERTIES LINKER_LANGUAGE CXX)
+# add_compile_options(-Wall -Wextra -g) # for debugging
 
 add_subdirectory(runtime-testing)
 add_subdirectory(tests)

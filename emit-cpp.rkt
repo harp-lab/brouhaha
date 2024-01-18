@@ -33,9 +33,7 @@
 
        ;  (define ptrName (gensym 'ptr))
        (define cloName (gensym 'clo))
-
-       ;  (append-line filepath (format "auto ~a = reinterpret_cast<void (*)()>(&~a_fptr);" ptrName ptr))
-
+       
        (append-line filepath (format "void** ~a = alloc_clo(~a_fptr, ~a);" cloName ptr arglength))
 
        (when (> (+ arglength 1) 1)
@@ -53,11 +51,7 @@
 
          (if (hash-has-key? conflicting_c++_prims (get-c-string item))
              (append-line filepath (format "~a[~a] = ~a;" cloName i (hash-ref conflicting_c++_prims (get-c-string item))))
-             (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item)))
-             )
-         ;  (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item)))
-
-         )
+             (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item)))))
 
        (append-line filepath (format "void* ~a = encode_clo(~a);" (get-c-string lhs) cloName))
 
@@ -165,10 +159,14 @@
           ; (displayln (~a "func: " func "builtin-func: " builtin-func " res: " res))
           (append-line filepath "\n//clo-apply")
 
-          (append-line filepath
-                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string builtin-func)))
+          (append-line filepath (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string builtin-func)))
           (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
           (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
+
+
+          (append-line filepath "// resetting the closure array")
+          (append-line filepath "decode_clo_array = nullptr;")
+
 
           (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
           ; (append-line filepath "return nullptr;")
@@ -184,6 +182,9 @@
           (append-line filepath
                        (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                                (get-c-string func)))
+
+          (append-line filepath "// resetting the closure array")
+          (append-line filepath "decode_clo_array = nullptr;")
 
           (append-line filepath "// call next proc using a function pointer")
           (append-line filepath "function_ptr();")
@@ -219,6 +220,10 @@
            filepath
            (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                    (get-c-string (car args))))
+
+          (append-line filepath "// resetting the closure array")
+          (append-line filepath "decode_clo_array = nullptr;")
+
           (append-line filepath "function_ptr();")
           ; (append-line filepath "return nullptr;")
           ]
@@ -234,6 +239,9 @@
             (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
           (append-line filepath
                        (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+
+          (append-line filepath "// resetting the closure array")
+          (append-line filepath "decode_clo_array = nullptr;")
 
           (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
           ; (append-line filepath "return nullptr;")
@@ -254,6 +262,9 @@
            (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                    (get-c-string func)))
 
+          (append-line filepath "// resetting the closure array")
+          (append-line filepath "decode_clo_array = nullptr;")
+
           (append-line filepath "//call next proc using a function pointer")
           (append-line filepath "function_ptr();")
           ; (append-line filepath "return nullptr;")
@@ -268,12 +279,10 @@
        ; start of function definitions
        (append-line filepath func_name)
 
-
-
        ;  uncomment these two lines for debugging!
-        (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
-       (append-line filepath "call_counter++;")
+       ;  (append-line filepath "call_counter++;")
 
        (append-line filepath "//reading number of args")
        ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
@@ -281,17 +290,14 @@
        (append-line filepath "//reading env")
        (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
 
-       (append-line filepath "//decododing closure array")
-       (append-line filepath (format "void** decode_clo_array = nullptr;"))
-       (append-line filepath (format "std::string env_var_name = \"~a\";" (get-c-string env)))
-       (append-line filepath (format "if (env_var_name.rfind(\"env\", 0) == 0) {"))
-       (append-line filepath (format "decode_clo_array = decode_clo(~a);" (get-c-string env)))
-       (append-line filepath (format "}"))
-
        (append-line filepath "//reading env and args")
        (for ([i (in-range 2 (+ (length args) 2))] [item args])
-
          (append-line filepath (format "void* ~a = arg_buffer[~a];" (get-c-string item) i)))
+
+       (append-line filepath "//decoding closure array")
+       (append-line filepath (format "void** decode_clo_array = nullptr;"))
+       (when (string-prefix? (symbol->string env) "e")
+         (append-line filepath (format "decode_clo_array = decode_clo(~a);" (get-c-string env))))
 
        (convert-proc-body (get-c-string ptr) (get-c-string env) args body)
 
@@ -316,9 +322,9 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-        (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
-       (append-line filepath "call_counter++;")
+       ;  (append-line filepath "call_counter++;")
 
        (append-line filepath "//reading number of args")
        (append-line filepath "// This is the second type of the functions")
@@ -330,12 +336,10 @@
 
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
-       (append-line filepath (format "std::string env_var_name = \"~a\";" (get-c-string env)))
-       (append-line filepath (format "if (env_var_name.rfind(\"env\", 0) == 0) {"))
-       (append-line filepath (format "decode_clo_array = decode_clo(~a);" (get-c-string env)))
-       (append-line filepath (format "}"))
+       (when (string-prefix? (symbol->string env) "e")
+         (append-line filepath (format "decode_clo_array = decode_clo(~a);" (get-c-string env))))
 
-       (append-line filepath (format "void* ~a;" arg))
+       (append-line filepath (format "void* ~a = nullptr;" arg))
 
        (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
        (append-line filepath "//(apply e0 e0) case")
@@ -353,13 +357,12 @@
        (convert-proc-body (get-c-string ptr) (get-c-string env) arg body)
        (append-line filepath "}\n")
 
-       (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
-           (append-line filepath
+       (append-line filepath
+                    (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
                         (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
                                 (hash-ref conflicting_c++_prims (get-c-string ptr))
                                 (get-c-string ptr)
-                                0))
-           (append-line filepath
+                                0)
                         (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
                                 (get-c-string ptr)
                                 (get-c-string ptr)
@@ -384,9 +387,9 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-        (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
-       (append-line filepath "call_counter++;")
+       ;  (append-line filepath "call_counter++;")
 
        (append-line filepath "//reading number of args")
        (append-line filepath "// This is the second type of the functions")
@@ -396,14 +399,10 @@
        (append-line filepath "//reading env")
        (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
 
-      ;  (append-line filepath "//decododing closure array")
-      ;  (append-line filepath (format "void** decode_clo_array = nullptr;"))
-      ;  (append-line filepath (format "std::string env_var_name = \"~a\";" (get-c-string env)))
-      ;  (append-line filepath (format "if (env_var_name.rfind(\"env\", 0) == 0) {"))
-      ;  (append-line filepath (format "decode_clo_array = decode_clo(~a);" (get-c-string env)))
-      ;  (append-line filepath (format "}"))
+       (append-line filepath "//decoding closure array")
+       (append-line filepath (format "void** decode_clo_array = nullptr;"))
 
-       (append-line filepath (format "void* ~a;" arg))
+       (append-line filepath (format "void* ~a = nullptr;" arg))
 
        (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
        (append-line filepath "//(apply e0 e0) case")
@@ -421,13 +420,13 @@
        (convert-proc-body (get-c-string ptr) (get-c-string env) arg make-generic-apply-prim-body)
        (append-line filepath "}\n")
 
-       (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
-           (append-line filepath
+
+       (append-line filepath
+                    (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
                         (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
                                 (hash-ref conflicting_c++_prims (get-c-string ptr))
                                 (get-c-string ptr)
-                                0))
-           (append-line filepath
+                                0)
                         (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
                                 (get-c-string ptr)
                                 (get-c-string ptr)
@@ -444,25 +443,20 @@
   ; writing the main function.
   (append-line filepath "int main(int argc, char **argv)\n{")
 
-  ; (define tempPtr (gensym 'ptr))
-  ; (define tempEnv (gensym '_))
-  ; (define tempClo (gensym 'clo))
-
-  (append-line
-   filepath
-   "mp_set_memory_functions(&allocate_function,
-                            &reallocate_function,
-                            &deallocate_function);") ;
-
-  (append-line filepath "//making a call to the brouhaha main function to kick off our c++ emission.")
-  (append-line filepath "call_counter++;")
-  (append-line filepath "void *fhalt_clo = encode_clo(alloc_clo(fhalt,0));")
 
   (append-line filepath
-               "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(brouhaha_main))[0]);")
+               "mp_set_memory_functions(&allocate_function,
+                            &reallocate_function,
+                            &deallocate_function);")
+
+  (append-line filepath "//making a call to the brouhaha main function to kick off our C++ emission.")
+  ; (append-line filepath "call_counter++;")
+  (append-line filepath "void *fhalt_clo = encode_clo(alloc_clo(fhalt,0));")
+
+  (append-line filepath "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(brouhaha_main))[0]);")
   ; (append-line filepath "arg_num = arg_buffer.size();")
-  (append-line filepath "arg_buffer[0]=0;")
-  (append-line filepath "arg_buffer[2]=fhalt_clo;")
+  (append-line filepath "arg_buffer[0] = 0;")
+  (append-line filepath "arg_buffer[2] = fhalt_clo;")
 
   (append-line filepath "function_ptr();")
 
