@@ -5,6 +5,7 @@
     ; (modulo 7.0 3.0)
     ; (modulo 7 3.0)
     ; (modulo 7.0 3)
+    ; (modulo "7.0" "hello")
     (apply modulo (list 28.0 8))
     )
 

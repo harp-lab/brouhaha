@@ -756,11 +756,7 @@ void *prim_modulo(void *first, void *second)
 {
     void *result = nullptr;
 
-    if (!is_integer_val(first) || !is_integer_val(second))
-    { // to see either of the numbers has fraction in it!
-        assert_type(false, "Error in modulo: contract violation -> expected integer arguments!");
-    }
-    else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
+    if (get_tag(first) == MPZ && get_tag(second) == MPZ)
     { // both numbers are mpz
         mpz_t *mpz_arg1 = decode_mpz(first);
         mpz_t *mpz_arg2 = decode_mpz(second);
@@ -797,16 +793,25 @@ void *apply_prim_modulo(void *lst)
         assert_type(false, "Error in modulo -> arity mismatch: expected number of argument is 2!");
 
     void **cons_lst = decode_cons(lst);
-    int car_tag = get_tag(cons_lst[0]);
-    bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-    assert_type(type_check, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
+    void* car = cons_lst[0];
+    void* cadr = prim_car(cons_lst[1]);
 
-    return prim_modulo(prim_car(lst), prim_car(prim_cdr(lst)));
+    if (!is_integer_val(car) || !is_integer_val(cadr))
+    { 
+        assert_type(false, "Error in modulo: contract violation -> expected integer arguments!");
+    }
+
+    return prim_modulo(car, cadr);
 }
 
 void *apply_prim_modulo_2(void *a, void *b)
 {
+    if (!is_integer_val(a) || !is_integer_val(b))
+    { 
+        assert_type(false, "Error in modulo: contract violation -> expected integer arguments!");
+    }
+
     return prim_modulo(a, b);
 }
 
@@ -826,7 +831,11 @@ void *apply_prim_equal_u63(void *lst)
     if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in equal? -> arity mismatch: expected number of argument is 2.");
 
-    return prim_equal_u63(prim_car(lst), prim_car(prim_cdr(lst)));
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cadr = prim_car(cons_lst[1]);
+
+    return prim_equal_u63(car, cadr);
 }
 
 void *prim_eq_u63(void *arg1, void *arg2)
@@ -847,10 +856,14 @@ void *apply_prim_eq_u63(void *lst)
     if (length_counter(lst) > 2)
         assert_type(false, "Error in eq? -> arity mismatch: expected number of argument is 2.");
 
-    if (is_cons(prim_car(lst)) || is_cons(prim_car(prim_cdr(lst))))
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cadr = prim_car(cons_lst[1]);
+
+    if (is_cons(car) || is_cons(cadr))
         return encode_bool(false);
 
-    return prim_eq_u63(prim_car(lst), prim_car(prim_cdr(lst)));
+    return prim_eq_u63(car, cadr);
 }
 
 // null?
@@ -2194,7 +2207,11 @@ void *apply_prim_hash_u45ref(void *lst)
     if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in hash-ref -> arity mismatch: number of arguments should be 2!");
 
-    return prim_hash_u45ref(prim_car(lst), prim_car(prim_cdr(lst)));
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cadr = prim_car(cons_lst[1]);
+
+    return prim_hash_u45ref(car, cadr);
 }
 
 void *prim_hash_u45set(void *h, void *k, void *v)
@@ -2234,7 +2251,13 @@ void *apply_prim_hash_u45set(void *lst)
     if (len_cnt < 3 || len_cnt > 3)
         assert_type(false, "Error in hash-set -> arity mismatch: number of arguments should be 3!");
 
-    return prim_hash_u45set(prim_car(lst), prim_car(prim_cdr(lst)), prim_car(prim_cdr(prim_cdr(lst))));
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cdr = cons_lst[1];
+    void* cadr = prim_car(cdr);
+
+    return prim_hash_u45set(car, cadr, prim_car(prim_cdr(cdr)));
+    // return prim_hash_u45set(prim_car(lst), prim_car(prim_cdr(lst)), prim_car(prim_cdr(prim_cdr(lst))));
 }
 
 void *prim_set_u45add(void *s, void *val)
@@ -2276,7 +2299,11 @@ void *apply_prim_set_u45add(void *lst)
     if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in set-add -> arity mismatch: number of arguments should be 2!");
 
-    return prim_set_u45add(prim_car(lst), prim_car(prim_cdr(lst)));
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cadr = prim_car(cons_lst[1]);
+
+    return prim_set_u45add(car, cadr);
 }
 
 void *apply_prim_set_u45member_u63_2(void *arg1, void *arg2)
@@ -2398,7 +2425,11 @@ void *apply_prim_hash_u45has_u45key_u63(void *lst)
     if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in hash-has-key? -> arity mismatch: number of arguments should be 2!");
 
-    return prim_hash_u45has_u45key_u63(prim_car(lst), prim_car(prim_cdr(lst)));
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cadr = prim_car(cons_lst[1]);
+
+    return prim_hash_u45has_u45key_u63(car, cadr);
 }
 
 void *prim_hash_u45count(void *h)
@@ -2641,7 +2672,11 @@ void *apply_prim_set_u45remove(void *lst)
     if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in set-remove -> arity mismatch: number of arguments should be 2!");
 
-    return apply_prim_set_u45remove_2(prim_car(lst), prim_car(prim_cdr(lst)));
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cadr = prim_car(cons_lst[1]);
+
+    return apply_prim_set_u45remove_2(car, cadr);
 }
 
 void *apply_prim_set_u45count_1(void *arg1)
@@ -3091,7 +3126,11 @@ void *apply_prim_string_u45ref(void *lst)
     if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in string-ref -> arity mismatch: number of arguments should be 2!");
 
-    return prim_string_u45ref(prim_car(lst), prim_car(prim_cdr(lst)));
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cadr = prim_car(cons_lst[1]);
+
+    return prim_string_u45ref(car, cadr);
 }
 
 // takes in the str, start[inclusive] and end[exclusive]
@@ -3131,7 +3170,12 @@ void *apply_prim_substring(void *lst)
     if (len_cnt < 3 || len_cnt > 3)
         assert_type(false, "Error in substring -> arity mismatch: number of arguments should be 3!");
 
-    return prim_substring(prim_car(lst), prim_car(prim_cdr(lst)), prim_car(prim_cdr(prim_cdr(lst))));
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cdr = cons_lst[1];
+    void* cadr = prim_car(cdr);
+
+    return prim_substring(car, cadr, prim_car(prim_cdr(cdr)));
 }
 
 // takes two strings and returns the appended string
@@ -3476,7 +3520,11 @@ void *apply_prim_expt(void *lst)
     if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in expt -> arity mismatch: number of arguments should be 2!");
 
-    return apply_prim_expt_2(prim_car(lst), prim_car(prim_cdr(lst)));
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cadr = prim_car(cons_lst[1]);
+
+    return apply_prim_expt_2(car, cadr);
 }
 
 void *apply_prim_sqrt_1(void *arg1)
@@ -3563,7 +3611,11 @@ void *apply_prim_remainder(void *lst)
     if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in remaind -> arity mismatch: number of arguments should be 2!");
 
-    return apply_prim_remainder_2(prim_car(lst), prim_car(prim_cdr(lst)));
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cadr = prim_car(cons_lst[1]);
+
+    return apply_prim_remainder_2(car, cadr);
 }
 
 void *apply_prim_quotient_2(void *first, void *second)
@@ -3612,7 +3664,11 @@ void *apply_prim_quotient(void *lst)
     if (len_cnt < 2 || len_cnt > 2)
         assert_type(false, "Error in quotient -> arity mismatch: number of arguments should be 2!");
 
-    return apply_prim_quotient_2(prim_car(lst), prim_car(prim_cdr(lst)));
+    void **cons_lst = decode_cons(lst);
+    void* car = cons_lst[0];
+    void* cadr = prim_car(cons_lst[1]);
+
+    return apply_prim_quotient_2(car, cadr);
 }
 
 void *apply_prim_random_1(void *arg1) // random
