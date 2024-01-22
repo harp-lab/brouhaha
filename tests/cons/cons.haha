@@ -1,7 +1,7 @@
 (define (call)
     ; (cons 1 "hello")
-    (apply cons (list 12 2))
-    ; (cons 1 (cons 20 (list)))
+    ; (apply cons (list 12 2))
+    (cons 1 (cons 20 (list)))
 
     ; (apply cons (list 12 (list 2)))
     )

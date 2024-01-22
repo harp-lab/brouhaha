@@ -103,7 +103,8 @@
           (define mpzVar (gensym 'mpzvar))
 
           (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" mpzVar))
-          (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" mpzVar val))
+          ; (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" mpzVar val))
+          (append-line filepath (format "mpz_init_set_si(*~a, ~a);" mpzVar val))
           (append-line filepath (format "void* ~a = encode_mpz(~a);" (get-c-string lhs) mpzVar))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
@@ -159,7 +160,7 @@
           ; (displayln (~a "func: " func "builtin-func: " builtin-func " res: " res))
           (append-line filepath "\n//clo-apply")
 
-          (append-line filepath (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string builtin-func)))
+          (append-line filepath (format "arg_buffer[1] = ~a;" (get-c-string builtin-func)))
           (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
           (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
 
@@ -175,7 +176,7 @@
           (append-line filepath "\n//clo-apply")
 
           (append-line filepath
-                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
+                       (format "arg_buffer[1] = ~a;" (get-c-string func)))
           (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
           (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
 
@@ -213,7 +214,7 @@
                    (cddr args)))
           (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);" (get-c-string builtin-func) (- (length args) 1) args-str))
           (append-line filepath
-                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string (car args))))
+                       (format "arg_buffer[1] = ~a;" (get-c-string (car args))))
           (append-line filepath
                        (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (- (length args) 1)))
           (append-line
@@ -234,7 +235,7 @@
           (append-line filepath "\n//clo-app")
 
           (append-line filepath
-                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string builtin-func)))
+                       (format "arg_buffer[1] = ~a;" (get-c-string builtin-func)))
           (for ([i (in-range 1 (+ (length args) 1))] [item args])
             (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
           (append-line filepath
@@ -251,7 +252,7 @@
           (append-line filepath "\n//clo-app")
 
           (append-line filepath
-                       (format "arg_buffer[1]=reinterpret_cast<void*>(~a);" (get-c-string func)))
+                       (format "arg_buffer[1] = ~a;" (get-c-string func)))
           (for ([i (in-range 1 (+ (length args) 1))] [item args])
             (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
           (append-line filepath
@@ -282,7 +283,7 @@
        ;  uncomment these two lines for debugging!
        ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
-       ;  (append-line filepath "call_counter++;")
+      ;  (append-line filepath "call_counter++;")
 
        (append-line filepath "//reading number of args")
        ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
@@ -324,7 +325,7 @@
        ; uncomment these two lines for debugging!
        ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
-       ;  (append-line filepath "call_counter++;")
+      ;  (append-line filepath "call_counter++;")
 
        (append-line filepath "//reading number of args")
        (append-line filepath "// This is the second type of the functions")
@@ -389,7 +390,7 @@
        ; uncomment these two lines for debugging!
        ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
-       ;  (append-line filepath "call_counter++;")
+      ;  (append-line filepath "call_counter++;")
 
        (append-line filepath "//reading number of args")
        (append-line filepath "// This is the second type of the functions")
@@ -402,22 +403,48 @@
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
 
-       (append-line filepath (format "void* ~a = nullptr;" arg))
+      ;  (append-line filepath (format "void* ~a = nullptr;" arg))
 
        (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
        (append-line filepath "//(apply e0 e0) case")
-       (append-line filepath (format "~a = arg_buffer[2];" arg))
+       (append-line filepath (format "void* ~a = arg_buffer[2];" arg))
+       (append-line filepath (format "void* ~a = prim_car(lst);" k))
+       (append-line filepath (format "void* ~a = prim_cdr(lst);" newarg))
+       (append-line filepath (format "void* ~a = apply_prim_~a(~a);" x (get-c-string ptr) newarg))
+
+       (append-line filepath (format "arg_buffer[1] = ~a;" k))
+       (append-line filepath (format "arg_buffer[2] = ~a;" x))
+       (append-line filepath
+                    (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
+       (append-line
+        filepath
+        (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                k))
+
+       (append-line filepath "//call next proc using a function pointer")
+       (append-line filepath "function_ptr();")
+
+
        (append-line filepath "}\nelse\n{")
 
-       (append-line filepath "//building cons cell")
-       (append-line filepath (format "~a = encode_null();" arg))
-       (append-line filepath (format "for(int i = numArgs; i >= 2; i--)\n{"))
-       (append-line filepath (format "~a = prim_cons(arg_buffer[i], ~a);" arg arg))
-       (append-line filepath (format "\n}\n"))
+       (append-line filepath (format "void* ~a = arg_buffer[2];" k))
+       (append-line filepath (format "void* ~a = apply_prim_~a(arg_buffer);" x (get-c-string ptr)))
+
+       (append-line filepath (format "arg_buffer[1] = ~a;" k))
+       (append-line filepath (format "arg_buffer[2] = ~a;" x))
+       (append-line filepath
+                    (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
+       (append-line
+        filepath
+        (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                k))
+                
+       (append-line filepath "//call next proc using a function pointer")
+       (append-line filepath "function_ptr();")
 
        (append-line filepath "}\n")
 
-       (convert-proc-body (get-c-string ptr) (get-c-string env) arg make-generic-apply-prim-body)
+      ;  (convert-proc-body (get-c-string ptr) (get-c-string env) arg make-generic-apply-prim-body)
        (append-line filepath "}\n")
 
 

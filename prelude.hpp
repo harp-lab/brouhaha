@@ -47,6 +47,9 @@ std::string print_val(void *val);
 void *equal_(void *arg1, void *arg2);
 u64 hash_(void *val);
 
+void *arg_buffer[999]; // This is where the arg buffer is called
+long numArgs;
+
 #pragma region Types
 // region Encoding and Decoding and Tags
 
@@ -207,7 +210,7 @@ void **alloc_clo(void (*fptr)(), int num)
 {
     void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
     obj[0] = 0;
-    obj[1] = 0;
+    // obj[1] = 0;
     if (obj != NULL)
     {
         obj[0] = reinterpret_cast<void *>(fptr);
@@ -308,7 +311,17 @@ bool is_null_val(void *val)
     return false;
 }
 
-void *apply_prim_cons(void *lst)
+void *apply_prim_cons(void *arg)
+{
+    // std::cout << "Total # c2 apply_prim_cons: " << numArgs << std::endl;
+
+    if (numArgs < 4 || numArgs > 4)
+        assert_type(false, "Error in cons -> arity mismatch: number of arguments should be 2!");
+
+    return prim_cons(arg_buffer[3], arg_buffer[4]);
+}
+
+void *apply_prim_cons_i(void *lst)
 {
     int len_cnt = length_counter(lst);
     if (len_cnt < 2 || len_cnt > 2)
@@ -322,7 +335,16 @@ void *apply_prim_cons(void *lst)
     return prim_cons(car, cadr);
 }
 
+
 void *apply_prim_car(void *lst)
+{
+    if (numArgs < 3 || numArgs > 3)
+        assert_type(false, "Error in car -> arity mismatch: number of arguments should be 1!");
+
+    return prim_car(arg_buffer[3]);
+}
+
+void *apply_prim_car_i(void *lst)
 {
     int len_cnt = length_counter(lst);
     if (len_cnt < 1 || len_cnt > 1)
@@ -333,6 +355,14 @@ void *apply_prim_car(void *lst)
 }
 
 void *apply_prim_cdr(void *lst)
+{
+    if (numArgs < 3 || numArgs > 3)
+        assert_type(false, "Error in cdr -> arity mismatch: number of arguments should be 1!");
+
+    return prim_cdr(arg_buffer[3]);
+}
+
+void *apply_prim_cdr_i(void *lst)
 {
     int len_cnt = length_counter(lst);
     if (len_cnt < 1 || len_cnt > 1)
@@ -885,6 +915,15 @@ void *prim_null_u63(void *item)
 
 void *apply_prim_null_u63(void *lst)
 {
+    if (numArgs < 3 || numArgs > 3)
+        assert_type(false, "Error in null? -> arity mismatch: expected number of argument is 1.");
+
+    return prim_null_u63(arg_buffer[3]);
+}
+
+
+void *apply_prim_null_u63_i(void *lst)
+{
     int len_cnt = length_counter(lst);
     if (len_cnt < 1 || len_cnt > 1)
         assert_type(false, "Error in null? -> arity mismatch: expected number of argument is 1.");
@@ -1099,7 +1138,40 @@ void *add_old(void *arg1, void *arg2)
     return 0;
 }
 
-void *apply_prim__u43(void *lst) //+
+void *apply_prim__u43(void *arg) //+
+{
+    void *result = nullptr;
+
+    for (int i = 3; i <= numArgs; i++)
+    {
+        int tag = get_tag(arg_buffer[i]);
+        bool type_check = (tag == MPZ) || (tag == MPF);
+
+        if (!type_check)
+            assert_type(false, "Error in addition -> contact violation: The values in the list must be integers or floating-point numbers!");
+
+        if (!result)
+        {
+            result = arg_buffer[i];
+        }
+        else
+        {
+            result = add(result, arg_buffer[i]);
+        }
+    }
+
+    if (result == nullptr)
+    {
+        mpz_t *val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init_set_si(*val, 0);
+        return encode_mpz(val);
+    }
+
+    // std::cout << "Total # c2 apply_prim__u43: " << print_val(result) << std::endl;
+    return result;
+}
+
+void *apply_prim__u43_i(void *lst) //+
 {
     void *result = nullptr;
 
@@ -1127,7 +1199,7 @@ void *apply_prim__u43(void *lst) //+
     if (result == nullptr)
     {
         mpz_t *val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init_set_str(*val, "0", 10);
+        mpz_init_set_si(*val, 0);
         return encode_mpz(val);
     }
     return result;
@@ -1305,7 +1377,35 @@ void *apply_prim__u45_3(void *arg1, void *arg2, void *arg3) //-
     return sub(sub(arg1, arg2), arg3);
 }
 
-void *apply_prim__u45(void *lst) //-
+void *apply_prim__u45(void *arg)
+{
+    if (numArgs == 3)
+        return apply_prim__u45_1(arg_buffer[3]);
+
+    void *result = nullptr;
+
+    for (int i = 3; i <= numArgs; i++)
+    {
+        int tag = get_tag(arg_buffer[i]);
+        bool type_check = (tag == MPZ) || (tag == MPF);
+
+        if (!type_check)
+            assert_type(false, "Error in substraction -> contact violation: The values in the list must be integers or floating-point numbers!");
+
+        if (!result)
+        {
+            result = arg_buffer[i];
+        }
+        else
+        {
+            result = sub(result, arg_buffer[i]);
+        }
+    }
+
+    return result;
+}
+
+void *apply_prim__u45_i(void *lst) //-
 {
 
     if (length_counter(lst) == 1)
@@ -1425,7 +1525,7 @@ void *apply_prim__u42(void *lst) //*
     if (result == nullptr)
     {
         mpz_t *val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init_set_str(*val, "1", 10);
+        mpz_init_set_si(*val, 1);
         return encode_mpz(val);
     }
 
@@ -1529,7 +1629,7 @@ void *apply_prim__u47_2(void *arg1, void *arg2) // / division
             if (mpz_sgn(*(decode_mpz(arg1))) == 0)
             {
                 mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-                mpz_init_set_str(*tempMpzVal, "0", 10);
+                mpz_init_set_si(*tempMpzVal, 0);
                 return encode_mpz(tempMpzVal);
             }
 
@@ -1541,7 +1641,7 @@ void *apply_prim__u47_2(void *arg1, void *arg2) // / division
             if (mpf_sgn(*(decode_mpf(arg1))) == 0)
             {
                 mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-                mpf_init_set_str(*tempMpfVal, "0.0", 10);
+                mpf_init_set_d(*tempMpfVal, 0.0);
                 return encode_mpf(tempMpfVal);
             }
 
@@ -1659,7 +1759,7 @@ void *apply_prim__u47_1(void *arg1) // / division
 
             // adding dummy parameter
             mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-            mpz_init_set_str(*tempMpzVal, "1", 10);
+            mpz_init_set_si(*tempMpzVal, 1);
             void *arg2 = encode_mpz(tempMpzVal);
 
             return apply_prim__u47_2(arg2, arg1);
@@ -1673,7 +1773,7 @@ void *apply_prim__u47_1(void *arg1) // / division
 
             // adding dummy parameter
             mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-            mpf_init_set_str(*tempMpfVal, "1.0", 10);
+            mpf_init_set_d(*tempMpfVal, 1.0);
             void *arg2 = encode_mpf(tempMpfVal);
 
             return apply_prim__u47_2(arg2, arg1);
@@ -1730,7 +1830,7 @@ void *apply_prim__u47(void *lst) // / division
                 if (mpz_sgn(*(decode_mpz(cons_lst[0]))) == 0)
                 {
                     mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-                    mpz_init_set_str(*tempMpzVal, "0", 10);
+                    mpz_init_set_si(*tempMpzVal, 0);
                     return encode_mpz(tempMpzVal);
                 }
             }
@@ -1739,7 +1839,7 @@ void *apply_prim__u47(void *lst) // / division
                 if (mpf_sgn(*(decode_mpf(cons_lst[0]))) == 0)
                 {
                     mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-                    mpf_init_set_str(*tempMpfVal, "0.0", 10);
+                    mpf_init_set_d(*tempMpfVal, 0.0);
                     return encode_mpf(tempMpfVal);
                 }
             }
@@ -1858,6 +1958,79 @@ bool equal_zero(long cmp)
     return false;
 }
 
+void *compare_lst(bool (*cmp_op)(long))
+{
+    if (numArgs < 3)
+        assert_type(false, "Error -> arity mismatch: number of arguments should be at least 1!");
+
+    mpf_t *old_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*old_car);
+    mpf_t *mpf_new_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*mpf_new_car);
+
+    bool iteration_one = false;
+    int cmp_res = 0;
+
+    for(int i = 3; i <= numArgs; i++)
+    {
+        int car_tag = get_tag(arg_buffer[i]);
+        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+
+        if (!type_check)
+            assert_type(false, "Error -> contact violation: argument type should be either integers or floating-point numbers!");
+
+        if (!iteration_one)
+        {
+            iteration_one = true;
+            if (car_tag == MPZ)
+            {
+                // old_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+                mpf_t *temp_mpf;
+                mpz_t *temp_mpz_ptr = decode_mpz(arg_buffer[i]);
+
+                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+                mpf_set(*old_car, *temp_mpf);
+
+                mpf_clear(*temp_mpf);
+            }
+            else
+            {
+                // old_car = decode_mpf(cons_lst[0]);
+                mpf_set(*old_car, *decode_mpf(arg_buffer[i]));
+            }
+        }
+        else
+        {
+            if (car_tag == MPZ)
+            {
+                // mpf_new_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+
+                mpf_t *temp_mpf;
+                mpz_t *temp_mpz_ptr = decode_mpz(arg_buffer[i]);
+                temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+
+                mpf_set(*mpf_new_car, *temp_mpf);
+                mpf_clear(*temp_mpf);
+            }
+            else
+            {
+                // mpf_new_car = decode_mpf(cons_lst[0]);
+                mpf_set(*mpf_new_car, *decode_mpf(arg_buffer[i]));
+            }
+
+            cmp_res = mpf_cmp(*old_car, *mpf_new_car);
+
+            if (cmp_op(cmp_res))
+                mpf_set(*old_car, *mpf_new_car);
+            else
+                return encode_bool(false);
+        }
+    }
+
+    return encode_bool(true);
+}
+
+
 void *compare_lst(void *lst, bool (*cmp_op)(long))
 {
     if (length_counter(lst) < 1)
@@ -1975,6 +2148,11 @@ void *compare_op(void *arg1, void *arg2, bool (*cmp_op)(long))
 
 // checks if a list is equal
 void *apply_prim__u61(void *lst) // =
+{
+    return compare_lst(*equal_zero);
+}
+
+void *apply_prim__u61_i(void *lst) // =
 {
     return compare_lst(lst, *equal_zero);
 }
@@ -2268,7 +2446,7 @@ void *apply_prim_hash_u45set(void *lst)
         assert_type(false, "Error in hash-set -> arity mismatch: number of arguments should be 3!");
 
     void **cons_lst = decode_cons(lst);
-    void *car = cons_lst[0];
+    void *const car = cons_lst[0];
     void *cdr = cons_lst[1];
     void *cadr = prim_car(cdr);
 
@@ -3442,7 +3620,7 @@ void *apply_prim_min(void *lst)
         int car_tag = get_tag(cons_lst[0]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        if(!type_check)
+        if (!type_check)
             assert_type(false, "Error in min -> contact violation: argument type should be either integers or floating-point numbers!");
 
         if (!is_result)
@@ -3860,14 +4038,25 @@ std::string print_val(void *val)
 
 #pragma endregion
 void *halt;
-void *arg_buffer[999]; // This is where the arg buffer is called
-long numArgs;
+// void *arg_buffer[999]; // This is where the arg buffer is called
+// long numArgs;
 unsigned long long call_counter = 0;
+unsigned long long car_counter = 0;
+unsigned long long cdr_counter = 0;
+unsigned long long cons_counter = 0;
+unsigned long long plus_counter = 0;
+unsigned long long minus_counter = 0;
 
 void fhalt()
 {
     // std::cout << "In fhalt" << std::endl;
     std::cout << print_val(arg_buffer[2]) << std::endl;
+    // std::cout << "Total # calls made (excluding prelude): " << call_counter << std::endl;
+    // std::cout << "Total # calls made (car): " << car_counter << std::endl;
+    // std::cout << "Total # calls made (cdr): " << cdr_counter << std::endl;
+    // std::cout << "Total # calls made (cons): " << cons_counter << std::endl;
+    // std::cout << "Total # calls made (plus): " << plus_counter << std::endl;
+    // std::cout << "Total # calls made (minus): " << minus_counter << std::endl;
     // print_val(arg_buffer[2]);
     exit(0);
 }

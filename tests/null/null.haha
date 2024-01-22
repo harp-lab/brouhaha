@@ -1,5 +1,9 @@
 (define (call)
-  (apply null? (list 100)))
+  ; (null?)
+  ; (null? 5)
+  (null? (list 100))
+  ; (apply null? (list 100))
+  )
 
 (define (brouhaha_main)
   (call))

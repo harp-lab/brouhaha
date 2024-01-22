@@ -1,7 +1,7 @@
 (define (call)
-    ; (car (list 1 2))
+    (car (list (list 1 2) 3 (list 4 5)))
     ; (car 5)
-    (apply car (list (list 10 2)))
+    ; (apply car (list (list 10 2)))
     )
 
 (define (brouhaha_main)
