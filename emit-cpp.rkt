@@ -4,7 +4,7 @@
 (require "slog-utils.rkt")
 ; (require print-debug/print-dbg)
 (provide emit-cpp)
-(define (emit-cpp proc_list filepath slog-flag ast-root)
+(define (emit-cpp proc_list filepath slog-flag ast-root desugarred_prog)
   ; defining cpp header files
   ; replace the old cpp file, if exists
   (append-line filepath "#include<stdio.h>" 'replace)
@@ -19,6 +19,23 @@
                                        (sqrt . sqrt_brouhaha)
                                        (for . for_brouhaha)
                                        ))
+
+  (define proc-name-shadowed?
+    (let loop ([env+ (hash)] [prog+ desugarred_prog])
+      (match prog+
+        [`((define (,name . ,_) ,_) ,_ ...)
+         (loop
+          (if (hash-has-key? env+ name)
+              (hash-set env+ name `(shadowed ,@(cdr (hash-ref env+ name))))
+              (hash-set env+ name `(not-shadowed dummyinfo)))
+          (cdr prog+))]
+        [`((define-prim ,f-name ,params ...) ,_ ...)
+         (loop
+          (if (hash-has-key? env+ f-name)
+              (hash-set env+ f-name `(shadowed ,params))
+              (hash-set env+ f-name `(not-shadowed-dp ,params)))
+          (cdr prog+))]
+        [`() env+])))
 
   (define (convert-proc-body proc_name proc_env proc_arg body)
     (define (true? x) (if x #t #f))
@@ -241,34 +258,72 @@
           (append-line filepath
                        (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
 
-          (append-line filepath "// resetting the closure array")
-          (append-line filepath "decode_clo_array = nullptr;")
 
           (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
           ; (append-line filepath "return nullptr;")
           ]
-
          [else
-          (append-line filepath "\n//clo-app")
+          (match-define `(,is_define_prim ,is_callable ,arg_count)
+            (callable-define-prim? proc-name-shadowed? func (- (length args) 1)))
 
-          (append-line filepath
-                       (format "arg_buffer[1] = ~a;" (get-c-string func)))
-          (for ([i (in-range 1 (+ (length args) 1))] [item args])
-            (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
-          (append-line filepath
-                       (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+          ; (displayln func)
+          ; (displayln (- (length args) 1))
+          ; (displayln is_define_prim)
+          ; (displayln is_callable)
+          ; (displayln arg_count)
+          ; (displayln "---------")
 
-          (append-line
-           filepath
-           (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-                   (get-c-string func)))
+          (cond
+            [(and is_define_prim is_callable)
+             (append-line filepath "\n//clo-app")
+             (define args-str
+               (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
+                      (symbol->string (cadr args))
+                      (cddr args)))
+             (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);" (get-c-string func) (- (length args) 1) args-str))
+             (append-line filepath
+                          (format "arg_buffer[1] = ~a;" (get-c-string (car args))))
+             (append-line filepath
+                          (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (- (length args) 1)))
+             (append-line
+              filepath
+              (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                      (get-c-string (car args))))
 
-          (append-line filepath "// resetting the closure array")
-          (append-line filepath "decode_clo_array = nullptr;")
+             (append-line filepath "function_ptr();")]
+            [is_define_prim
+             (append-line filepath "\n//clo-app")
 
-          (append-line filepath "//call next proc using a function pointer")
-          (append-line filepath "function_ptr();")
-          ; (append-line filepath "return nullptr;")
+             (append-line filepath
+                          (format "arg_buffer[1] = ~a;" (get-c-string func)))
+             (for ([i (in-range 1 (+ (length args) 1))] [item args])
+               (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
+             (append-line filepath
+                          (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+
+             (append-line filepath (format "~a_fptr();" (get-c-string func)))]
+            [else
+             (append-line filepath "\n//clo-app")
+
+             (append-line filepath
+                          (format "arg_buffer[1] = ~a;" (get-c-string func)))
+             (for ([i (in-range 1 (+ (length args) 1))] [item args])
+               (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
+             (append-line filepath
+                          (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+
+             (append-line
+              filepath
+              (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                      (get-c-string func)))
+
+             (append-line filepath "// resetting the closure array")
+             (append-line filepath "decode_clo_array = nullptr;")
+
+             (append-line filepath "//call next proc using a function pointer")
+             (append-line filepath "function_ptr();")
+             ])
+
           ])]))
 
   (define (convert-procs proc)
@@ -283,7 +338,7 @@
        ;  uncomment these two lines for debugging!
        ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
-      ;  (append-line filepath "call_counter++;")
+       ;  (append-line filepath "call_counter++;")
 
        (append-line filepath "//reading number of args")
        ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
@@ -325,7 +380,7 @@
        ; uncomment these two lines for debugging!
        ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
-      ;  (append-line filepath "call_counter++;")
+       ;  (append-line filepath "call_counter++;")
 
        (append-line filepath "//reading number of args")
        (append-line filepath "// This is the second type of the functions")
@@ -390,7 +445,7 @@
        ; uncomment these two lines for debugging!
        ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
-      ;  (append-line filepath "call_counter++;")
+       ;  (append-line filepath "call_counter++;")
 
        (append-line filepath "//reading number of args")
        (append-line filepath "// This is the second type of the functions")
@@ -403,7 +458,7 @@
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
 
-      ;  (append-line filepath (format "void* ~a = nullptr;" arg))
+       ;  (append-line filepath (format "void* ~a = nullptr;" arg))
 
        (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
        (append-line filepath "//(apply e0 e0) case")
@@ -438,13 +493,13 @@
         filepath
         (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                 k))
-                
+
        (append-line filepath "//call next proc using a function pointer")
        (append-line filepath "function_ptr();")
 
        (append-line filepath "}\n")
 
-      ;  (convert-proc-body (get-c-string ptr) (get-c-string env) arg make-generic-apply-prim-body)
+       ;  (convert-proc-body (get-c-string ptr) (get-c-string env) arg make-generic-apply-prim-body)
        (append-line filepath "}\n")
 
 

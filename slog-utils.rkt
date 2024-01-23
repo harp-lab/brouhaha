@@ -153,7 +153,7 @@ void *fhalt()
            (if (hash-has-key? tree-hash (car search-items))
                (get-sub-tree (hash-ref tree-hash (car search-items)) (cdr search-items))
                '())]
-        [_ '()])))
+          [_ '()])))
   (match (get-sub-tree tree items)
     [`(,_ ,(? hash? sub-tree-hash)) (get-leaves sub-tree-hash)]
     [(? list? index-list) index-list]
@@ -239,7 +239,36 @@ void *fhalt()
 
      `(,(string->symbol prim-func) #t)]
     [_
-       `(,func-name #f)]))
+     `(,func-name #f)]))
+
+
+; this function returns (#t/#f #t/#f supported_arg_count) as a touple,
+; if the called function at a call site is
+; one of the built-in define-prim's
+; returns,
+; - (#t #t count)
+3;     - #t, means one of the define prim
+;     - #t, means the function is directly callable
+;     - count, return the actual supported arg count = actual parameter count
+; - (#t #f count)
+;     - #t, means one of the define prim
+;     - #f, means the function is not directly callable
+;     - count, should return 0
+; - (#f #f count)
+;     - #f, means not a define prim
+;     - #f, means the function is not directly callable
+;     - count, should return 0
+
+(define (callable-define-prim? proc-name-shadowed_hash prc count)
+  (if (not (hash-has-key? proc-name-shadowed_hash prc))
+      `(#f #f 0)
+      (let ([res (hash-ref proc-name-shadowed_hash prc)])
+        (if (equal? (car res) 'not-shadowed-dp)
+            (if (member count (cadr res))
+                `(#t #t ,(car (member count (cadr res))))
+                `(#t #f 0))
+            `(#f #f 0)))))
+
 
 
 ; looks at the call-sites and returns a list of distinct number of args at call-site
@@ -297,3 +326,12 @@ void *fhalt()
 
 ; ; 578515199c3a2906e454b88940173865172a56f9d945ed2e8b1a3836
 ; ; 925aee401258590a198ba4de7fd7f43dc34636b0e4bd42e8008c3f43
+
+; (is-define-prm 'car 1)
+; (is-define-prm 'reverse 1)
+; (is-define-prm '+ 1)
+; (is-define-prm '+ 2)
+; (is-define-prm '+ 3)
+; (is-define-prm '+ 5)
+; (is-define-prm '- 2)
+; (is-define-prm '- 5)

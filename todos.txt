@@ -1,9 +1,19 @@
 1. Slog cannot process string with spaces
-    exp. it can process "I_am_a_string", but can't "I am a string"
+    - it can process "I_am_a_string", but can't "I am a string"
 
     status: unsloved
 
 2. Slog non-termination issue
-    exp. doesn't terminate for tests like, length, map, foldr
+    - doesn't terminate for tests like, length, map, foldr
     
+    status: unsloved
+
+3. C++ function prototyping
+    - so that user can define functions in any order, but it would still work
+    
+    status: unsloved
+
+4. We don't support built-in prim shadowing yet
+    - what if user writes a function (define (car lst) (cdr lst))
+
     status: unsloved

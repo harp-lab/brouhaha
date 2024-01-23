@@ -39,4 +39,4 @@
   )
 
 (define (brouhaha_main)
-  (nqueens 14))
+  (nqueens 13))

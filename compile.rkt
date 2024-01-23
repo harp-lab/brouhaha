@@ -159,13 +159,15 @@
     (foldl (lambda (def env)
              (match def
                [`(define (,fname . ,params) ,body)
-                (when (hash-has-key? env fname)
-                  (error "Function name is already defined"))
+                ; will see later, if this causes problems
+                ; (when (hash-has-key? env fname)
+                ;   (error "Function name is already defined"))
                 (hash-set env fname fname)]
 
                [`(define-prim ,fname ,params-count ...)
-                (when (hash-has-key? env fname)
-                  (error "Function name is already defined"))
+                ; will see later, if this causes problems
+                ; (when (hash-has-key? env fname)
+                ;   (error "Function name is already defined"))
                 (hash-set env fname fname)]
 
                ))
