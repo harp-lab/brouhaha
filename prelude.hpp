@@ -1218,7 +1218,62 @@ void *apply_prim__u43_1(void *arg1) //+
 }
 void *apply_prim__u43_2(void *arg1, void *arg2) //+
 {
-    return add(arg1, arg2);
+    bool is_mpf = false;
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
+
+    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)))
+    {
+        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*arg1_mpf);
+        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*arg2_mpf);
+
+        if (arg1_tag == MPZ)
+        {
+            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+        }
+        else
+        {
+            is_mpf = true;
+            arg1_mpf = decode_mpf(arg1);
+        }
+
+        if (arg2_tag == MPZ)
+        {
+            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
+        }
+        else
+        {
+            is_mpf = true;
+            arg2_mpf = decode_mpf(arg2);
+        }
+
+        mpf_t *res1 = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*res1);
+        mpf_add(*res1, *arg1_mpf, *arg2_mpf);
+
+        void *res = encode_mpf(res1);
+
+        if (is_mpf || !is_integer_val(res))
+        {
+            return res;
+        }
+        else
+        {
+            // none of the values were mpf, and the result do no have any fractional part
+            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+            mpz_init(*ress);
+            mpz_set_f(*ress, *(decode_mpf(res)));
+            return encode_mpz(ress);
+        }
+    }
+    else
+    {
+        assert_type(false, "Error in plus -> contact violation: The values in the list must be integers or floating-point numbers!");
+    }
+
+    return nullptr;
 }
 void *apply_prim__u43_3(void *arg1, void *arg2, void *arg3) //+
 {
@@ -1370,7 +1425,62 @@ void *apply_prim__u45_1(void *arg1) //-
 }
 void *apply_prim__u45_2(void *arg1, void *arg2) //-
 {
-    return sub(arg1, arg2);
+    bool is_mpf = false;
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
+
+    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)))
+    {
+        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*arg1_mpf);
+        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*arg2_mpf);
+
+        if (arg1_tag == MPZ)
+        {
+            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+        }
+        else
+        {
+            is_mpf = true;
+            arg1_mpf = decode_mpf(arg1);
+        }
+
+        if (arg2_tag == MPZ)
+        {
+            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
+        }
+        else
+        {
+            is_mpf = true;
+            arg2_mpf = decode_mpf(arg2);
+        }
+
+        mpf_t *res1 = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init(*res1);
+        mpf_sub(*res1, *arg1_mpf, *arg2_mpf);
+
+        void *res = encode_mpf(res1);
+
+        if (is_mpf || !is_integer_val(res))
+        {
+            return res;
+        }
+        else
+        {
+            // none of the values were mpf, and the result do no have any fractional part
+            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+            mpz_init(*ress);
+            mpz_set_f(*ress, *(decode_mpf(res)));
+            return encode_mpz(ress);
+        }
+    }
+    else
+    {
+        assert_type(false, "Error in minus -> contact violation: The values in the list must be integers or floating-point numbers!");
+    }
+
+    return nullptr;
 }
 void *apply_prim__u45_3(void *arg1, void *arg2, void *arg3) //-
 {
@@ -2162,7 +2272,43 @@ void *apply_prim__u61_1(void *arg1) // =
 }
 void *apply_prim__u61_2(void *arg1, void *arg2) // =
 {
-    return compare_op(arg1, arg2, *equal_zero);
+    // return compare_op(arg1, arg2, *equal_zero);
+    int cmp_res = 0;
+
+    int arg1_tag = get_tag(arg1);
+    int arg2_tag = get_tag(arg2);
+
+    bool type_check = (arg1_tag == MPZ) || (arg1_tag == MPF);
+
+    if (!type_check)
+        assert_type(false, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
+
+    bool type_check2 = (arg2_tag == MPZ) || (arg2_tag == MPF);
+
+    if (!type_check2)
+        assert_type(false, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
+
+    mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*arg1_mpf);
+    mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*arg2_mpf);
+
+    if (arg1_tag == MPZ)
+        arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+    else
+        arg1_mpf = decode_mpf(arg1);
+
+    if (arg2_tag == MPZ)
+        arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
+    else
+        arg2_mpf = decode_mpf(arg2);
+
+    cmp_res = mpf_cmp(*arg1_mpf, *arg2_mpf);
+
+    if (equal_zero(cmp_res))
+        return encode_bool(true);
+    else
+        return encode_bool(false);
 }
 void *apply_prim__u61_3(void *arg1, void *arg2, void *arg3) // =
 {
