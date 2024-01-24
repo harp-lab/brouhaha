@@ -160,14 +160,14 @@
              (match def
                [`(define (,fname . ,params) ,body)
                 ; will see later, if this causes problems
-                ; (when (hash-has-key? env fname)
-                ;   (error "Function name is already defined"))
+                (when (hash-has-key? env fname)
+                  (error "Function name is already defined"))
                 (hash-set env fname fname)]
 
                [`(define-prim ,fname ,params-count ...)
                 ; will see later, if this causes problems
-                ; (when (hash-has-key? env fname)
-                ;   (error "Function name is already defined"))
+                (when (hash-has-key? env fname)
+                  (error "Function name is already defined"))
                 (hash-set env fname fname)]
 
                ))

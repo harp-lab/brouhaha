@@ -181,11 +181,6 @@
           (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
           (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
 
-
-          (append-line filepath "// resetting the closure array")
-          (append-line filepath "decode_clo_array = nullptr;")
-
-
           (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
           ; (append-line filepath "return nullptr;")
           ]
@@ -201,8 +196,8 @@
                        (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                                (get-c-string func)))
 
-          (append-line filepath "// resetting the closure array")
-          (append-line filepath "decode_clo_array = nullptr;")
+          ; (append-line filepath "// resetting the closure array")
+          ; (append-line filepath "decode_clo_array = nullptr;")
 
           (append-line filepath "// call next proc using a function pointer")
           (append-line filepath "function_ptr();")
@@ -233,7 +228,7 @@
           (append-line filepath
                        (format "arg_buffer[1] = ~a;" (get-c-string (car args))))
           (append-line filepath
-                       (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (- (length args) 1)))
+                       (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
           (append-line
            filepath
            (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
@@ -251,10 +246,11 @@
          [(and slog-flag res1)
           (append-line filepath "\n//clo-app")
 
-          (append-line filepath
-                       (format "arg_buffer[1] = ~a;" (get-c-string builtin-func)))
+          (append-line filepath (format "arg_buffer[1] = ~a;" (get-c-string builtin-func)))
+
           (for ([i (in-range 1 (+ (length args) 1))] [item args])
             (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
+
           (append-line filepath
                        (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
 
@@ -266,6 +262,9 @@
           (match-define `(,is_define_prim ,is_callable ,arg_count)
             (callable-define-prim? proc-name-shadowed? func (- (length args) 1)))
 
+          ; (set! is_define_prim #f)
+          ; (set! is_callable #f)
+          ; (set! arg_count 0)
           ; (displayln func)
           ; (displayln (- (length args) 1))
           ; (displayln is_define_prim)
@@ -280,11 +279,12 @@
                (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
                       (symbol->string (cadr args))
                       (cddr args)))
-             (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);" (get-c-string func) (- (length args) 1) args-str))
+             (append-line filepath (format "arg_buffer[2]=apply_prim_~a_~a(~a);" (get-c-string func) arg_count args-str))
              (append-line filepath
                           (format "arg_buffer[1] = ~a;" (get-c-string (car args))))
-             (append-line filepath
-                          (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (- (length args) 1)))
+
+             (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
+
              (append-line
               filepath
               (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
@@ -317,9 +317,6 @@
               (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                       (get-c-string func)))
 
-             (append-line filepath "// resetting the closure array")
-             (append-line filepath "decode_clo_array = nullptr;")
-
              (append-line filepath "//call next proc using a function pointer")
              (append-line filepath "function_ptr();")
              ])
@@ -336,7 +333,7 @@
        (append-line filepath func_name)
 
        ;  uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -378,7 +375,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -431,11 +428,11 @@
        (define arg 'lst)
        (define newarg (gensym arg))
 
-       (define make-generic-apply-prim-body
-         `(let ([,k (prim car ,arg)])
-            (let ([,newarg (prim cdr ,arg)])
-              (let ((,x (apply-prim ,ptr ,newarg)))
-                (clo-app ,k ,x)))))
+       ;  (define make-generic-apply-prim-body
+       ;    `(let ([,k (prim car ,arg)])
+       ;       (let ([,newarg (prim cdr ,arg)])
+       ;         (let ((,x (apply-prim ,ptr ,newarg)))
+       ;           (clo-app ,k ,x)))))
 
        (define func_name (format "void ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
@@ -443,7 +440,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
