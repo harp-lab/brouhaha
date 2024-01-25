@@ -46,6 +46,27 @@
                   [else (string-append "_u" (number->string (char->integer ch)))]))
               (string->list (symbol->string sym)))))
 
+
+(define (find-global-constants-helper exp env)
+  (match exp
+    ['() env]
+    [(? symbol?) env]
+    [`(let ([,lhs ,val]) ,letbody)
+     (find-global-constants-helper letbody
+                                   (match val
+                                     [`(quote ,(? integer? val))
+                                      (hash-set env val `(mpz ,(gensym 'mpz)))]
+                                     [`(quote ,(? flonum? val))
+                                      (hash-set env val `(mpf ,(gensym 'mpf)))]
+                                     [_ env]))]
+    [`(if ,ec ,et ,ef) (find-global-constants-helper et env) (find-global-constants-helper ef env)]
+    [`(apply ,e0 ,e1) (find-global-constants-helper e0 env) (find-global-constants-helper e1 env)]
+    [`(,ef ,eas ...)
+     (find-global-constants-helper ef env)
+     (find-global-constants-helper eas env)]
+    ))
+
+
 (define (print-color text color)
   (display "\x1b[")
   (display color)

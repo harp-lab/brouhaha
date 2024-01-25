@@ -4,7 +4,7 @@
 (require "slog-utils.rkt")
 ; (require print-debug/print-dbg)
 (provide emit-cpp)
-(define (emit-cpp proc_list filepath slog-flag ast-root desugarred_prog)
+(define (emit-cpp proc_list filepath slog-flag ast-root desugarred_prog anf_prog)
   ; defining cpp header files
   ; replace the old cpp file, if exists
   (append-line filepath "#include<stdio.h>" 'replace)
@@ -36,6 +36,27 @@
               (hash-set env+ f-name `(not-shadowed-dp ,params)))
           (cdr prog+))]
         [`() env+])))
+
+  (define find-global-constants
+    (let loop ([env+ (hash)] [prog+ anf_prog])
+      (match prog+
+        [`((define (,name . ,param) ,body) ,rest ...)
+         (loop (find-global-constants-helper body env+) rest)]
+        [`((define-prim ,f-name ,params ...) ,_ ...)
+         (loop env+ (cdr prog+))]
+        [`() env+]
+        )))
+
+
+  (append-line filepath "\n// declaring global constants at the top")
+  (hash-map find-global-constants
+            (lambda (key type)
+              (if (equal? (car type) 'mpz)
+                  (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" (cadr type)))
+                  (append-line filepath (format "mpf_t* ~a = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));" (cadr type)))
+                  )))
+
+  (append-line filepath "\n")
 
   (define (convert-proc-body proc_name proc_env proc_arg body)
     (define (true? x) (if x #t #f))
@@ -109,20 +130,32 @@
        ;  (match (p-dbg val)
        (match val
          [`(quote ,(? flonum? val))
-          (define mpfVar (gensym 'mpfvar))
+          ; (define mpfVar (gensym 'mpfvar))
 
-          (append-line filepath (format "mpf_t* ~a = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));" mpfVar))
-          (append-line filepath (format "mpf_init_set_str(*~a, \"~a\", 10);" mpfVar val))
-          (append-line filepath (format "void* ~a = encode_mpf(~a);" (get-c-string lhs) mpfVar))
+          ; (append-line filepath (format "mpf_t* ~a = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));" mpfVar))
+          ; (append-line filepath (format "mpf_init_set_str(*~a, \"~a\", 10);" mpfVar val))
+          ; (append-line filepath (format "void* ~a = encode_mpf(~a);" (get-c-string lhs) mpfVar))
+
+
+          (if (hash-has-key? find-global-constants val)
+              (append-line filepath (format "void* ~a = encode_mpf(~a);" lhs (cadr (hash-ref find-global-constants val))))
+              (error "Couldn't find the global constant definition in the map!"))
+
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [`(quote ,(? integer? val))
-          (define mpzVar (gensym 'mpzvar))
+          ; (define mpzVar (gensym 'mpzvar))
 
-          (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" mpzVar))
-          ; (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" mpzVar val))
-          (append-line filepath (format "mpz_init_set_si(*~a, ~a);" mpzVar val))
-          (append-line filepath (format "void* ~a = encode_mpz(~a);" (get-c-string lhs) mpzVar))
+          ; (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" mpzVar))
+          ; ; (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" mpzVar val))
+          ; (append-line filepath (format "mpz_init_set_si(*~a, ~a);" mpzVar val))
+          ; (append-line filepath (format "void* ~a = encode_mpz(~a);" (get-c-string lhs) mpzVar))
+
+
+          (if (hash-has-key? find-global-constants val)
+              (append-line filepath (format "void* ~a = encode_mpz(~a);" lhs (cadr (hash-ref find-global-constants val))))
+              (error "Couldn't find the global constant definition in the map!"))
+
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [`(quote ,(? boolean? val))
@@ -333,7 +366,7 @@
        (append-line filepath func_name)
 
        ;  uncomment these two lines for debugging!
-      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -375,7 +408,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -440,7 +473,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -527,6 +560,17 @@
                "mp_set_memory_functions(&allocate_function,
                             &reallocate_function,
                             &deallocate_function);")
+
+  ; mpz_init_set_si(*mpzvar9246, 12);
+  (append-line filepath "\n// initializing global constants in the main")
+  (hash-map find-global-constants
+            (lambda (key type)
+              (if (equal? (car type) 'mpz)
+                  (append-line filepath (format "mpz_init_set_si(*~a, ~a);" (cadr type) key))
+                  (append-line filepath (format "mpf_init_set_d(*~a, ~a);" (cadr type) key))
+                  )))
+
+  (append-line filepath "\n")
 
   (append-line filepath "//making a call to the brouhaha main function to kick off our C++ emission.")
   ; (append-line filepath "call_counter++;")
