@@ -2,6 +2,7 @@ tests/*/*.out
 # tests/*/
 tests/*/output/*
 tests/*/compiler-out/*
+!tests/compiler-out/*.cpp
 tests/*/CMakeLists.txt
 tests/*/driver.cpp
 tests2/*/*.out
