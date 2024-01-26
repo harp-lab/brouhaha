@@ -13,11 +13,19 @@
 ;REF VARIABLES
 (free x ?(ref x))
 
-;LAMBDAS (NOT COMPLETE)
+;LAMBDAS
 [(free x eb)
- (=/= x y)
  -->
- (free x ?(lambda y eb))]
+(do-free-lam ?(lambda ys eb) ys x)]
+
+[(do-free-lam lam [y ys ...] x)
+ (=/= y x)
+ -->
+ (do-free-lam lam ys x)]
+
+[(do-free-lam lam [] x)
+ -->
+ (free x lam)]
 
 ;APPL
 [(or (free x ef) (free x ea))
@@ -34,18 +42,43 @@
  -->
  (free x ?(app ef eas))]
 
-(do-free ?(app ef eas) eas)
+(do-free-app ?(app ef eas) eas)
 
-[(do-free app [ea eas ...])
+[(do-free-app app [ea eas ...])
  -->
- (do-free app eas)]
+ (do-free-app app eas)]
 
-[(do-free app [ea eas ...])
- (= app (app ef _))
+[(do-free-app app [ea eas ...])
  (free x ea)
  -->
  (free x app)]
- 
+
+;LET BINDINGS RIGHT HAND SIDES
+(do-free-let-rhs ?(let binds body) binds)
+
+[(do-free-let-rhs let [bind binds ...])
+ -->
+(do-free-let-rhs let binds)]    
+
+[(do-free-let-rhs let [(binding lhs rhs) binds ...])
+ (free x rhs)
+ -->
+ (free x let)]
+
+;LET BINDINGS LEFT HAND SIDES
+[(free x body)
+ -->
+(do-free-let-lhs ?(let binds body) binds x)]
+
+[(do-free-let-lhs let [(binding lhs rhs) binds ...] x)
+ (=/= lhs x)
+ -->
+ (do-free-let-lhs let binds x)]
+
+[(do-free-let-lhs let [] x)
+ -->
+ (free x let)]
+
 
 ;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;START RULE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
