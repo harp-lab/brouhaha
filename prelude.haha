@@ -67,16 +67,16 @@
 ;; other predicates and HOFs
 (define (list . x) x)
 
-(define (even? x)
-  (equal? 0 (modulo x 2)))
+; (define (even? x)
+;   (equal? 0 (modulo x 2)))
 
-(define (odd? x)
-  (equal? 1 (modulo x 2)))
+; (define (odd? x)
+;   (equal? 1 (modulo x 2)))
 
-(define (list-ref lst n)
-  (if (= 0 n)
-      (car lst)
-      (list-ref (cdr lst) (- n 1))))
+; (define (list-ref lst n)
+;   (if (= 0 n)
+;       (car lst)
+;       (list-ref (cdr lst) (- n 1))))
 
 (define (member item lst)
   (cond
@@ -87,10 +87,10 @@
 (define (member? x lst)
   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
 
-(define (length lst)
-  (if (null? lst)
-      0
-      (+ 1 (length (cdr lst)))))
+; (define (length lst)
+;   (if (null? lst)
+;       0
+;       (+ 1 (length (cdr lst)))))
 
 (define (map proc lst)
   (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
@@ -102,10 +102,10 @@
           (cons (car lst) (filter op (cdr lst)))
           (filter op (cdr lst)))))
 
-(define (drop lst n)
-  (if (= n 0)
-      lst
-      (drop (cdr lst) (- n 1))))
+; (define (drop lst n)
+;   (if (= n 0)
+;       lst
+;       (drop (cdr lst) (- n 1))))
 
 (define (foldl fun acc lst)
   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
@@ -128,13 +128,13 @@
 (define (append xs . x)
   (foldr append1 (list) (append1 (list xs) x)))
 
-(define (take-helper lst n lst2)
-  (if (= n 0)
-      (reverse lst2)
-      (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
+; (define (take-helper lst n lst2)
+;   (if (= n 0)
+;       (reverse lst2)
+;       (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
 
-(define (take lst n)
-  (take-helper lst n (list)))
+; (define (take lst n)
+;   (take-helper lst n (list)))
 
 ; ormap, andmap, both requires length to work properly. once done will impelement them.
 

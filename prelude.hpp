@@ -12,6 +12,7 @@
 #include "gc_cpp.h"
 #include "gmp.h"
 #include "gmpxx.h"
+#include <limits.h>
 
 // hamt headers
 #include "hamt.h"
@@ -38,8 +39,9 @@ enum DataType
     STRING = 0x3,
     MPF = 0x4,
     CLO = 0x5,
-    // ENV = 0x6,
-    CONS = 0x7
+    INT = 0x6,
+    CONS = 0x7,
+    FLOAT = 0x8,
 };
 
 struct hash_struct;
@@ -64,6 +66,16 @@ void assert_type(bool cond, const char *msg)
 // ??why encode and decode functions for every type, just have one and make it
 // take a void* and the type we want the tag variable to returns a void* that is
 // tagged
+
+u64 encode_int(s32 val)
+{
+    return ((((u64)((u32)(val))) << 32) | INT);
+}
+
+u64 encode_float(float val)
+{
+    return ((((u64)(*(u32 *)&val)) << 32) | FLOAT);
+}
 
 void *encode_mpz(mpz_t *val)
 {
@@ -144,7 +156,24 @@ bool is_cons(void *lst)
     return false;
 }
 
-// decode functions
+s32 decode_int(void* val)
+{
+    u64 v = reinterpret_cast<u64>(val);
+    if ((v & 0x7) != INT)
+        assert_type(false, "Error in decode_int -> Type error: Not an Integer!");
+
+    return ((s32)((u32)(((v) & ~(7ULL)) >> 32)));
+}
+
+float decode_float(void* val)
+{
+    u64 v = reinterpret_cast<u64>(val);
+    if ((v & 0x8) != FLOAT)
+        assert_type(false, "Error in decode_float -> Type error: Not a float!");
+
+    u32 temp = (u32)((v & ~(7ULL)) >> 32);
+    return *(float *)&temp;
+}
 
 mpz_t *decode_mpz(void *val)
 {
@@ -154,6 +183,7 @@ mpz_t *decode_mpz(void *val)
 
     return reinterpret_cast<mpz_t *>(MASK(val));
 }
+
 mpf_t *decode_mpf(void *val)
 {
     // MASK does the casting to u64
@@ -334,7 +364,6 @@ void *apply_prim_cons_i(void *lst)
 
     return prim_cons(car, cadr);
 }
-
 
 void *apply_prim_car(void *lst)
 {
@@ -921,7 +950,6 @@ void *apply_prim_null_u63(void *lst)
     return prim_null_u63(arg_buffer[3]);
 }
 
-
 void *apply_prim_null_u63_i(void *lst)
 {
     int len_cnt = length_counter(lst);
@@ -1054,7 +1082,7 @@ void *add_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
     return encode_mpf(mpf_arg2);
 }
 
-void *add(void *arg1, void *arg2)
+void *add_unused(void *arg1, void *arg2)
 {
     bool is_mpf = false;
     int arg1_tag = get_tag(arg1);
@@ -1116,10 +1144,11 @@ void *add(void *arg1, void *arg2)
 
 // takes in two number?, gets the tags,  does the castings as required and adds them.
 // the numbers could be mpz_t or mpf_t, if different, mpz_t gets casted to mpf_t
-void *add_old(void *arg1, void *arg2)
+void *add(void *arg1, void *arg2)
 {
     int arg1_tag = get_tag(arg1);
     int arg2_tag = get_tag(arg2);
+
     if (arg1_tag == arg2_tag)
     {
         if (arg1_tag == MPZ)
@@ -1222,51 +1251,18 @@ void *apply_prim__u43_2(void *arg1, void *arg2) //+
     int arg1_tag = get_tag(arg1);
     int arg2_tag = get_tag(arg2);
 
-    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)))
+    if (((arg1_tag == INT) || (arg1_tag == FLOAT) || (arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == INT) || (arg2_tag == FLOAT) || (arg2_tag == MPZ) || (arg2_tag == MPF)))
     {
-        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*arg1_mpf);
-        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*arg2_mpf);
-
-        if (arg1_tag == MPZ)
+        if (arg1_tag == arg2_tag)
         {
-            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
-        }
-        else
-        {
-            is_mpf = true;
-            arg1_mpf = decode_mpf(arg1);
+            if (arg1_tag == INT)
+            {
+                s32 res = decode_int(arg1) + decode_int(arg2);
+                return reinterpret_cast<void*>(encode_int(res));
+            }
         }
 
-        if (arg2_tag == MPZ)
-        {
-            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
-        }
-        else
-        {
-            is_mpf = true;
-            arg2_mpf = decode_mpf(arg2);
-        }
-
-        mpf_t *res1 = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*res1);
-        mpf_add(*res1, *arg1_mpf, *arg2_mpf);
-
-        void *res = encode_mpf(res1);
-
-        if (is_mpf || !is_integer_val(res))
-        {
-            return res;
-        }
-        else
-        {
-            // none of the values were mpf, and the result do no have any fractional part
-            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-            mpz_init(*ress);
-            mpz_set_f(*ress, *(decode_mpf(res)));
-            return encode_mpz(ress);
-        }
+        return add(arg1, arg2);
     }
     else
     {
@@ -1428,52 +1424,61 @@ void *apply_prim__u45_2(void *arg1, void *arg2) //-
     bool is_mpf = false;
     int arg1_tag = get_tag(arg1);
     int arg2_tag = get_tag(arg2);
-
-    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)))
+    
+    if (((arg1_tag == INT) || (arg1_tag == FLOAT) || (arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == INT) || (arg2_tag == FLOAT) || (arg2_tag == MPZ) || (arg2_tag == MPF)))
     {
-        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*arg1_mpf);
-        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*arg2_mpf);
+        if (arg1_tag == arg2_tag)
+        {
+            if (arg1_tag == INT)
+            {
+                s32 res = decode_int(arg1) - decode_int(arg2);
 
-        if (arg1_tag == MPZ)
-        {
-            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+                return reinterpret_cast<void*>(encode_int(res));
+            }
         }
-        else
-        {
-            is_mpf = true;
-            arg1_mpf = decode_mpf(arg1);
-        }
+        // mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        // mpf_init(*arg1_mpf);
+        // mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        // mpf_init(*arg2_mpf);
 
-        if (arg2_tag == MPZ)
-        {
-            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
-        }
-        else
-        {
-            is_mpf = true;
-            arg2_mpf = decode_mpf(arg2);
-        }
+        // if (arg1_tag == MPZ)
+        // {
+        //     arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+        // }
+        // else
+        // {
+        //     is_mpf = true;
+        //     arg1_mpf = decode_mpf(arg1);
+        // }
 
-        mpf_t *res1 = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*res1);
-        mpf_sub(*res1, *arg1_mpf, *arg2_mpf);
+        // if (arg2_tag == MPZ)
+        // {
+        //     arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
+        // }
+        // else
+        // {
+        //     is_mpf = true;
+        //     arg2_mpf = decode_mpf(arg2);
+        // }
 
-        void *res = encode_mpf(res1);
+        // mpf_t *res1 = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        // mpf_init(*res1);
+        // mpf_sub(*res1, *arg1_mpf, *arg2_mpf);
 
-        if (is_mpf || !is_integer_val(res))
-        {
-            return res;
-        }
-        else
-        {
-            // none of the values were mpf, and the result do no have any fractional part
-            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-            mpz_init(*ress);
-            mpz_set_f(*ress, *(decode_mpf(res)));
-            return encode_mpz(ress);
-        }
+        // void *res = encode_mpf(res1);
+
+        // if (is_mpf || !is_integer_val(res))
+        // {
+        //     return res;
+        // }
+        // else
+        // {
+        //     // none of the values were mpf, and the result do no have any fractional part
+        //     mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        //     mpz_init(*ress);
+        //     mpz_set_f(*ress, *(decode_mpf(res)));
+        //     return encode_mpz(ress);
+        // }
     }
     else
     {
@@ -2081,7 +2086,7 @@ void *compare_lst(bool (*cmp_op)(long))
     bool iteration_one = false;
     int cmp_res = 0;
 
-    for(int i = 3; i <= numArgs; i++)
+    for (int i = 3; i <= numArgs; i++)
     {
         int car_tag = get_tag(arg_buffer[i]);
         bool type_check = (car_tag == MPZ) || (car_tag == MPF);
@@ -2139,7 +2144,6 @@ void *compare_lst(bool (*cmp_op)(long))
 
     return encode_bool(true);
 }
-
 
 void *compare_lst(void *lst, bool (*cmp_op)(long))
 {
@@ -2275,40 +2279,54 @@ void *apply_prim__u61_2(void *arg1, void *arg2) // =
     // return compare_op(arg1, arg2, *equal_zero);
     int cmp_res = 0;
 
+    // std::cout << (reinterpret_cast<u64>(arg1) & 0x7) << std::endl;
     int arg1_tag = get_tag(arg1);
     int arg2_tag = get_tag(arg2);
+    // std::cout << arg1_tag << std::endl;
+    // std::cout << arg2_tag << std::endl;
 
-    bool type_check = (arg1_tag == MPZ) || (arg1_tag == MPF);
+    bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT) || (arg1_tag == MPZ) || (arg1_tag == MPF);
 
     if (!type_check)
         assert_type(false, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
 
-    bool type_check2 = (arg2_tag == MPZ) || (arg2_tag == MPF);
+    bool type_check2 = (arg2_tag == INT) || (arg2_tag == FLOAT) || (arg2_tag == MPZ) || (arg2_tag == MPF);
 
     if (!type_check2)
         assert_type(false, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
 
-    mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*arg1_mpf);
-    mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*arg2_mpf);
+    if (arg1_tag == arg2_tag)
+    {
+        if (arg1_tag == INT)
+        {
+            if (decode_int(arg1) == decode_int(arg2))
+                return encode_bool(true);
+            else
+                return encode_bool(false);
+        }
+    }
+    // mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    // mpf_init(*arg1_mpf);
+    // mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    // mpf_init(*arg2_mpf);
 
-    if (arg1_tag == MPZ)
-        arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
-    else
-        arg1_mpf = decode_mpf(arg1);
+    // if (arg1_tag == MPZ)
+    //     arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+    // else
+    //     arg1_mpf = decode_mpf(arg1);
 
-    if (arg2_tag == MPZ)
-        arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
-    else
-        arg2_mpf = decode_mpf(arg2);
+    // if (arg2_tag == MPZ)
+    //     arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
+    // else
+    //     arg2_mpf = decode_mpf(arg2);
 
-    cmp_res = mpf_cmp(*arg1_mpf, *arg2_mpf);
+    // cmp_res = mpf_cmp(*arg1_mpf, *arg2_mpf);
 
-    if (equal_zero(cmp_res))
-        return encode_bool(true);
-    else
-        return encode_bool(false);
+    // if (equal_zero(cmp_res))
+    //     return encode_bool(true);
+    // else
+    //     return encode_bool(false);
+    return nullptr;
 }
 void *apply_prim__u61_3(void *arg1, void *arg2, void *arg3) // =
 {
@@ -4148,10 +4166,16 @@ std::string print_val(void *val)
     }
     case MPZ:
     {
-
         mpz_t *final_mpz = decode_mpz(val);
         std::string str(mpz_get_str(nullptr, 10, *final_mpz));
         return str;
+        break;
+    }
+    case INT:
+    {
+        std::string str = std::to_string(decode_int(val));
+        return str;
+       
         break;
     }
     case STRING:
@@ -4186,12 +4210,12 @@ std::string print_val(void *val)
 void *halt;
 // void *arg_buffer[999]; // This is where the arg buffer is called
 // long numArgs;
-unsigned long long call_counter = 0;
-unsigned long long car_counter = 0;
-unsigned long long cdr_counter = 0;
-unsigned long long cons_counter = 0;
-unsigned long long plus_counter = 0;
-unsigned long long minus_counter = 0;
+// unsigned long long call_counter = 0;
+// unsigned long long car_counter = 0;
+// unsigned long long cdr_counter = 0;
+// unsigned long long cons_counter = 0;
+// unsigned long long plus_counter = 0;
+// unsigned long long minus_counter = 0;
 
 void fhalt()
 {
@@ -4206,3 +4230,31 @@ void fhalt()
     // print_val(arg_buffer[2]);
     exit(0);
 }
+
+// int main()
+// {
+//     s32 value = 1001;
+//     void *encodedInt = encode_int(value);
+//     s32 decodedInt = decode_int(encodedInt);
+//     cout << "Encoded int value: " << encodedInt << endl;
+//     cout << "Decoded int value: " << decodedInt << endl;
+
+//     // bool bvalue = true;
+//     // void *encodedBool = encodeBool(bvalue);
+//     // bool decodedBool = decodeBool(encodedBool);
+//     // cout << "Encoded boolean value: " << encodedBool << endl;
+//     // cout << "Decoded boolean value: " << decodedBool << endl;
+
+//     // string svalue = "is this working?";
+
+//     // void *encodedString = encodeString(svalue);
+//     // string decodedString = decodeString(encodedString);
+//     // cout << "Encoded string value: " << encodedString << endl;
+//     // cout << "Decoded string value: " << decodedString << endl;
+
+//     // float fvalue = 42.203;
+//     // void *encodedFloat = encodeFloat(fvalue);
+//     // float decodedFloat = decodeFloat(encodedFloat);
+//     // cout << "Encoded float value: " << encodedFloat << endl;
+//     // cout << "Decoded float value: " << decodedFloat << endl;
+// }

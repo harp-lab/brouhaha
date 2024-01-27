@@ -47,6 +47,13 @@
               (string->list (symbol->string sym)))))
 
 
+(define (within-int-32bit-range? val)
+  (and (<= -2147483648 val) (<= val 2147483647)))
+
+(define (within-float-32bit-range? val)
+  (and (<= -3.40282347e+38 val) (<= val 3.40282347e+38)))
+
+
 (define (find-global-constants-helper exp env)
   (match exp
     ['() env]
@@ -54,10 +61,14 @@
     [`(let ([,lhs ,val]) ,letbody)
      (find-global-constants-helper letbody
                                    (match val
-                                     [`(quote ,(? integer? val))
-                                      (hash-set env val `(mpz ,(gensym 'mpz)))]
+                                     [`(quote ,(? exact-integer? val))
+                                      (if (within-int-32bit-range? val)
+                                          (hash-set env val `(int ,(gensym 'int)))
+                                          (hash-set env val `(mpz ,(gensym 'mpz))))]
                                      [`(quote ,(? flonum? val))
-                                      (hash-set env val `(mpf ,(gensym 'mpf)))]
+                                      (if (within-float-32bit-range? val)
+                                          (hash-set env val `(float ,(gensym 'float)))
+                                          (hash-set env val `(mpf ,(gensym 'mpf))))]
                                      [_ env]))]
     [`(if ,ec ,et ,ef) (find-global-constants-helper et env) (find-global-constants-helper ef env)]
     [`(apply ,e0 ,e1) (find-global-constants-helper e0 env) (find-global-constants-helper e1 env)]

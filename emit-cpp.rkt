@@ -51,10 +51,18 @@
   (append-line filepath "\n// declaring global constants at the top")
   (hash-map find-global-constants
             (lambda (key type)
-              (if (equal? (car type) 'mpz)
-                  (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" (cadr type)))
-                  (append-line filepath (format "mpf_t* ~a = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));" (cadr type)))
-                  )))
+              (cond
+                [(equal? (car type) 'mpz)
+                 (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" (cadr type)))]
+                [(equal? (car type) 'mpf)
+                 (append-line filepath (format "mpf_t* ~a = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));" (cadr type)))]
+                [(equal? (car type) 'int)
+                 (append-line filepath (format "int ~a;" (cadr type)))]
+                [(equal? (car type) 'float)
+                 (append-line filepath (format "float ~a;" (cadr type)))]
+                [else (error "Error occured find-global-constants!")]
+                )
+              ))
 
   (append-line filepath "\n")
 
@@ -130,31 +138,36 @@
        ;  (match (p-dbg val)
        (match val
          [`(quote ,(? flonum? val))
-          ; (define mpfVar (gensym 'mpfvar))
+          (match-define `(,type ,varname) (hash-ref find-global-constants val))
 
-          ; (append-line filepath (format "mpf_t* ~a = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));" mpfVar))
-          ; (append-line filepath (format "mpf_init_set_str(*~a, \"~a\", 10);" mpfVar val))
-          ; (append-line filepath (format "void* ~a = encode_mpf(~a);" (get-c-string lhs) mpfVar))
+          (cond
+            [(equal? type 'float)
+             (append-line filepath (format "void* ~a = reinterpret_cast<void*>(encode_float(~a));" lhs varname))]
+            [(equal? type 'mpf)
+             (append-line filepath (format "void* ~a = encode_mpf(~a);" lhs varname))]
+            [else (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])
 
 
-          (if (hash-has-key? find-global-constants val)
-              (append-line filepath (format "void* ~a = encode_mpf(~a);" lhs (cadr (hash-ref find-global-constants val))))
-              (error "Couldn't find the global constant definition in the map!"))
+          ; (if (hash-has-key? find-global-constants val)
+          ;     (append-line filepath (format "void* ~a = encode_mpf(~a);" lhs (cadr (hash-ref find-global-constants val))))
+          ;     (error "Couldn't find the global constant definition in the map!"))
 
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-         [`(quote ,(? integer? val))
-          ; (define mpzVar (gensym 'mpzvar))
+         [`(quote ,(? exact-integer? val))
 
-          ; (append-line filepath (format "mpz_t* ~a = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));" mpzVar))
-          ; ; (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" mpzVar val))
-          ; (append-line filepath (format "mpz_init_set_si(*~a, ~a);" mpzVar val))
-          ; (append-line filepath (format "void* ~a = encode_mpz(~a);" (get-c-string lhs) mpzVar))
+          (match-define `(,type ,varname) (hash-ref find-global-constants val))
 
+          (cond
+            [(equal? type 'int)
+             (append-line filepath (format "void* ~a = reinterpret_cast<void*>(encode_int(~a));" lhs varname))]
+            [(equal? type 'mpz)
+             (append-line filepath (format "void* ~a = encode_mpz(~a);" lhs varname))]
+            [else (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])
 
-          (if (hash-has-key? find-global-constants val)
-              (append-line filepath (format "void* ~a = encode_mpz(~a);" lhs (cadr (hash-ref find-global-constants val))))
-              (error "Couldn't find the global constant definition in the map!"))
+          ; (if (hash-has-key? find-global-constants val)
+          ;     (append-line filepath (format "void* ~a = encode_mpz(~a);" lhs (cadr (hash-ref find-global-constants val))))
+          ;     (error "Couldn't find the global constant definition in the map!"))
 
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
@@ -565,10 +578,18 @@
   (append-line filepath "\n// initializing global constants in the main")
   (hash-map find-global-constants
             (lambda (key type)
-              (if (equal? (car type) 'mpz)
-                  (append-line filepath (format "mpz_init_set_si(*~a, ~a);" (cadr type) key))
-                  (append-line filepath (format "mpf_init_set_d(*~a, ~a);" (cadr type) key))
-                  )))
+              (cond
+                [(equal? (car type) 'mpz)
+                 (append-line filepath (format "mpz_init_set_si(*~a, ~a);" (cadr type) key))]
+                [(equal? (car type) 'mpf)
+                 (append-line filepath (format "mpf_init_set_d(*~a, ~a);" (cadr type) key))]
+                [(equal? (car type) 'int)
+                 (append-line filepath (format "~a = ~a;" (cadr type) key))]
+                [(equal? (car type) 'float)
+                 (append-line filepath (format "~a = ~a;" (cadr type) key))]
+                [else (error "Error occured find-global-constants!")]
+                )
+              ))
 
   (append-line filepath "\n")
 
