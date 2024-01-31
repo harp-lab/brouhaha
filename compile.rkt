@@ -341,76 +341,72 @@
   (map cps-convert-def program))
 
 (define (T-bottom-up e [symbol-set (set)])
-  (match e
-    ; [`(quote ,d) `(,(set) ,e ,(list))]
-    [`(let ([,x ',dat]) ,e0)
-     (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0 symbol-set))
-     (list (set-remove freevars x) (coverage `(let ([,x ',dat]) ,e0+)) procs+)]
-    [`(let ([,x ,(? string? str)]) ,e0)
-     (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0 symbol-set))
-     (list (set-remove freevars x) (coverage `(let ([,x ,str]) ,e0+)) procs+)]
-    [`(let ([,x (prim ,op ,xs ...)]) ,e0)
-     (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0 symbol-set))
-     (list (set-remove (set-union (list->set xs) freevars) x)
-           (coverage `(let ([,x (prim ,op ,@xs)]) ,e0+))
-           procs+)]
-    [`(let ([,x (apply-prim ,op ,y)]) ,e0)
-     (match-define `(,freevars ,e0+ ,procs+) (T-bottom-up e0 symbol-set))
-     (list (set-remove (set-add freevars y) x) (coverage `(let ([,x (apply-prim ,op ,y)]) ,e0+)) procs+)]
+  (let loop ([e e] [symbol-set symbol-set])
+    (match e
+      ; [`(quote ,d) `(,(set) ,e ,(list))]
+      [`(let ([,x ',dat]) ,e0)
+       (match-define `(,freevars ,e0+ ,procs+) (loop e0 symbol-set))
+       (list (set-remove freevars x) (coverage `(let ([,x ',dat]) ,e0+)) procs+)]
+      [`(let ([,x ,(? string? str)]) ,e0)
+       (match-define `(,freevars ,e0+ ,procs+) (loop e0 symbol-set))
+       (list (set-remove freevars x) (coverage `(let ([,x ,str]) ,e0+)) procs+)]
+      [`(let ([,x (prim ,op ,xs ...)]) ,e0)
+       (match-define `(,freevars ,e0+ ,procs+) (loop e0 symbol-set))
+       (list (set-remove (set-union (list->set xs) freevars) x)
+             (coverage `(let ([,x (prim ,op ,@xs)]) ,e0+))
+             procs+)]
+      [`(let ([,x (apply-prim ,op ,y)]) ,e0)
+       (match-define `(,freevars ,e0+ ,procs+) (loop e0 symbol-set))
+       (list (set-remove (set-add freevars y) x) (coverage `(let ([,x (apply-prim ,op ,y)]) ,e0+)) procs+)]
 
-    [`(let ([,x (lambda (,xs ...) ,body)]) ,e0)
-     (match-define `(,freevars ,e0+ ,procs0+) (T-bottom-up e0 symbol-set))
-     (match-define `(,freelambda ,body+ ,procs1+) (T-bottom-up body symbol-set))
-     (define fx (gensym 'lam))
-     (define envx (gensym 'env))
+      [`(let ([,x (lambda (,xs ...) ,body)]) ,e0)
+       (match-define `(,freevars ,e0+ ,procs0+) (loop e0 symbol-set))
+       (match-define `(,freelambda ,body+ ,procs1+) (loop body symbol-set))
+       (define fx (gensym 'lam))
+       (define envx (gensym 'env))
 
-     (define envvars (foldl (lambda (x fr) (set-remove fr x)) freelambda xs))
-     ;  (define envlist (set->list envvars))
-     (define envvars+ (foldl (lambda (x fr)
-                               (set-remove fr x)) envvars (set->list symbol-set)))
-     (define envlist (set->list envvars+))
-     (define body++
-       (cdr (foldl (lambda (x count+bdy)
-                     (cons (+ 1 (car count+bdy))
-                           `(let ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
-                   (cons 1 body+)
-                   envlist)))
-     (coverage (list (set-remove (set-union envvars freevars) x)
-                     `(let ([,x (make-closure ,fx ,@envlist)]) ,e0+)
-                     ;  `(let ([,x (make-closure ,@envlist)]) ,e0+)
-                     `(,@procs0+ ,@procs1+ (proc (,fx ,envx ,@xs) ,body++))))]
+       (define envvars (foldl (lambda (x fr) (set-remove fr x)) freelambda xs))
+       ;  (define envlist (set->list envvars))
+       (define envvars+ (foldl (lambda (x fr)
+                                 (set-remove fr x)) envvars (set->list symbol-set)))
+       (define envlist (set->list envvars+))
+       (define body++
+         (cdr (foldl (lambda (x count+bdy)
+                       (cons (+ 1 (car count+bdy))
+                             `(let ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
+                     (cons 1 body+)
+                     envlist)))
+       (coverage (list (set-remove (set-union envvars freevars) x)
+                       `(let ([,x (make-closure ,fx ,@envlist)]) ,e0+)
+                       `(,@procs0+ ,@procs1+ (proc (,fx ,envx ,@xs) ,body++))))]
 
-    [`(let ([,x (lambda ,arg ,body)]) ,e0)
-     (match-define `(,freevars ,e0+ ,procs0+) (T-bottom-up e0 symbol-set))
-     (match-define `(,freelambda ,body+ ,procs1+) (T-bottom-up body symbol-set))
-     (define fx (gensym 'lam))
-     (define envx (gensym 'env))
-     (define envvars (set-remove freelambda arg))
-     ;  (define envlist (set->list envvars))
-     (define envvars+ (foldl (lambda (x fr)
-                               (set-remove fr x)) envvars (set->list symbol-set)))
-     (define envlist (set->list envvars+))
-     (define body++
-       (cdr (foldl (lambda (x count+bdy)
-                     (cons (+ 1 (car count+bdy))
-                           `(let ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
-                   (cons 1 body+)
-                   envlist)))
-     (coverage (list (set-remove (set-union envvars freevars) x)
-                     `(let ([,x (make-closure ,fx ,@envlist)]) ,e0+)
-                     ;  `(let ([,x (make-closure ,@envlist)]) ,e0+)
-                     `(,@procs0+ ,@procs1+ (proc (,fx ,envx . ,arg) ,body++))))]
-    [`(if ,x ,e0 ,e1)
-     (match-define `(,freevars0 ,e0+ ,procs0+) (T-bottom-up e0 symbol-set))
-     (match-define `(,freevars1 ,e1+ ,procs1+) (T-bottom-up e1 symbol-set))
-     (list (set-add (set-union freevars0 freevars1) x) (coverage `(if ,x ,e0+ ,e1+)) (append procs0+ procs1+))]
-    ; [`(if ,x ,e0 ,e1)
-    ;  (match-define `(,freevars0 ,e0+ ,procs0+) (T-bottom-up e0 symbol-set))
-    ;  (match-define `(,freevars1 ,e1+ ,procs1+) (T-bottom-up e1))
-    ;  (list (set-add (set-union freevars0 freevars1) x) `(if ,x ,e0+ ,e1+) (append procs0+ procs1+))]
-    [`(apply ,f ,x) (list (list->set `(,f ,x)) (coverage `(clo-apply ,f ,x)) '())]
-    [`(,f ,xs ...) (list (list->set `(,f ,@xs)) (coverage `(clo-app ,f ,@xs)) '())]
-    ))
+      [`(let ([,x (lambda ,arg ,body)]) ,e0)
+       (match-define `(,freevars ,e0+ ,procs0+) (loop e0 symbol-set))
+       (match-define `(,freelambda ,body+ ,procs1+) (loop body symbol-set))
+       (define fx (gensym 'lam))
+       (define envx (gensym 'env))
+       (define envvars (set-remove freelambda arg))
+       ;  (define envlist (set->list envvars))
+       (define envvars+ (foldl (lambda (x fr)
+                                 (set-remove fr x)) envvars (set->list symbol-set)))
+       (define envlist (set->list envvars+))
+       (define body++
+         (cdr (foldl (lambda (x count+bdy)
+                       (cons (+ 1 (car count+bdy))
+                             `(let ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
+                     (cons 1 body+)
+                     envlist)))
+       (coverage (list (set-remove (set-union envvars freevars) x)
+                       `(let ([,x (make-closure ,fx ,@envlist)]) ,e0+)
+                       `(,@procs0+ ,@procs1+ (proc (,fx ,envx . ,arg) ,body++))))]
+      [`(if ,x ,e0 ,e1)
+       (match-define `(,freevars0 ,e0+ ,procs0+) (loop e0 symbol-set))
+       (match-define `(,freevars1 ,e1+ ,procs1+) (loop e1 symbol-set))
+       (list (set-add (set-union freevars0 freevars1) x) (coverage `(if ,x ,e0+ ,e1+)) (append procs0+ procs1+))]
+      [`(apply ,f ,x) (list (list->set `(,f ,x)) (coverage `(clo-apply ,f ,x)) '())]
+      [`(,f ,xs ...) (list (list->set `(,f ,@xs)) (coverage `(clo-app ,f ,@xs)) '())]
+      ))
+  )
 
 (define (closure-convert program)
   (define global-symbols-set
@@ -426,20 +422,9 @@
   ; (pretty-print global-symbols-set)
   (foldl (lambda (def pr+)
            (match def
-             ;  [`(define (,fx . ,xs)
-             ;      ,body)
-             ;   ;  (pretty-print (list fx xs))
-             ;   ; (define facts-list (search-facts ast-root '(eval )))
-             ;   (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body))
-             ;   (define envx (gensym '_))
-             ;   ; (pretty-print (list freevars procs+ fx envx xs))
-             ;   `(,@pr+ ,@procs+ (proc (,fx ,envx . ,xs) ,body+))]
              [`(define (,fx . ,xs) ,body)
-              ;  (pretty-print (list fx xs))
-              ; (define facts-list (search-facts ast-root '(eval )))
               (match-define `(,freevars ,body+ ,procs+) (T-bottom-up body global-symbols-set))
               (define envx (gensym '_))
-              ; (pretty-print (list freevars procs+ fx envx xs))
               (coverage `(,@pr+ ,@procs+ (proc (,fx ,envx . ,xs) ,body+)))]
              [`(define-prim ,fname ,param-counts ...)
               (coverage `(,@pr+ (define-prim ,fname ,@param-counts)))]
