@@ -63,7 +63,65 @@
                 [else (error "Error occured find-global-constants!")]
                 )
               ))
+  (append-line filepath "\n")
 
+  (append-line filepath "\n// declaring functions at the top")
+  (let loop ([env+ (hash)] [prog+ proc_list])
+    (match prog+
+
+      [`((proc (,ptr ,env ,args ...) ,body) ,rest ...)
+       (define func_name (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
+       (append-line filepath func_name)
+
+       (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
+           (append-line filepath
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (hash-ref conflicting_c++_prims (get-c-string ptr))
+                                (get-c-string ptr)
+                                0))
+           (append-line filepath
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (get-c-string ptr)
+                                (get-c-string ptr)
+                                0)))
+
+
+       (loop env+ (cdr prog+))
+       ]
+      [`((proc (,ptr ,env . ,arg) ,body) ,rest ...)
+       (define func_name (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
+       (append-line filepath func_name)
+
+       (append-line filepath
+                    (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (hash-ref conflicting_c++_prims (get-c-string ptr))
+                                (get-c-string ptr)
+                                0)
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (get-c-string ptr)
+                                (get-c-string ptr)
+                                0)))
+
+       (loop env+ (cdr prog+))]
+      [`((define-prim ,ptr ,params ...) ,_ ...)
+       (define func_name (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
+       (append-line filepath func_name)
+
+       (append-line filepath
+                    (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (hash-ref conflicting_c++_prims (get-c-string ptr))
+                                (get-c-string ptr)
+                                0)
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (get-c-string ptr)
+                                (get-c-string ptr)
+                                0)))
+
+       (loop env+ (cdr prog+))]
+      [`() env+]
+      ))
   (append-line filepath "\n")
 
   (define (convert-proc-body proc_name proc_env proc_arg body)
@@ -87,13 +145,14 @@
 
        (for ([i (in-range 1 (+ arglength 1))] [item args])
 
-         (when (eq? (get-c-string item) proc_name)
-           (append-line
-            filepath
-            (if (hash-has-key? conflicting_c++_prims (get-c-string item))
-                (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" (hash-ref conflicting_c++_prims (get-c-string item)) proc_name 0)
-                (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" proc_name proc_name 0))
-            ))
+         ; we don't need this anymore, right!
+         ;  (when (eq? (get-c-string item) proc_name)
+         ;    (append-line
+         ;     filepath
+         ;     (if (hash-has-key? conflicting_c++_prims (get-c-string item))
+         ;         (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" (hash-ref conflicting_c++_prims (get-c-string item)) proc_name 0)
+         ;         (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" proc_name proc_name 0))
+         ;     ))
 
          (if (hash-has-key? conflicting_c++_prims (get-c-string item))
              (append-line filepath (format "~a[~a] = ~a;" cloName i (hash-ref conflicting_c++_prims (get-c-string item))))
@@ -130,7 +189,7 @@
 
       [`(let ([,lhs (env-ref ,env ,idx)]) ,letbody)
        ; (append-line filepath (format "void* ~a = (decode_clo(~a))[~a];" (get-c-string lhs) env idx))
-       (append-line filepath (format "void* ~a = decode_clo_array[~a];" (get-c-string lhs) idx))
+       (append-line filepath (format "void* const ~a = decode_clo_array[~a];" (get-c-string lhs) idx))
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
@@ -142,15 +201,10 @@
 
           (cond
             [(equal? type 'float)
-             (append-line filepath (format "void* ~a = reinterpret_cast<void*>(encode_float(~a));" lhs varname))]
+             (append-line filepath (format "void* const ~a = reinterpret_cast<void*>(encode_float(~a));" (get-c-string lhs) varname))]
             [(equal? type 'mpf)
-             (append-line filepath (format "void* ~a = encode_mpf(~a);" lhs varname))]
+             (append-line filepath (format "void* const ~a = encode_mpf(~a);" (get-c-string lhs) varname))]
             [else (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])
-
-
-          ; (if (hash-has-key? find-global-constants val)
-          ;     (append-line filepath (format "void* ~a = encode_mpf(~a);" lhs (cadr (hash-ref find-global-constants val))))
-          ;     (error "Couldn't find the global constant definition in the map!"))
 
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
@@ -160,14 +214,10 @@
 
           (cond
             [(equal? type 'int)
-             (append-line filepath (format "void* ~a = reinterpret_cast<void*>(encode_int(~a));" lhs varname))]
+             (append-line filepath (format "void* const ~a = reinterpret_cast<void*>(encode_int(~a));" lhs varname))]
             [(equal? type 'mpz)
-             (append-line filepath (format "void* ~a = encode_mpz(~a);" lhs varname))]
+             (append-line filepath (format "void* const ~a = encode_mpz(~a);" (get-c-string lhs) varname))]
             [else (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])
-
-          ; (if (hash-has-key? find-global-constants val)
-          ;     (append-line filepath (format "void* ~a = encode_mpz(~a);" lhs (cadr (hash-ref find-global-constants val))))
-          ;     (error "Couldn't find the global constant definition in the map!"))
 
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
@@ -379,7 +429,7 @@
        (append-line filepath func_name)
 
        ;  uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -387,11 +437,11 @@
        ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
        (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
        (append-line filepath "//reading env")
-       (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
+       (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
 
        (append-line filepath "//reading env and args")
        (for ([i (in-range 2 (+ (length args) 2))] [item args])
-         (append-line filepath (format "void* ~a = arg_buffer[~a];" (get-c-string item) i)))
+         (append-line filepath (format "void* const ~a = arg_buffer[~a];" (get-c-string item) i)))
 
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
@@ -402,17 +452,18 @@
 
        (append-line filepath "}\n")
 
-       (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
-           (append-line filepath
-                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
-                                (hash-ref conflicting_c++_prims (get-c-string ptr))
-                                (get-c-string ptr)
-                                0))
-           (append-line filepath
-                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
-                                (get-c-string ptr)
-                                (get-c-string ptr)
-                                0)))]
+       ;  (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
+       ;      (append-line filepath
+       ;                   (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+       ;                           (hash-ref conflicting_c++_prims (get-c-string ptr))
+       ;                           (get-c-string ptr)
+       ;                           0))
+       ;      (append-line filepath
+       ;                   (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+       ;                           (get-c-string ptr)
+       ;                           (get-c-string ptr)
+       ;                           0)))
+       ]
 
       [`(proc (,ptr ,env . ,arg) ,body)
        (define func_name (format "void ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
@@ -421,7 +472,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -431,7 +482,7 @@
        (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
 
        (append-line filepath "//reading env")
-       (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
+       (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
 
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
@@ -456,16 +507,17 @@
        (convert-proc-body (get-c-string ptr) (get-c-string env) arg body)
        (append-line filepath "}\n")
 
-       (append-line filepath
-                    (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
-                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
-                                (hash-ref conflicting_c++_prims (get-c-string ptr))
-                                (get-c-string ptr)
-                                0)
-                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
-                                (get-c-string ptr)
-                                (get-c-string ptr)
-                                0)))]
+       ;  (append-line filepath
+       ;               (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
+       ;                   (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+       ;                           (hash-ref conflicting_c++_prims (get-c-string ptr))
+       ;                           (get-c-string ptr)
+       ;                           0)
+       ;                   (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+       ;                           (get-c-string ptr)
+       ;                           (get-c-string ptr)
+       ;                           0)))
+       ]
 
       [`(define-prim ,ptr ,args ...)
        (define k (gensym 'kont))
@@ -486,7 +538,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -496,7 +548,7 @@
        (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
 
        (append-line filepath "//reading env")
-       (append-line filepath (format "void* ~a = arg_buffer[1];" (get-c-string env)))
+       (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
 
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
@@ -505,10 +557,10 @@
 
        (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
        (append-line filepath "//(apply e0 e0) case")
-       (append-line filepath (format "void* ~a = arg_buffer[2];" arg))
-       (append-line filepath (format "void* ~a = prim_car(lst);" k))
-       (append-line filepath (format "void* ~a = prim_cdr(lst);" newarg))
-       (append-line filepath (format "void* ~a = apply_prim_~a(~a);" x (get-c-string ptr) newarg))
+       (append-line filepath (format "void* const ~a = arg_buffer[2];" arg))
+       (append-line filepath (format "void* const ~a = prim_car(lst);" k))
+       (append-line filepath (format "void* const ~a = prim_cdr(lst);" newarg))
+       (append-line filepath (format "void* const ~a = apply_prim_~a(~a);" x (get-c-string ptr) newarg))
 
        (append-line filepath (format "arg_buffer[1] = ~a;" k))
        (append-line filepath (format "arg_buffer[2] = ~a;" x))
@@ -525,8 +577,8 @@
 
        (append-line filepath "}\nelse\n{")
 
-       (append-line filepath (format "void* ~a = arg_buffer[2];" k))
-       (append-line filepath (format "void* ~a = apply_prim_~a(arg_buffer);" x (get-c-string ptr)))
+       (append-line filepath (format "void* const ~a = arg_buffer[2];" k))
+       (append-line filepath (format "void* const ~a = apply_prim_~a(arg_buffer);" x (get-c-string ptr)))
 
        (append-line filepath (format "arg_buffer[1] = ~a;" k))
        (append-line filepath (format "arg_buffer[2] = ~a;" x))
@@ -546,16 +598,17 @@
        (append-line filepath "}\n")
 
 
-       (append-line filepath
-                    (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
-                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
-                                (hash-ref conflicting_c++_prims (get-c-string ptr))
-                                (get-c-string ptr)
-                                0)
-                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
-                                (get-c-string ptr)
-                                (get-c-string ptr)
-                                0)))]
+       ;  (append-line filepath
+       ;               (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
+       ;                   (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+       ;                           (hash-ref conflicting_c++_prims (get-c-string ptr))
+       ;                           (get-c-string ptr)
+       ;                           0)
+       ;                   (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+       ;                           (get-c-string ptr)
+       ;                           (get-c-string ptr)
+       ;                           0)))
+       ]
       ) ;end of match
     ;end of function definitions.
     )
@@ -580,14 +633,14 @@
             (lambda (key type)
               (cond
                 [(equal? (car type) 'mpz)
-                 (append-line filepath (format "mpz_init_set_si(*~a, ~a);" (cadr type) key))]
+                 (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" (cadr type) key))]
                 [(equal? (car type) 'mpf)
-                 (append-line filepath (format "mpf_init_set_d(*~a, ~a);" (cadr type) key))]
+                 (append-line filepath (format "mpf_init_set_str(*~a, \"~a\", 10);" (cadr type) key))]
                 [(equal? (car type) 'int)
                  (append-line filepath (format "~a = ~a;" (cadr type) key))]
                 [(equal? (car type) 'float)
                  (append-line filepath (format "~a = ~a;" (cadr type) key))]
-                [else (error "Error occured find-global-constants!")]
+                [else (error "Error occured could not find value in -> find-global-constants!")]
                 )
               ))
 
