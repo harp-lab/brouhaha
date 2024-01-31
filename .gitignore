@@ -41,4 +41,4 @@ uncook.rkt
 benchmark.c
 a.out
 dependencies/
-.cache/
+.cache/clangd/index/
