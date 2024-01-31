@@ -41,3 +41,4 @@ uncook.rkt
 benchmark.c
 a.out
 dependencies/
+.cache/
