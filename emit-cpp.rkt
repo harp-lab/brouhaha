@@ -295,7 +295,7 @@
           ; (append-line filepath "// resetting the closure array")
           ; (append-line filepath "decode_clo_array = nullptr;")
 
-          (append-line filepath "// call next proc using a function pointer")
+          (append-line filepath "\n// calling next procedure using a function pointer")
           (append-line filepath "function_ptr();")
           ; (append-line filepath "return nullptr;")
           ]
@@ -333,6 +333,7 @@
           (append-line filepath "// resetting the closure array")
           (append-line filepath "decode_clo_array = nullptr;")
 
+          (append-line filepath "\n// calling next procedure using a function pointer")
           (append-line filepath "function_ptr();")
           ; (append-line filepath "return nullptr;")
           ]
@@ -386,6 +387,7 @@
               (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                       (get-c-string (car args))))
 
+             (append-line filepath "\n// calling next procedure using a function pointer")
              (append-line filepath "function_ptr();")]
             [is_define_prim
              (append-line filepath "\n//clo-app")
@@ -413,7 +415,7 @@
               (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                       (get-c-string func)))
 
-             (append-line filepath "//call next proc using a function pointer")
+             (append-line filepath "\n// calling next procedure using a function pointer")
              (append-line filepath "function_ptr();")
              ])
 
@@ -477,7 +479,6 @@
        ;  (append-line filepath "call_counter++;")
 
        (append-line filepath "//reading number of args")
-       (append-line filepath "// This is the second type of the functions")
        ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
        (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
 
@@ -571,7 +572,7 @@
         (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                 k))
 
-       (append-line filepath "//call next proc using a function pointer")
+       (append-line filepath "\n// calling next procedure using a function pointer")
        (append-line filepath "function_ptr();")
 
 
@@ -589,7 +590,7 @@
         (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                 k))
 
-       (append-line filepath "//call next proc using a function pointer")
+       (append-line filepath "\n// calling next procedure using a function pointer")
        (append-line filepath "function_ptr();")
 
        (append-line filepath "}\n")
@@ -655,6 +656,7 @@
   (append-line filepath "arg_buffer[0] = 0;")
   (append-line filepath "arg_buffer[2] = fhalt_clo;")
 
+  (append-line filepath "\n// calling next procedure using a function pointer")
   (append-line filepath "function_ptr();")
 
   ; (append-line filepath "arg_buffer.clear();")

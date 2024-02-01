@@ -100,8 +100,7 @@ int main(int argc, char **argv) {
 
   // making a call to the brouhaha main function to kick off our C++ emission.
   void *fhalt_clo = encode_clo(alloc_clo(fhalt, 0));
-  auto function_ptr =
-      reinterpret_cast<void (*)()>((decode_clo(brouhaha_main))[0]);
+  auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(brouhaha_main))[0]);
   arg_buffer[0] = 0;
   arg_buffer[2] = fhalt_clo;
   function_ptr();

@@ -216,6 +216,7 @@ const hamt<hash_struct, hash_struct> *decode_hash(void *val) {
 
 // Closure Allocation, alloc_clo
 inline void **alloc_clo(void (*fptr)(), int num) {
+  call_counter++;
   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
   obj[0] = 0;
   // obj[1] = 0;
@@ -1110,9 +1111,34 @@ inline void *apply_prim__u43_1(void *arg1) //+
 
 inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
 {
-  bool is_mpf = false;
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
+
+  if (arg1_tag == INT) {
+    if (arg2_tag == INT) {
+      const s64 a1 = decode_int(arg1);
+      const s64 a2 = decode_int(arg2);
+
+      const s64 res = a1 + a2;
+      const s32 res32 = static_cast<s32>(res);
+      if (res32 == res) {
+        // no overflow
+        return reinterpret_cast<void *>(encode_int(res32));
+      } else {
+        // overflow occurred, promoting to mpz
+
+        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+
+        mpz_init(*result);
+
+        mpz_set_ui(*result, res);
+
+        return encode_mpz(result);
+      }
+    } else if (arg2_tag == MPZ) {
+      /// ....
+    }
+  }
 
   // std::cout << "no overflow: " << arg1_tag << std::endl;
   // std::cout << "no overflow: " << arg2_tag << std::endl;
@@ -1324,14 +1350,39 @@ void *apply_prim__u45_1(void *arg1) //-
   return nullptr;
 }
 
-inline void *apply_prim__u45_2(void *arg1, void *arg2) //+
+inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
 {
-  bool is_mpf = false;
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
 
   // std::cout << "no overflow: " << arg1_tag << std::endl;
   // std::cout << "no overflow: " << arg2_tag << std::endl;
+
+  if (arg1_tag == INT) {
+    if (arg2_tag == INT) {
+      const s64 a1 = decode_int(arg1);
+      const s64 a2 = decode_int(arg2);
+
+      const s64 res = a1 - a2;
+      const s32 res32 = static_cast<s32>(res);
+      if (res32 == res) {
+        // no overflow
+        return reinterpret_cast<void *>(encode_int(res32));
+      } else {
+        // overflow occurred, promoting to mpz
+
+        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+
+        mpz_init(*result);
+
+        mpz_set_ui(*result, res);
+
+        return encode_mpz(result);
+      }
+    } else if (arg2_tag == MPZ) {
+      /// ....
+    }
+  }
 
   if (((arg1_tag == INT) || (arg1_tag == FLOAT) || (arg1_tag == MPZ) ||
        (arg1_tag == MPF)) &&
@@ -2231,22 +2282,20 @@ inline void *apply_prim__u61_2(void *arg1, void *arg2) // =
       else
         return encode_bool(false);
     } else if (arg1_tag == MPZ) {
-      
       cmp_res = mpz_cmp(*(decode_mpz(arg1)), *(decode_mpz(arg2)));
       if (equal_zero(cmp_res))
         return encode_bool(true);
       else
         return encode_bool(false);
-    }
-    else if (arg1_tag == MPF) {
-      
+    } else if (arg1_tag == MPF) {
+
       cmp_res = mpf_cmp(*(decode_mpf(arg1)), *(decode_mpf(arg2)));
       if (equal_zero(cmp_res))
         return encode_bool(true);
       else
         return encode_bool(false);
     }
-  }else{
+  } else {
     // will write later
   }
   // mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
@@ -4051,8 +4100,8 @@ void *halt;
 // void *arg_buffer[999]; // This is where the arg buffer is called
 // long numArgs;
 // unsigned long long call_counter = 0;
-unsigned long long car_counter = 0;
-unsigned long long cdr_counter = 0;
+// unsigned long long car_counter = 0;
+// unsigned long long cdr_counter = 0;
 // unsigned long long cons_counter = 0;
 // unsigned long long plus_counter = 0;
 // unsigned long long minus_counter = 0;
@@ -4060,7 +4109,8 @@ unsigned long long cdr_counter = 0;
 void fhalt() {
   // std::cout << "In fhalt" << std::endl;
   std::cout << print_val(arg_buffer[2]) << std::endl;
-  // std::cout << "Total # calls made (excluding prelude): " << call_counter
+  std::cout << "Total # calls made (excluding prelude): " << call_counter
+            << std::endl;
   // std::cout << "Total # calls made (car): " << car_counter << std::endl;
   //  std::cout << "Total # calls made (cdr): " << cdr_counter <<std::endl;
   // std::endl; std::cout << "Total # calls made (cons): " << cons_counter <<
