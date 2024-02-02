@@ -11,160 +11,160 @@ int int9130;
 
 
 // declaring functions at the top
-void _u43_fptr(); // +
+inline void _u43_fptr(); // +
 void* _u43 = encode_clo(alloc_clo(_u43_fptr, 0));
 
-void _u45_fptr(); // -
+inline void _u45_fptr(); // -
 void* _u45 = encode_clo(alloc_clo(_u45_fptr, 0));
 
-void _u42_fptr(); // *
+inline void _u42_fptr(); // *
 void* _u42 = encode_clo(alloc_clo(_u42_fptr, 0));
 
-void _u47_fptr(); // /
+inline void _u47_fptr(); // /
 void* _u47 = encode_clo(alloc_clo(_u47_fptr, 0));
 
-void _u61_fptr(); // =
+inline void _u61_fptr(); // =
 void* _u61 = encode_clo(alloc_clo(_u61_fptr, 0));
 
-void _u62_fptr(); // >
+inline void _u62_fptr(); // >
 void* _u62 = encode_clo(alloc_clo(_u62_fptr, 0));
 
-void _u60_fptr(); // <
+inline void _u60_fptr(); // <
 void* _u60 = encode_clo(alloc_clo(_u60_fptr, 0));
 
-void _u60_u61_fptr(); // <=
+inline void _u60_u61_fptr(); // <=
 void* _u60_u61 = encode_clo(alloc_clo(_u60_u61_fptr, 0));
 
-void _u62_u61_fptr(); // >=
+inline void _u62_u61_fptr(); // >=
 void* _u62_u61 = encode_clo(alloc_clo(_u62_u61_fptr, 0));
 
-void modulo_fptr(); // modulo
+inline void modulo_fptr(); // modulo
 void* modulo = encode_clo(alloc_clo(modulo_fptr, 0));
 
-void null_u63_fptr(); // null?
+inline void null_u63_fptr(); // null?
 void* null_u63 = encode_clo(alloc_clo(null_u63_fptr, 0));
 
-void equal_u63_fptr(); // equal?
+inline void equal_u63_fptr(); // equal?
 void* equal_u63 = encode_clo(alloc_clo(equal_u63_fptr, 0));
 
-void eq_u63_fptr(); // eq?
+inline void eq_u63_fptr(); // eq?
 void* eq_u63 = encode_clo(alloc_clo(eq_u63_fptr, 0));
 
-void cons_fptr(); // cons
+inline void cons_fptr(); // cons
 void* cons = encode_clo(alloc_clo(cons_fptr, 0));
 
-void car_fptr(); // car
+inline void car_fptr(); // car
 void* car = encode_clo(alloc_clo(car_fptr, 0));
 
-void cdr_fptr(); // cdr
+inline void cdr_fptr(); // cdr
 void* cdr = encode_clo(alloc_clo(cdr_fptr, 0));
 
-void float_u45_u62int_fptr(); // float->int
+inline void float_u45_u62int_fptr(); // float->int
 void* float_u45_u62int = encode_clo(alloc_clo(float_u45_u62int_fptr, 0));
 
-void int_u45_u62float_fptr(); // int->float
+inline void int_u45_u62float_fptr(); // int->float
 void* int_u45_u62float = encode_clo(alloc_clo(int_u45_u62float_fptr, 0));
 
-void hash_fptr(); // hash
+inline void hash_fptr(); // hash
 void* hash = encode_clo(alloc_clo(hash_fptr, 0));
 
-void hash_u45ref_fptr(); // hash-ref
+inline void hash_u45ref_fptr(); // hash-ref
 void* hash_u45ref = encode_clo(alloc_clo(hash_u45ref_fptr, 0));
 
-void hash_u45set_fptr(); // hash-set
+inline void hash_u45set_fptr(); // hash-set
 void* hash_u45set = encode_clo(alloc_clo(hash_u45set_fptr, 0));
 
-void hash_u45keys_fptr(); // hash-keys
+inline void hash_u45keys_fptr(); // hash-keys
 void* hash_u45keys = encode_clo(alloc_clo(hash_u45keys_fptr, 0));
 
-void hash_u45has_u45key_u63_fptr(); // hash-has-key?
+inline void hash_u45has_u45key_u63_fptr(); // hash-has-key?
 void* hash_u45has_u45key_u63 = encode_clo(alloc_clo(hash_u45has_u45key_u63_fptr, 0));
 
-void hash_u45count_fptr(); // hash-count
+inline void hash_u45count_fptr(); // hash-count
 void* hash_u45count = encode_clo(alloc_clo(hash_u45count_fptr, 0));
 
-void set_fptr(); // set
+inline void set_fptr(); // set
 void* set = encode_clo(alloc_clo(set_fptr, 0));
 
-void set_u45_u62list_fptr(); // set->list
+inline void set_u45_u62list_fptr(); // set->list
 void* set_u45_u62list = encode_clo(alloc_clo(set_u45_u62list_fptr, 0));
 
-void list_u45_u62set_fptr(); // list->set
+inline void list_u45_u62set_fptr(); // list->set
 void* list_u45_u62set = encode_clo(alloc_clo(list_u45_u62set_fptr, 0));
 
-void set_u45add_fptr(); // set-add
+inline void set_u45add_fptr(); // set-add
 void* set_u45add = encode_clo(alloc_clo(set_u45add_fptr, 0));
 
-void set_u45member_u63_fptr(); // set-member?
+inline void set_u45member_u63_fptr(); // set-member?
 void* set_u45member_u63 = encode_clo(alloc_clo(set_u45member_u63_fptr, 0));
 
-void set_u45remove_fptr(); // set-remove
+inline void set_u45remove_fptr(); // set-remove
 void* set_u45remove = encode_clo(alloc_clo(set_u45remove_fptr, 0));
 
-void set_u45count_fptr(); // set-count
+inline void set_u45count_fptr(); // set-count
 void* set_u45count = encode_clo(alloc_clo(set_u45count_fptr, 0));
 
-void string_u63_fptr(); // string?
+inline void string_u63_fptr(); // string?
 void* string_u63 = encode_clo(alloc_clo(string_u63_fptr, 0));
 
-void string_u45length_fptr(); // string-length
+inline void string_u45length_fptr(); // string-length
 void* string_u45length = encode_clo(alloc_clo(string_u45length_fptr, 0));
 
-void string_u45ref_fptr(); // string-ref
+inline void string_u45ref_fptr(); // string-ref
 void* string_u45ref = encode_clo(alloc_clo(string_u45ref_fptr, 0));
 
-void substring_fptr(); // substring
+inline void substring_fptr(); // substring
 void* substring = encode_clo(alloc_clo(substring_fptr, 0));
 
-void string_u45append_fptr(); // string-append
+inline void string_u45append_fptr(); // string-append
 void* string_u45append = encode_clo(alloc_clo(string_u45append_fptr, 0));
 
-void string_u45_u62list_fptr(); // string->list
+inline void string_u45_u62list_fptr(); // string->list
 void* string_u45_u62list = encode_clo(alloc_clo(string_u45_u62list_fptr, 0));
 
-void exact_u45floor_fptr(); // exact-floor
+inline void exact_u45floor_fptr(); // exact-floor
 void* exact_u45floor = encode_clo(alloc_clo(exact_u45floor_fptr, 0));
 
-void exact_u45ceiling_fptr(); // exact-ceiling
+inline void exact_u45ceiling_fptr(); // exact-ceiling
 void* exact_u45ceiling = encode_clo(alloc_clo(exact_u45ceiling_fptr, 0));
 
-void exact_u45round_fptr(); // exact-round
+inline void exact_u45round_fptr(); // exact-round
 void* exact_u45round = encode_clo(alloc_clo(exact_u45round_fptr, 0));
 
-void abs_fptr(); // abs
+inline void abs_fptr(); // abs
 void* abs_brouhaha = encode_clo(alloc_clo(abs_fptr, 0));
 
-void max_fptr(); // max
+inline void max_fptr(); // max
 void* max = encode_clo(alloc_clo(max_fptr, 0));
 
-void min_fptr(); // min
+inline void min_fptr(); // min
 void* min = encode_clo(alloc_clo(min_fptr, 0));
 
-void expt_fptr(); // expt
+inline void expt_fptr(); // expt
 void* expt = encode_clo(alloc_clo(expt_fptr, 0));
 
-void sqrt_fptr(); // sqrt
+inline void sqrt_fptr(); // sqrt
 void* sqrt_brouhaha = encode_clo(alloc_clo(sqrt_fptr, 0));
 
-void remainder_fptr(); // remainder
+inline void remainder_fptr(); // remainder
 void* remainder_brouhaha = encode_clo(alloc_clo(remainder_fptr, 0));
 
-void quotient_fptr(); // quotient
+inline void quotient_fptr(); // quotient
 void* quotient = encode_clo(alloc_clo(quotient_fptr, 0));
 
-void random_fptr(); // random
+inline void random_fptr(); // random
 void* random_brouhaha = encode_clo(alloc_clo(random_fptr, 0));
 
-void symbol_u63_fptr(); // symbol?
+inline void symbol_u63_fptr(); // symbol?
 void* symbol_u63 = encode_clo(alloc_clo(symbol_u63_fptr, 0));
 
-void pair_u63_fptr(); // pair?
+inline void pair_u63_fptr(); // pair?
 void* pair_u63 = encode_clo(alloc_clo(pair_u63_fptr, 0));
 
-void positive_u63_fptr(); // positive?
+inline void positive_u63_fptr(); // positive?
 void* positive_u63 = encode_clo(alloc_clo(positive_u63_fptr, 0));
 
-void negative_u63_fptr(); // negative?
+inline void negative_u63_fptr(); // negative?
 void* negative_u63 = encode_clo(alloc_clo(negative_u63_fptr, 0));
 
 void list_fptr(); // list
@@ -2577,6 +2577,7 @@ function_ptr();
 
 void lam8915_fptr() // lam8915 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -2600,6 +2601,7 @@ function_ptr();
 
 void lam8917_fptr() // lam8917 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -2623,6 +2625,7 @@ function_ptr();
 
 void lam8919_fptr() // lam8919 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -2649,6 +2652,7 @@ function_ptr();
 
 void lam8921_fptr() // lam8921 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -2703,6 +2707,7 @@ function_ptr();
 
 void lam8923_fptr() // lam8923 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -2739,6 +2744,7 @@ function_ptr();
 
 void lam8925_fptr() // lam8925 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -2756,7 +2762,7 @@ void* const kont8800 = decode_clo_array[1];
 bool if_guard9342 = is_true(a8695);
 if(if_guard9342)
 {
-void* xy8696 = encode_bool(false);
+void* xy8696 = reinterpret_cast<void *>(FALSE_VALUE);
 
 //clo-app
 arg_buffer[1] = kont8800;
@@ -2795,6 +2801,7 @@ function_ptr();
 
 void lam8927_fptr() // lam8927 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -2868,6 +2875,7 @@ function_ptr();
 
 void member_fptr() // member 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -2902,6 +2910,7 @@ function_ptr();
 
 void lam8930_fptr() // lam8930 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -2928,6 +2937,7 @@ function_ptr();
 
 void lam8932_fptr() // lam8932 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -2937,15 +2947,15 @@ void* const a8703 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8933);
-void* const lst = decode_clo_array[3];
-void* const kont8808 = decode_clo_array[2];
-void* const x = decode_clo_array[1];
+void* const x = decode_clo_array[3];
+void* const lst = decode_clo_array[2];
+void* const kont8808 = decode_clo_array[1];
 
 //if-clause
 bool if_guard9349 = is_true(a8703);
 if(if_guard9349)
 {
-void* xy8704 = encode_bool(true);
+void* xy8704 = reinterpret_cast<void *>(TRUE_VALUE);
 
 //clo-app
 arg_buffer[1] = kont8808;
@@ -2983,6 +2993,7 @@ function_ptr();
 
 void lam8934_fptr() // lam8934 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -2992,17 +3003,17 @@ void* const a8702 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8935);
-void* const lst = decode_clo_array[3];
-void* const kont8808 = decode_clo_array[2];
-void* const x = decode_clo_array[1];
+void* const x = decode_clo_array[3];
+void* const lst = decode_clo_array[2];
+void* const kont8808 = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9351 = alloc_clo(lam8932_fptr, 3);
 
 //setting env list
-clo9351[1] = x;
-clo9351[2] = kont8808;
-clo9351[3] = lst;
+clo9351[1] = kont8808;
+clo9351[2] = lst;
+clo9351[3] = x;
 void* f8810 = encode_clo(clo9351);
 
 
@@ -3019,6 +3030,7 @@ function_ptr();
 
 void lam8936_fptr() // lam8936 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3028,15 +3040,15 @@ void* const a8700 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8937);
-void* const lst = decode_clo_array[3];
-void* const kont8808 = decode_clo_array[2];
-void* const x = decode_clo_array[1];
+void* const x = decode_clo_array[3];
+void* const lst = decode_clo_array[2];
+void* const kont8808 = decode_clo_array[1];
 
 //if-clause
 bool if_guard9352 = is_true(a8700);
 if(if_guard9352)
 {
-void* xy8701 = encode_bool(false);
+void* xy8701 = reinterpret_cast<void *>(FALSE_VALUE);
 
 //clo-app
 arg_buffer[1] = kont8808;
@@ -3054,9 +3066,9 @@ else
 void** clo9353 = alloc_clo(lam8934_fptr, 3);
 
 //setting env list
-clo9353[1] = x;
-clo9353[2] = kont8808;
-clo9353[3] = lst;
+clo9353[1] = kont8808;
+clo9353[2] = lst;
+clo9353[3] = x;
 void* f8811 = encode_clo(clo9353);
 
 
@@ -3075,6 +3087,7 @@ function_ptr();
 
 void member_u63_fptr() // member? 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3090,9 +3103,9 @@ void** decode_clo_array = nullptr;
 void** clo9354 = alloc_clo(lam8936_fptr, 3);
 
 //setting env list
-clo9354[1] = x;
-clo9354[2] = kont8808;
-clo9354[3] = lst;
+clo9354[1] = kont8808;
+clo9354[2] = lst;
+clo9354[3] = x;
 void* f8812 = encode_clo(clo9354);
 
 
@@ -3109,6 +3122,7 @@ function_ptr();
 
 void lam8939_fptr() // lam8939 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3132,6 +3146,7 @@ function_ptr();
 
 void lam8941_fptr() // lam8941 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3156,6 +3171,7 @@ function_ptr();
 
 void lam8943_fptr() // lam8943 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3166,8 +3182,8 @@ void* const a8710 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8944);
 void* const a8709 = decode_clo_array[3];
-void* const proc = decode_clo_array[2];
-void* const kont8813 = decode_clo_array[1];
+void* const kont8813 = decode_clo_array[2];
+void* const proc = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9355 = alloc_clo(lam8941_fptr, 2);
@@ -3193,6 +3209,7 @@ function_ptr();
 
 void lam8945_fptr() // lam8945 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3203,15 +3220,15 @@ void* const a8709 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8946);
 void* const lst = decode_clo_array[3];
-void* const proc = decode_clo_array[2];
-void* const kont8813 = decode_clo_array[1];
+void* const kont8813 = decode_clo_array[2];
+void* const proc = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9356 = alloc_clo(lam8943_fptr, 3);
 
 //setting env list
-clo9356[1] = kont8813;
-clo9356[2] = proc;
+clo9356[1] = proc;
+clo9356[2] = kont8813;
 clo9356[3] = a8709;
 void* f8816 = encode_clo(clo9356);
 
@@ -3229,6 +3246,7 @@ function_ptr();
 
 void lam8947_fptr() // lam8947 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3239,15 +3257,15 @@ void* const a8708 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8948);
 void* const lst = decode_clo_array[3];
-void* const proc = decode_clo_array[2];
-void* const kont8813 = decode_clo_array[1];
+void* const kont8813 = decode_clo_array[2];
+void* const proc = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9357 = alloc_clo(lam8945_fptr, 3);
 
 //setting env list
-clo9357[1] = kont8813;
-clo9357[2] = proc;
+clo9357[1] = proc;
+clo9357[2] = kont8813;
 clo9357[3] = lst;
 void* f8817 = encode_clo(clo9357);
 
@@ -3266,6 +3284,7 @@ function_ptr();
 
 void lam8949_fptr() // lam8949 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3276,8 +3295,8 @@ void* const a8706 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8950);
 void* const lst = decode_clo_array[3];
-void* const proc = decode_clo_array[2];
-void* const kont8813 = decode_clo_array[1];
+void* const kont8813 = decode_clo_array[2];
+void* const proc = decode_clo_array[1];
 
 //if-clause
 bool if_guard9358 = is_true(a8706);
@@ -3309,8 +3328,8 @@ else
 void** clo9360 = alloc_clo(lam8947_fptr, 3);
 
 //setting env list
-clo9360[1] = kont8813;
-clo9360[2] = proc;
+clo9360[1] = proc;
+clo9360[2] = kont8813;
 clo9360[3] = lst;
 void* f8818 = encode_clo(clo9360);
 
@@ -3330,6 +3349,7 @@ function_ptr();
 
 void map_fptr() // map 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3345,8 +3365,8 @@ void** decode_clo_array = nullptr;
 void** clo9361 = alloc_clo(lam8949_fptr, 3);
 
 //setting env list
-clo9361[1] = kont8813;
-clo9361[2] = proc;
+clo9361[1] = proc;
+clo9361[2] = kont8813;
 clo9361[3] = lst;
 void* f8819 = encode_clo(clo9361);
 
@@ -3364,6 +3384,7 @@ function_ptr();
 
 void lam8952_fptr() // lam8952 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3387,6 +3408,7 @@ function_ptr();
 
 void lam8954_fptr() // lam8954 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3411,6 +3433,7 @@ function_ptr();
 
 void lam8956_fptr() // lam8956 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3448,6 +3471,7 @@ function_ptr();
 
 void lam8958_fptr() // lam8958 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3484,6 +3508,7 @@ function_ptr();
 
 void lam8960_fptr() // lam8960 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3510,6 +3535,7 @@ function_ptr();
 
 void lam8962_fptr() // lam8962 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3575,6 +3601,7 @@ function_ptr();
 
 void lam8964_fptr() // lam8964 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3612,6 +3639,7 @@ function_ptr();
 
 void lam8966_fptr() // lam8966 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3676,6 +3704,7 @@ function_ptr();
 
 void filter_fptr() // filter 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3710,6 +3739,7 @@ function_ptr();
 
 void lam8969_fptr() // lam8969 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3719,9 +3749,9 @@ void* const a8723 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8970);
-void* const a8722 = decode_clo_array[3];
+void* const kont8829 = decode_clo_array[3];
 void* const fun = decode_clo_array[2];
-void* const kont8829 = decode_clo_array[1];
+void* const a8722 = decode_clo_array[1];
 
 //clo-app
 arg_buffer[1] = foldl;
@@ -3738,6 +3768,7 @@ function_ptr();
 
 void lam8971_fptr() // lam8971 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3748,16 +3779,16 @@ void* const a8722 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8972);
 void* const lst = decode_clo_array[3];
-void* const fun = decode_clo_array[2];
-void* const kont8829 = decode_clo_array[1];
+void* const kont8829 = decode_clo_array[2];
+void* const fun = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9372 = alloc_clo(lam8969_fptr, 3);
 
 //setting env list
-clo9372[1] = kont8829;
+clo9372[1] = a8722;
 clo9372[2] = fun;
-clo9372[3] = a8722;
+clo9372[3] = kont8829;
 void* f8830 = encode_clo(clo9372);
 
 
@@ -3774,6 +3805,7 @@ function_ptr();
 
 void lam8973_fptr() // lam8973 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3784,16 +3816,16 @@ void* const a8721 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8974);
 void* const lst = decode_clo_array[4];
-void* const fun = decode_clo_array[3];
-void* const acc = decode_clo_array[2];
-void* const kont8829 = decode_clo_array[1];
+void* const kont8829 = decode_clo_array[3];
+void* const fun = decode_clo_array[2];
+void* const acc = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9373 = alloc_clo(lam8971_fptr, 3);
 
 //setting env list
-clo9373[1] = kont8829;
-clo9373[2] = fun;
+clo9373[1] = fun;
+clo9373[2] = kont8829;
 clo9373[3] = lst;
 void* f8831 = encode_clo(clo9373);
 
@@ -3813,6 +3845,7 @@ function_ptr();
 
 void lam8975_fptr() // lam8975 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3823,9 +3856,9 @@ void* const a8720 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8976);
 void* const lst = decode_clo_array[4];
-void* const fun = decode_clo_array[3];
-void* const acc = decode_clo_array[2];
-void* const kont8829 = decode_clo_array[1];
+void* const kont8829 = decode_clo_array[3];
+void* const fun = decode_clo_array[2];
+void* const acc = decode_clo_array[1];
 
 //if-clause
 bool if_guard9374 = is_true(a8720);
@@ -3848,9 +3881,9 @@ else
 void** clo9375 = alloc_clo(lam8973_fptr, 4);
 
 //setting env list
-clo9375[1] = kont8829;
-clo9375[2] = acc;
-clo9375[3] = fun;
+clo9375[1] = acc;
+clo9375[2] = fun;
+clo9375[3] = kont8829;
 clo9375[4] = lst;
 void* f8832 = encode_clo(clo9375);
 
@@ -3870,6 +3903,7 @@ function_ptr();
 
 void foldl_fptr() // foldl 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3886,9 +3920,9 @@ void** decode_clo_array = nullptr;
 void** clo9376 = alloc_clo(lam8975_fptr, 4);
 
 //setting env list
-clo9376[1] = kont8829;
-clo9376[2] = acc;
-clo9376[3] = fun;
+clo9376[1] = acc;
+clo9376[2] = fun;
+clo9376[3] = kont8829;
 clo9376[4] = lst;
 void* f8833 = encode_clo(clo9376);
 
@@ -3906,6 +3940,7 @@ function_ptr();
 
 void lam8978_fptr() // lam8978 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3915,9 +3950,9 @@ void* const a8727 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8979);
-void* const kont8834 = decode_clo_array[3];
-void* const a8725 = decode_clo_array[2];
-void* const fun = decode_clo_array[1];
+void* const a8725 = decode_clo_array[3];
+void* const fun = decode_clo_array[2];
+void* const kont8834 = decode_clo_array[1];
 
 //clo-app
 arg_buffer[1] = fun;
@@ -3933,6 +3968,7 @@ function_ptr();
 
 void lam8980_fptr() // lam8980 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3942,18 +3978,18 @@ void* const a8726 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8981);
-void* const kont8834 = decode_clo_array[4];
-void* const a8725 = decode_clo_array[3];
-void* const fun = decode_clo_array[2];
-void* const acc = decode_clo_array[1];
+void* const a8725 = decode_clo_array[4];
+void* const fun = decode_clo_array[3];
+void* const acc = decode_clo_array[2];
+void* const kont8834 = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9377 = alloc_clo(lam8978_fptr, 3);
 
 //setting env list
-clo9377[1] = fun;
-clo9377[2] = a8725;
-clo9377[3] = kont8834;
+clo9377[1] = kont8834;
+clo9377[2] = fun;
+clo9377[3] = a8725;
 void* f8835 = encode_clo(clo9377);
 
 
@@ -3973,6 +4009,7 @@ function_ptr();
 
 void lam8982_fptr() // lam8982 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -3982,19 +4019,19 @@ void* const a8725 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8983);
-void* const kont8834 = decode_clo_array[4];
-void* const lst = decode_clo_array[3];
-void* const fun = decode_clo_array[2];
-void* const acc = decode_clo_array[1];
+void* const lst = decode_clo_array[4];
+void* const fun = decode_clo_array[3];
+void* const acc = decode_clo_array[2];
+void* const kont8834 = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9378 = alloc_clo(lam8980_fptr, 4);
 
 //setting env list
-clo9378[1] = acc;
-clo9378[2] = fun;
-clo9378[3] = a8725;
-clo9378[4] = kont8834;
+clo9378[1] = kont8834;
+clo9378[2] = acc;
+clo9378[3] = fun;
+clo9378[4] = a8725;
 void* f8836 = encode_clo(clo9378);
 
 
@@ -4011,6 +4048,7 @@ function_ptr();
 
 void lam8984_fptr() // lam8984 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4020,10 +4058,10 @@ void* const a8724 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8985);
-void* const kont8834 = decode_clo_array[4];
-void* const lst = decode_clo_array[3];
-void* const fun = decode_clo_array[2];
-void* const acc = decode_clo_array[1];
+void* const lst = decode_clo_array[4];
+void* const fun = decode_clo_array[3];
+void* const acc = decode_clo_array[2];
+void* const kont8834 = decode_clo_array[1];
 
 //if-clause
 bool if_guard9379 = is_true(a8724);
@@ -4046,10 +4084,10 @@ else
 void** clo9380 = alloc_clo(lam8982_fptr, 4);
 
 //setting env list
-clo9380[1] = acc;
-clo9380[2] = fun;
-clo9380[3] = lst;
-clo9380[4] = kont8834;
+clo9380[1] = kont8834;
+clo9380[2] = acc;
+clo9380[3] = fun;
+clo9380[4] = lst;
 void* f8837 = encode_clo(clo9380);
 
 
@@ -4068,6 +4106,7 @@ function_ptr();
 
 void foldr_fptr() // foldr 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4084,10 +4123,10 @@ void** decode_clo_array = nullptr;
 void** clo9381 = alloc_clo(lam8984_fptr, 4);
 
 //setting env list
-clo9381[1] = acc;
-clo9381[2] = fun;
-clo9381[3] = lst;
-clo9381[4] = kont8834;
+clo9381[1] = kont8834;
+clo9381[2] = acc;
+clo9381[3] = fun;
+clo9381[4] = lst;
 void* f8838 = encode_clo(clo9381);
 
 
@@ -4104,6 +4143,7 @@ function_ptr();
 
 void lam8987_fptr() // lam8987 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4130,6 +4170,7 @@ function_ptr();
 
 void lam8989_fptr() // lam8989 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4165,6 +4206,7 @@ function_ptr();
 
 void lam8991_fptr() // lam8991 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4174,8 +4216,8 @@ void* const a8729 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8992);
-void* const lst = decode_clo_array[3];
-void* const kont8839 = decode_clo_array[2];
+void* const kont8839 = decode_clo_array[3];
+void* const lst = decode_clo_array[2];
 void* const lst2 = decode_clo_array[1];
 
 //creating new closure instance
@@ -4201,6 +4243,7 @@ function_ptr();
 
 void lam8993_fptr() // lam8993 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4210,8 +4253,8 @@ void* const a8728 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8994);
-void* const lst = decode_clo_array[3];
-void* const kont8839 = decode_clo_array[2];
+void* const kont8839 = decode_clo_array[3];
+void* const lst = decode_clo_array[2];
 void* const lst2 = decode_clo_array[1];
 
 //if-clause
@@ -4236,8 +4279,8 @@ void** clo9385 = alloc_clo(lam8991_fptr, 3);
 
 //setting env list
 clo9385[1] = lst2;
-clo9385[2] = kont8839;
-clo9385[3] = lst;
+clo9385[2] = lst;
+clo9385[3] = kont8839;
 void* f8842 = encode_clo(clo9385);
 
 
@@ -4256,6 +4299,7 @@ function_ptr();
 
 void reverse_u45helper_fptr() // reverse-helper 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4272,8 +4316,8 @@ void** clo9386 = alloc_clo(lam8993_fptr, 3);
 
 //setting env list
 clo9386[1] = lst2;
-clo9386[2] = kont8839;
-clo9386[3] = lst;
+clo9386[2] = lst;
+clo9386[3] = kont8839;
 void* f8843 = encode_clo(clo9386);
 
 
@@ -4290,6 +4334,7 @@ function_ptr();
 
 void lam8996_fptr() // lam8996 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4316,6 +4361,7 @@ function_ptr();
 
 void reverse_fptr() // reverse 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4348,6 +4394,7 @@ function_ptr();
 
 void lam8999_fptr() // lam8999 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4372,6 +4419,7 @@ function_ptr();
 
 void lam9001_fptr() // lam9001 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4409,6 +4457,7 @@ function_ptr();
 
 void lam9003_fptr() // lam9003 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4445,6 +4494,7 @@ function_ptr();
 
 void lam9005_fptr() // lam9005 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4500,6 +4550,7 @@ function_ptr();
 
 void append1_fptr() // append1 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4534,6 +4585,7 @@ function_ptr();
 
 void lam9008_fptr() // lam9008 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4543,8 +4595,8 @@ void* const a8739 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9009);
-void* const kont8851 = decode_clo_array[2];
-void* const a8737 = decode_clo_array[1];
+void* const a8737 = decode_clo_array[2];
+void* const kont8851 = decode_clo_array[1];
 
 //clo-app
 arg_buffer[1] = foldr;
@@ -4561,6 +4613,7 @@ function_ptr();
 
 void lam9010_fptr() // lam9010 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4570,16 +4623,16 @@ void* const a8738 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9011);
-void* const kont8851 = decode_clo_array[3];
-void* const x = decode_clo_array[2];
-void* const a8737 = decode_clo_array[1];
+void* const x = decode_clo_array[3];
+void* const a8737 = decode_clo_array[2];
+void* const kont8851 = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9393 = alloc_clo(lam9008_fptr, 2);
 
 //setting env list
-clo9393[1] = a8737;
-clo9393[2] = kont8851;
+clo9393[1] = kont8851;
+clo9393[2] = a8737;
 void* f8852 = encode_clo(clo9393);
 
 
@@ -4598,6 +4651,7 @@ function_ptr();
 
 void lam9012_fptr() // lam9012 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4607,17 +4661,17 @@ void* const a8737 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9013);
-void* const kont8851 = decode_clo_array[3];
-void* const x = decode_clo_array[2];
+void* const x = decode_clo_array[3];
+void* const kont8851 = decode_clo_array[2];
 void* const xs = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9394 = alloc_clo(lam9010_fptr, 3);
 
 //setting env list
-clo9394[1] = a8737;
-clo9394[2] = x;
-clo9394[3] = kont8851;
+clo9394[1] = kont8851;
+clo9394[2] = a8737;
+clo9394[3] = x;
 void* f8853 = encode_clo(clo9394);
 
 
@@ -4635,6 +4689,7 @@ function_ptr();
 
 void lam9014_fptr() // lam9014 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4652,8 +4707,8 @@ void** clo9395 = alloc_clo(lam9012_fptr, 3);
 
 //setting env list
 clo9395[1] = xs;
-clo9395[2] = x;
-clo9395[3] = kont8851;
+clo9395[2] = kont8851;
+clo9395[3] = x;
 void* f8854 = encode_clo(clo9395);
 
 
@@ -4670,6 +4725,7 @@ function_ptr();
 
 void lam9016_fptr() // lam9016 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4704,6 +4760,7 @@ function_ptr();
 
 void lam9018_fptr() // lam9018 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4713,8 +4770,8 @@ void* const xs = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9019);
-void* const kont8851 = decode_clo_array[2];
-void* const vargs8913 = decode_clo_array[1];
+void* const vargs8913 = decode_clo_array[2];
+void* const kont8851 = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9397 = alloc_clo(lam9016_fptr, 2);
@@ -4769,8 +4826,8 @@ void* vargs8913 = prim_cdr(vargs);
 void** clo9398 = alloc_clo(lam9018_fptr, 2);
 
 //setting env list
-clo9398[1] = vargs8913;
-clo9398[2] = kont8851;
+clo9398[1] = kont8851;
+clo9398[2] = vargs8913;
 void* f8857 = encode_clo(clo9398);
 
 
@@ -4787,6 +4844,7 @@ function_ptr();
 
 void lam9021_fptr() // lam9021 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4796,9 +4854,9 @@ void* const a8756 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9022);
-void* const a8755 = decode_clo_array[3];
-void* const kont8858 = decode_clo_array[2];
-void* const row = decode_clo_array[1];
+void* const kont8858 = decode_clo_array[3];
+void* const row = decode_clo_array[2];
+void* const a8755 = decode_clo_array[1];
 
 //clo-app
 arg_buffer[1] = ok_u63;
@@ -4815,6 +4873,7 @@ function_ptr();
 
 void lam9023_fptr() // lam9023 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4832,9 +4891,9 @@ void* const placed = decode_clo_array[1];
 void** clo9399 = alloc_clo(lam9021_fptr, 3);
 
 //setting env list
-clo9399[1] = row;
-clo9399[2] = kont8858;
-clo9399[3] = a8755;
+clo9399[1] = a8755;
+clo9399[2] = row;
+clo9399[3] = kont8858;
 void* f8859 = encode_clo(clo9399);
 
 
@@ -4851,6 +4910,7 @@ function_ptr();
 
 void lam9025_fptr() // lam9025 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4893,7 +4953,7 @@ function_ptr();
 }
 else
 {
-void* xy8757 = encode_bool(false);
+void* xy8757 = reinterpret_cast<void *>(FALSE_VALUE);
 
 //clo-app
 arg_buffer[1] = kont8858;
@@ -4909,6 +4969,7 @@ function_ptr();
 
 void lam9027_fptr() // lam9027 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -4939,7 +5000,7 @@ void* f8861 = encode_clo(clo9402);
 bool if_guard9403 = is_true(a8750);
 if(if_guard9403)
 {
-void* xy8751 = encode_bool(false);
+void* xy8751 = reinterpret_cast<void *>(FALSE_VALUE);
 
 //clo-app
 arg_buffer[1] = f8861;
@@ -4952,7 +5013,7 @@ function_ptr();
 }
 else
 {
-void* xy8752 = encode_bool(true);
+void* xy8752 = reinterpret_cast<void *>(TRUE_VALUE);
 
 //clo-app
 arg_buffer[1] = f8861;
@@ -4968,6 +5029,7 @@ function_ptr();
 
 void lam9029_fptr() // lam9029 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5007,6 +5069,7 @@ function_ptr();
 
 void lam9031_fptr() // lam9031 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5046,6 +5109,7 @@ function_ptr();
 
 void lam9033_fptr() // lam9033 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5088,7 +5152,7 @@ function_ptr();
 }
 else
 {
-void* xy8758 = encode_bool(false);
+void* xy8758 = reinterpret_cast<void *>(FALSE_VALUE);
 
 //clo-app
 arg_buffer[1] = kont8858;
@@ -5104,6 +5168,7 @@ function_ptr();
 
 void lam9035_fptr() // lam9035 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5134,7 +5199,7 @@ void* f8865 = encode_clo(clo9408);
 bool if_guard9409 = is_true(a8744);
 if(if_guard9409)
 {
-void* xy8745 = encode_bool(false);
+void* xy8745 = reinterpret_cast<void *>(FALSE_VALUE);
 
 //clo-app
 arg_buffer[1] = f8865;
@@ -5147,7 +5212,7 @@ function_ptr();
 }
 else
 {
-void* xy8746 = encode_bool(true);
+void* xy8746 = reinterpret_cast<void *>(TRUE_VALUE);
 
 //clo-app
 arg_buffer[1] = f8865;
@@ -5163,6 +5228,7 @@ function_ptr();
 
 void lam9037_fptr() // lam9037 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5172,8 +5238,8 @@ void* const a8743 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9038);
-void* const dist = decode_clo_array[5];
-void* const a8742 = decode_clo_array[4];
+void* const a8742 = decode_clo_array[5];
+void* const dist = decode_clo_array[4];
 void* const kont8858 = decode_clo_array[3];
 void* const row = decode_clo_array[2];
 void* const placed = decode_clo_array[1];
@@ -5202,6 +5268,7 @@ function_ptr();
 
 void lam9039_fptr() // lam9039 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5223,8 +5290,8 @@ void** clo9411 = alloc_clo(lam9037_fptr, 5);
 clo9411[1] = placed;
 clo9411[2] = row;
 clo9411[3] = kont8858;
-clo9411[4] = a8742;
-clo9411[5] = dist;
+clo9411[4] = dist;
+clo9411[5] = a8742;
 void* f8867 = encode_clo(clo9411);
 
 
@@ -5241,6 +5308,7 @@ function_ptr();
 
 void lam9041_fptr() // lam9041 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5259,7 +5327,7 @@ void* const placed = decode_clo_array[1];
 bool if_guard9412 = is_true(a8740);
 if(if_guard9412)
 {
-void* xy8741 = encode_bool(true);
+void* xy8741 = reinterpret_cast<void *>(TRUE_VALUE);
 
 //clo-app
 arg_buffer[1] = kont8858;
@@ -5299,6 +5367,7 @@ function_ptr();
 
 void ok_u63_fptr() // ok? 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5335,6 +5404,7 @@ function_ptr();
 
 void lam9044_fptr() // lam9044 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5358,6 +5428,7 @@ function_ptr();
 
 void lam9046_fptr() // lam9046 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5381,6 +5452,7 @@ function_ptr();
 
 void lam9048_fptr() // lam9048 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5413,6 +5485,7 @@ function_ptr();
 
 void lam9050_fptr() // lam9050 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5439,6 +5512,7 @@ function_ptr();
 
 void lam9052_fptr() // lam9052 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5448,8 +5522,8 @@ void* const a8765 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9053);
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[2];
+void* const count = decode_clo_array[1];
 void* const a8766 = reinterpret_cast<void*>(encode_int(int9128));
 
 //creating new closure instance
@@ -5474,6 +5548,7 @@ function_ptr();
 
 void lam9054_fptr() // lam9054 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5483,8 +5558,8 @@ void* const a8768 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9055);
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[2];
+void* const count = decode_clo_array[1];
 
 //clo-app
 arg_buffer[1] = q_u45helper;
@@ -5500,6 +5575,7 @@ function_ptr();
 
 void lam9056_fptr() // lam9056 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5510,8 +5586,8 @@ void* const a8764 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9057);
 void* const stack = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[2];
+void* const count = decode_clo_array[1];
 
 //if-clause
 bool if_guard9417 = is_true(a8764);
@@ -5522,8 +5598,8 @@ if(if_guard9417)
 void** clo9418 = alloc_clo(lam9052_fptr, 2);
 
 //setting env list
-clo9418[1] = kont8870;
-clo9418[2] = count;
+clo9418[1] = count;
+clo9418[2] = kont8870;
 void* f8872 = encode_clo(clo9418);
 
 
@@ -5544,8 +5620,8 @@ else
 void** clo9419 = alloc_clo(lam9054_fptr, 2);
 
 //setting env list
-clo9419[1] = kont8870;
-clo9419[2] = count;
+clo9419[1] = count;
+clo9419[2] = kont8870;
 void* f8873 = encode_clo(clo9419);
 
 
@@ -5564,6 +5640,7 @@ function_ptr();
 
 void lam9058_fptr() // lam9058 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5588,6 +5665,7 @@ function_ptr();
 
 void lam9060_fptr() // lam9060 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5622,6 +5700,7 @@ function_ptr();
 
 void lam9062_fptr() // lam9062 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5661,6 +5740,7 @@ function_ptr();
 
 void lam9064_fptr() // lam9064 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5673,8 +5753,8 @@ decode_clo_array = decode_clo(env9065);
 void* const stack = decode_clo_array[5];
 void* const a8777 = decode_clo_array[4];
 void* const a8778 = decode_clo_array[3];
-void* const z = decode_clo_array[2];
-void* const f8876 = decode_clo_array[1];
+void* const f8876 = decode_clo_array[2];
+void* const z = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9422 = alloc_clo(lam9062_fptr, 4);
@@ -5700,6 +5780,7 @@ function_ptr();
 
 void lam9066_fptr() // lam9066 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5711,16 +5792,16 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9067);
 void* const stack = decode_clo_array[5];
 void* const a8777 = decode_clo_array[4];
-void* const z = decode_clo_array[3];
-void* const f8876 = decode_clo_array[2];
+void* const f8876 = decode_clo_array[3];
+void* const z = decode_clo_array[2];
 void* const x = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9423 = alloc_clo(lam9064_fptr, 5);
 
 //setting env list
-clo9423[1] = f8876;
-clo9423[2] = z;
+clo9423[1] = z;
+clo9423[2] = f8876;
 clo9423[3] = a8778;
 clo9423[4] = a8777;
 clo9423[5] = stack;
@@ -5740,6 +5821,7 @@ function_ptr();
 
 void lam9068_fptr() // lam9068 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5750,8 +5832,8 @@ void* const a8777 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9069);
 void* const stack = decode_clo_array[4];
-void* const z = decode_clo_array[3];
-void* const f8876 = decode_clo_array[2];
+void* const f8876 = decode_clo_array[3];
+void* const z = decode_clo_array[2];
 void* const x = decode_clo_array[1];
 
 //creating new closure instance
@@ -5759,8 +5841,8 @@ void** clo9424 = alloc_clo(lam9066_fptr, 5);
 
 //setting env list
 clo9424[1] = x;
-clo9424[2] = f8876;
-clo9424[3] = z;
+clo9424[2] = z;
+clo9424[3] = f8876;
 clo9424[4] = a8777;
 clo9424[5] = stack;
 void* f8881 = encode_clo(clo9424);
@@ -5779,6 +5861,7 @@ function_ptr();
 
 void lam9070_fptr() // lam9070 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5789,18 +5872,18 @@ void* const a8776 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9071);
 void* const stack = decode_clo_array[5];
-void* const z = decode_clo_array[4];
-void* const x = decode_clo_array[3];
+void* const f8876 = decode_clo_array[4];
+void* const z = decode_clo_array[3];
 void* const y = decode_clo_array[2];
-void* const f8876 = decode_clo_array[1];
+void* const x = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9425 = alloc_clo(lam9068_fptr, 4);
 
 //setting env list
 clo9425[1] = x;
-clo9425[2] = f8876;
-clo9425[3] = z;
+clo9425[2] = z;
+clo9425[3] = f8876;
 clo9425[4] = stack;
 void* f8882 = encode_clo(clo9425);
 
@@ -5820,6 +5903,7 @@ function_ptr();
 
 void lam9072_fptr() // lam9072 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5843,6 +5927,7 @@ function_ptr();
 
 void lam9074_fptr() // lam9074 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5852,8 +5937,8 @@ void* const a8785 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9075);
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[2];
+void* const count = decode_clo_array[1];
 
 //clo-app
 arg_buffer[1] = q_u45helper;
@@ -5869,6 +5954,7 @@ function_ptr();
 
 void lam9076_fptr() // lam9076 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5879,15 +5965,15 @@ void* const a8784 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9077);
 void* const a8772 = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[2];
+void* const count = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9426 = alloc_clo(lam9074_fptr, 2);
 
 //setting env list
-clo9426[1] = kont8870;
-clo9426[2] = count;
+clo9426[1] = count;
+clo9426[2] = kont8870;
 void* f8875 = encode_clo(clo9426);
 
 
@@ -5904,6 +5990,7 @@ function_ptr();
 
 void lam9078_fptr() // lam9078 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5913,20 +6000,20 @@ void* const a8775 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9079);
-void* const stack = decode_clo_array[7];
-void* const a8772 = decode_clo_array[6];
+void* const kont8870 = decode_clo_array[7];
+void* const count = decode_clo_array[6];
 void* const z = decode_clo_array[5];
 void* const y = decode_clo_array[4];
 void* const x = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const stack = decode_clo_array[2];
+void* const a8772 = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9427 = alloc_clo(lam9076_fptr, 3);
 
 //setting env list
-clo9427[1] = kont8870;
-clo9427[2] = count;
+clo9427[1] = count;
+clo9427[2] = kont8870;
 clo9427[3] = a8772;
 void* f8876 = encode_clo(clo9427);
 
@@ -5941,10 +6028,10 @@ if(if_guard9428)
 void** clo9429 = alloc_clo(lam9070_fptr, 5);
 
 //setting env list
-clo9429[1] = f8876;
+clo9429[1] = x;
 clo9429[2] = y;
-clo9429[3] = x;
-clo9429[4] = z;
+clo9429[3] = z;
+clo9429[4] = f8876;
 clo9429[5] = stack;
 void* f8883 = encode_clo(clo9429);
 
@@ -5985,6 +6072,7 @@ function_ptr();
 
 void lam9080_fptr() // lam9080 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -5994,26 +6082,26 @@ void* const a8773 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9081);
-void* const stack = decode_clo_array[7];
-void* const a8772 = decode_clo_array[6];
+void* const kont8870 = decode_clo_array[7];
+void* const count = decode_clo_array[6];
 void* const z = decode_clo_array[5];
 void* const y = decode_clo_array[4];
 void* const x = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const stack = decode_clo_array[2];
+void* const a8772 = decode_clo_array[1];
 void* const a8774 = reinterpret_cast<void*>(encode_int(int9128));
 
 //creating new closure instance
 void** clo9431 = alloc_clo(lam9078_fptr, 7);
 
 //setting env list
-clo9431[1] = kont8870;
-clo9431[2] = count;
+clo9431[1] = a8772;
+clo9431[2] = stack;
 clo9431[3] = x;
 clo9431[4] = y;
 clo9431[5] = z;
-clo9431[6] = a8772;
-clo9431[7] = stack;
+clo9431[6] = count;
+clo9431[7] = kont8870;
 void* f8885 = encode_clo(clo9431);
 
 
@@ -6033,6 +6121,7 @@ function_ptr();
 
 void lam9082_fptr() // lam9082 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6043,23 +6132,23 @@ void* const a8772 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9083);
 void* const stack = decode_clo_array[6];
-void* const z = decode_clo_array[5];
-void* const y = decode_clo_array[4];
-void* const x = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[5];
+void* const count = decode_clo_array[4];
+void* const z = decode_clo_array[3];
+void* const y = decode_clo_array[2];
+void* const x = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9432 = alloc_clo(lam9080_fptr, 7);
 
 //setting env list
-clo9432[1] = kont8870;
-clo9432[2] = count;
+clo9432[1] = a8772;
+clo9432[2] = stack;
 clo9432[3] = x;
 clo9432[4] = y;
 clo9432[5] = z;
-clo9432[6] = a8772;
-clo9432[7] = stack;
+clo9432[6] = count;
+clo9432[7] = kont8870;
 void* f8886 = encode_clo(clo9432);
 
 
@@ -6076,6 +6165,7 @@ function_ptr();
 
 void lam9084_fptr() // lam9084 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6086,22 +6176,22 @@ void* const a8771 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9085);
 void* const stack = decode_clo_array[7];
-void* const z = decode_clo_array[6];
-void* const y = decode_clo_array[5];
-void* const x = decode_clo_array[4];
-void* const a8769 = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[6];
+void* const count = decode_clo_array[5];
+void* const z = decode_clo_array[4];
+void* const y = decode_clo_array[3];
+void* const x = decode_clo_array[2];
+void* const a8769 = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9433 = alloc_clo(lam9082_fptr, 6);
 
 //setting env list
-clo9433[1] = kont8870;
-clo9433[2] = count;
-clo9433[3] = x;
-clo9433[4] = y;
-clo9433[5] = z;
+clo9433[1] = x;
+clo9433[2] = y;
+clo9433[3] = z;
+clo9433[4] = count;
+clo9433[5] = kont8870;
 clo9433[6] = stack;
 void* f8887 = encode_clo(clo9433);
 
@@ -6122,6 +6212,7 @@ function_ptr();
 
 void lam9086_fptr() // lam9086 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6132,23 +6223,23 @@ void* const a8770 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9087);
 void* const stack = decode_clo_array[7];
-void* const z = decode_clo_array[6];
-void* const y = decode_clo_array[5];
-void* const x = decode_clo_array[4];
-void* const a8769 = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[6];
+void* const count = decode_clo_array[5];
+void* const z = decode_clo_array[4];
+void* const y = decode_clo_array[3];
+void* const x = decode_clo_array[2];
+void* const a8769 = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9434 = alloc_clo(lam9084_fptr, 7);
 
 //setting env list
-clo9434[1] = kont8870;
-clo9434[2] = count;
-clo9434[3] = a8769;
-clo9434[4] = x;
-clo9434[5] = y;
-clo9434[6] = z;
+clo9434[1] = a8769;
+clo9434[2] = x;
+clo9434[3] = y;
+clo9434[4] = z;
+clo9434[5] = count;
+clo9434[6] = kont8870;
 clo9434[7] = stack;
 void* f8888 = encode_clo(clo9434);
 
@@ -6166,6 +6257,7 @@ function_ptr();
 
 void lam9088_fptr() // lam9088 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6176,22 +6268,22 @@ void* const a8769 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9089);
 void* const stack = decode_clo_array[6];
-void* const z = decode_clo_array[5];
-void* const y = decode_clo_array[4];
-void* const x = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[5];
+void* const count = decode_clo_array[4];
+void* const z = decode_clo_array[3];
+void* const y = decode_clo_array[2];
+void* const x = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9435 = alloc_clo(lam9086_fptr, 7);
 
 //setting env list
-clo9435[1] = kont8870;
-clo9435[2] = count;
-clo9435[3] = a8769;
-clo9435[4] = x;
-clo9435[5] = y;
-clo9435[6] = z;
+clo9435[1] = a8769;
+clo9435[2] = x;
+clo9435[3] = y;
+clo9435[4] = z;
+clo9435[5] = count;
+clo9435[6] = kont8870;
 clo9435[7] = stack;
 void* f8889 = encode_clo(clo9435);
 
@@ -6209,6 +6301,7 @@ function_ptr();
 
 void lam9090_fptr() // lam9090 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6219,11 +6312,11 @@ void* const a8763 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9091);
 void* const stack = decode_clo_array[6];
-void* const z = decode_clo_array[5];
-void* const y = decode_clo_array[4];
-void* const x = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[5];
+void* const count = decode_clo_array[4];
+void* const z = decode_clo_array[3];
+void* const y = decode_clo_array[2];
+void* const x = decode_clo_array[1];
 
 //if-clause
 bool if_guard9436 = is_true(a8763);
@@ -6234,8 +6327,8 @@ if(if_guard9436)
 void** clo9437 = alloc_clo(lam9056_fptr, 3);
 
 //setting env list
-clo9437[1] = kont8870;
-clo9437[2] = count;
+clo9437[1] = count;
+clo9437[2] = kont8870;
 clo9437[3] = stack;
 void* f8874 = encode_clo(clo9437);
 
@@ -6257,11 +6350,11 @@ else
 void** clo9438 = alloc_clo(lam9088_fptr, 6);
 
 //setting env list
-clo9438[1] = kont8870;
-clo9438[2] = count;
-clo9438[3] = x;
-clo9438[4] = y;
-clo9438[5] = z;
+clo9438[1] = x;
+clo9438[2] = y;
+clo9438[3] = z;
+clo9438[4] = count;
+clo9438[5] = kont8870;
 clo9438[6] = stack;
 void* f8890 = encode_clo(clo9438);
 
@@ -6281,6 +6374,7 @@ function_ptr();
 
 void lam9092_fptr() // lam9092 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6291,20 +6385,20 @@ void* const z = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9093);
 void* const stack = decode_clo_array[5];
-void* const y = decode_clo_array[4];
-void* const x = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[4];
+void* const count = decode_clo_array[3];
+void* const y = decode_clo_array[2];
+void* const x = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9439 = alloc_clo(lam9090_fptr, 6);
 
 //setting env list
-clo9439[1] = kont8870;
-clo9439[2] = count;
-clo9439[3] = x;
-clo9439[4] = y;
-clo9439[5] = z;
+clo9439[1] = x;
+clo9439[2] = y;
+clo9439[3] = z;
+clo9439[4] = count;
+clo9439[5] = kont8870;
 clo9439[6] = stack;
 void* f8891 = encode_clo(clo9439);
 
@@ -6322,6 +6416,7 @@ function_ptr();
 
 void lam9094_fptr() // lam9094 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6333,18 +6428,18 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9095);
 void* const stack = decode_clo_array[5];
 void* const state = decode_clo_array[4];
-void* const x = decode_clo_array[3];
+void* const kont8870 = decode_clo_array[3];
 void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const x = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9440 = alloc_clo(lam9092_fptr, 5);
 
 //setting env list
-clo9440[1] = kont8870;
-clo9440[2] = count;
-clo9440[3] = x;
-clo9440[4] = y;
+clo9440[1] = x;
+clo9440[2] = y;
+clo9440[3] = count;
+clo9440[4] = kont8870;
 clo9440[5] = stack;
 void* f8892 = encode_clo(clo9440);
 
@@ -6371,6 +6466,7 @@ function_ptr();
 
 void lam9096_fptr() // lam9096 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6382,16 +6478,16 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9097);
 void* const stack = decode_clo_array[4];
 void* const state = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[2];
+void* const count = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9442 = alloc_clo(lam9094_fptr, 5);
 
 //setting env list
-clo9442[1] = kont8870;
+clo9442[1] = x;
 clo9442[2] = count;
-clo9442[3] = x;
+clo9442[3] = kont8870;
 clo9442[4] = state;
 clo9442[5] = stack;
 void* f8895 = encode_clo(clo9442);
@@ -6419,6 +6515,7 @@ function_ptr();
 
 void lam9098_fptr() // lam9098 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6429,15 +6526,15 @@ void* const state = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9099);
 void* const stack = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[2];
+void* const count = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9444 = alloc_clo(lam9096_fptr, 4);
 
 //setting env list
-clo9444[1] = kont8870;
-clo9444[2] = count;
+clo9444[1] = count;
+clo9444[2] = kont8870;
 clo9444[3] = state;
 clo9444[4] = stack;
 void* f8897 = encode_clo(clo9444);
@@ -6456,6 +6553,7 @@ function_ptr();
 
 void lam9100_fptr() // lam9100 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6466,8 +6564,8 @@ void* const a8759 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9101);
 void* const stack = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const kont8870 = decode_clo_array[1];
+void* const kont8870 = decode_clo_array[2];
+void* const count = decode_clo_array[1];
 
 //if-clause
 bool if_guard9445 = is_true(a8759);
@@ -6490,8 +6588,8 @@ else
 void** clo9446 = alloc_clo(lam9098_fptr, 3);
 
 //setting env list
-clo9446[1] = kont8870;
-clo9446[2] = count;
+clo9446[1] = count;
+clo9446[2] = kont8870;
 clo9446[3] = stack;
 void* f8898 = encode_clo(clo9446);
 
@@ -6511,6 +6609,7 @@ function_ptr();
 
 void q_u45helper_fptr() // q-helper 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6526,8 +6625,8 @@ void** decode_clo_array = nullptr;
 void** clo9447 = alloc_clo(lam9100_fptr, 3);
 
 //setting env list
-clo9447[1] = kont8870;
-clo9447[2] = count;
+clo9447[1] = count;
+clo9447[2] = kont8870;
 clo9447[3] = stack;
 void* f8899 = encode_clo(clo9447);
 
@@ -6545,6 +6644,7 @@ function_ptr();
 
 void lam9103_fptr() // lam9103 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6571,6 +6671,7 @@ function_ptr();
 
 void lam9105_fptr() // lam9105 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6606,6 +6707,7 @@ function_ptr();
 
 void lam9107_fptr() // lam9107 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6662,6 +6764,7 @@ function_ptr();
 
 void iota1_fptr() // iota1 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6697,6 +6800,7 @@ function_ptr();
 
 void lam9110_fptr() // lam9110 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6723,6 +6827,7 @@ function_ptr();
 
 void lam9112_fptr() // lam9112 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6756,6 +6861,7 @@ function_ptr();
 
 void lam9114_fptr() // lam9114 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6793,6 +6899,7 @@ function_ptr();
 
 void lam9116_fptr() // lam9116 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6828,6 +6935,7 @@ function_ptr();
 
 void lam9118_fptr() // lam9118 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6861,6 +6969,7 @@ function_ptr();
 
 void lam9120_fptr() // lam9120 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6896,6 +7005,7 @@ function_ptr();
 
 void nqueens_fptr() // nqueens 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6928,6 +7038,7 @@ function_ptr();
 
 void brouhaha_main_fptr() // brouhaha_main 
 {
+call_counter++;
 //reading number of args
 numArgs = reinterpret_cast<long>(arg_buffer[0]);
 //reading env
@@ -6958,7 +7069,7 @@ mp_set_memory_functions(&allocate_function,
 // initializing global constants in the main
 int9129 = 0;
 int9128 = 1;
-int9130 = 14;
+int9130 = 6;
 
 
 //making a call to the brouhaha main function to kick off our C++ emission.

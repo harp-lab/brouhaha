@@ -22,11 +22,11 @@
 #define MASK(val) (((u64)(val)) & ~(7ULL))
 unsigned long long call_counter = 0;
 
-#define NULL_VALUE 0
-#define TRUE_VALUE 8
-#define FALSE_VALUE 16
-#define ENV_ARRAY 1
-#define RANDOM_VALUE 63 // 00111111
+constexpr uint8_t NULL_VALUE = 0;
+constexpr uint8_t TRUE_VALUE = 8;
+constexpr uint8_t FALSE_VALUE = 16;
+constexpr uint8_t ENV_ARRAY = 1;
+constexpr uint8_t RANDOM_VALUE = 63; // 00111111
 
 // Making the choice not to use them because the intptr_t is available.
 typedef uint64_t u64;
@@ -101,16 +101,18 @@ inline void *encode_hash(const hamt<hash_struct, hash_struct> *val) {
   return reinterpret_cast<void *>(((u64)(val)) | HASH);
 }
 
-inline void *encode_null() { return NULL_VALUE; }
+inline void *encode_null() {
+  return reinterpret_cast<void *>(static_cast<uintptr_t>(NULL_VALUE));
+}
 
 // takes in a void * type and gets the tag, return it as an integer
 inline int get_tag(void *val) {
-  u64 ptr = reinterpret_cast<u64>(val);
-
-  if ((ptr & 0xF) == FLOAT)
-    return (ptr & 0xF);
-
-  return (ptr & 7);
+  const u64 ptr = reinterpret_cast<u64>(val);
+  if (ptr == NULL) {
+    return 0;
+  } 
+  const u64 mask = (ptr & 0xF) == FLOAT ? 0xF : 0x7;
+  return ptr & mask;
 }
 
 // for debugging purpose!
@@ -152,11 +154,7 @@ inline s32 decode_int(void *val) {
 inline float decode_float(void *val) {
   if ((get_tag(val)) != FLOAT)
     assert_type(false, "Error in decode_float -> Type error: Not a float!");
-
-  u64 v = reinterpret_cast<u64>(val);
-
-  u32 temp = (v >> 32) & ~0xF;
-  return *reinterpret_cast<float *>(&temp);
+  return *reinterpret_cast<float *>((reinterpret_cast<u64>(val) >> 32) & ~0xF);
 }
 
 mpz_t *decode_mpz(void *val) {
@@ -181,19 +179,11 @@ std::string *decode_str(void *val) {
   return reinterpret_cast<std::string *>(MASK(val));
 }
 
-bool decode_bool(void *val) {
-  // MASK does the casting to u64
-  assert_type(((get_tag(val)) == SPL),
-              "Error in decode_bool -> Type error : Not BOOLEAN");
-  u64 temp = (u64)val;
-  if (temp == TRUE_VALUE) {
-    return true;
-  } else if (temp == FALSE_VALUE) {
-    return false;
-  } else {
-    assert_type(false, "Error in decode_bool -> Type error: Not BOOLEAN");
-  }
-  return false;
+inline bool decode_bool(void *val) {
+  assert_type((get_tag(val) == SPL), "Error in decode_bool -> Type error : Not BOOLEAN");
+  u64 temp = MASK(val);
+  
+  return temp == TRUE_VALUE;
 }
 
 inline void **decode_cons(void *val) {
@@ -216,10 +206,7 @@ const hamt<hash_struct, hash_struct> *decode_hash(void *val) {
 
 // Closure Allocation, alloc_clo
 inline void **alloc_clo(void (*fptr)(), int num) {
-  call_counter++;
   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
-  obj[0] = 0;
-  // obj[1] = 0;
   if (obj != NULL) {
     obj[0] = reinterpret_cast<void *>(fptr);
   }
@@ -244,10 +231,7 @@ inline void *apply_prim_cons_2(void *arg1, void *arg2) {
 
 // cons?
 inline void *prim_cons_u63(void *lst) {
-  if (get_tag(lst) == CONS) {
-    return encode_bool(true);
-  }
-  return encode_bool(false);
+    return encode_bool(get_tag(lst) == CONS);
 }
 
 inline void *prim_car(void *val) {
@@ -272,36 +256,25 @@ inline void *apply_prim_cdr_1(void *arg1) { return prim_cdr(arg1); }
 
 // returns length of a list
 inline int length_counter(void *lst) {
-  if (lst == NULL_VALUE)
+  if (lst == 0)
     return 0;
 
   if (get_tag(lst) != CONS)
     assert_type(false, "Error -> contact violation: expected list");
 
   // void *val = prim_car(lst);
-  void *rest = prim_cdr(lst);
+//   void *rest = prim_cdr(lst);
 
   // if (get_tag(val) == CONS)
   //     return length_counter(val) + length_counter(rest);
   // else
   //     return 1 + length_counter(rest);
 
-  return 1 + length_counter(rest);
+  return 1 + length_counter(prim_cdr(lst));
 }
 
 inline bool is_null_val(void *val) {
-  u64 temp = (u64)val;
-  if (temp != TRUE_VALUE && temp != FALSE_VALUE && val == NULL_VALUE) {
-    // means its null value = empty list = '()
-    // kludgy way of doing this!
-    // null and booleans should have had their own cases
-    // but unfortunately we took that path, when we didn't consider this issue
-    // might arise that we won't be able differentiate between booleans and
-    // nulls an SPL could be anything right? not just boolean!
-    return true;
-  }
-
-  return false;
+    return (u64)val != TRUE_VALUE && (u64)val != FALSE_VALUE && val == reinterpret_cast<void *>(static_cast<uintptr_t>(NULL_VALUE));
 }
 
 inline void *apply_prim_cons(void *arg) {
@@ -322,10 +295,10 @@ inline void *apply_prim_cons_i(void *lst) {
 
   void **cons_lst = decode_cons(lst);
 
-  void *car = cons_lst[0];
-  void *cadr = prim_car(cons_lst[1]);
+  // void *car = cons_lst[0];
+  // void *cadr = prim_car(cons_lst[1]);
 
-  return prim_cons(car, cadr);
+  return prim_cons(cons_lst[0], prim_car(cons_lst[1]));
 }
 
 inline void *apply_prim_car(void *lst) {
@@ -369,24 +342,26 @@ inline void *apply_prim_cdr_i(void *lst) {
 }
 
 std::string print_cons(void *lst) {
-  std::string ret_str;
-  ret_str.append("(list ");
+  std::ostringstream ret_str;
+  ret_str << "(list ";
+  
   while (is_cons(lst)) {
     void **cons_lst = decode_cons(lst);
-    ret_str.append(print_val(cons_lst[0]));
+    ret_str << print_val(cons_lst[0]);
+    
     if (!is_cons(cons_lst[1])) {
       if (get_tag(cons_lst[1]) != SPL) {
-        ret_str.append(" . ");
-        ret_str.append(print_val(cons_lst[1]));
+        ret_str << " . " << print_val(cons_lst[1]);
       }
-
       break;
     }
-    ret_str.append(" ");
+
+    ret_str << " ";
     lst = cons_lst[1];
   }
-  ret_str.append(")");
-  return ret_str;
+  
+  ret_str << ")";
+  return ret_str.str();
 }
 
 #pragma endregion
@@ -394,14 +369,7 @@ std::string print_cons(void *lst) {
 #pragma region ArithOpFunctions
 
 inline bool is_true(void *val) {
-  if (is_null_val(val)) {
-    // kludgy way of doing this!
-    // null and booleans should have had their own cases
-    // but unfortunately we took that path, when we didn't consider this issue
-    // might arise that we won't be able differentiate between booleans and
-    // nulls an SPL could be anything right? not just boolean!
-    return true;
-  } else if (get_tag(val) == CONS) {
+  if (is_null_val(val) || get_tag(val) == CONS) {
     return true;
   }
 
@@ -427,21 +395,18 @@ inline void *mpf_equal(void *arg1, void *arg2) {
   mpf_t *arg1_mpf = decode_mpf(arg1);
   mpf_t *arg2_mpf = decode_mpf(arg2);
 
-  if (mpf_cmp(*arg1_mpf, *arg2_mpf) == 0) {
-    return encode_bool(true);
-  }
-  return encode_bool(false);
+  return encode_bool(mpf_cmp(*arg1_mpf, *arg2_mpf) == 0);
 }
 
 // casting functions
-mpf_t *mpz_2_mpf(mpz_t *val) {
+inline mpf_t *mpz_2_mpf(mpz_t *val) {
   mpf_t *ret_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
   mpf_init(*ret_val);
   mpf_set_z(*ret_val, *val);
   return ret_val;
 }
 
-mpz_t *mpf_2_mpz(mpf_t *val) {
+inline mpz_t *mpf_2_mpz(mpf_t *val) {
   mpz_t *ret_val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
   mpz_init(*ret_val);
   mpz_set_f(*ret_val, *val);
@@ -452,10 +417,7 @@ inline void *str_equal(void *arg1, void *arg2) {
   std::string *arg1_str = decode_str(arg1);
   std::string *arg2_str = decode_str(arg2);
 
-  if (arg1_str->compare(*arg2_str) == 0) {
-    return encode_bool(true);
-  }
-  return encode_bool(false);
+  return encode_bool(arg1_str->compare(*arg2_str) == 0);
 }
 inline void *spl_equal(void *arg1, void *arg2) {
   // we don't care if the values are bools are nulls, we just care about
@@ -464,35 +426,29 @@ inline void *spl_equal(void *arg1, void *arg2) {
   u64 arg1_u64 = (u64)arg1;
   u64 arg2_u64 = (u64)arg2;
 
-  if (arg1_u64 == arg2_u64) {
-    return encode_bool(true);
-  }
-  return encode_bool(false);
+  return encode_bool(arg1_u64 == arg2_u64);
 }
 
 inline void *cons_equal(void *arg1, void *arg2) {
-  // tags have to be equal or false
-  // if both are cons, then we fetch the car and call equal on them if not equal
-  // return false update to cdr and continue if not cons, call equal on the
-  // value and if not return false or return true
-  while ((get_tag(arg1) == get_tag(arg2))) {
-    if (is_cons(arg1) && is_cons(arg2)) {
-      void **cons_arg1 = decode_cons(arg1);
-      void **cons_arg2 = decode_cons(arg2);
+  while (get_tag(arg1) == get_tag(arg2)) {
+    if (!is_cons(arg1) || !is_cons(arg2)) {
+      // Directly return the result of equal_ for non-cons cells, assuming equal_ handles value comparison properly.
+      return encode_bool(equal_(arg1, arg2));
+    }
+    
+    void **cons_arg1 = decode_cons(arg1);
+    void **cons_arg2 = decode_cons(arg2);
 
-      // comparing the car values of two cons using the equal function
-      if (!decode_bool(equal_(cons_arg1[0], cons_arg2[0]))) {
-        return encode_bool(false);
-      }
-      arg1 = cons_arg1[1];
-      arg2 = cons_arg2[1];
-    } else {
-      if (decode_bool(equal_(arg1, arg2))) {
-        return encode_bool(true);
-      }
+    // If the car elements are not equal, return false immediately.
+    if (!equal_(cons_arg1[0], cons_arg2[0])) {
       return encode_bool(false);
     }
+
+    // Move to comparing the cdr elements.
+    arg1 = cons_arg1[1];
+    arg2 = cons_arg2[1];
   }
+
   return encode_bool(false);
 }
 
@@ -500,85 +456,56 @@ inline void *hash_equal(void *arg1, void *arg2) {
   const hamt<hash_struct, hash_struct> *h_arg1 = decode_hash(arg1);
   const hamt<hash_struct, hash_struct> *h_arg2 = decode_hash(arg2);
 
-  if (h_arg1->getHash() == h_arg2->getHash()) {
-    return encode_bool(true);
-  }
-  return encode_bool(false);
+  return encode_bool(h_arg1->getHash() == h_arg2->getHash());
 }
 
 inline void *equal_(void *arg1, void *arg2) {
-  // takes in two voids,
-  // checks if they have the same tag, if not return false else
-  // switches based on the tag to the appropriate function for the type
   int type_arg1 = get_tag(arg1);
-  // checking the tags match
-  if (!(type_arg1 == get_tag(arg2))) {
+
+  if (type_arg1 != get_tag(arg2)) {
     return encode_bool(false);
   }
+  
   switch (type_arg1) {
-  case MPZ: {
-    return mpz_equal(arg1, arg2);
-    break;
-  }
-  case MPF: {
-    return mpf_equal(arg1, arg2);
-    break;
-  }
-  case STRING: {
-    return str_equal(arg1, arg2);
-    break;
-  }
-  case SPL: {
-    return spl_equal(arg1, arg2);
-    break;
-  }
-  case CONS: {
-    return cons_equal(arg1, arg2);
-    break;
-  }
-  case HASH: {
-    return hash_equal(arg1, arg2);
-    break;
-  }
-  default: {
-    return encode_bool(false);
-    break;
-  }
+    case MPZ:
+      return mpz_equal(arg1, arg2);
+    case MPF:
+      return mpf_equal(arg1, arg2);
+    case STRING:
+      return str_equal(arg1, arg2);
+    case SPL:
+      return spl_equal(arg1, arg2);
+    case CONS:
+      return cons_equal(arg1, arg2);
+    case HASH:
+      return hash_equal(arg1, arg2);
+    default:
+      return encode_bool(false); 
   }
 }
 
 #pragma endregion
 
 #pragma region HASHING
-
-// these function assume the type passed is the expected one
-// all the three hash function have a very similar structure
-// get the the number of limbs/chars to process, and get the array pointer to
-// them for loop over them to compute FNV1A and return the hash
-u64 mpz_hash(void *val) {
+inline u64 mpz_hash(void *val) {
   u64 h = 0xcbf29ce484222325;
   mpz_t *mpz_val = decode_mpz(val);
-  // the mpz_sgn is a macro in gmp that just looks at _mp_size for sign info
-  int is_negative =
-      mpz_sgn(*mpz_val); // < 0 if negative, = 0 if zero and > 0 if_positive
+  int is_negative = mpz_sgn(*mpz_val);
   u64 limb_cnt = mpz_size(*mpz_val);
   const mp_limb_t *limb_ptr = mpz_limbs_read(*mpz_val);
+
   if (is_negative < 0) {
-    h = h ^ 0x00000000000000ff;
-    h = h * 0x100000001b3;
-  } else {
-    h = h ^ 0x0000000000000000; // this doesn't do anything, not sure what to
-                                // XOR it with for change
-    h = h * 0x100000001b3;
+    h = (h ^ 0x00000000000000ff) * 0x100000001b3;
   }
 
-  for (u32 i = 0; i < limb_cnt; i++) {
+  for (u64 i = 0; i < limb_cnt; ++i) {
     u64 limb = limb_ptr[i];
-    for (u32 j = 0; j < 8; j++) {
-      h = h ^ ((limb >> j * 8) & 0x00000000000000ff);
-      h = h * 0x100000001b3;
+    for (u64 byte_shift = 0; byte_shift < 64; byte_shift += 8) {
+      u8 byte = (limb >> byte_shift) & 0xFF;
+      h = (h ^ byte) * 0x100000001b3;
     }
   }
+
   return h;
 }
 
@@ -609,14 +536,14 @@ u64 mpf_hash(void *val) {
   return h;
 }
 
-u64 str_hash(void *val) {
-  std::string *str = decode_str(val);
+inline u64 str_hash(void *val) {
+  const std::string *str = decode_str(val);
   const u8 *data = reinterpret_cast<const u8 *>(str->data());
-  int length = str->length();
+  const size_t length = str->length();
   u64 h = 0xcbf29ce484222325;
-  for (u32 i = 0; i < length; ++i && ++data) {
-    h = h ^ *data;
-    h = h * 0x100000001b3;
+
+  for (size_t i = 0; i < length; ++i) {
+    h = (h ^ data[i]) * 0x100000001b3;
   }
 
   return h;
@@ -832,10 +759,7 @@ inline void *apply_prim_eq_u63(void *lst) {
 
 // null?
 inline void *prim_null_u63(void *item) {
-  if (get_tag(item) == SPL) {
-    return encode_bool(true);
-  }
-  return encode_bool(false);
+  return encode_bool(get_tag(item) == SPL);
 }
 
 inline void *apply_prim_null_u63(void *lst) {
@@ -1111,34 +1035,9 @@ inline void *apply_prim__u43_1(void *arg1) //+
 
 inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
 {
+  bool is_mpf = false;
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
-
-  if (arg1_tag == INT) {
-    if (arg2_tag == INT) {
-      const s64 a1 = decode_int(arg1);
-      const s64 a2 = decode_int(arg2);
-
-      const s64 res = a1 + a2;
-      const s32 res32 = static_cast<s32>(res);
-      if (res32 == res) {
-        // no overflow
-        return reinterpret_cast<void *>(encode_int(res32));
-      } else {
-        // overflow occurred, promoting to mpz
-
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-
-        mpz_init(*result);
-
-        mpz_set_ui(*result, res);
-
-        return encode_mpz(result);
-      }
-    } else if (arg2_tag == MPZ) {
-      /// ....
-    }
-  }
 
   // std::cout << "no overflow: " << arg1_tag << std::endl;
   // std::cout << "no overflow: " << arg2_tag << std::endl;
@@ -1350,39 +1249,14 @@ void *apply_prim__u45_1(void *arg1) //-
   return nullptr;
 }
 
-inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
+inline void *apply_prim__u45_2(void *arg1, void *arg2) //+
 {
+  bool is_mpf = false;
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
 
   // std::cout << "no overflow: " << arg1_tag << std::endl;
   // std::cout << "no overflow: " << arg2_tag << std::endl;
-
-  if (arg1_tag == INT) {
-    if (arg2_tag == INT) {
-      const s64 a1 = decode_int(arg1);
-      const s64 a2 = decode_int(arg2);
-
-      const s64 res = a1 - a2;
-      const s32 res32 = static_cast<s32>(res);
-      if (res32 == res) {
-        // no overflow
-        return reinterpret_cast<void *>(encode_int(res32));
-      } else {
-        // overflow occurred, promoting to mpz
-
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-
-        mpz_init(*result);
-
-        mpz_set_ui(*result, res);
-
-        return encode_mpz(result);
-      }
-    } else if (arg2_tag == MPZ) {
-      /// ....
-    }
-  }
 
   if (((arg1_tag == INT) || (arg1_tag == FLOAT) || (arg1_tag == MPZ) ||
        (arg1_tag == MPF)) &&
@@ -2282,20 +2156,22 @@ inline void *apply_prim__u61_2(void *arg1, void *arg2) // =
       else
         return encode_bool(false);
     } else if (arg1_tag == MPZ) {
+      
       cmp_res = mpz_cmp(*(decode_mpz(arg1)), *(decode_mpz(arg2)));
       if (equal_zero(cmp_res))
         return encode_bool(true);
       else
         return encode_bool(false);
-    } else if (arg1_tag == MPF) {
-
+    }
+    else if (arg1_tag == MPF) {
+      
       cmp_res = mpf_cmp(*(decode_mpf(arg1)), *(decode_mpf(arg2)));
       if (equal_zero(cmp_res))
         return encode_bool(true);
       else
         return encode_bool(false);
     }
-  } else {
+  }else{
     // will write later
   }
   // mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
@@ -2543,7 +2419,7 @@ void *prim_hash_u45ref(void *h, void *k) {
   if (t) {
     return t->val;
   } else {
-    return NULL_VALUE;
+    return reinterpret_cast<void *>(static_cast<uintptr_t>(NULL_VALUE));
   }
 }
 
@@ -2803,7 +2679,7 @@ void *prim_hash_u45keys(void *h) {
   const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
   const hash_struct **keys_array = h_hamt->getKeys();
   // std::cout << "The size of the hash is: " << h_hamt->size() << std::endl;
-  void *keys_cons_lst = encode_null();
+  void *keys_cons_lst = reinterpret_cast<void *>(static_cast<uintptr_t>(NULL_VALUE));
   //+=2 and *2 coz getKeys returns an array that also has values.
   for (long i = 0; i < (h_hamt->size() * 2); i += 2) {
     keys_cons_lst = prim_cons(keys_array[i]->val, keys_cons_lst);
@@ -2965,7 +2841,7 @@ inline void *apply_prim_set_u45remove_2(void *arg1, void *arg2) {
       const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
       const hash_struct **keys_array = h_hamt->getKeys();
 
-      void *keys_cons_lst = encode_null();
+      void *keys_cons_lst = reinterpret_cast<void *>(static_cast<uintptr_t>(NULL_VALUE));
 
       for (long i = 0; i < (h_hamt->size() * 2); i += 2) {
         if (!decode_bool(prim_equal_u63(arg2, keys_array[i]->val))) {
@@ -2982,7 +2858,7 @@ inline void *apply_prim_set_u45remove_2(void *arg1, void *arg2) {
                        "argument should be a set or a list");
   } else if (tag == CONS) {
     void *result = nullptr;
-    void *lst = encode_null();
+    void *lst = reinterpret_cast<void *>(static_cast<uintptr_t>(NULL_VALUE));
 
     while (is_cons(arg1)) {
       void **cons_lst = decode_cons(arg1);
@@ -3547,7 +3423,7 @@ void *prim_string_u45_u62list(void *str_void) {
   std::string *str = decode_str(str_void);
   std::string *ret_str = new (GC) std::string(*str);
   std::reverse(ret_str->begin(), ret_str->end());
-  void *lst = encode_null();
+  void *lst = reinterpret_cast<void *>(static_cast<uintptr_t>(NULL_VALUE));
   for (char c : *ret_str) {
     lst = prim_cons(encode_str(new (GC) std::string(1, c)), lst);
   }
@@ -4100,8 +3976,8 @@ void *halt;
 // void *arg_buffer[999]; // This is where the arg buffer is called
 // long numArgs;
 // unsigned long long call_counter = 0;
-// unsigned long long car_counter = 0;
-// unsigned long long cdr_counter = 0;
+unsigned long long car_counter = 0;
+unsigned long long cdr_counter = 0;
 // unsigned long long cons_counter = 0;
 // unsigned long long plus_counter = 0;
 // unsigned long long minus_counter = 0;
@@ -4109,8 +3985,7 @@ void *halt;
 void fhalt() {
   // std::cout << "In fhalt" << std::endl;
   std::cout << print_val(arg_buffer[2]) << std::endl;
-  std::cout << "Total # calls made (excluding prelude): " << call_counter
-            << std::endl;
+  std::cout << "Total # calls made (excluding prelude): " << call_counter << std::endl;
   // std::cout << "Total # calls made (car): " << car_counter << std::endl;
   //  std::cout << "Total # calls made (cdr): " << cdr_counter <<std::endl;
   // std::endl; std::cout << "Total # calls made (cons): " << cons_counter <<

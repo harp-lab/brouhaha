@@ -105,7 +105,7 @@
 
        (loop env+ (cdr prog+))]
       [`((define-prim ,ptr ,params ...) ,_ ...)
-       (define func_name (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
+       (define func_name (format "inline void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
        (append-line filepath func_name)
 
        (append-line filepath
@@ -178,7 +178,7 @@
 
       [`(let ([,lhs (apply-prim ,op ,arg)]) ,letbody)
        (define line
-         (format "void* ~a = apply_prim_~a(~a);"
+         (format "inline void* ~a = apply_prim_~a(~a);"
                  (get-c-string lhs)
                  (get-c-string op)
                  (get-c-string arg)))
@@ -201,9 +201,9 @@
 
           (cond
             [(equal? type 'float)
-             (append-line filepath (format "void* const ~a = reinterpret_cast<void*>(encode_float(~a));" (get-c-string lhs) varname))]
+             (append-line filepath (format "constexpr void* const ~a = reinterpret_cast<void*>(encode_float(~a));" (get-c-string lhs) varname))]
             [(equal? type 'mpf)
-             (append-line filepath (format "void* const ~a = encode_mpf(~a);" (get-c-string lhs) varname))]
+             (append-line filepath (format "inline void* const ~a = encode_mpf(~a);" (get-c-string lhs) varname))]
             [else (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])
 
           (convert-proc-body proc_name proc_env proc_arg letbody)]
@@ -224,32 +224,32 @@
          [`(quote ,(? boolean? val))
           (cond
             [(true? val)
-             (append-line filepath (format "void* ~a = encode_bool(true);" (get-c-string lhs)))
+             (append-line filepath (format "void* ~a = reinterpret_cast<void *>(TRUE_VALUE);" (get-c-string lhs)))
              (convert-proc-body proc_name proc_env proc_arg letbody)]
             [else
-             (append-line filepath (format "void* ~a = encode_bool(false);" (get-c-string lhs)))
+             (append-line filepath (format "void* ~a = reinterpret_cast<void *>(FALSE_VALUE);" (get-c-string lhs)))
              (convert-proc-body proc_name proc_env proc_arg letbody)])]
 
          [`(quote ,(? null? val))
-          (append-line filepath (format "void* ~a = encode_null();" (get-c-string lhs)))
+          (append-line filepath (format "inline void* ~a = encode_null();" (get-c-string lhs)))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [`(quote ,(? string? val))
           (append-line
            filepath
-           (format "void* ~a = encode_str(new(GC) std::string(\"~a\"));" (get-c-string lhs) val))
+           (format "inline void* ~a = encode_str(new(GC) std::string(\"~a\"));" (get-c-string lhs) val))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [`(quote ,(? symbol? val))
           (append-line
            filepath
-           (format "void* ~a = encode_str(new(GC) std::string(\"~a\"));" (get-c-string lhs) (symbol->string val)))
+           (format "inline void* ~a = encode_str(new(GC) std::string(\"~a\"));" (get-c-string lhs) (symbol->string val)))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [(? symbol?) ; Not sure what this case does or supposed to do - SK
           ; (pretty-print (~a "cpb: " val))
           (append-line filepath
-                       (format "void* ~a = encode_str(new string(\"~a\"));" (get-c-string lhs) val))
+                       (format "inline void* ~a = encode_str(new string(\"~a\"));" (get-c-string lhs) val))
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [_ (raise (format "Unknown datatype! ~a" val))])]
@@ -433,7 +433,7 @@
        ;  uncomment these two lines for debugging!
        ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
-       ;  (append-line filepath "call_counter++;")
+        (append-line filepath "call_counter++;")
 
        (append-line filepath "//reading number of args")
        ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
