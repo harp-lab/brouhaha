@@ -7069,7 +7069,7 @@ mp_set_memory_functions(&allocate_function,
 // initializing global constants in the main
 int9129 = 0;
 int9128 = 1;
-int9130 = 6;
+int9130 = 14;
 
 
 //making a call to the brouhaha main function to kick off our C++ emission.

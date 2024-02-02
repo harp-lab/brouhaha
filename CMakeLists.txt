@@ -31,6 +31,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3 -finline-functions -fsanitize=address -Wall -We
 # set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
 
 # set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 # add_definitions(-DGC_DEBUG) #for gc debugging
 
 

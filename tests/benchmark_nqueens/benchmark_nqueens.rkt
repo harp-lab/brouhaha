@@ -44,7 +44,7 @@
   )
 
 (define (brouhaha_main)
-  (nqueens 6))
+  (nqueens 14))
 
 (brouhaha_main)
 (displayln calls)
