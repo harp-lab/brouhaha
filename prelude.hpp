@@ -216,7 +216,7 @@ const hamt<hash_struct, hash_struct> *decode_hash(void *val) {
 
 // Closure Allocation, alloc_clo
 inline void **alloc_clo(void (*fptr)(), int num) {
-  call_counter++;
+  // call_counter++;
   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
   obj[0] = 0;
   // obj[1] = 0;
