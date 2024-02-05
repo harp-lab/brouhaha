@@ -1,4 +1,4 @@
-; Prelude is used as a way to add functionality to the language and programs as a library
+;;;;;;;;; Prelude is used as a way to add functionality to the language and programs as a library
 
 (define-prim + 1 2 3)
 (define-prim - 1 2 3)

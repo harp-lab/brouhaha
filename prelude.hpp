@@ -236,34 +236,6 @@ inline void **alloc_clo(void (*fptr)(), int num) {
   return obj;
 }
 
-// Assume each closure requires no more than 64 bytes
-// constexpr size_t MaxClosureSize = 64;
-// constexpr size_t NumClosures = 90000000; // 9 billion
-// constexpr size_t PoolSize = MaxClosureSize * NumClosures;
-
-// char* closurePool = new char[PoolSize];
-// size_t currentOffset = 0;
-
-// void* alloc_bulk(size_t bytes) {
-//     if (currentOffset + bytes > PoolSize) {
-//         std::cerr << "Exceeded closure pool size." << std::endl;
-//         exit(1); // Or handle more gracefully
-//     }
-//     void* allocated = closurePool + currentOffset;
-//     currentOffset += bytes;
-//     return allocated;
-// }
-
-// inline void** alloc_clo(void (*fptr)(), int num) {
-//     size_t size = (num + 1) * sizeof(void*);
-//     void** obj = (void**)alloc_bulk(size);
-//     if (obj != nullptr) {
-//         obj[0] = reinterpret_cast<void*>(fptr);
-//     }
-//     return obj;
-// }
-
-
 #pragma endregion
 
 #pragma region ConsMethods
