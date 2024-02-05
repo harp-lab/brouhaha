@@ -1,107 +1,90 @@
 #include "../../prelude.hpp"
 #include "gmp_func.h"
+#include <chrono>
 #include <stdio.h>
 #include <string.h>
 
-// declaring global constants at the top
-int int8696;
-int int8694;
-
-void _u43_fptr() // +
+void _u45_fptr() // -
 {
   // reading number of args
   //  This is the second type of the functions
   numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
-  void *const _env8699 = arg_buffer[1];
+  void *const _env9141 = arg_buffer[1];
   // decoding closure array
   void **decode_clo_array = nullptr;
   if (is_cons(arg_buffer[2])) {
     //(apply e0 e0) case
     void *const lst = arg_buffer[2];
-    void *const kont8697 = prim_car(lst);
-    void *const lst8700 = prim_cdr(lst);
-    void *const x8698 = apply_prim__u43(lst8700);
-    arg_buffer[1] = kont8697;
-    arg_buffer[2] = x8698;
+    void *const kont9139 = prim_car(lst);
+    void *const lst9142 = prim_cdr(lst);
+    void *const x9140 = apply_prim__u45(lst9142);
+    arg_buffer[1] = kont9139;
+    arg_buffer[2] = x9140;
     arg_buffer[0] = reinterpret_cast<void *>(2);
-    auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8697))[0]);
-    // call next proc using a function pointer
+    auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9139))[0]);
+
+    // calling next procedure using a function pointer
     function_ptr();
   } else {
-    void *const kont8697 = arg_buffer[2];
-    void *const x8698 = apply_prim__u43(arg_buffer);
-    arg_buffer[1] = kont8697;
-    arg_buffer[2] = x8698;
+    void *const kont9139 = arg_buffer[2];
+    void *const x9140 = apply_prim__u45(arg_buffer);
+    arg_buffer[1] = kont9139;
+    arg_buffer[2] = x9140;
     arg_buffer[0] = reinterpret_cast<void *>(2);
-    auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8697))[0]);
-    // call next proc using a function pointer
+    auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9139))[0]);
+
+    // calling next procedure using a function pointer
     function_ptr();
   }
 }
 
-void *_u43 = encode_clo(alloc_clo(_u43_fptr, 0));
-
-void call_fptr() // call
+void car_fptr() // car
 {
-  // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
-  // reading env
-  void *const _8691 = arg_buffer[1];
-  // reading env and args
-  void *const kont8687 = arg_buffer[2];
-  void *const x = arg_buffer[3];
-  // decoding closure array
-  void **decode_clo_array = nullptr;
-  void *const a8684 = reinterpret_cast<void *>(encode_int(int8694));
-  void *const a8685 = reinterpret_cast<void *>(encode_int(int8696));
+  void *const a8793 = reinterpret_cast<void *>(3);
+  void *const a8792 = reinterpret_cast<void *>(2);
+  void **clo9452 = alloc_clo(_u45_fptr, 2);
 
-  // clo-app
-  arg_buffer[2] = apply_prim__u43_2(a8684, a8685);
-  arg_buffer[1] = kont8687;
-  arg_buffer[0] = reinterpret_cast<void *>(2);
-  auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8687))[0]);
-  function_ptr();
+  // setting env list
+  clo9452[1] = a8793;
+  clo9452[2] = a8792;
+  clo9452[2] = a8792;
+  clo9452[2] = a8792;
+  void *f8905 = encode_clo(clo9452);
 }
 
-void *call = encode_clo(alloc_clo(call_fptr, 0));
+// void _u45_fptr()
+// {
+//     void *a8452 = encode_mpz(mpzvar9246);
+//     void *a8453 = encode_mpz(mpzvar9247);
+// }
 
-void brouhaha_main_fptr() // brouhaha_main
-{
-  // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
-  // reading env
-  void *const _8693 = arg_buffer[1];
-  // reading env and args
-  void *const kont8688 = arg_buffer[2];
-  // decoding closure array
-  void **decode_clo_array = nullptr;
-  void *const a8686 = reinterpret_cast<void *>(encode_int(int8696));
+// void _u43_fptr()
+// {
+//     void *a8452 = encode_mpz(mpzvar9246);
+//     void *a8453 = encode_mpz(mpzvar9247);
+// }
 
-  // clo-app
-  arg_buffer[1] = call;
-  arg_buffer[2] = kont8688;
-  arg_buffer[3] = a8686;
-  arg_buffer[0] = reinterpret_cast<void *>(3);
-  auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(call))[0]);
-  // call next proc using a function pointer
-  function_ptr();
-}
-
-void *brouhaha_main = encode_clo(alloc_clo(brouhaha_main_fptr, 0));
-
-int main(int argc, char **argv) {
+int main() {
   mp_set_memory_functions(&allocate_function, &reallocate_function,
                           &deallocate_function);
+  using namespace std::chrono;
 
-  // initializing global constants in the main
-  int8696 = 1;
-  int8694 = 100;
+  auto start = high_resolution_clock::now();
 
-  // making a call to the brouhaha main function to kick off our C++ emission.
-  void *fhalt_clo = encode_clo(alloc_clo(fhalt, 0));
-  auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(brouhaha_main))[0]);
-  arg_buffer[0] = 0;
-  arg_buffer[2] = fhalt_clo;
-  function_ptr();
+  // for (long long i = 0; i < 156749600; ++i){ _u43_fptr(); }
+
+  // for (long long i = 0; i < 78337957; ++i) { _u45_fptr(); }
+
+  for (long long i = 0; i < 999000000; ++i) {
+    car_fptr();
+  }
+
+  auto end = high_resolution_clock::now();
+
+  auto duration = duration_cast<microseconds>(end - start);
+  std::cout << "Time taken by function: " << duration.count() << " microseconds"
+            << std::endl;
+
+  return 0;
 }

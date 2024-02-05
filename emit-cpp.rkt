@@ -4,7 +4,7 @@
 (require "slog-utils.rkt")
 ; (require print-debug/print-dbg)
 (provide emit-cpp)
-(define (emit-cpp proc_list filepath slog-flag ast-root desugarred_prog anf_prog)
+(define (emit-cpp proc_list filepath slog-flag ast-root desugarred_prog anf_prog alphatized_cps_prog)
   ; defining cpp header files
   ; replace the old cpp file, if exists
   (append-line filepath "#include<stdio.h>" 'replace)
@@ -48,6 +48,31 @@
         )))
 
 
+  (define global-kont-set
+    (let loop ([item-set (set)] [prog+ alphatized_cps_prog])
+      (match prog+
+        [`((define (,ptr ,kont . ,param) ,body) ,rest ...)
+         (loop (set-add item-set kont) rest)]
+        [`((define (,ptr . ,param) ,body) ,rest ...)
+         (loop item-set rest)]
+        [`((define-prim ,ptr ,params ...) ,_ ...)
+         (loop item-set (cdr prog+))]
+        [`() item-set]
+        )))
+
+  (define global-symbols-set
+    (let loop ([item-set (set)] [prog+ alphatized_cps_prog])
+      (match prog+
+        ; [`((define (,ptr ,kont . ,param) ,body) ,rest ...)
+        ;  (loop (set-add (set-add item-set ptr) kont) rest)]
+        [`((define (,ptr . ,param) ,body) ,rest ...)
+         (loop (set-add item-set ptr) rest)]
+        [`((define-prim ,ptr ,params ...) ,_ ...)
+         (loop (set-add item-set ptr) (cdr prog+))]
+        [`() item-set]
+        )))
+
+
   (append-line filepath "\n// declaring global constants at the top")
   (hash-map find-global-constants
             (lambda (key type)
@@ -65,6 +90,11 @@
               ))
   (append-line filepath "\n")
 
+  ; (append-line filepath "\n// declaring global konts at the top")
+  ; (for ([item (set->list global-kont-set)])
+  ;   (append-line filepath (format "void *const ~a = nullptr;" item)))
+  ; (append-line filepath "\n")
+
   (append-line filepath "\n// declaring functions at the top")
   (let loop ([env+ (hash)] [prog+ proc_list])
     (match prog+
@@ -79,15 +109,15 @@
                                 (hash-ref conflicting_c++_prims (get-c-string ptr))
                                 (get-c-string ptr)
                                 0))
+
            (append-line filepath
                         (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
                                 (get-c-string ptr)
                                 (get-c-string ptr)
                                 0)))
 
+       (loop env+ (cdr prog+))]
 
-       (loop env+ (cdr prog+))
-       ]
       [`((proc (,ptr ,env . ,arg) ,body) ,rest ...)
        (define func_name (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
        (append-line filepath func_name)
@@ -104,6 +134,7 @@
                                 0)))
 
        (loop env+ (cdr prog+))]
+
       [`((define-prim ,ptr ,params ...) ,_ ...)
        (define func_name (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
        (append-line filepath func_name)
@@ -123,6 +154,17 @@
       [`() env+]
       ))
   (append-line filepath "\n")
+
+  (append-line filepath "\n// pre-decoding global symbols")
+  (for ([item (set->list global-symbols-set)])
+    ; (append-line filepath (format "void *const ~a = nullptr;" item))
+    (append-line filepath
+                 (if (hash-has-key? conflicting_c++_prims (get-c-string item))
+                     (format "auto decoded_~a = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                             (get-c-string item) (hash-ref conflicting_c++_prims (get-c-string item)))
+                     (format "auto decoded_~a = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" (get-c-string item) (get-c-string item)))))
+  (append-line filepath "\n")
+
 
   (define (convert-proc-body proc_name proc_env proc_arg body)
     (define (true? x) (if x #t #f))
@@ -348,8 +390,7 @@
           (for ([i (in-range 1 (+ (length args) 1))] [item args])
             (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
 
-          (append-line filepath
-                       (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
+          (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
 
 
           (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
@@ -382,13 +423,21 @@
 
              (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
 
-             (append-line
-              filepath
-              (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-                      (get-c-string (car args))))
 
-             (append-line filepath "\n// calling next procedure using a function pointer")
-             (append-line filepath "function_ptr();")]
+             (if (set-member? global-symbols-set (car args))
+                 (begin
+                   (append-line filepath (format "decoded_~a();" (get-c-string (car args)))))
+                 (begin
+                   (append-line
+                    filepath
+                    (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                            (get-c-string (car args))))
+
+                   (append-line filepath "\n// calling next procedure using a function pointer")
+                   (append-line filepath "function_ptr();")
+                   ))
+            ]
+            
             [is_define_prim
              (append-line filepath "\n//clo-app")
 
@@ -410,13 +459,26 @@
              (append-line filepath
                           (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
 
-             (append-line
-              filepath
-              (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-                      (get-c-string func)))
+             (if (set-member? global-symbols-set func)
+                 (begin
+                   (append-line filepath (format "decoded_~a();" (get-c-string func))))
+                 (begin
+                   (append-line
+                    filepath
+                    (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                            (get-c-string func)))
 
-             (append-line filepath "\n// calling next procedure using a function pointer")
-             (append-line filepath "function_ptr();")
+                   (append-line filepath "\n// calling next procedure using a function pointer")
+                   (append-line filepath "function_ptr();")
+                   ))
+
+            ;  (append-line
+            ;   filepath
+            ;   (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+            ;           (get-c-string func)))
+
+            ;  (append-line filepath "\n// calling next procedure using a function pointer")
+            ;  (append-line filepath "function_ptr();")
              ])
 
           ])]))

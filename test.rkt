@@ -120,7 +120,7 @@
     ; Here we compile rest
     (define anf_prg (list-ref compiled-program 0))
     (define cps_prg (list-ref compiled-program 1))
-    (define cps_after_anf (list-ref compiled-program 2))
+    (define alphatized_cps_prog (list-ref compiled-program 2))
     (define clo_conv_prg (list-ref compiled-program 3))
 
     ; (string-append out-dir "/output/" "facts.txt")
@@ -173,7 +173,8 @@
       ;;;                " and outputting to: "
       ;;;                (generate-comp-filepath "_cpp_program.cpp")))
       (let ([ast-root (if (slog-flag) (read-facts fact-file) '() )])
-        (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp") (slog-flag) ast-root desugar_prg anf_prg)
+        (emit-cpp clo_conv_prg (generate-comp-filepath "_cpp_program.cpp") (slog-flag) ast-root
+                  desugar_prg anf_prg alphatized_cps_prog)
         )
 
       (if (and (interp-anf-flag) (interp-cps-flag) (interp-closure-flag))
