@@ -103,15 +103,20 @@
        (define func_name (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
        (append-line filepath func_name)
 
-       (append-line filepath
-                    (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
-                        (format "void * ~a;" (hash-ref conflicting_c++_prims (get-c-string ptr)))
-                        (format "void * ~a;" (get-c-string ptr))))
+       (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
+           (append-line filepath
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (hash-ref conflicting_c++_prims (get-c-string ptr))
+                                (get-c-string ptr)
+                                0))
 
-       (define id (gensym 'stack_clo))
-       (append-line filepath (format "void * ~a[1];" id))
-       (loop (hash-set env+  ptr id) (cdr prog+))
-       ]
+           (append-line filepath
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (get-c-string ptr)
+                                (get-c-string ptr)
+                                0)))
+
+       (loop env+ (cdr prog+))]
 
       [`((proc (,ptr ,env . ,arg) ,body) ,rest ...)
        (define func_name (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
@@ -119,13 +124,16 @@
 
        (append-line filepath
                     (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
-                        (format "void * ~a;" (hash-ref conflicting_c++_prims (get-c-string ptr)))
-                        (format "void * ~a;" (get-c-string ptr))))
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (hash-ref conflicting_c++_prims (get-c-string ptr))
+                                (get-c-string ptr)
+                                0)
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (get-c-string ptr)
+                                (get-c-string ptr)
+                                0)))
 
-       (define id (gensym 'stack_clo))
-       (append-line filepath (format "void * ~a[1];" id))
-       (loop (hash-set env+  ptr id) (cdr prog+))
-       ]
+       (loop env+ (cdr prog+))]
 
       [`((define-prim ,ptr ,params ...) ,_ ...)
        (define func_name (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
@@ -133,45 +141,29 @@
 
        (append-line filepath
                     (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
-                        (format "void * ~a;" (hash-ref conflicting_c++_prims (get-c-string ptr)))
-                        (format "void * ~a;" (get-c-string ptr))))
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (hash-ref conflicting_c++_prims (get-c-string ptr))
+                                (get-c-string ptr)
+                                0)
+                        (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n"
+                                (get-c-string ptr)
+                                (get-c-string ptr)
+                                0)))
 
-       (define id (gensym 'stack_clo))
-       (append-line filepath (format "void * ~a[1];" id))
-       (loop (hash-set env+  ptr id) (cdr prog+))
-       ]
-      [`()
-       (append-line filepath "\nvoid initialize(){")
-       (hash-map env+
-                 (lambda (key stack_array_id)
-                   ;  (append-line filepath "\n")
-                   (append-line filepath (format "~a[0] = reinterpret_cast<void *>(~a_fptr);" stack_array_id (get-c-string key)))
-                   (if (hash-has-key? conflicting_c++_prims (get-c-string key))
-                       (append-line filepath (format "~a = encode_clo(~a);"
-                                                     (hash-ref conflicting_c++_prims (get-c-string key)) stack_array_id))
-                       (append-line filepath (format "~a = encode_clo(~a);" (get-c-string key) stack_array_id))
-                       )))
-
-       (append-line filepath "}")
-       ]
+       (loop env+ (cdr prog+))]
+      [`() env+]
       ))
-  (append-line filepath "")
+  (append-line filepath "\n")
 
-  (append-line filepath "//pre-declaration of global symbols")
-  (for ([item (set->list global-symbols-set)])
-    (append-line filepath (format "void(*decoded_~a)();" (get-c-string item))))
-  (append-line filepath "")
-
-  (append-line filepath "//pre-decoding global symbols")
-  (append-line filepath "void decode_global_symbols(){")
+  (append-line filepath "\n// pre-decoding global symbols")
   (for ([item (set->list global-symbols-set)])
     ; (append-line filepath (format "void *const ~a = nullptr;" item))
     (append-line filepath
                  (if (hash-has-key? conflicting_c++_prims (get-c-string item))
-                     (format "decoded_~a = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+                     (format "auto decoded_~a = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                              (get-c-string item) (hash-ref conflicting_c++_prims (get-c-string item)))
-                     (format "decoded_~a = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" (get-c-string item) (get-c-string item)))))
-  (append-line filepath "}\n")
+                     (format "auto decoded_~a = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" (get-c-string item) (get-c-string item)))))
+  (append-line filepath "\n")
 
 
   (define (convert-proc-body proc_name proc_env proc_arg body)
@@ -185,14 +177,10 @@
        ; new-closure
        (append-line filepath "\n//creating new closure instance")
 
-
-
        ;  (define ptrName (gensym 'ptr))
        (define cloName (gensym 'clo))
 
-       ;  (append-line filepath (format "void** ~a = alloc_clo(~a_fptr, ~a);" cloName ptr arglength))
-       (append-line filepath (format "void* ~a[~a];" cloName (+ 1 arglength)))
-       (append-line filepath (format "~a[0] = reinterpret_cast<void *>(~a_fptr);" cloName (get-c-string ptr)))
+       (append-line filepath (format "void** ~a = alloc_clo(~a_fptr, ~a);" cloName ptr arglength))
 
        (when (> (+ arglength 1) 1)
          (append-line filepath "\n//setting env list"))
@@ -208,9 +196,9 @@
          ;         (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" proc_name proc_name 0))
          ;     ))
 
-         (append-line filepath (format "~a[~a] = ~a;" cloName i item))
-
-         )
+         (if (hash-has-key? conflicting_c++_prims (get-c-string item))
+             (append-line filepath (format "~a[~a] = ~a;" cloName i (hash-ref conflicting_c++_prims (get-c-string item))))
+             (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item)))))
 
        (append-line filepath (format "void* ~a = encode_clo(~a);" (get-c-string lhs) cloName))
 
@@ -448,8 +436,8 @@
                    (append-line filepath "\n// calling next procedure using a function pointer")
                    (append-line filepath "function_ptr();")
                    ))
-             ]
-
+            ]
+            
             [is_define_prim
              (append-line filepath "\n//clo-app")
 
@@ -484,13 +472,13 @@
                    (append-line filepath "function_ptr();")
                    ))
 
-             ;  (append-line
-             ;   filepath
-             ;   (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-             ;           (get-c-string func)))
+            ;  (append-line
+            ;   filepath
+            ;   (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+            ;           (get-c-string func)))
 
-             ;  (append-line filepath "\n// calling next procedure using a function pointer")
-             ;  (append-line filepath "function_ptr();")
+            ;  (append-line filepath "\n// calling next procedure using a function pointer")
+            ;  (append-line filepath "function_ptr();")
              ])
 
           ])]))
@@ -505,7 +493,7 @@
        (append-line filepath func_name)
 
        ;  uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -548,7 +536,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -613,7 +601,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -697,14 +685,12 @@
   (append-line filepath "int main(int argc, char **argv)\n{")
 
 
-  ; (append-line filepath
-  ;              "mp_set_memory_functions(&allocate_function,
-  ;                           &reallocate_function,
-  ;                           &deallocate_function);")
+  (append-line filepath
+               "mp_set_memory_functions(&allocate_function,
+                            &reallocate_function,
+                            &deallocate_function);")
 
-  (append-line filepath "initialize();")
-  (append-line filepath "decode_global_symbols();")
-
+  ; mpz_init_set_si(*mpzvar9246, 12);
   (append-line filepath "\n// initializing global constants in the main")
   (hash-map find-global-constants
             (lambda (key type)
@@ -725,24 +711,19 @@
 
   (append-line filepath "//making a call to the brouhaha main function to kick off our C++ emission.")
   ; (append-line filepath "call_counter++;")
+  (append-line filepath "void *fhalt_clo = encode_clo(alloc_clo(fhalt,0));")
 
-  (define stack_clo_id (gensym 'stack_clo))
-
-  (append-line filepath (format "void * ~a[0];" stack_clo_id))
-  (append-line filepath (format "~a[0] = reinterpret_cast<void *>(fhalt);" stack_clo_id))
-  (append-line filepath (format "void *fhalt_clo = encode_clo(~a);" stack_clo_id))
-
-  ; (append-line filepath "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(brouhaha_main))[0]);")
+  (append-line filepath "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(brouhaha_main))[0]);")
   ; (append-line filepath "arg_num = arg_buffer.size();")
   (append-line filepath "arg_buffer[0] = 0;")
   (append-line filepath "arg_buffer[2] = fhalt_clo;")
 
   (append-line filepath "\n// calling next procedure using a function pointer")
-  (append-line filepath "decoded_brouhaha_main();")
+  (append-line filepath "function_ptr();")
 
   ; (append-line filepath "arg_buffer.clear();")
   ; (append-line filepath "return 0;")
 
-  (append-line filepath "}")
+  (append-line filepath "}\n")
   ;end of main function.
   'cpp-emission-done!)
