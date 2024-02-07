@@ -1,2 +1,3 @@
 # Internals
-[main-page](../docs.md)
+- [emitting-slog](emitting-slog.md)
+- [main-page](../docs.md)
