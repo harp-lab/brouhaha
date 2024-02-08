@@ -228,7 +228,7 @@ const hamt<hash_struct, hash_struct> *decode_hash(void *val) {
 inline void **alloc_clo(void (*fptr)(), int num) {
   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
   obj[0] = 0;
-  // obj[1] = 0;
+  
   if (obj != NULL) {
     obj[0] = reinterpret_cast<void *>(fptr);
   }
