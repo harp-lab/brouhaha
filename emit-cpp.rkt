@@ -82,9 +82,9 @@
                 [(equal? (car type) 'mpf)
                  (append-line filepath (format "mpf_t* ~a = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));" (cadr type)))]
                 [(equal? (car type) 'int)
-                 (append-line filepath (format "int ~a;" (cadr type)))]
+                 (append-line filepath (format "void* ~a;" (cadr type)))]
                 [(equal? (car type) 'float)
-                 (append-line filepath (format "float ~a;" (cadr type)))]
+                 (append-line filepath (format "void* ~a;" (cadr type)))]
                 [else (error "Error occured find-global-constants!")]
                 )
               ))
@@ -244,7 +244,7 @@
 
           (cond
             [(equal? type 'float)
-             (append-line filepath (format "void* const ~a = reinterpret_cast<void*>(encode_float(~a));" (get-c-string lhs) varname))]
+             (append-line filepath (format "void* const ~a = ~a;" (get-c-string lhs) varname))]
             [(equal? type 'mpf)
              (append-line filepath (format "void* const ~a = encode_mpf(~a);" (get-c-string lhs) varname))]
             [else (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])
@@ -257,7 +257,7 @@
 
           (cond
             [(equal? type 'int)
-             (append-line filepath (format "void* const ~a = reinterpret_cast<void*>(encode_int(~a));" lhs varname))]
+             (append-line filepath (format "void* const ~a = ~a;" lhs varname))]
             [(equal? type 'mpz)
              (append-line filepath (format "void* const ~a = encode_mpz(~a);" (get-c-string lhs) varname))]
             [else (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])
@@ -701,9 +701,9 @@
                 [(equal? (car type) 'mpf)
                  (append-line filepath (format "mpf_init_set_str(*~a, \"~a\", 10);" (cadr type) key))]
                 [(equal? (car type) 'int)
-                 (append-line filepath (format "~a = ~a;" (cadr type) key))]
+                 (append-line filepath (format "~a = reinterpret_cast<void*>(encode_int(~a));" (cadr type) key))]
                 [(equal? (car type) 'float)
-                 (append-line filepath (format "~a = ~a;" (cadr type) key))]
+                 (append-line filepath (format "~a = reinterpret_cast<void*>(encode_float(~a));" (cadr type) key))]
                 [else (error "Error occured could not find value in -> find-global-constants!")]
                 )
               ))

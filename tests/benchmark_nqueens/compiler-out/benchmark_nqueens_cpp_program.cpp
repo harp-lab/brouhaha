@@ -4,10 +4,10 @@
 #include "../../prelude.hpp"
 
 // declaring global constants at the top
-int int9021;
-int int9020;
-int int9007;
-int int9022;
+void* int9021;
+void* int9020;
+void* int9007;
+void* int9022;
 
 
 
@@ -2498,8 +2498,8 @@ void* const kont8855 = arg_buffer[2];
 void* const x = arg_buffer[3];
 //decoding closure array
 void** decode_clo_array = nullptr;
-void* const id_8716 = reinterpret_cast<void*>(encode_int(int9021));
-void* const id_8717 = reinterpret_cast<void*>(encode_int(int9007));
+void* const id_8716 = int9021;
+void* const id_8717 = int9007;
 void* id_8718 = apply_prim_modulo_2(x, id_8717);
 
 //clo-app
@@ -2523,8 +2523,8 @@ void* const kont8856 = arg_buffer[2];
 void* const x = arg_buffer[3];
 //decoding closure array
 void** decode_clo_array = nullptr;
-void* const id_8719 = reinterpret_cast<void*>(encode_int(int9020));
-void* const id_8720 = reinterpret_cast<void*>(encode_int(int9007));
+void* const id_8719 = int9020;
+void* const id_8720 = int9007;
 void* id_8721 = apply_prim_modulo_2(x, id_8720);
 
 //clo-app
@@ -2549,7 +2549,7 @@ void* const lst = arg_buffer[3];
 void* const n = arg_buffer[4];
 //decoding closure array
 void** decode_clo_array = nullptr;
-void* const id_8722 = reinterpret_cast<void*>(encode_int(int9021));
+void* const id_8722 = int9021;
 void* id_8723 = apply_prim__u61_2(id_8722, n);
 
 //if-clause
@@ -2570,7 +2570,7 @@ function_ptr();
 else
 {
 void* id_8725 = apply_prim_cdr_1(lst);
-void* const id_8726 = reinterpret_cast<void*>(encode_int(int9020));
+void* const id_8726 = int9020;
 void* id_8727 = apply_prim__u45_2(n, id_8726);
 
 //clo-app
@@ -2813,7 +2813,7 @@ void* id_8742 = apply_prim_null_u63_1(lst);
 bool if_guard9238 = is_true(id_8742);
 if(if_guard9238)
 {
-void* const xy8743 = reinterpret_cast<void*>(encode_int(int9021));
+void* const xy8743 = int9021;
 
 //clo-app
 arg_buffer[1] = kont8861;
@@ -2826,7 +2826,7 @@ function_ptr();
 }
 else
 {
-void* const id_8744 = reinterpret_cast<void*>(encode_int(int9020));
+void* const id_8744 = int9020;
 void* id_8745 = apply_prim_cdr_1(lst);
 
 //creating new closure instance
@@ -2907,9 +2907,9 @@ void* const id_8750 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8929);
-void* const proc = decode_clo_array[3];
+void* const kont8863 = decode_clo_array[3];
 void* const lst = decode_clo_array[2];
-void* const kont8863 = decode_clo_array[1];
+void* const proc = decode_clo_array[1];
 void* id_8751 = apply_prim_cdr_1(lst);
 
 //creating new closure instance
@@ -2973,9 +2973,9 @@ void* id_8749 = apply_prim_car_1(lst);
 void** clo9243 = alloc_clo(lam8928_fptr, 3);
 
 //setting env list
-clo9243[1] = kont8863;
+clo9243[1] = proc;
 clo9243[2] = lst;
-clo9243[3] = proc;
+clo9243[3] = kont8863;
 void* f8866 = encode_clo(clo9243);
 
 
@@ -3052,8 +3052,8 @@ void* const id_8756 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8936);
 void* const lst = decode_clo_array[3];
-void* const op = decode_clo_array[2];
-void* const kont8867 = decode_clo_array[1];
+void* const kont8867 = decode_clo_array[2];
+void* const op = decode_clo_array[1];
 
 //if-clause
 bool if_guard9244 = is_true(id_8756);
@@ -3137,8 +3137,8 @@ void* id_8755 = apply_prim_car_1(lst);
 void** clo9248 = alloc_clo(lam8935_fptr, 3);
 
 //setting env list
-clo9248[1] = kont8867;
-clo9248[2] = op;
+clo9248[1] = op;
+clo9248[2] = kont8867;
 clo9248[3] = lst;
 void* f8870 = encode_clo(clo9248);
 
@@ -3169,7 +3169,7 @@ void* const lst = arg_buffer[3];
 void* const n = arg_buffer[4];
 //decoding closure array
 void** decode_clo_array = nullptr;
-void* const id_8761 = reinterpret_cast<void*>(encode_int(int9021));
+void* const id_8761 = int9021;
 void* id_8762 = apply_prim__u61_2(n, id_8761);
 
 //if-clause
@@ -3189,7 +3189,7 @@ function_ptr();
 else
 {
 void* id_8763 = apply_prim_cdr_1(lst);
-void* const id_8764 = reinterpret_cast<void*>(encode_int(int9020));
+void* const id_8764 = int9020;
 void* id_8765 = apply_prim__u45_2(n, id_8764);
 
 //clo-app
@@ -3479,8 +3479,8 @@ void* const id_8782 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8950);
-void* const id_8780 = decode_clo_array[2];
-void* const kont8879 = decode_clo_array[1];
+void* const kont8879 = decode_clo_array[2];
+void* const id_8780 = decode_clo_array[1];
 
 //clo-app
 arg_buffer[2]=apply_prim_cons_2(id_8780, id_8782);
@@ -3529,8 +3529,8 @@ void* id_8781 = apply_prim_cdr_1(lhs);
 void** clo9257 = alloc_clo(lam8949_fptr, 2);
 
 //setting env list
-clo9257[1] = kont8879;
-clo9257[2] = id_8780;
+clo9257[1] = id_8780;
+clo9257[2] = kont8879;
 void* f8880 = encode_clo(clo9257);
 
 
@@ -3757,7 +3757,7 @@ void* const n = arg_buffer[4];
 void* const lst2 = arg_buffer[5];
 //decoding closure array
 void** decode_clo_array = nullptr;
-void* const id_8786 = reinterpret_cast<void*>(encode_int(int9021));
+void* const id_8786 = int9021;
 void* id_8787 = apply_prim__u61_2(n, id_8786);
 
 //if-clause
@@ -3784,7 +3784,7 @@ decoded_reverse();
 else
 {
 void* id_8789 = apply_prim_cdr_1(lst);
-void* const id_8790 = reinterpret_cast<void*>(encode_int(int9020));
+void* const id_8790 = int9020;
 void* id_8791 = apply_prim__u45_2(n, id_8790);
 void* id_8792 = apply_prim_car_1(lst);
 void* id_8793 = apply_prim_cons_2(id_8792, lst2);
@@ -3813,8 +3813,8 @@ void* const id_8794 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8965);
 void* const lst = decode_clo_array[3];
-void* const n = decode_clo_array[2];
-void* const kont8888 = decode_clo_array[1];
+void* const kont8888 = decode_clo_array[2];
+void* const n = decode_clo_array[1];
 
 //clo-app
 arg_buffer[1] = take_u45helper;
@@ -3843,8 +3843,8 @@ void** decode_clo_array = nullptr;
 void** clo9264 = alloc_clo(lam8964_fptr, 3);
 
 //setting env list
-clo9264[1] = kont8888;
-clo9264[2] = n;
+clo9264[1] = n;
+clo9264[2] = kont8888;
 clo9264[3] = lst;
 void* f8889 = encode_clo(clo9264);
 
@@ -3870,14 +3870,14 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8968);
 void* const dist = decode_clo_array[4];
 void* const row = decode_clo_array[3];
-void* const placed = decode_clo_array[2];
-void* const kont8890 = decode_clo_array[1];
+void* const kont8890 = decode_clo_array[2];
+void* const placed = decode_clo_array[1];
 
 //if-clause
 bool if_guard9265 = is_true(id_8808);
 if(if_guard9265)
 {
-void* const id_8809 = reinterpret_cast<void*>(encode_int(int9020));
+void* const id_8809 = int9020;
 void* id_8810 = apply_prim__u43_2(dist, id_8809);
 void* id_8811 = apply_prim_cdr_1(placed);
 
@@ -3919,8 +3919,8 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8970);
 void* const dist = decode_clo_array[4];
 void* const row = decode_clo_array[3];
-void* const placed = decode_clo_array[2];
-void* const kont8890 = decode_clo_array[1];
+void* const kont8890 = decode_clo_array[2];
+void* const placed = decode_clo_array[1];
 
 //if-clause
 bool if_guard9266 = is_true(id_8802);
@@ -3934,8 +3934,8 @@ void* id_8805 = apply_prim__u61_2(id_8803, id_8804);
 void** clo9267 = alloc_clo(lam8967_fptr, 4);
 
 //setting env list
-clo9267[1] = kont8890;
-clo9267[2] = placed;
+clo9267[1] = placed;
+clo9267[2] = kont8890;
 clo9267[3] = row;
 clo9267[4] = dist;
 void* f8891 = encode_clo(clo9267);
@@ -4028,8 +4028,8 @@ void* id_8799 = apply_prim__u61_2(id_8797, id_8798);
 void** clo9270 = alloc_clo(lam8969_fptr, 4);
 
 //setting env list
-clo9270[1] = kont8890;
-clo9270[2] = placed;
+clo9270[1] = placed;
+clo9270[2] = kont8890;
 clo9270[3] = row;
 clo9270[4] = dist;
 void* f8892 = encode_clo(clo9270);
@@ -4180,9 +4180,9 @@ void* const id_8839 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8979);
-void* const id_8827 = decode_clo_array[3];
-void* const kont8893 = decode_clo_array[2];
-void* const count = decode_clo_array[1];
+void* const kont8893 = decode_clo_array[3];
+void* const count = decode_clo_array[2];
+void* const id_8827 = decode_clo_array[1];
 void* id_8840 = apply_prim_cons_2(id_8827, id_8839);
 
 //clo-app
@@ -4205,21 +4205,21 @@ void* const id_8830 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8981);
-void* const kont8893 = decode_clo_array[7];
-void* const count = decode_clo_array[6];
-void* const z = decode_clo_array[5];
-void* const y = decode_clo_array[4];
-void* const x = decode_clo_array[3];
+void* const count = decode_clo_array[7];
+void* const z = decode_clo_array[6];
+void* const y = decode_clo_array[5];
+void* const x = decode_clo_array[4];
+void* const id_8827 = decode_clo_array[3];
 void* const stack = decode_clo_array[2];
-void* const id_8827 = decode_clo_array[1];
+void* const kont8893 = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9274 = alloc_clo(lam8978_fptr, 3);
 
 //setting env list
-clo9274[1] = count;
-clo9274[2] = kont8893;
-clo9274[3] = id_8827;
+clo9274[1] = id_8827;
+clo9274[2] = count;
+clo9274[3] = kont8893;
 void* f8894 = encode_clo(clo9274);
 
 
@@ -4277,26 +4277,26 @@ void* const id_8827 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8983);
-void* const stack = decode_clo_array[6];
-void* const kont8893 = decode_clo_array[5];
-void* const count = decode_clo_array[4];
-void* const z = decode_clo_array[3];
-void* const y = decode_clo_array[2];
-void* const x = decode_clo_array[1];
+void* const count = decode_clo_array[6];
+void* const z = decode_clo_array[5];
+void* const y = decode_clo_array[4];
+void* const x = decode_clo_array[3];
+void* const stack = decode_clo_array[2];
+void* const kont8893 = decode_clo_array[1];
 void* id_8828 = apply_prim_car_1(x);
-void* const id_8829 = reinterpret_cast<void*>(encode_int(int9020));
+void* const id_8829 = int9020;
 
 //creating new closure instance
 void** clo9277 = alloc_clo(lam8980_fptr, 7);
 
 //setting env list
-clo9277[1] = id_8827;
+clo9277[1] = kont8893;
 clo9277[2] = stack;
-clo9277[3] = x;
-clo9277[4] = y;
-clo9277[5] = z;
-clo9277[6] = count;
-clo9277[7] = kont8893;
+clo9277[3] = id_8827;
+clo9277[4] = x;
+clo9277[5] = y;
+clo9277[6] = z;
+clo9277[7] = count;
 void* f8898 = encode_clo(clo9277);
 
 
@@ -4322,11 +4322,11 @@ void* const z = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8985);
-void* const stack = decode_clo_array[5];
-void* const kont8893 = decode_clo_array[4];
-void* const count = decode_clo_array[3];
-void* const y = decode_clo_array[2];
-void* const x = decode_clo_array[1];
+void* const count = decode_clo_array[5];
+void* const y = decode_clo_array[4];
+void* const x = decode_clo_array[3];
+void* const stack = decode_clo_array[2];
+void* const kont8893 = decode_clo_array[1];
 void* id_8818 = apply_prim_null_u63_1(x);
 
 //if-clause
@@ -4340,7 +4340,7 @@ bool if_guard9279 = is_true(id_8819);
 if(if_guard9279)
 {
 void* id_8820 = apply_prim_cdr_1(stack);
-void* const id_8821 = reinterpret_cast<void*>(encode_int(int9020));
+void* const id_8821 = int9020;
 void* id_8822 = apply_prim__u43_2(count, id_8821);
 
 //clo-app
@@ -4375,12 +4375,12 @@ void* id_8826 = apply_prim_cons_2(id_8825, y);
 void** clo9280 = alloc_clo(lam8982_fptr, 6);
 
 //setting env list
-clo9280[1] = x;
-clo9280[2] = y;
-clo9280[3] = z;
-clo9280[4] = count;
-clo9280[5] = kont8893;
-clo9280[6] = stack;
+clo9280[1] = kont8893;
+clo9280[2] = stack;
+clo9280[3] = x;
+clo9280[4] = y;
+clo9280[5] = z;
+clo9280[6] = count;
 void* f8899 = encode_clo(clo9280);
 
 
@@ -4408,21 +4408,21 @@ void* const y = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8987);
-void* const stack = decode_clo_array[5];
-void* const state = decode_clo_array[4];
-void* const kont8893 = decode_clo_array[3];
-void* const count = decode_clo_array[2];
-void* const x = decode_clo_array[1];
+void* const state = decode_clo_array[5];
+void* const count = decode_clo_array[4];
+void* const x = decode_clo_array[3];
+void* const stack = decode_clo_array[2];
+void* const kont8893 = decode_clo_array[1];
 
 //creating new closure instance
 void** clo9281 = alloc_clo(lam8984_fptr, 5);
 
 //setting env list
-clo9281[1] = x;
-clo9281[2] = y;
-clo9281[3] = count;
-clo9281[4] = kont8893;
-clo9281[5] = stack;
+clo9281[1] = kont8893;
+clo9281[2] = stack;
+clo9281[3] = x;
+clo9281[4] = y;
+clo9281[5] = count;
 void* f8900 = encode_clo(clo9281);
 
 
@@ -4476,11 +4476,11 @@ void* x = apply_prim_car_1(state);
 void** clo9283 = alloc_clo(lam8986_fptr, 5);
 
 //setting env list
-clo9283[1] = x;
-clo9283[2] = count;
-clo9283[3] = kont8893;
-clo9283[4] = state;
-clo9283[5] = stack;
+clo9283[1] = kont8893;
+clo9283[2] = stack;
+clo9283[3] = x;
+clo9283[4] = count;
+clo9283[5] = state;
 void* f8901 = encode_clo(clo9283);
 
 
@@ -4510,7 +4510,7 @@ void* const n = arg_buffer[3];
 void* const l = arg_buffer[4];
 //decoding closure array
 void** decode_clo_array = nullptr;
-void* const id_8841 = reinterpret_cast<void*>(encode_int(int9021));
+void* const id_8841 = int9021;
 void* id_8842 = apply_prim__u61_2(n, id_8841);
 
 //if-clause
@@ -4529,7 +4529,7 @@ function_ptr();
 }
 else
 {
-void* const id_8843 = reinterpret_cast<void*>(encode_int(int9020));
+void* const id_8843 = int9020;
 void* id_8844 = apply_prim__u45_2(n, id_8843);
 void* id_8845 = apply_prim_cons_2(n, l);
 
@@ -4556,7 +4556,7 @@ void* const id_8851 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8991);
 void* const kont8903 = decode_clo_array[1];
-void* const id_8852 = reinterpret_cast<void*>(encode_int(int9021));
+void* const id_8852 = int9021;
 
 //clo-app
 arg_buffer[1] = q_u45helper;
@@ -4764,7 +4764,7 @@ void* const _9003 = arg_buffer[1];
 void* const kont8910 = arg_buffer[2];
 //decoding closure array
 void** decode_clo_array = nullptr;
-void* const id_8853 = reinterpret_cast<void*>(encode_int(int9022));
+void* const id_8853 = int9022;
 
 //clo-app
 arg_buffer[1] = nqueens;
@@ -4781,10 +4781,10 @@ mp_set_memory_functions(&allocate_function,
                             &deallocate_function);
 
 // initializing global constants in the main
-int9021 = 0;
-int9020 = 1;
-int9007 = 2;
-int9022 = 14;
+int9021 = reinterpret_cast<void*>(encode_int(0));
+int9020 = reinterpret_cast<void*>(encode_int(1));
+int9007 = reinterpret_cast<void*>(encode_int(2));
+int9022 = reinterpret_cast<void*>(encode_int(12));
 
 
 //making a call to the brouhaha main function to kick off our C++ emission.

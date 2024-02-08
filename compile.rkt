@@ -362,11 +362,11 @@
     (match ae
       [`(lambda (,xs ...) ,e0)
        (define cx (gensym 'cont))
-       (coverage `(lambda (,cx ,@xs) ,(T e0 cx)))] ; checked
+       (coverage `(lambda (,cx ,@xs) ,(T e0 cx)))]
       [`(lambda ,x ,e0)
        (define cx (gensym 'cont))
        (define x+ (gensym x))
-       (coverage `(lambda ,x+ (let ([,cx (prim car ,x+)]) (let ([,x (prim cdr ,x+)]) ,(T e0 cx)))))] ; checked
+       (coverage `(lambda ,x+ (let ([,cx (prim car ,x+)]) (let ([,x (prim cdr ,x+)]) ,(T e0 cx)))))]
       [(? symbol? x) (coverage x)]
       [`',dat (coverage `',dat)]))
 
