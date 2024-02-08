@@ -313,7 +313,7 @@
 
       [`(let ([,x ,(? symbol? rhs)]) ,e0) `(let ([,x ,rhs]) ,(tag-body e0))]
 
-      [`(let ([,x (list)]) ,e0) `(let ([,x (list)]) ,(tag-body e0))]
+      [`(let ([,x (list)]) ,e0) `(let ([,x (prim list)]) ,(tag-body e0))]
 
       [`(let ([,x ,rhs]) ,e0)
        (match-define `(,is_define_prim ,is_callable ,arg_count)
