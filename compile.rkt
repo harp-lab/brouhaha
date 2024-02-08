@@ -343,7 +343,7 @@
       ))
 
 
-  (define (cps-convert-def def)
+  (define (init def)
     (match def
       [`(define (,fname ,params ...) ,body)
        `(define (,fname ,@params) ,(tag-body body))]
@@ -353,7 +353,7 @@
        `(define-prim ,fname ,@param-counts)]
       ))
 
-  (map cps-convert-def program)
+  (map init program)
   )
 
 

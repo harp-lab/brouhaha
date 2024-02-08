@@ -47,6 +47,9 @@
         [`() env+]
         )))
 
+  ; (pretty-print anf_prog)
+  ; (pretty-print find-global-constants)
+
 
   (define global-kont-set
     (let loop ([item-set (set)] [prog+ alphatized_cps_prog])
@@ -84,6 +87,8 @@
                 [(equal? (car type) 'int)
                  (append-line filepath (format "void* ~a;" (cadr type)))]
                 [(equal? (car type) 'float)
+                 (append-line filepath (format "void* ~a;" (cadr type)))]
+                [(or (equal? (car type) 'bool-true) (equal? (car type) 'bool-false))
                  (append-line filepath (format "void* ~a;" (cadr type)))]
                 [else (error "Error occured find-global-constants!")]
                 )
@@ -167,7 +172,7 @@
 
 
   (define (convert-proc-body proc_name proc_env proc_arg body)
-    (define (true? x) (if x #t #f))
+    ; (define (true? x) (if x #t #f))
 
     ; (match (p-dbg body)
     (match body
@@ -209,7 +214,7 @@
 
       [`(let ([,lhs (prim ,op ,args ...)]) ,letbody)
        (define line
-         (format "void* ~a = apply_prim_~a_~a(~a);"
+         (format "void* const ~a = apply_prim_~a_~a(~a);"
                  (get-c-string lhs)
                  (get-c-string op)
                  (length args)
@@ -265,13 +270,17 @@
           (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [`(quote ,(? boolean? val))
-          (cond
-            [(true? val)
-             (append-line filepath (format "void* ~a = encode_bool(true);" (get-c-string lhs)))
-             (convert-proc-body proc_name proc_env proc_arg letbody)]
-            [else
-             (append-line filepath (format "void* ~a = encode_bool(false);" (get-c-string lhs)))
-             (convert-proc-body proc_name proc_env proc_arg letbody)])]
+
+            (match-define `(,type ,varname) (hash-ref find-global-constants val))
+            (cond
+              [(equal? type 'bool-true)
+               (append-line filepath (format "void* const ~a = ~a;" (get-c-string lhs) varname))]
+              [(equal? type 'bool-false)
+               (append-line filepath (format "void* const ~a = ~a;" (get-c-string lhs) varname))]
+              [else (error "Error occured in emit-cpp -> proc_body case: (quote ,(? boolean? val)")])
+
+            (convert-proc-body proc_name proc_env proc_arg letbody)
+          ]
 
          [`(quote ,(? null? val))
           (append-line filepath (format "void* ~a = encode_null();" (get-c-string lhs)))
@@ -437,8 +446,8 @@
                    (append-line filepath "\n// calling next procedure using a function pointer")
                    (append-line filepath "function_ptr();")
                    ))
-            ]
-            
+             ]
+
             [is_define_prim
              (append-line filepath "\n//clo-app")
 
@@ -473,13 +482,13 @@
                    (append-line filepath "function_ptr();")
                    ))
 
-            ;  (append-line
-            ;   filepath
-            ;   (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
-            ;           (get-c-string func)))
+             ;  (append-line
+             ;   filepath
+             ;   (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+             ;           (get-c-string func)))
 
-            ;  (append-line filepath "\n// calling next procedure using a function pointer")
-            ;  (append-line filepath "function_ptr();")
+             ;  (append-line filepath "\n// calling next procedure using a function pointer")
+             ;  (append-line filepath "function_ptr();")
              ])
 
           ])]))
@@ -704,6 +713,10 @@
                  (append-line filepath (format "~a = reinterpret_cast<void*>(encode_int(~a));" (cadr type) key))]
                 [(equal? (car type) 'float)
                  (append-line filepath (format "~a = reinterpret_cast<void*>(encode_float(~a));" (cadr type) key))]
+                [(equal? (car type) 'bool-true)
+                 (append-line filepath (format "~a = encode_bool(true);" (cadr type)))]
+                [(equal? (car type) 'bool-false)
+                 (append-line filepath (format "~a = encode_bool(false);" (cadr type)))]
                 [else (error "Error occured could not find value in -> find-global-constants!")]
                 )
               ))
@@ -714,13 +727,14 @@
   ; (append-line filepath "call_counter++;")
   (append-line filepath "void *fhalt_clo = encode_clo(alloc_clo(fhalt,0));")
 
-  (append-line filepath "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(brouhaha_main))[0]);")
+  ; (append-line filepath "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(brouhaha_main))[0]);")
   ; (append-line filepath "arg_num = arg_buffer.size();")
   (append-line filepath "arg_buffer[0] = 0;")
   (append-line filepath "arg_buffer[2] = fhalt_clo;")
 
   (append-line filepath "\n// calling next procedure using a function pointer")
-  (append-line filepath "function_ptr();")
+  ; (append-line filepath "function_ptr();")
+  (append-line filepath "decoded_brouhaha_main();")
 
   ; (append-line filepath "arg_buffer.clear();")
   ; (append-line filepath "return 0;")

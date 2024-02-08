@@ -9,6 +9,8 @@
 (define (get-c-string s)
   (string->symbol (convert-id-to-c s)))
 
+(define (true? x) (if x #t #f))
+
 ; appends a line in the program, default mode is append, if not specified
 (define (append-line filename line [mode 'append])
   (define outfile (open-output-file #:exists mode filename))
@@ -69,12 +71,20 @@
                                       (if (within-float-32bit-range? val)
                                           (hash-set env val `(float ,(gensym 'float)))
                                           (hash-set env val `(mpf ,(gensym 'mpf))))]
+                                     [`(quote ,(? boolean? val))
+                                      (cond
+                                        [(true? val)
+                                         (hash-set env val `(bool-true ,(gensym 'bool_t))) ]
+                                        [else
+                                         (hash-set env val `(bool-false ,(gensym 'bool_f)))]
+                                        )]
                                      [_ env]))]
-    [`(if ,ec ,et ,ef) (find-global-constants-helper et env) (find-global-constants-helper ef env)]
-    [`(apply ,e0 ,e1) (find-global-constants-helper e0 env) (find-global-constants-helper e1 env)]
+    [`(if ,ec ,et ,ef)
+     (find-global-constants-helper et (find-global-constants-helper ef env))]
+    [`(apply ,e0 ,e1)
+     (find-global-constants-helper e0 (find-global-constants-helper e1 env))]
     [`(,ef ,eas ...)
-     (find-global-constants-helper ef env)
-     (find-global-constants-helper eas env)]
+     (find-global-constants-helper ef (find-global-constants-helper eas env))]
     ))
 
 

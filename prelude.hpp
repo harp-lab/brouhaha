@@ -56,13 +56,11 @@ void *arg_buffer[999]; // This is where the arg buffer is called
 long numArgs;
 
 // Example print_val function
-template<typename T>
-T print_val(T val) {
-    return val; // Just return the value for demonstration
+template <typename T> T print_val(T val) {
+  return val; // Just return the value for demonstration
 }
 
 #define PRINT(val) (std::cout << (val) << std::endl)
-
 
 #pragma region Types
 // region Encoding and Decoding and Tags
@@ -228,7 +226,7 @@ const hamt<hash_struct, hash_struct> *decode_hash(void *val) {
 inline void **alloc_clo(void (*fptr)(), int num) {
   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
   obj[0] = 0;
-  
+
   if (obj != NULL) {
     obj[0] = reinterpret_cast<void *>(fptr);
   }
@@ -946,6 +944,35 @@ inline void *apply_prim_pair_u63(void *lst) {
         "Error in pair? -> arity mismatch: expected number of argument is 1.");
 
   return apply_prim_pair_u63_1(prim_car(lst));
+}
+
+inline void *apply_prim_list(void *arg) {
+  void *x = encode_null();
+
+  for (int i = numArgs; i > 2; i--) {
+    x = prim_cons(arg_buffer[i], x);
+  }
+
+  return x;
+}
+
+inline void *apply_prim_list_1(void *arg) {
+  void *x = encode_null();
+
+  return prim_cons(arg, encode_null());
+}
+
+inline void *apply_prim_list_2(void *arg1, void *arg2) {
+  return prim_cons(arg1, prim_cons(arg2, encode_null()));
+}
+
+inline void *apply_prim_list_3(void *arg1, void *arg2, void *arg3) {
+  return prim_cons(arg1, prim_cons(arg2, prim_cons(arg3, encode_null())));
+}
+
+inline void *apply_prim_list_4(void *arg1, void *arg2, void *arg3, void *arg4) {
+  return prim_cons(
+      arg1, prim_cons(arg2, prim_cons(arg3, prim_cons(arg4, encode_null()))));
 }
 
 #pragma region Addition
@@ -4118,8 +4145,9 @@ void *halt;
 void fhalt() {
   // std::cout << "In fhalt" << std::endl;
   std::cout << print_val(arg_buffer[2]) << std::endl;
-  // std::cout << "Total # calls made (excluding prelude): " << call_counter << std::endl;
-  // std::cout << "Total # calls made (car): " << car_counter << std::endl;
+  // std::cout << "Total # calls made (excluding prelude): " << call_counter <<
+  // std::endl; std::cout << "Total # calls made (car): " << car_counter <<
+  // std::endl;
   //  std::cout << "Total # calls made (cdr): " << cdr_counter <<std::endl;
   // std::endl; std::cout << "Total # calls made (cons): " << cons_counter <<
   // std::endl; std::cout << "Total # calls made (plus): " << plus_counter <<
