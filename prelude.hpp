@@ -235,6 +235,18 @@ inline void **alloc_clo(void (*fptr)(), int num) {
   return obj;
 }
 
+template<typename Func>
+void** alloc_clo(Func fptr, int num) {
+    void **obj = (void**)(GC_MALLOC((num + 1) * sizeof(void*)));
+    obj[0] = nullptr;
+
+    if (obj != nullptr) {
+        obj[0] = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(fptr));
+    }
+
+    return obj;
+}
+
 #pragma endregion
 
 #pragma region ConsMethods
@@ -1143,7 +1155,7 @@ inline void *apply_prim__u43_1(void *arg1) //+
 {
   int arg1_tag = get_tag(arg1);
 
-  if (arg1_tag == MPZ || arg1_tag == MPF)
+  if (arg1_tag == INT || arg1_tag == FLOAT || arg1_tag == MPZ || arg1_tag == MPF)
     return arg1;
 
   assert_type(false, "Error in addition -> contact violation: The values in "
@@ -1268,7 +1280,7 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
 
 inline void *apply_prim__u43_3(void *arg1, void *arg2, void *arg3) //+
 {
-  return add(arg1, add(arg2, arg3));
+  return apply_prim__u43_2(arg1, apply_prim__u43_2(arg2, arg3));
 }
 
 #pragma endregion
