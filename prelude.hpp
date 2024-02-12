@@ -224,7 +224,7 @@ const hamt<hash_struct, hash_struct> *decode_hash(void *val) {
 
 // Closure Allocation, alloc_clo
 inline void **alloc_clo(void (*fptr)(), int num) {
-  call_counter++;
+  // call_counter++;
   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
   obj[0] = 0;
 
@@ -4164,7 +4164,7 @@ void *halt;
 void fhalt() {
   // std::cout << "In fhalt" << std::endl;
   std::cout << print_val(arg_buffer[2]) << std::endl;
-  std::cout << "Total # calls made (excluding prelude): " << call_counter <<std::endl; 
+  // std::cout << "Total # calls made (excluding prelude): " << call_counter <<std::endl; 
   // std::cout << "Total # calls made (car): " << car_counter <<
   // std::endl;
   //  std::cout << "Total # calls made (cdr): " << cdr_counter <<std::endl;

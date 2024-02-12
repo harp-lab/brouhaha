@@ -47,7 +47,7 @@
 (define-prim string-append 2)
 (define-prim string->list 1)
 
-; other new prims
+;;; other new prims
 (define-prim exact-floor 1)
 (define-prim exact-ceiling 1)
 (define-prim exact-round 1)
@@ -128,7 +128,10 @@
             (append1 (cdr lhs) rhs))))
 
 (define (append xs . x)
-  (foldr append1 (list) (append1 (list xs) x)))
+  (if (= 1 (length x))
+      (append1 xs (car x))
+      (foldr append1 (list) (append1 (list xs) x))))
+
 
 (define (take-helper lst n lst2)
   (if (= n 0)
