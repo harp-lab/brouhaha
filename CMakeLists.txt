@@ -20,10 +20,12 @@ set(CMAKE_CXX_STANDARD 14) # requiring 14 as google test requires 14
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # used to control whether or not compiler-specific extensions are enabled when compiling the C++ code.
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -finline-functions") # for release builds
+
 # Add compiler flags for optimization and inlining
+set(CMAKE_CXX_FLAGS_RELEASE "-O3") # for release builds
 # set(CMAKE_CXX_FLAGS_RELEASE "-O3 -finline-functions")
 # set(CMAKE_CXX_FLAGS_DEBUG "-O2") # for debug builds
+# set(CMAKE_CXX_FLAGS_DEBUG) # for debug builds
 
 # for profiling
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")

@@ -26,6 +26,7 @@ unsigned long long call_counter = 0;
 #define NULL_VALUE 0
 #define TRUE_VALUE 8
 #define FALSE_VALUE 16
+#define FLOAT_VAL 24
 #define ENV_ARRAY 1
 #define RANDOM_VALUE 63 // 00111111
 
@@ -44,7 +45,6 @@ enum DataType {
   CLO = 0x5,
   INT = 0x6,
   CONS = 0x7,
-  FLOAT = 0x9
 };
 
 struct hash_struct;
@@ -77,7 +77,11 @@ inline void assert_type(bool cond, const char *msg) {
 
 u64 encode_int(s32 val) { return ((((u64)((u32)(val))) << 32) | INT); }
 
-u64 encode_float(float val) { return ((((u64)(*(u32 *)&val)) << 32) | FLOAT); }
+u64 encode_float(float val) {
+    u32 asU32 = *reinterpret_cast<u32 *>(&val);
+    u64 asUint64 = static_cast<uint64_t>(asU32);
+    return (asUint64 << 32) | FLOAT_VAL;
+}
 
 inline void *encode_mpz(mpz_t *val) {
   return reinterpret_cast<void *>(((u64)val) | MPZ);
@@ -113,12 +117,11 @@ inline void *encode_null() { return NULL_VALUE; }
 
 // takes in a void * type and gets the tag, return it as an integer
 inline int get_tag(void *val) {
-  u64 ptr = reinterpret_cast<u64>(val);
+    u64 ptr = reinterpret_cast<u64>(val);
+    if ((ptr & 0x7) == SPL)
+        return (ptr & 0x18);
 
-  if ((ptr & 0xF) == FLOAT)
-    return (ptr & 0xF);
-
-  return (ptr & 7);
+    return (ptr & 7);
 }
 
 // for debugging purpose!
@@ -151,6 +154,7 @@ inline bool is_cons(void *lst) {
 
 inline s32 decode_int(void *val) {
   u64 v = reinterpret_cast<u64>(val);
+
   if ((v & 0x7) != INT)
     assert_type(false, "Error in decode_int -> Type error: Not an Integer!");
 
@@ -158,13 +162,15 @@ inline s32 decode_int(void *val) {
 }
 
 inline float decode_float(void *val) {
-  if ((get_tag(val)) != FLOAT)
-    assert_type(false, "Error in decode_float -> Type error: Not a float!");
+    uint64_t v = *static_cast<uint64_t *>(val);
 
-  u64 v = reinterpret_cast<u64>(val);
+    if ((v & 0x18) != FLOAT_VAL)
+        assert_type(false, "Error in decode_int -> Type error: Not an Integer!");
 
-  u32 temp = (v >> 32) & ~0xF;
-  return *reinterpret_cast<float *>(&temp);
+    u32 asU32 = (u32) (v >> 32);
+    float decodedFloat = *reinterpret_cast<float *>(&asU32);
+
+    return decodedFloat;
 }
 
 mpz_t *decode_mpz(void *val) {
@@ -190,18 +196,17 @@ std::string *decode_str(void *val) {
 }
 
 bool decode_bool(void *val) {
-  // MASK does the casting to u64
-  assert_type(((get_tag(val)) == SPL),
-              "Error in decode_bool -> Type error : Not BOOLEAN");
-  u64 temp = (u64)val;
-  if (temp == TRUE_VALUE) {
+  int tag = get_tag(val);
+
+  if (tag == TRUE_VALUE) {
     return true;
-  } else if (temp == FALSE_VALUE) {
+  } else if (tag == FALSE_VALUE) {
     return false;
-  } else {
-    assert_type(false, "Error in decode_bool -> Type error: Not BOOLEAN");
   }
-  return false;
+
+  assert_type(false, "Error in decode_bool -> Type error: Not BOOLEAN");
+
+  return false; // this line is just to satisfy the return type
 }
 
 inline void **decode_cons(void *val) {
@@ -235,16 +240,15 @@ inline void **alloc_clo(void (*fptr)(), int num) {
   return obj;
 }
 
-template<typename Func>
-void** alloc_clo(Func fptr, int num) {
-    void **obj = (void**)(GC_MALLOC((num + 1) * sizeof(void*)));
-    obj[0] = nullptr;
+template <typename Func> void **alloc_clo(Func fptr, int num) {
+  void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
+  obj[0] = nullptr;
 
-    if (obj != nullptr) {
-        obj[0] = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(fptr));
-    }
+  if (obj != nullptr) {
+    obj[0] = reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(fptr));
+  }
 
-    return obj;
+  return obj;
 }
 
 #pragma endregion
@@ -1155,7 +1159,8 @@ inline void *apply_prim__u43_1(void *arg1) //+
 {
   int arg1_tag = get_tag(arg1);
 
-  if (arg1_tag == INT || arg1_tag == FLOAT || arg1_tag == MPZ || arg1_tag == MPF)
+  if (arg1_tag == INT || arg1_tag == FLOAT_VAL || arg1_tag == MPZ ||
+      arg1_tag == MPF)
     return arg1;
 
   assert_type(false, "Error in addition -> contact violation: The values in "
@@ -1198,9 +1203,9 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
   // std::cout << "no overflow: " << arg1_tag << std::endl;
   // std::cout << "no overflow: " << arg2_tag << std::endl;
 
-  if (((arg1_tag == INT) || (arg1_tag == FLOAT) || (arg1_tag == MPZ) ||
+  if (((arg1_tag == INT) || (arg1_tag == FLOAT_VAL) || (arg1_tag == MPZ) ||
        (arg1_tag == MPF)) &&
-      ((arg2_tag == INT) || (arg2_tag == FLOAT) || (arg2_tag == MPZ) ||
+      ((arg2_tag == INT) || (arg2_tag == FLOAT_VAL) || (arg2_tag == MPZ) ||
        (arg2_tag == MPF))) {
     if (arg1_tag == arg2_tag) { // if both numbers have the same tag!
       if (arg1_tag == INT) {
@@ -1232,7 +1237,7 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
 
           return encode_mpz(result);
         }
-      } else if (arg1_tag == FLOAT) {
+      } else if (arg1_tag == FLOAT_VAL) {
         const float a1 = decode_float(arg1);
         const float a2 = decode_float(arg2);
 
@@ -1439,9 +1444,9 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
     }
   }
 
-  if (((arg1_tag == INT) || (arg1_tag == FLOAT) || (arg1_tag == MPZ) ||
+  if (((arg1_tag == INT) || (arg1_tag == FLOAT_VAL) || (arg1_tag == MPZ) ||
        (arg1_tag == MPF)) &&
-      ((arg2_tag == INT) || (arg2_tag == FLOAT) || (arg2_tag == MPZ) ||
+      ((arg2_tag == INT) || (arg2_tag == FLOAT_VAL) || (arg2_tag == MPZ) ||
        (arg2_tag == MPF))) {
     if (arg1_tag == arg2_tag) { // if both numbers have the same tag!
       if (arg1_tag == INT) {
@@ -1473,7 +1478,7 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
 
           return encode_mpz(result);
         }
-      } else if (arg1_tag == FLOAT) {
+      } else if (arg1_tag == FLOAT_VAL) {
         const float a1 = decode_float(arg1);
         const float a2 = decode_float(arg2);
 
@@ -1527,9 +1532,9 @@ inline void *apply_prim__u45_2_b4(void *arg1, void *arg2) //-
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
 
-  if (((arg1_tag == INT) || (arg1_tag == FLOAT) || (arg1_tag == MPZ) ||
+  if (((arg1_tag == INT) || (arg1_tag == FLOAT_VAL) || (arg1_tag == MPZ) ||
        (arg1_tag == MPF)) &&
-      ((arg2_tag == INT) || (arg2_tag == FLOAT) || (arg2_tag == MPZ) ||
+      ((arg2_tag == INT) || (arg2_tag == FLOAT_VAL) || (arg2_tag == MPZ) ||
        (arg2_tag == MPF))) {
     if (arg1_tag == arg2_tag) {
       if (arg1_tag == INT) {
@@ -2307,18 +2312,17 @@ inline void *apply_prim__u61_2(void *arg1, void *arg2) // =
   // return compare_op(arg1, arg2, *equal_zero);
   int cmp_res = 0;
 
-  // std::cout << (reinterpret_cast<u64>(arg1) & 0x7) << std::endl;
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
 
-  bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT) ||
+  bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT_VAL) ||
                     (arg1_tag == MPZ) || (arg1_tag == MPF);
 
   if (!type_check)
     assert_type(false, "Error in modulo -> contact violation: argument type "
                        "should be either integers or floating-point numbers!");
 
-  bool type_check2 = (arg2_tag == INT) || (arg2_tag == FLOAT) ||
+  bool type_check2 = (arg2_tag == INT) || (arg2_tag == FLOAT_VAL) ||
                      (arg2_tag == MPZ) || (arg2_tag == MPF);
 
   if (!type_check2)
@@ -2331,7 +2335,7 @@ inline void *apply_prim__u61_2(void *arg1, void *arg2) // =
         return encode_bool(true);
       else
         return encode_bool(false);
-    } else if (arg1_tag == FLOAT) {
+    } else if (arg1_tag == FLOAT_VAL) {
       if (decode_float(arg1) == decode_float(arg2))
         return encode_bool(true);
       else
@@ -4120,7 +4124,7 @@ std::string print_val(void *val) {
 
     break;
   }
-  case FLOAT: {
+  case FLOAT_VAL: {
     std::string str = std::to_string(decode_float(val));
     return str;
 
@@ -4164,8 +4168,8 @@ void *halt;
 void fhalt() {
   // std::cout << "In fhalt" << std::endl;
   std::cout << print_val(arg_buffer[2]) << std::endl;
-  // std::cout << "Total # calls made (excluding prelude): " << call_counter <<std::endl; 
-  // std::cout << "Total # calls made (car): " << car_counter <<
+  // std::cout << "Total # calls made (excluding prelude): " << call_counter
+  // <<std::endl; std::cout << "Total # calls made (car): " << car_counter <<
   // std::endl;
   //  std::cout << "Total # calls made (cdr): " << cdr_counter <<std::endl;
   // std::endl; std::cout << "Total # calls made (cons): " << cons_counter <<
