@@ -128,7 +128,7 @@
             (append1 (cdr lhs) rhs))))
 
 (define (append xs . x)
-  (if (null? (car x))
+  (if (= 1 (length x))
       (append1 xs (car x))
       (foldr append1 (list) (append1 (list xs) x))))
 

@@ -226,19 +226,17 @@ std::string *decode_str(void *val) {
 }
 
 bool decode_bool(void *val) {
-    // MASK does the casting to u64
-    int tag = get_tag(val);
+  int tag = get_tag(val);
 
-    u64 temp = (u64) val;
-    switch (tag) {
-        case TRUE_VALUE:
-            return true;
-        case FALSE_VALUE:
-            return false;
-        default:
-            assert_type(false, "Error in decode_bool -> Type error: Not BOOLEAN");
-    }
-    return false; // this line is just to satisfy the return type
+  if (tag == TRUE_VALUE) {
+    return true;
+  } else if (tag == FALSE_VALUE) {
+    return false;
+  }
+
+  assert_type(false, "Error in decode_bool -> Type error: Not BOOLEAN");
+
+  return false; // this line is just to satisfy the return type
 }
 
 inline void **decode_cons(void *val) {

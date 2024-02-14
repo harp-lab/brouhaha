@@ -430,9 +430,6 @@
            (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
                    (get-c-string (car args))))
 
-          (append-line filepath "// resetting the closure array")
-          (append-line filepath "decode_clo_array = nullptr;")
-
           (append-line filepath "\n// calling next procedure using a function pointer")
           (append-line filepath "function_ptr();")
           ]
@@ -577,6 +574,7 @@
                             [else (format "numArgs = ~a;" (+ (length args) 1))]
                             )
                           )
+             (append-line filepath "\n")
 
              (if (set-member? global-symbols-set func)
                  (begin
@@ -610,17 +608,23 @@
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
-       (append-line filepath "//reading number of args")
+       ;  (append-line filepath "//reading number of args")
        ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
-      ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
-       (append-line filepath "//reading env")
-       (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
+       ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
+
+       ;  (append-line filepath "//reading env")
+       ;  (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
+
+       (when (string-prefix? (symbol->string env) "e")
+         (append-line filepath "//reading env")
+         (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
+         )
 
        (append-line filepath "//reading env and args")
        (for ([i (in-range 2 (+ (length args) 2))] [item args])
          (append-line filepath (format "void* const ~a = arg_buffer[~a];" (get-c-string item) i)))
 
-       (append-line filepath "//decoding closure array")
+       (append-line filepath "\n//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
        (when (string-prefix? (symbol->string env) "e")
          (append-line filepath (format "decode_clo_array = decode_clo(~a);" (get-c-string env))))
@@ -641,13 +645,18 @@
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
-       (append-line filepath "//reading number of args")
-      ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
+       ;  (append-line filepath "//reading number of args")
+       ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
 
-       (append-line filepath "//reading env")
-       (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
+       (when (string-prefix? (symbol->string env) "e")
+         (append-line filepath "//reading env")
+         (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
+         )
 
-       (append-line filepath "//decoding closure array")
+       ;  (append-line filepath "//reading env")
+       ;  (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
+
+       (append-line filepath "\n//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
        (when (string-prefix? (symbol->string env) "e")
          (append-line filepath (format "decode_clo_array = decode_clo(~a);" (get-c-string env))))
@@ -694,14 +703,19 @@
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
-       (append-line filepath "//reading number of args")
-       (append-line filepath "// This is the second type of the functions")
-      ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
+       ;  (append-line filepath "//reading number of args")
+       ;  (append-line filepath "// This is the second type of the functions")
+       ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
 
-       (append-line filepath "//reading env")
-       (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
+       ;  (append-line filepath "//reading env")
+       ;  (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
 
-       (append-line filepath "//decoding closure array")
+       (when (string-prefix? (symbol->string env) "e")
+         (append-line filepath "//reading env")
+         (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
+         )
+
+       (append-line filepath "\n//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
 
        (append-line filepath (format "if(is_cons(arg_buffer[2]))\n{"))
@@ -754,7 +768,7 @@
                       [(hash-has-key? global-int-vars 2) (format "numArgs = ~a;" (hash-ref global-int-vars 2))]
                       [else (format "numArgs = 2;")]
                       )
-                      )
+                    )
 
        (append-line
         filepath
