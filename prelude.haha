@@ -132,7 +132,6 @@
       (append1 xs (car x))
       (foldr append1 (list) (append1 (list xs) x))))
 
-
 (define (take-helper lst n lst2)
   (if (= n 0)
       (reverse lst2)
