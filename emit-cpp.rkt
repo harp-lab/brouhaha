@@ -107,7 +107,8 @@
   (append-line filepath "\n// declaring global integer variable")
   (hash-map global-int-vars
             (lambda (key val)
-              (append-line filepath (format "void* ~a;" val))
+              ; (append-line filepath (format "void* ~a;" val))
+              (append-line filepath (format "int ~a;" val))
               ))
 
 
@@ -135,7 +136,7 @@
          (append-line filepath (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
 
          (when (not (string-prefix? (symbol->string ptr) "lam"))
-           (define func_name (format "void ~a_fptr(~a); // ~a" (get-c-string ptr) args-str ptr))
+           (define func_name (format "void ~a_spec(~a); // ~a" (get-c-string ptr) args-str ptr))
            (append-line filepath func_name))
 
 
@@ -403,14 +404,16 @@
             [is_define_prim
              (append-line filepath (format "arg_buffer[1] = ~a;" (get-c-string func)))
              (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
-             (append-line filepath (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2)))
+            ;  (append-line filepath (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2)))
+             (append-line filepath (format "numArgs = ~a;" (hash-ref global-int-vars 2)))
 
              (append-line filepath (format "~a_fptr();" (get-c-string func)))
              ]
             [else
              (append-line filepath (format "arg_buffer[1] = ~a;" (get-c-string func)))
              (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
-             (append-line filepath (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2)))
+            ;  (append-line filepath (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2)))
+             (append-line filepath (format "numArgs = ~a;" (hash-ref global-int-vars 2)))
 
              (append-line filepath
                           (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
@@ -449,8 +452,10 @@
           (append-line filepath
                        (cond
                          ;  [(hash-has-key? find-global-constants 2) (format "numArgs = ~a;" (cadr (hash-ref find-global-constants 2)))]
-                         [(hash-has-key? global-int-vars 2) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2))]
-                         [else (format "arg_buffer[0] = reinterpret_cast<void*> (2);")]
+                        ;  [(hash-has-key? global-int-vars 2) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2))]
+                         [(hash-has-key? global-int-vars 2) (format "numArgs = ~a;" (hash-ref global-int-vars 2))]
+                         [else (format "numArgs = 2;")]
+                        ;  [else (format "arg_buffer[0] = reinterpret_cast<void*> (2);")]
                          )
                        )
 
@@ -478,9 +483,10 @@
                        (cond
                          ;  [(hash-has-key? find-global-constants (+ (length args) 1))
                          ;   (format "numArgs = ~a;" (cadr (hash-ref find-global-constants (+ (length args) 1))))]
-                         [(hash-has-key? global-int-vars (+ (length args) 1))
-                          (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
-                         [else (format "arg_buffer[0] = reinterpret_cast<void*> (~a);" (+ (length args) 1))]
+                        ;  [(hash-has-key? global-int-vars (+ (length args) 1)) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
+                         [(hash-has-key? global-int-vars (+ (length args) 1)) (format "numArgs = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
+                        ;  [else (format "arg_buffer[0] = reinterpret_cast<void*> (~a);" (+ (length args) 1))]
+                         [else (format "numArgs = ~a;" (+ (length args) 1))]
                          )
 
                        )
@@ -521,8 +527,10 @@
              (append-line filepath
                           (cond
                             ;  [(hash-has-key? find-global-constants 2) (format "numArgs = ~a;" (cadr (hash-ref find-global-constants 2)))]
-                            [(hash-has-key? global-int-vars 2) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2))]
-                            [else (format "arg_buffer[0] = reinterpret_cast<void*> (2);")]
+                            ; [(hash-has-key? global-int-vars 2) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2))]
+                            [(hash-has-key? global-int-vars 2) (format "numArgs = ~a;" (hash-ref global-int-vars 2))]
+                            ; [else (format "arg_buffer[0] = reinterpret_cast<void*> (2);")]
+                            [else (format "numArgs = 2;")]
                             ))
 
 
@@ -554,9 +562,10 @@
                           (cond
                             ;  [(hash-has-key? find-global-constants (+ (length args) 1))
                             ;   (format "numArgs = ~a;" (cadr (hash-ref find-global-constants (+ (length args) 1))))]
-                            [(hash-has-key? global-int-vars (+ (length args) 1))
-                             (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
-                            [else (format "arg_buffer[0] = reinterpret_cast<void*> (~a);" (+ (length args) 1))]
+                            ; [(hash-has-key? global-int-vars (+ (length args) 1)) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
+                            [(hash-has-key? global-int-vars (+ (length args) 1)) (format "numArgs = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
+                            ; [else (format "arg_buffer[0] = reinterpret_cast<void*> (~a);" (+ (length args) 1))]
+                            [else (format "numArgs = ~a;" (+ (length args) 1))]
                             ))
 
              (append-line filepath (format "~a_fptr();" (get-c-string func)))]
@@ -577,14 +586,15 @@
                                     (cond
                                       ; [(hash-has-key? find-global-constants (+ (length args) 1))
                                       ;  (format "numArgs = ~a;" (cadr (hash-ref find-global-constants (+ (length args) 1))))]
-                                      [(hash-has-key? global-int-vars (+ (length args) 1))
-                                       (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
-                                      [else (format "arg_buffer[0] = reinterpret_cast<void*> (~a);" (+ (length args) 1))]
+                                      ; [(hash-has-key? global-int-vars (+ (length args) 1)) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
+                                      [(hash-has-key? global-int-vars (+ (length args) 1)) (format "numArgs = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
+                                      ; [else (format "arg_buffer[0] = reinterpret_cast<void*> (~a);" (+ (length args) 1))]
+                                      [else (format "numArgs = ~a;" (+ (length args) 1))]
                                       ))
                        (append-line filepath (format "~a_fptr();" (get-c-string func))) )
 
                      (append-line filepath
-                                  (format "~a_fptr(~a);" (get-c-string func)
+                                  (format "~a_spec(~a);" (get-c-string func)
                                           (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
                                                  ;  (string-append (number->string (+ (length args) 1)) ", " (symbol->string (get-c-string func)) ", " (symbol->string (car args)))
                                                  (string-append (symbol->string (get-c-string func)) ", " (symbol->string (car args)))
@@ -599,9 +609,10 @@
                                 (cond
                                   ; [(hash-has-key? find-global-constants (+ (length args) 1))
                                   ;  (format "numArgs = ~a;" (cadr (hash-ref find-global-constants (+ (length args) 1))))]
-                                  [(hash-has-key? global-int-vars (+ (length args) 1))
-                                   (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
-                                  [else (format "arg_buffer[0] = reinterpret_cast<void*> (~a);" (+ (length args) 1))]
+                                  ; [(hash-has-key? global-int-vars (+ (length args) 1)) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
+                                  [(hash-has-key? global-int-vars (+ (length args) 1)) (format "numArgs = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
+                                  [else (format "numArgs = ~a;" (+ (length args) 1))]
+                                  ; [else (format "arg_buffer[0] = reinterpret_cast<void*> (~a);" (+ (length args) 1))]
                                   ))
 
                    (append-line
@@ -623,7 +634,7 @@
       [`(proc (,ptr ,env ,args ...) ,body)
 
 
-       (append-line filepath (format "void ~a_fptr() // ~a -> generic version ~a" (get-c-string ptr) ptr "\n{"))
+       (append-line filepath (format "inline void ~a_fptr() // ~a -> generic version ~a" (get-c-string ptr) ptr "\n{"))
 
        ;  uncomment these two lines for debugging!
        ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: generic version\"<<std::endl;" (get-c-string ptr)))
@@ -632,7 +643,7 @@
 
        (append-line filepath "//reading number of args")
        ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
-       (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
+      ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
        (append-line filepath "//reading env")
        (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
 
@@ -657,7 +668,7 @@
                   (string-append "void* " (symbol->string env))
                   args))
 
-         (append-line filepath (format "void ~a_fptr(~a) // ~a ~a" (get-c-string ptr) args-str ptr "\n{"))
+         (append-line filepath (format "inline void ~a_spec(~a) // ~a ~a" (get-c-string ptr) args-str ptr "\n{"))
 
 
          ;  uncomment these two lines for debugging!
@@ -670,7 +681,7 @@
                (when (= (hash-ref declare-top-level-funcs ptr) 0)
                  (append-line filepath "//reading number of args")
                  ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
-                 (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
+                ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
                  (append-line filepath "//reading env")
                  (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
 
@@ -681,7 +692,7 @@
              (begin
                (append-line filepath "//reading number of args")
                ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
-               (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
+              ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
                (append-line filepath "//reading env")
                (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
 
@@ -714,7 +725,7 @@
 
        (append-line filepath "//reading number of args")
        ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
-       (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
+      ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
 
        (append-line filepath "//reading env")
        (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
@@ -756,7 +767,7 @@
        ;         (let ((,x (apply-prim ,ptr ,newarg)))
        ;           (clo-app ,k ,x)))))
 
-       (define func_name (format "void ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
+       (define func_name (format "inline void ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
        (append-line filepath func_name)
@@ -769,7 +780,7 @@
        (append-line filepath "//reading number of args")
        (append-line filepath "// This is the second type of the functions")
        ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
-       (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
+      ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
 
        (append-line filepath "//reading env")
        (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
@@ -790,8 +801,10 @@
        (append-line filepath
                     (cond
                       ; [(hash-has-key? find-global-constants 2) (format "arg_buffer[0] = ~a;" (cadr (hash-ref find-global-constants 2)))]
-                      [(hash-has-key? global-int-vars 2) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2))]
-                      [else (format "arg_buffer[0] = reinterpret_cast<void*>(2);")]
+                      ; [(hash-has-key? global-int-vars 2) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2))]
+                      [(hash-has-key? global-int-vars 2) (format "numArgs = ~a;" (hash-ref global-int-vars 2))]
+                      ; [else (format "arg_buffer[0] = reinterpret_cast<void*>(2);")]
+                      [else (format "numArgs = 2;")]
                       ))
 
        (append-line
@@ -814,8 +827,10 @@
        (append-line filepath
                     (cond
                       ; [(hash-has-key? find-global-constants 2) (format "arg_buffer[0] = ~a;" (cadr (hash-ref find-global-constants 2)))]
-                      [(hash-has-key? global-int-vars 2) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2))]
-                      [else (format "arg_buffer[0] = reinterpret_cast<void*>(2);")]
+                      ; [(hash-has-key? global-int-vars 2) (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2))]
+                      [(hash-has-key? global-int-vars 2) (format "numArgs = ~a;" (hash-ref global-int-vars 2))]
+                      ; [else (format "arg_buffer[0] = reinterpret_cast<void*>(2);")]
+                      [else (format "numArgs = 2;")]
                       ))
 
        (append-line
@@ -869,7 +884,8 @@
   (hash-map global-int-vars
             (lambda (key val)
               ; (append-line filepath (format "~a = reinterpret_cast<void*>(encode_int(~a));" val key))
-              (append-line filepath (format "~a = reinterpret_cast<void *>(~a);" val key))
+              ; (append-line filepath (format "~a = reinterpret_cast<void *>(~a);" val key))
+              (append-line filepath (format "~a = ~a;" val key))
               ))
 
   (append-line filepath "\n//making a call to the brouhaha main function to kick off our C++ emission.")
@@ -880,7 +896,7 @@
   (append-line filepath "arg_buffer[2] = fhalt_clo;")
 
   (append-line filepath "\n// calling next procedure using a function pointer")
-  (append-line filepath "brouhaha_main_fptr(nullptr, fhalt_clo);")
+  (append-line filepath "brouhaha_main_spec(nullptr, fhalt_clo);")
 
   (append-line filepath "}\n")
   ;end of main function.

@@ -281,16 +281,16 @@ inline void **alloc_clo(void (*fptr)(), int num) {
   return obj;
 }
 
-template <typename Func> void **alloc_clo(Func fptr, int num) {
-  void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
-  obj[0] = nullptr;
+// template <typename Func> void **alloc_clo(Func fptr, int num) {
+//   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
+//   obj[0] = nullptr;
 
-  if (obj != nullptr) {
-    obj[0] = reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(fptr));
-  }
+//   if (obj != nullptr) {
+//     obj[0] = reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(fptr));
+//   }
 
-  return obj;
-}
+//   return obj;
+// }
 
 #pragma endregion
 

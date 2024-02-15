@@ -12,11 +12,11 @@ void *int8968;
 void *int8990;
 
 // declaring global integer variable
-void *int8991;
-void *int8992;
-void *int8993;
-void *int8994;
-void *int8995;
+int int8991;
+int int8992;
+int int8993;
+int int8994;
+int int8995;
 
 // declaring functions at the top
 void _u43_fptr(); // +
@@ -180,15 +180,15 @@ void list_fptr(); // list
 void *list = encode_clo(alloc_clo(list_fptr, 0));
 
 void even_u63_fptr();                                     // even?
-void even_u63_fptr(void *_8901, void *kont8857, void *x); // even?
+void even_u63_spec(void *_8901, void *kont8857, void *x); // even?
 void *even_u63 = encode_clo(alloc_clo(even_u63_fptr, 0));
 
 void odd_u63_fptr();                                     // odd?
-void odd_u63_fptr(void *_8902, void *kont8858, void *x); // odd?
+void odd_u63_spec(void *_8902, void *kont8858, void *x); // odd?
 void *odd_u63 = encode_clo(alloc_clo(odd_u63_fptr, 0));
 
 void list_u45ref_fptr(); // list-ref
-void list_u45ref_fptr(void *_8903, void *kont8859, void *lst,
+void list_u45ref_spec(void *_8903, void *kont8859, void *lst,
                       void *n); // list-ref
 void *list_u45ref = encode_clo(alloc_clo(list_u45ref_fptr, 0));
 
@@ -196,11 +196,11 @@ void lam8904_fptr(); // lam8904
 void *lam8904 = encode_clo(alloc_clo(lam8904_fptr, 0));
 
 void member_fptr();                                                   // member
-void member_fptr(void *_8906, void *kont8860, void *item, void *lst); // member
+void member_spec(void *_8906, void *kont8860, void *item, void *lst); // member
 void *member = encode_clo(alloc_clo(member_fptr, 0));
 
 void member_u63_fptr(); // member?
-void member_u63_fptr(void *_8907, void *kont8862, void *x,
+void member_u63_spec(void *_8907, void *kont8862, void *x,
                      void *lst); // member?
 void *member_u63 = encode_clo(alloc_clo(member_u63_fptr, 0));
 
@@ -208,7 +208,7 @@ void lam8908_fptr(); // lam8908
 void *lam8908 = encode_clo(alloc_clo(lam8908_fptr, 0));
 
 void length_fptr();                                       // length
-void length_fptr(void *_8910, void *kont8863, void *lst); // length
+void length_spec(void *_8910, void *kont8863, void *lst); // length
 void *length = encode_clo(alloc_clo(length_fptr, 0));
 
 void lam8911_fptr(); // lam8911
@@ -218,7 +218,7 @@ void lam8913_fptr(); // lam8913
 void *lam8913 = encode_clo(alloc_clo(lam8913_fptr, 0));
 
 void map_fptr();                                                   // map
-void map_fptr(void *_8915, void *kont8865, void *proc, void *lst); // map
+void map_spec(void *_8915, void *kont8865, void *proc, void *lst); // map
 void *map = encode_clo(alloc_clo(map_fptr, 0));
 
 void lam8916_fptr(); // lam8916
@@ -228,18 +228,18 @@ void lam8918_fptr(); // lam8918
 void *lam8918 = encode_clo(alloc_clo(lam8918_fptr, 0));
 
 void filter_fptr();                                                 // filter
-void filter_fptr(void *_8920, void *kont8868, void *op, void *lst); // filter
+void filter_spec(void *_8920, void *kont8868, void *op, void *lst); // filter
 void *filter = encode_clo(alloc_clo(filter_fptr, 0));
 
 void drop_fptr();                                                // drop
-void drop_fptr(void *_8921, void *kont8871, void *lst, void *n); // drop
+void drop_spec(void *_8921, void *kont8871, void *lst, void *n); // drop
 void *drop = encode_clo(alloc_clo(drop_fptr, 0));
 
 void lam8922_fptr(); // lam8922
 void *lam8922 = encode_clo(alloc_clo(lam8922_fptr, 0));
 
 void foldl_fptr(); // foldl
-void foldl_fptr(void *_8924, void *kont8872, void *fun, void *acc,
+void foldl_spec(void *_8924, void *kont8872, void *fun, void *acc,
                 void *lst); // foldl
 void *foldl = encode_clo(alloc_clo(foldl_fptr, 0));
 
@@ -247,24 +247,24 @@ void lam8925_fptr(); // lam8925
 void *lam8925 = encode_clo(alloc_clo(lam8925_fptr, 0));
 
 void foldr_fptr(); // foldr
-void foldr_fptr(void *_8927, void *kont8874, void *fun, void *acc,
+void foldr_spec(void *_8927, void *kont8874, void *fun, void *acc,
                 void *lst); // foldr
 void *foldr = encode_clo(alloc_clo(foldr_fptr, 0));
 
 void reverse_u45helper_fptr(); // reverse-helper
-void reverse_u45helper_fptr(void *_8928, void *kont8876, void *lst,
+void reverse_u45helper_spec(void *_8928, void *kont8876, void *lst,
                             void *lst2); // reverse-helper
 void *reverse_u45helper = encode_clo(alloc_clo(reverse_u45helper_fptr, 0));
 
 void reverse_fptr();                                       // reverse
-void reverse_fptr(void *_8929, void *kont8877, void *lst); // reverse
+void reverse_spec(void *_8929, void *kont8877, void *lst); // reverse
 void *reverse = encode_clo(alloc_clo(reverse_fptr, 0));
 
 void lam8930_fptr(); // lam8930
 void *lam8930 = encode_clo(alloc_clo(lam8930_fptr, 0));
 
 void append1_fptr();                                                  // append1
-void append1_fptr(void *_8932, void *kont8878, void *lhs, void *rhs); // append1
+void append1_spec(void *_8932, void *kont8878, void *lhs, void *rhs); // append1
 void *append1 = encode_clo(alloc_clo(append1_fptr, 0));
 
 void lam8933_fptr(); // lam8933
@@ -283,12 +283,12 @@ void lam8940_fptr(); // lam8940
 void *lam8940 = encode_clo(alloc_clo(lam8940_fptr, 0));
 
 void take_u45helper_fptr(); // take-helper
-void take_u45helper_fptr(void *_8942, void *kont8884, void *lst, void *n,
+void take_u45helper_spec(void *_8942, void *kont8884, void *lst, void *n,
                          void *lst2); // take-helper
 void *take_u45helper = encode_clo(alloc_clo(take_u45helper_fptr, 0));
 
 void take_fptr();                                                // take
-void take_fptr(void *_8943, void *kont8886, void *lst, void *n); // take
+void take_spec(void *_8943, void *kont8886, void *lst, void *n); // take
 void *take = encode_clo(alloc_clo(take_fptr, 0));
 
 void lam8944_fptr(); // lam8944
@@ -298,7 +298,7 @@ void lam8946_fptr(); // lam8946
 void *lam8946 = encode_clo(alloc_clo(lam8946_fptr, 0));
 
 void ok_u63_fptr(); // ok?
-void ok_u63_fptr(void *_8948, void *kont8887, void *row, void *dist,
+void ok_u63_spec(void *_8948, void *kont8887, void *row, void *dist,
                  void *placed); // ok?
 void *ok_u63 = encode_clo(alloc_clo(ok_u63_fptr, 0));
 
@@ -318,30 +318,29 @@ void lam8957_fptr(); // lam8957
 void *lam8957 = encode_clo(alloc_clo(lam8957_fptr, 0));
 
 void q_u45helper_fptr(); // q-helper
-void q_u45helper_fptr(void *_8959, void *kont8890, void *stack,
+void q_u45helper_spec(void *_8959, void *kont8890, void *stack,
                       void *count); // q-helper
 void *q_u45helper = encode_clo(alloc_clo(q_u45helper_fptr, 0));
 
 void iota1_fptr();                                              // iota1
-void iota1_fptr(void *_8960, void *kont8896, void *n, void *l); // iota1
+void iota1_spec(void *_8960, void *kont8896, void *n, void *l); // iota1
 void *iota1 = encode_clo(alloc_clo(iota1_fptr, 0));
 
 void lam8961_fptr(); // lam8961
 void *lam8961 = encode_clo(alloc_clo(lam8961_fptr, 0));
 
 void nqueens_fptr();                                     // nqueens
-void nqueens_fptr(void *_8963, void *kont8897, void *n); // nqueens
+void nqueens_spec(void *_8963, void *kont8897, void *n); // nqueens
 void *nqueens = encode_clo(alloc_clo(nqueens_fptr, 0));
 
 void brouhaha_main_fptr();                            // brouhaha_main
-void brouhaha_main_fptr(void *_8964, void *kont8899); // brouhaha_main
+void brouhaha_main_spec(void *_8964, void *kont8899); // brouhaha_main
 void *brouhaha_main = encode_clo(alloc_clo(brouhaha_main_fptr, 0));
 
-void _u43_fptr() // +
+inline void _u43_fptr() // +
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env8998 = arg_buffer[1];
   // decoding closure array
@@ -354,7 +353,7 @@ void _u43_fptr() // +
     void *const x8997 = apply_prim__u43(lst8999);
     arg_buffer[1] = kont8996;
     arg_buffer[2] = x8997;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8996))[0]);
 
     // calling next procedure using a function pointer
@@ -364,7 +363,7 @@ void _u43_fptr() // +
     void *const x8997 = apply_prim__u43(arg_buffer);
     arg_buffer[1] = kont8996;
     arg_buffer[2] = x8997;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8996))[0]);
 
     // calling next procedure using a function pointer
@@ -372,11 +371,10 @@ void _u43_fptr() // +
   }
 }
 
-void _u45_fptr() // -
+inline void _u45_fptr() // -
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9002 = arg_buffer[1];
   // decoding closure array
@@ -389,7 +387,7 @@ void _u45_fptr() // -
     void *const x9001 = apply_prim__u45(lst9003);
     arg_buffer[1] = kont9000;
     arg_buffer[2] = x9001;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9000))[0]);
 
     // calling next procedure using a function pointer
@@ -399,7 +397,7 @@ void _u45_fptr() // -
     void *const x9001 = apply_prim__u45(arg_buffer);
     arg_buffer[1] = kont9000;
     arg_buffer[2] = x9001;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9000))[0]);
 
     // calling next procedure using a function pointer
@@ -407,11 +405,10 @@ void _u45_fptr() // -
   }
 }
 
-void _u42_fptr() // *
+inline void _u42_fptr() // *
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9006 = arg_buffer[1];
   // decoding closure array
@@ -424,7 +421,7 @@ void _u42_fptr() // *
     void *const x9005 = apply_prim__u42(lst9007);
     arg_buffer[1] = kont9004;
     arg_buffer[2] = x9005;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9004))[0]);
 
     // calling next procedure using a function pointer
@@ -434,7 +431,7 @@ void _u42_fptr() // *
     void *const x9005 = apply_prim__u42(arg_buffer);
     arg_buffer[1] = kont9004;
     arg_buffer[2] = x9005;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9004))[0]);
 
     // calling next procedure using a function pointer
@@ -442,11 +439,10 @@ void _u42_fptr() // *
   }
 }
 
-void _u47_fptr() // /
+inline void _u47_fptr() // /
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9010 = arg_buffer[1];
   // decoding closure array
@@ -459,7 +455,7 @@ void _u47_fptr() // /
     void *const x9009 = apply_prim__u47(lst9011);
     arg_buffer[1] = kont9008;
     arg_buffer[2] = x9009;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9008))[0]);
 
     // calling next procedure using a function pointer
@@ -469,7 +465,7 @@ void _u47_fptr() // /
     void *const x9009 = apply_prim__u47(arg_buffer);
     arg_buffer[1] = kont9008;
     arg_buffer[2] = x9009;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9008))[0]);
 
     // calling next procedure using a function pointer
@@ -477,11 +473,10 @@ void _u47_fptr() // /
   }
 }
 
-void _u61_fptr() // =
+inline void _u61_fptr() // =
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9014 = arg_buffer[1];
   // decoding closure array
@@ -494,7 +489,7 @@ void _u61_fptr() // =
     void *const x9013 = apply_prim__u61(lst9015);
     arg_buffer[1] = kont9012;
     arg_buffer[2] = x9013;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9012))[0]);
 
     // calling next procedure using a function pointer
@@ -504,7 +499,7 @@ void _u61_fptr() // =
     void *const x9013 = apply_prim__u61(arg_buffer);
     arg_buffer[1] = kont9012;
     arg_buffer[2] = x9013;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9012))[0]);
 
     // calling next procedure using a function pointer
@@ -512,11 +507,10 @@ void _u61_fptr() // =
   }
 }
 
-void _u62_fptr() // >
+inline void _u62_fptr() // >
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9018 = arg_buffer[1];
   // decoding closure array
@@ -529,7 +523,7 @@ void _u62_fptr() // >
     void *const x9017 = apply_prim__u62(lst9019);
     arg_buffer[1] = kont9016;
     arg_buffer[2] = x9017;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9016))[0]);
 
     // calling next procedure using a function pointer
@@ -539,7 +533,7 @@ void _u62_fptr() // >
     void *const x9017 = apply_prim__u62(arg_buffer);
     arg_buffer[1] = kont9016;
     arg_buffer[2] = x9017;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9016))[0]);
 
     // calling next procedure using a function pointer
@@ -547,11 +541,10 @@ void _u62_fptr() // >
   }
 }
 
-void _u60_fptr() // <
+inline void _u60_fptr() // <
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9022 = arg_buffer[1];
   // decoding closure array
@@ -564,7 +557,7 @@ void _u60_fptr() // <
     void *const x9021 = apply_prim__u60(lst9023);
     arg_buffer[1] = kont9020;
     arg_buffer[2] = x9021;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9020))[0]);
 
     // calling next procedure using a function pointer
@@ -574,7 +567,7 @@ void _u60_fptr() // <
     void *const x9021 = apply_prim__u60(arg_buffer);
     arg_buffer[1] = kont9020;
     arg_buffer[2] = x9021;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9020))[0]);
 
     // calling next procedure using a function pointer
@@ -582,11 +575,10 @@ void _u60_fptr() // <
   }
 }
 
-void _u60_u61_fptr() // <=
+inline void _u60_u61_fptr() // <=
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9026 = arg_buffer[1];
   // decoding closure array
@@ -599,7 +591,7 @@ void _u60_u61_fptr() // <=
     void *const x9025 = apply_prim__u60_u61(lst9027);
     arg_buffer[1] = kont9024;
     arg_buffer[2] = x9025;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9024))[0]);
 
     // calling next procedure using a function pointer
@@ -609,7 +601,7 @@ void _u60_u61_fptr() // <=
     void *const x9025 = apply_prim__u60_u61(arg_buffer);
     arg_buffer[1] = kont9024;
     arg_buffer[2] = x9025;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9024))[0]);
 
     // calling next procedure using a function pointer
@@ -617,11 +609,10 @@ void _u60_u61_fptr() // <=
   }
 }
 
-void _u62_u61_fptr() // >=
+inline void _u62_u61_fptr() // >=
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9030 = arg_buffer[1];
   // decoding closure array
@@ -634,7 +625,7 @@ void _u62_u61_fptr() // >=
     void *const x9029 = apply_prim__u62_u61(lst9031);
     arg_buffer[1] = kont9028;
     arg_buffer[2] = x9029;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9028))[0]);
 
     // calling next procedure using a function pointer
@@ -644,7 +635,7 @@ void _u62_u61_fptr() // >=
     void *const x9029 = apply_prim__u62_u61(arg_buffer);
     arg_buffer[1] = kont9028;
     arg_buffer[2] = x9029;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9028))[0]);
 
     // calling next procedure using a function pointer
@@ -652,11 +643,10 @@ void _u62_u61_fptr() // >=
   }
 }
 
-void modulo_fptr() // modulo
+inline void modulo_fptr() // modulo
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9034 = arg_buffer[1];
   // decoding closure array
@@ -669,7 +659,7 @@ void modulo_fptr() // modulo
     void *const x9033 = apply_prim_modulo(lst9035);
     arg_buffer[1] = kont9032;
     arg_buffer[2] = x9033;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9032))[0]);
 
     // calling next procedure using a function pointer
@@ -679,7 +669,7 @@ void modulo_fptr() // modulo
     void *const x9033 = apply_prim_modulo(arg_buffer);
     arg_buffer[1] = kont9032;
     arg_buffer[2] = x9033;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9032))[0]);
 
     // calling next procedure using a function pointer
@@ -687,11 +677,10 @@ void modulo_fptr() // modulo
   }
 }
 
-void null_u63_fptr() // null?
+inline void null_u63_fptr() // null?
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9038 = arg_buffer[1];
   // decoding closure array
@@ -704,7 +693,7 @@ void null_u63_fptr() // null?
     void *const x9037 = apply_prim_null_u63(lst9039);
     arg_buffer[1] = kont9036;
     arg_buffer[2] = x9037;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9036))[0]);
 
     // calling next procedure using a function pointer
@@ -714,7 +703,7 @@ void null_u63_fptr() // null?
     void *const x9037 = apply_prim_null_u63(arg_buffer);
     arg_buffer[1] = kont9036;
     arg_buffer[2] = x9037;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9036))[0]);
 
     // calling next procedure using a function pointer
@@ -722,11 +711,10 @@ void null_u63_fptr() // null?
   }
 }
 
-void equal_u63_fptr() // equal?
+inline void equal_u63_fptr() // equal?
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9042 = arg_buffer[1];
   // decoding closure array
@@ -739,7 +727,7 @@ void equal_u63_fptr() // equal?
     void *const x9041 = apply_prim_equal_u63(lst9043);
     arg_buffer[1] = kont9040;
     arg_buffer[2] = x9041;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9040))[0]);
 
     // calling next procedure using a function pointer
@@ -749,7 +737,7 @@ void equal_u63_fptr() // equal?
     void *const x9041 = apply_prim_equal_u63(arg_buffer);
     arg_buffer[1] = kont9040;
     arg_buffer[2] = x9041;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9040))[0]);
 
     // calling next procedure using a function pointer
@@ -757,11 +745,10 @@ void equal_u63_fptr() // equal?
   }
 }
 
-void eq_u63_fptr() // eq?
+inline void eq_u63_fptr() // eq?
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9046 = arg_buffer[1];
   // decoding closure array
@@ -774,7 +761,7 @@ void eq_u63_fptr() // eq?
     void *const x9045 = apply_prim_eq_u63(lst9047);
     arg_buffer[1] = kont9044;
     arg_buffer[2] = x9045;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9044))[0]);
 
     // calling next procedure using a function pointer
@@ -784,7 +771,7 @@ void eq_u63_fptr() // eq?
     void *const x9045 = apply_prim_eq_u63(arg_buffer);
     arg_buffer[1] = kont9044;
     arg_buffer[2] = x9045;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9044))[0]);
 
     // calling next procedure using a function pointer
@@ -792,11 +779,10 @@ void eq_u63_fptr() // eq?
   }
 }
 
-void cons_fptr() // cons
+inline void cons_fptr() // cons
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9050 = arg_buffer[1];
   // decoding closure array
@@ -809,7 +795,7 @@ void cons_fptr() // cons
     void *const x9049 = apply_prim_cons(lst9051);
     arg_buffer[1] = kont9048;
     arg_buffer[2] = x9049;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9048))[0]);
 
     // calling next procedure using a function pointer
@@ -819,7 +805,7 @@ void cons_fptr() // cons
     void *const x9049 = apply_prim_cons(arg_buffer);
     arg_buffer[1] = kont9048;
     arg_buffer[2] = x9049;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9048))[0]);
 
     // calling next procedure using a function pointer
@@ -827,11 +813,10 @@ void cons_fptr() // cons
   }
 }
 
-void car_fptr() // car
+inline void car_fptr() // car
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9054 = arg_buffer[1];
   // decoding closure array
@@ -844,7 +829,7 @@ void car_fptr() // car
     void *const x9053 = apply_prim_car(lst9055);
     arg_buffer[1] = kont9052;
     arg_buffer[2] = x9053;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9052))[0]);
 
     // calling next procedure using a function pointer
@@ -854,7 +839,7 @@ void car_fptr() // car
     void *const x9053 = apply_prim_car(arg_buffer);
     arg_buffer[1] = kont9052;
     arg_buffer[2] = x9053;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9052))[0]);
 
     // calling next procedure using a function pointer
@@ -862,11 +847,10 @@ void car_fptr() // car
   }
 }
 
-void cdr_fptr() // cdr
+inline void cdr_fptr() // cdr
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9058 = arg_buffer[1];
   // decoding closure array
@@ -879,7 +863,7 @@ void cdr_fptr() // cdr
     void *const x9057 = apply_prim_cdr(lst9059);
     arg_buffer[1] = kont9056;
     arg_buffer[2] = x9057;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9056))[0]);
 
     // calling next procedure using a function pointer
@@ -889,7 +873,7 @@ void cdr_fptr() // cdr
     void *const x9057 = apply_prim_cdr(arg_buffer);
     arg_buffer[1] = kont9056;
     arg_buffer[2] = x9057;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9056))[0]);
 
     // calling next procedure using a function pointer
@@ -897,11 +881,10 @@ void cdr_fptr() // cdr
   }
 }
 
-void float_u45_u62int_fptr() // float->int
+inline void float_u45_u62int_fptr() // float->int
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9062 = arg_buffer[1];
   // decoding closure array
@@ -914,7 +897,7 @@ void float_u45_u62int_fptr() // float->int
     void *const x9061 = apply_prim_float_u45_u62int(lst9063);
     arg_buffer[1] = kont9060;
     arg_buffer[2] = x9061;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9060))[0]);
 
     // calling next procedure using a function pointer
@@ -924,7 +907,7 @@ void float_u45_u62int_fptr() // float->int
     void *const x9061 = apply_prim_float_u45_u62int(arg_buffer);
     arg_buffer[1] = kont9060;
     arg_buffer[2] = x9061;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9060))[0]);
 
     // calling next procedure using a function pointer
@@ -932,11 +915,10 @@ void float_u45_u62int_fptr() // float->int
   }
 }
 
-void int_u45_u62float_fptr() // int->float
+inline void int_u45_u62float_fptr() // int->float
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9066 = arg_buffer[1];
   // decoding closure array
@@ -949,7 +931,7 @@ void int_u45_u62float_fptr() // int->float
     void *const x9065 = apply_prim_int_u45_u62float(lst9067);
     arg_buffer[1] = kont9064;
     arg_buffer[2] = x9065;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9064))[0]);
 
     // calling next procedure using a function pointer
@@ -959,7 +941,7 @@ void int_u45_u62float_fptr() // int->float
     void *const x9065 = apply_prim_int_u45_u62float(arg_buffer);
     arg_buffer[1] = kont9064;
     arg_buffer[2] = x9065;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9064))[0]);
 
     // calling next procedure using a function pointer
@@ -967,11 +949,10 @@ void int_u45_u62float_fptr() // int->float
   }
 }
 
-void hash_fptr() // hash
+inline void hash_fptr() // hash
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9070 = arg_buffer[1];
   // decoding closure array
@@ -984,7 +965,7 @@ void hash_fptr() // hash
     void *const x9069 = apply_prim_hash(lst9071);
     arg_buffer[1] = kont9068;
     arg_buffer[2] = x9069;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9068))[0]);
 
     // calling next procedure using a function pointer
@@ -994,7 +975,7 @@ void hash_fptr() // hash
     void *const x9069 = apply_prim_hash(arg_buffer);
     arg_buffer[1] = kont9068;
     arg_buffer[2] = x9069;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9068))[0]);
 
     // calling next procedure using a function pointer
@@ -1002,11 +983,10 @@ void hash_fptr() // hash
   }
 }
 
-void hash_u45ref_fptr() // hash-ref
+inline void hash_u45ref_fptr() // hash-ref
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9074 = arg_buffer[1];
   // decoding closure array
@@ -1019,7 +999,7 @@ void hash_u45ref_fptr() // hash-ref
     void *const x9073 = apply_prim_hash_u45ref(lst9075);
     arg_buffer[1] = kont9072;
     arg_buffer[2] = x9073;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9072))[0]);
 
     // calling next procedure using a function pointer
@@ -1029,7 +1009,7 @@ void hash_u45ref_fptr() // hash-ref
     void *const x9073 = apply_prim_hash_u45ref(arg_buffer);
     arg_buffer[1] = kont9072;
     arg_buffer[2] = x9073;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9072))[0]);
 
     // calling next procedure using a function pointer
@@ -1037,11 +1017,10 @@ void hash_u45ref_fptr() // hash-ref
   }
 }
 
-void hash_u45set_fptr() // hash-set
+inline void hash_u45set_fptr() // hash-set
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9078 = arg_buffer[1];
   // decoding closure array
@@ -1054,7 +1033,7 @@ void hash_u45set_fptr() // hash-set
     void *const x9077 = apply_prim_hash_u45set(lst9079);
     arg_buffer[1] = kont9076;
     arg_buffer[2] = x9077;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9076))[0]);
 
     // calling next procedure using a function pointer
@@ -1064,7 +1043,7 @@ void hash_u45set_fptr() // hash-set
     void *const x9077 = apply_prim_hash_u45set(arg_buffer);
     arg_buffer[1] = kont9076;
     arg_buffer[2] = x9077;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9076))[0]);
 
     // calling next procedure using a function pointer
@@ -1072,11 +1051,10 @@ void hash_u45set_fptr() // hash-set
   }
 }
 
-void hash_u45keys_fptr() // hash-keys
+inline void hash_u45keys_fptr() // hash-keys
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9082 = arg_buffer[1];
   // decoding closure array
@@ -1089,7 +1067,7 @@ void hash_u45keys_fptr() // hash-keys
     void *const x9081 = apply_prim_hash_u45keys(lst9083);
     arg_buffer[1] = kont9080;
     arg_buffer[2] = x9081;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9080))[0]);
 
     // calling next procedure using a function pointer
@@ -1099,7 +1077,7 @@ void hash_u45keys_fptr() // hash-keys
     void *const x9081 = apply_prim_hash_u45keys(arg_buffer);
     arg_buffer[1] = kont9080;
     arg_buffer[2] = x9081;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9080))[0]);
 
     // calling next procedure using a function pointer
@@ -1107,11 +1085,10 @@ void hash_u45keys_fptr() // hash-keys
   }
 }
 
-void hash_u45has_u45key_u63_fptr() // hash-has-key?
+inline void hash_u45has_u45key_u63_fptr() // hash-has-key?
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9086 = arg_buffer[1];
   // decoding closure array
@@ -1124,7 +1101,7 @@ void hash_u45has_u45key_u63_fptr() // hash-has-key?
     void *const x9085 = apply_prim_hash_u45has_u45key_u63(lst9087);
     arg_buffer[1] = kont9084;
     arg_buffer[2] = x9085;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9084))[0]);
 
     // calling next procedure using a function pointer
@@ -1134,7 +1111,7 @@ void hash_u45has_u45key_u63_fptr() // hash-has-key?
     void *const x9085 = apply_prim_hash_u45has_u45key_u63(arg_buffer);
     arg_buffer[1] = kont9084;
     arg_buffer[2] = x9085;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9084))[0]);
 
     // calling next procedure using a function pointer
@@ -1142,11 +1119,10 @@ void hash_u45has_u45key_u63_fptr() // hash-has-key?
   }
 }
 
-void hash_u45count_fptr() // hash-count
+inline void hash_u45count_fptr() // hash-count
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9090 = arg_buffer[1];
   // decoding closure array
@@ -1159,7 +1135,7 @@ void hash_u45count_fptr() // hash-count
     void *const x9089 = apply_prim_hash_u45count(lst9091);
     arg_buffer[1] = kont9088;
     arg_buffer[2] = x9089;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9088))[0]);
 
     // calling next procedure using a function pointer
@@ -1169,7 +1145,7 @@ void hash_u45count_fptr() // hash-count
     void *const x9089 = apply_prim_hash_u45count(arg_buffer);
     arg_buffer[1] = kont9088;
     arg_buffer[2] = x9089;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9088))[0]);
 
     // calling next procedure using a function pointer
@@ -1177,11 +1153,10 @@ void hash_u45count_fptr() // hash-count
   }
 }
 
-void set_fptr() // set
+inline void set_fptr() // set
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9094 = arg_buffer[1];
   // decoding closure array
@@ -1194,7 +1169,7 @@ void set_fptr() // set
     void *const x9093 = apply_prim_set(lst9095);
     arg_buffer[1] = kont9092;
     arg_buffer[2] = x9093;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9092))[0]);
 
     // calling next procedure using a function pointer
@@ -1204,7 +1179,7 @@ void set_fptr() // set
     void *const x9093 = apply_prim_set(arg_buffer);
     arg_buffer[1] = kont9092;
     arg_buffer[2] = x9093;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9092))[0]);
 
     // calling next procedure using a function pointer
@@ -1212,11 +1187,10 @@ void set_fptr() // set
   }
 }
 
-void set_u45_u62list_fptr() // set->list
+inline void set_u45_u62list_fptr() // set->list
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9098 = arg_buffer[1];
   // decoding closure array
@@ -1229,7 +1203,7 @@ void set_u45_u62list_fptr() // set->list
     void *const x9097 = apply_prim_set_u45_u62list(lst9099);
     arg_buffer[1] = kont9096;
     arg_buffer[2] = x9097;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9096))[0]);
 
     // calling next procedure using a function pointer
@@ -1239,7 +1213,7 @@ void set_u45_u62list_fptr() // set->list
     void *const x9097 = apply_prim_set_u45_u62list(arg_buffer);
     arg_buffer[1] = kont9096;
     arg_buffer[2] = x9097;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9096))[0]);
 
     // calling next procedure using a function pointer
@@ -1247,11 +1221,10 @@ void set_u45_u62list_fptr() // set->list
   }
 }
 
-void list_u45_u62set_fptr() // list->set
+inline void list_u45_u62set_fptr() // list->set
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9102 = arg_buffer[1];
   // decoding closure array
@@ -1264,7 +1237,7 @@ void list_u45_u62set_fptr() // list->set
     void *const x9101 = apply_prim_list_u45_u62set(lst9103);
     arg_buffer[1] = kont9100;
     arg_buffer[2] = x9101;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9100))[0]);
 
     // calling next procedure using a function pointer
@@ -1274,7 +1247,7 @@ void list_u45_u62set_fptr() // list->set
     void *const x9101 = apply_prim_list_u45_u62set(arg_buffer);
     arg_buffer[1] = kont9100;
     arg_buffer[2] = x9101;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9100))[0]);
 
     // calling next procedure using a function pointer
@@ -1282,11 +1255,10 @@ void list_u45_u62set_fptr() // list->set
   }
 }
 
-void set_u45add_fptr() // set-add
+inline void set_u45add_fptr() // set-add
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9106 = arg_buffer[1];
   // decoding closure array
@@ -1299,7 +1271,7 @@ void set_u45add_fptr() // set-add
     void *const x9105 = apply_prim_set_u45add(lst9107);
     arg_buffer[1] = kont9104;
     arg_buffer[2] = x9105;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9104))[0]);
 
     // calling next procedure using a function pointer
@@ -1309,7 +1281,7 @@ void set_u45add_fptr() // set-add
     void *const x9105 = apply_prim_set_u45add(arg_buffer);
     arg_buffer[1] = kont9104;
     arg_buffer[2] = x9105;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9104))[0]);
 
     // calling next procedure using a function pointer
@@ -1317,11 +1289,10 @@ void set_u45add_fptr() // set-add
   }
 }
 
-void set_u45member_u63_fptr() // set-member?
+inline void set_u45member_u63_fptr() // set-member?
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9110 = arg_buffer[1];
   // decoding closure array
@@ -1334,7 +1305,7 @@ void set_u45member_u63_fptr() // set-member?
     void *const x9109 = apply_prim_set_u45member_u63(lst9111);
     arg_buffer[1] = kont9108;
     arg_buffer[2] = x9109;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9108))[0]);
 
     // calling next procedure using a function pointer
@@ -1344,7 +1315,7 @@ void set_u45member_u63_fptr() // set-member?
     void *const x9109 = apply_prim_set_u45member_u63(arg_buffer);
     arg_buffer[1] = kont9108;
     arg_buffer[2] = x9109;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9108))[0]);
 
     // calling next procedure using a function pointer
@@ -1352,11 +1323,10 @@ void set_u45member_u63_fptr() // set-member?
   }
 }
 
-void set_u45remove_fptr() // set-remove
+inline void set_u45remove_fptr() // set-remove
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9114 = arg_buffer[1];
   // decoding closure array
@@ -1369,7 +1339,7 @@ void set_u45remove_fptr() // set-remove
     void *const x9113 = apply_prim_set_u45remove(lst9115);
     arg_buffer[1] = kont9112;
     arg_buffer[2] = x9113;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9112))[0]);
 
     // calling next procedure using a function pointer
@@ -1379,7 +1349,7 @@ void set_u45remove_fptr() // set-remove
     void *const x9113 = apply_prim_set_u45remove(arg_buffer);
     arg_buffer[1] = kont9112;
     arg_buffer[2] = x9113;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9112))[0]);
 
     // calling next procedure using a function pointer
@@ -1387,11 +1357,10 @@ void set_u45remove_fptr() // set-remove
   }
 }
 
-void set_u45count_fptr() // set-count
+inline void set_u45count_fptr() // set-count
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9118 = arg_buffer[1];
   // decoding closure array
@@ -1404,7 +1373,7 @@ void set_u45count_fptr() // set-count
     void *const x9117 = apply_prim_set_u45count(lst9119);
     arg_buffer[1] = kont9116;
     arg_buffer[2] = x9117;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9116))[0]);
 
     // calling next procedure using a function pointer
@@ -1414,7 +1383,7 @@ void set_u45count_fptr() // set-count
     void *const x9117 = apply_prim_set_u45count(arg_buffer);
     arg_buffer[1] = kont9116;
     arg_buffer[2] = x9117;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9116))[0]);
 
     // calling next procedure using a function pointer
@@ -1422,11 +1391,10 @@ void set_u45count_fptr() // set-count
   }
 }
 
-void string_u63_fptr() // string?
+inline void string_u63_fptr() // string?
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9122 = arg_buffer[1];
   // decoding closure array
@@ -1439,7 +1407,7 @@ void string_u63_fptr() // string?
     void *const x9121 = apply_prim_string_u63(lst9123);
     arg_buffer[1] = kont9120;
     arg_buffer[2] = x9121;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9120))[0]);
 
     // calling next procedure using a function pointer
@@ -1449,7 +1417,7 @@ void string_u63_fptr() // string?
     void *const x9121 = apply_prim_string_u63(arg_buffer);
     arg_buffer[1] = kont9120;
     arg_buffer[2] = x9121;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9120))[0]);
 
     // calling next procedure using a function pointer
@@ -1457,11 +1425,10 @@ void string_u63_fptr() // string?
   }
 }
 
-void string_u45length_fptr() // string-length
+inline void string_u45length_fptr() // string-length
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9126 = arg_buffer[1];
   // decoding closure array
@@ -1474,7 +1441,7 @@ void string_u45length_fptr() // string-length
     void *const x9125 = apply_prim_string_u45length(lst9127);
     arg_buffer[1] = kont9124;
     arg_buffer[2] = x9125;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9124))[0]);
 
     // calling next procedure using a function pointer
@@ -1484,7 +1451,7 @@ void string_u45length_fptr() // string-length
     void *const x9125 = apply_prim_string_u45length(arg_buffer);
     arg_buffer[1] = kont9124;
     arg_buffer[2] = x9125;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9124))[0]);
 
     // calling next procedure using a function pointer
@@ -1492,11 +1459,10 @@ void string_u45length_fptr() // string-length
   }
 }
 
-void string_u45ref_fptr() // string-ref
+inline void string_u45ref_fptr() // string-ref
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9130 = arg_buffer[1];
   // decoding closure array
@@ -1509,7 +1475,7 @@ void string_u45ref_fptr() // string-ref
     void *const x9129 = apply_prim_string_u45ref(lst9131);
     arg_buffer[1] = kont9128;
     arg_buffer[2] = x9129;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9128))[0]);
 
     // calling next procedure using a function pointer
@@ -1519,7 +1485,7 @@ void string_u45ref_fptr() // string-ref
     void *const x9129 = apply_prim_string_u45ref(arg_buffer);
     arg_buffer[1] = kont9128;
     arg_buffer[2] = x9129;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9128))[0]);
 
     // calling next procedure using a function pointer
@@ -1527,11 +1493,10 @@ void string_u45ref_fptr() // string-ref
   }
 }
 
-void substring_fptr() // substring
+inline void substring_fptr() // substring
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9134 = arg_buffer[1];
   // decoding closure array
@@ -1544,7 +1509,7 @@ void substring_fptr() // substring
     void *const x9133 = apply_prim_substring(lst9135);
     arg_buffer[1] = kont9132;
     arg_buffer[2] = x9133;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9132))[0]);
 
     // calling next procedure using a function pointer
@@ -1554,7 +1519,7 @@ void substring_fptr() // substring
     void *const x9133 = apply_prim_substring(arg_buffer);
     arg_buffer[1] = kont9132;
     arg_buffer[2] = x9133;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9132))[0]);
 
     // calling next procedure using a function pointer
@@ -1562,11 +1527,10 @@ void substring_fptr() // substring
   }
 }
 
-void string_u45append_fptr() // string-append
+inline void string_u45append_fptr() // string-append
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9138 = arg_buffer[1];
   // decoding closure array
@@ -1579,7 +1543,7 @@ void string_u45append_fptr() // string-append
     void *const x9137 = apply_prim_string_u45append(lst9139);
     arg_buffer[1] = kont9136;
     arg_buffer[2] = x9137;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9136))[0]);
 
     // calling next procedure using a function pointer
@@ -1589,7 +1553,7 @@ void string_u45append_fptr() // string-append
     void *const x9137 = apply_prim_string_u45append(arg_buffer);
     arg_buffer[1] = kont9136;
     arg_buffer[2] = x9137;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9136))[0]);
 
     // calling next procedure using a function pointer
@@ -1597,11 +1561,10 @@ void string_u45append_fptr() // string-append
   }
 }
 
-void string_u45_u62list_fptr() // string->list
+inline void string_u45_u62list_fptr() // string->list
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9142 = arg_buffer[1];
   // decoding closure array
@@ -1614,7 +1577,7 @@ void string_u45_u62list_fptr() // string->list
     void *const x9141 = apply_prim_string_u45_u62list(lst9143);
     arg_buffer[1] = kont9140;
     arg_buffer[2] = x9141;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9140))[0]);
 
     // calling next procedure using a function pointer
@@ -1624,7 +1587,7 @@ void string_u45_u62list_fptr() // string->list
     void *const x9141 = apply_prim_string_u45_u62list(arg_buffer);
     arg_buffer[1] = kont9140;
     arg_buffer[2] = x9141;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9140))[0]);
 
     // calling next procedure using a function pointer
@@ -1632,11 +1595,10 @@ void string_u45_u62list_fptr() // string->list
   }
 }
 
-void exact_u45floor_fptr() // exact-floor
+inline void exact_u45floor_fptr() // exact-floor
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9146 = arg_buffer[1];
   // decoding closure array
@@ -1649,7 +1611,7 @@ void exact_u45floor_fptr() // exact-floor
     void *const x9145 = apply_prim_exact_u45floor(lst9147);
     arg_buffer[1] = kont9144;
     arg_buffer[2] = x9145;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9144))[0]);
 
     // calling next procedure using a function pointer
@@ -1659,7 +1621,7 @@ void exact_u45floor_fptr() // exact-floor
     void *const x9145 = apply_prim_exact_u45floor(arg_buffer);
     arg_buffer[1] = kont9144;
     arg_buffer[2] = x9145;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9144))[0]);
 
     // calling next procedure using a function pointer
@@ -1667,11 +1629,10 @@ void exact_u45floor_fptr() // exact-floor
   }
 }
 
-void exact_u45ceiling_fptr() // exact-ceiling
+inline void exact_u45ceiling_fptr() // exact-ceiling
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9150 = arg_buffer[1];
   // decoding closure array
@@ -1684,7 +1645,7 @@ void exact_u45ceiling_fptr() // exact-ceiling
     void *const x9149 = apply_prim_exact_u45ceiling(lst9151);
     arg_buffer[1] = kont9148;
     arg_buffer[2] = x9149;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9148))[0]);
 
     // calling next procedure using a function pointer
@@ -1694,7 +1655,7 @@ void exact_u45ceiling_fptr() // exact-ceiling
     void *const x9149 = apply_prim_exact_u45ceiling(arg_buffer);
     arg_buffer[1] = kont9148;
     arg_buffer[2] = x9149;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9148))[0]);
 
     // calling next procedure using a function pointer
@@ -1702,11 +1663,10 @@ void exact_u45ceiling_fptr() // exact-ceiling
   }
 }
 
-void exact_u45round_fptr() // exact-round
+inline void exact_u45round_fptr() // exact-round
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9154 = arg_buffer[1];
   // decoding closure array
@@ -1719,7 +1679,7 @@ void exact_u45round_fptr() // exact-round
     void *const x9153 = apply_prim_exact_u45round(lst9155);
     arg_buffer[1] = kont9152;
     arg_buffer[2] = x9153;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9152))[0]);
 
     // calling next procedure using a function pointer
@@ -1729,7 +1689,7 @@ void exact_u45round_fptr() // exact-round
     void *const x9153 = apply_prim_exact_u45round(arg_buffer);
     arg_buffer[1] = kont9152;
     arg_buffer[2] = x9153;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9152))[0]);
 
     // calling next procedure using a function pointer
@@ -1737,11 +1697,10 @@ void exact_u45round_fptr() // exact-round
   }
 }
 
-void abs_fptr() // abs
+inline void abs_fptr() // abs
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9158 = arg_buffer[1];
   // decoding closure array
@@ -1754,7 +1713,7 @@ void abs_fptr() // abs
     void *const x9157 = apply_prim_abs(lst9159);
     arg_buffer[1] = kont9156;
     arg_buffer[2] = x9157;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9156))[0]);
 
     // calling next procedure using a function pointer
@@ -1764,7 +1723,7 @@ void abs_fptr() // abs
     void *const x9157 = apply_prim_abs(arg_buffer);
     arg_buffer[1] = kont9156;
     arg_buffer[2] = x9157;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9156))[0]);
 
     // calling next procedure using a function pointer
@@ -1772,11 +1731,10 @@ void abs_fptr() // abs
   }
 }
 
-void max_fptr() // max
+inline void max_fptr() // max
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9162 = arg_buffer[1];
   // decoding closure array
@@ -1789,7 +1747,7 @@ void max_fptr() // max
     void *const x9161 = apply_prim_max(lst9163);
     arg_buffer[1] = kont9160;
     arg_buffer[2] = x9161;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9160))[0]);
 
     // calling next procedure using a function pointer
@@ -1799,7 +1757,7 @@ void max_fptr() // max
     void *const x9161 = apply_prim_max(arg_buffer);
     arg_buffer[1] = kont9160;
     arg_buffer[2] = x9161;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9160))[0]);
 
     // calling next procedure using a function pointer
@@ -1807,11 +1765,10 @@ void max_fptr() // max
   }
 }
 
-void min_fptr() // min
+inline void min_fptr() // min
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9166 = arg_buffer[1];
   // decoding closure array
@@ -1824,7 +1781,7 @@ void min_fptr() // min
     void *const x9165 = apply_prim_min(lst9167);
     arg_buffer[1] = kont9164;
     arg_buffer[2] = x9165;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9164))[0]);
 
     // calling next procedure using a function pointer
@@ -1834,7 +1791,7 @@ void min_fptr() // min
     void *const x9165 = apply_prim_min(arg_buffer);
     arg_buffer[1] = kont9164;
     arg_buffer[2] = x9165;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9164))[0]);
 
     // calling next procedure using a function pointer
@@ -1842,11 +1799,10 @@ void min_fptr() // min
   }
 }
 
-void expt_fptr() // expt
+inline void expt_fptr() // expt
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9170 = arg_buffer[1];
   // decoding closure array
@@ -1859,7 +1815,7 @@ void expt_fptr() // expt
     void *const x9169 = apply_prim_expt(lst9171);
     arg_buffer[1] = kont9168;
     arg_buffer[2] = x9169;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9168))[0]);
 
     // calling next procedure using a function pointer
@@ -1869,7 +1825,7 @@ void expt_fptr() // expt
     void *const x9169 = apply_prim_expt(arg_buffer);
     arg_buffer[1] = kont9168;
     arg_buffer[2] = x9169;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9168))[0]);
 
     // calling next procedure using a function pointer
@@ -1877,11 +1833,10 @@ void expt_fptr() // expt
   }
 }
 
-void sqrt_fptr() // sqrt
+inline void sqrt_fptr() // sqrt
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9174 = arg_buffer[1];
   // decoding closure array
@@ -1894,7 +1849,7 @@ void sqrt_fptr() // sqrt
     void *const x9173 = apply_prim_sqrt(lst9175);
     arg_buffer[1] = kont9172;
     arg_buffer[2] = x9173;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9172))[0]);
 
     // calling next procedure using a function pointer
@@ -1904,7 +1859,7 @@ void sqrt_fptr() // sqrt
     void *const x9173 = apply_prim_sqrt(arg_buffer);
     arg_buffer[1] = kont9172;
     arg_buffer[2] = x9173;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9172))[0]);
 
     // calling next procedure using a function pointer
@@ -1912,11 +1867,10 @@ void sqrt_fptr() // sqrt
   }
 }
 
-void remainder_fptr() // remainder
+inline void remainder_fptr() // remainder
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9178 = arg_buffer[1];
   // decoding closure array
@@ -1929,7 +1883,7 @@ void remainder_fptr() // remainder
     void *const x9177 = apply_prim_remainder(lst9179);
     arg_buffer[1] = kont9176;
     arg_buffer[2] = x9177;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9176))[0]);
 
     // calling next procedure using a function pointer
@@ -1939,7 +1893,7 @@ void remainder_fptr() // remainder
     void *const x9177 = apply_prim_remainder(arg_buffer);
     arg_buffer[1] = kont9176;
     arg_buffer[2] = x9177;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9176))[0]);
 
     // calling next procedure using a function pointer
@@ -1947,11 +1901,10 @@ void remainder_fptr() // remainder
   }
 }
 
-void quotient_fptr() // quotient
+inline void quotient_fptr() // quotient
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9182 = arg_buffer[1];
   // decoding closure array
@@ -1964,7 +1917,7 @@ void quotient_fptr() // quotient
     void *const x9181 = apply_prim_quotient(lst9183);
     arg_buffer[1] = kont9180;
     arg_buffer[2] = x9181;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9180))[0]);
 
     // calling next procedure using a function pointer
@@ -1974,7 +1927,7 @@ void quotient_fptr() // quotient
     void *const x9181 = apply_prim_quotient(arg_buffer);
     arg_buffer[1] = kont9180;
     arg_buffer[2] = x9181;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9180))[0]);
 
     // calling next procedure using a function pointer
@@ -1982,11 +1935,10 @@ void quotient_fptr() // quotient
   }
 }
 
-void random_fptr() // random
+inline void random_fptr() // random
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9186 = arg_buffer[1];
   // decoding closure array
@@ -1999,7 +1951,7 @@ void random_fptr() // random
     void *const x9185 = apply_prim_random(lst9187);
     arg_buffer[1] = kont9184;
     arg_buffer[2] = x9185;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9184))[0]);
 
     // calling next procedure using a function pointer
@@ -2009,7 +1961,7 @@ void random_fptr() // random
     void *const x9185 = apply_prim_random(arg_buffer);
     arg_buffer[1] = kont9184;
     arg_buffer[2] = x9185;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9184))[0]);
 
     // calling next procedure using a function pointer
@@ -2017,11 +1969,10 @@ void random_fptr() // random
   }
 }
 
-void symbol_u63_fptr() // symbol?
+inline void symbol_u63_fptr() // symbol?
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9190 = arg_buffer[1];
   // decoding closure array
@@ -2034,7 +1985,7 @@ void symbol_u63_fptr() // symbol?
     void *const x9189 = apply_prim_symbol_u63(lst9191);
     arg_buffer[1] = kont9188;
     arg_buffer[2] = x9189;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9188))[0]);
 
     // calling next procedure using a function pointer
@@ -2044,7 +1995,7 @@ void symbol_u63_fptr() // symbol?
     void *const x9189 = apply_prim_symbol_u63(arg_buffer);
     arg_buffer[1] = kont9188;
     arg_buffer[2] = x9189;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9188))[0]);
 
     // calling next procedure using a function pointer
@@ -2052,11 +2003,10 @@ void symbol_u63_fptr() // symbol?
   }
 }
 
-void pair_u63_fptr() // pair?
+inline void pair_u63_fptr() // pair?
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9194 = arg_buffer[1];
   // decoding closure array
@@ -2069,7 +2019,7 @@ void pair_u63_fptr() // pair?
     void *const x9193 = apply_prim_pair_u63(lst9195);
     arg_buffer[1] = kont9192;
     arg_buffer[2] = x9193;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9192))[0]);
 
     // calling next procedure using a function pointer
@@ -2079,7 +2029,7 @@ void pair_u63_fptr() // pair?
     void *const x9193 = apply_prim_pair_u63(arg_buffer);
     arg_buffer[1] = kont9192;
     arg_buffer[2] = x9193;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9192))[0]);
 
     // calling next procedure using a function pointer
@@ -2087,11 +2037,10 @@ void pair_u63_fptr() // pair?
   }
 }
 
-void positive_u63_fptr() // positive?
+inline void positive_u63_fptr() // positive?
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9198 = arg_buffer[1];
   // decoding closure array
@@ -2104,7 +2053,7 @@ void positive_u63_fptr() // positive?
     void *const x9197 = apply_prim_positive_u63(lst9199);
     arg_buffer[1] = kont9196;
     arg_buffer[2] = x9197;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9196))[0]);
 
     // calling next procedure using a function pointer
@@ -2114,7 +2063,7 @@ void positive_u63_fptr() // positive?
     void *const x9197 = apply_prim_positive_u63(arg_buffer);
     arg_buffer[1] = kont9196;
     arg_buffer[2] = x9197;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9196))[0]);
 
     // calling next procedure using a function pointer
@@ -2122,11 +2071,10 @@ void positive_u63_fptr() // positive?
   }
 }
 
-void negative_u63_fptr() // negative?
+inline void negative_u63_fptr() // negative?
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9202 = arg_buffer[1];
   // decoding closure array
@@ -2139,7 +2087,7 @@ void negative_u63_fptr() // negative?
     void *const x9201 = apply_prim_negative_u63(lst9203);
     arg_buffer[1] = kont9200;
     arg_buffer[2] = x9201;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9200))[0]);
 
     // calling next procedure using a function pointer
@@ -2149,7 +2097,7 @@ void negative_u63_fptr() // negative?
     void *const x9201 = apply_prim_negative_u63(arg_buffer);
     arg_buffer[1] = kont9200;
     arg_buffer[2] = x9201;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9200))[0]);
 
     // calling next procedure using a function pointer
@@ -2157,11 +2105,10 @@ void negative_u63_fptr() // negative?
   }
 }
 
-void list_fptr() // list
+inline void list_fptr() // list
 {
   // reading number of args
   //  This is the second type of the functions
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _env9206 = arg_buffer[1];
   // decoding closure array
@@ -2174,7 +2121,7 @@ void list_fptr() // list
     void *const x9205 = apply_prim_list(lst9207);
     arg_buffer[1] = kont9204;
     arg_buffer[2] = x9205;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9204))[0]);
 
     // calling next procedure using a function pointer
@@ -2184,7 +2131,7 @@ void list_fptr() // list
     void *const x9205 = apply_prim_list(arg_buffer);
     arg_buffer[1] = kont9204;
     arg_buffer[2] = x9205;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont9204))[0]);
 
     // calling next procedure using a function pointer
@@ -2192,10 +2139,9 @@ void list_fptr() // list
   }
 }
 
-void even_u63_fptr() // even? -> generic version
+inline void even_u63_fptr() // even? -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8901 = arg_buffer[1];
   // reading env and args
@@ -2210,14 +2156,14 @@ void even_u63_fptr() // even? -> generic version
   // clo-app
   arg_buffer[2] = apply_prim_equal_u63_2(id_8715, id_8717);
   arg_buffer[1] = kont8857;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8857))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void even_u63_fptr(void *_8901, void *kont8857, void *x) // even?
+inline void even_u63_spec(void *_8901, void *kont8857, void *x) // even?
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -2228,17 +2174,16 @@ void even_u63_fptr(void *_8901, void *kont8857, void *x) // even?
   // clo-app
   arg_buffer[2] = apply_prim_equal_u63_2(id_8715, id_8717);
   arg_buffer[1] = kont8857;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8857))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void odd_u63_fptr() // odd? -> generic version
+inline void odd_u63_fptr() // odd? -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8902 = arg_buffer[1];
   // reading env and args
@@ -2253,14 +2198,14 @@ void odd_u63_fptr() // odd? -> generic version
   // clo-app
   arg_buffer[2] = apply_prim_equal_u63_2(id_8718, id_8720);
   arg_buffer[1] = kont8858;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8858))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void odd_u63_fptr(void *_8902, void *kont8858, void *x) // odd?
+inline void odd_u63_spec(void *_8902, void *kont8858, void *x) // odd?
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -2271,17 +2216,16 @@ void odd_u63_fptr(void *_8902, void *kont8858, void *x) // odd?
   // clo-app
   arg_buffer[2] = apply_prim_equal_u63_2(id_8718, id_8720);
   arg_buffer[1] = kont8858;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8858))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void list_u45ref_fptr() // list-ref -> generic version
+inline void list_u45ref_fptr() // list-ref -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8903 = arg_buffer[1];
   // reading env and args
@@ -2301,7 +2245,7 @@ void list_u45ref_fptr() // list-ref -> generic version
     // clo-app
     arg_buffer[1] = kont8859;
     arg_buffer[2] = xy8723;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8859))[0]);
 
     // calling next procedure using a function pointer
@@ -2312,12 +2256,12 @@ void list_u45ref_fptr() // list-ref -> generic version
     void *const id_8726 = apply_prim__u45_2(n, id_8725);
 
     // clo-app
-    list_u45ref_fptr(list_u45ref, kont8859, id_8724, id_8726);
+    list_u45ref_spec(list_u45ref, kont8859, id_8724, id_8726);
   }
 }
 
-void list_u45ref_fptr(void *_8903, void *kont8859, void *lst,
-                      void *n) // list-ref
+inline void list_u45ref_spec(void *_8903, void *kont8859, void *lst,
+                             void *n) // list-ref
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -2332,7 +2276,7 @@ void list_u45ref_fptr(void *_8903, void *kont8859, void *lst,
     // clo-app
     arg_buffer[1] = kont8859;
     arg_buffer[2] = xy8723;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8859))[0]);
 
     // calling next procedure using a function pointer
@@ -2343,14 +2287,13 @@ void list_u45ref_fptr(void *_8903, void *kont8859, void *lst,
     void *const id_8726 = apply_prim__u45_2(n, id_8725);
 
     // clo-app
-    list_u45ref_fptr(list_u45ref, kont8859, id_8724, id_8726);
+    list_u45ref_spec(list_u45ref, kont8859, id_8724, id_8726);
   }
 }
 
-void lam8904_fptr() // lam8904 -> generic version
+inline void lam8904_fptr() // lam8904 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8905 = arg_buffer[1];
   // reading env and args
@@ -2370,7 +2313,7 @@ void lam8904_fptr() // lam8904 -> generic version
     // clo-app
     arg_buffer[1] = kont8860;
     arg_buffer[2] = xy8731;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8860))[0]);
 
     // calling next procedure using a function pointer
@@ -2386,7 +2329,7 @@ void lam8904_fptr() // lam8904 -> generic version
       // clo-app
       arg_buffer[1] = kont8860;
       arg_buffer[2] = lst;
-      arg_buffer[0] = int8992;
+      numArgs = int8992;
       auto function_ptr =
           reinterpret_cast<void (*)()>((decode_clo(kont8860))[0]);
 
@@ -2396,15 +2339,14 @@ void lam8904_fptr() // lam8904 -> generic version
       void *const id_8734 = apply_prim_cdr_1(lst);
 
       // clo-app
-      member_fptr(member, kont8860, item, id_8734);
+      member_spec(member, kont8860, item, id_8734);
     }
   }
 }
 
-void member_fptr() // member -> generic version
+inline void member_fptr() // member -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8906 = arg_buffer[1];
   // reading env and args
@@ -2432,7 +2374,7 @@ void member_fptr() // member -> generic version
     // clo-app
     arg_buffer[1] = f8861;
     arg_buffer[2] = xy8728;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8861))[0]);
 
     // calling next procedure using a function pointer
@@ -2443,7 +2385,7 @@ void member_fptr() // member -> generic version
     // clo-app
     arg_buffer[1] = f8861;
     arg_buffer[2] = xy8729;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8861))[0]);
 
     // calling next procedure using a function pointer
@@ -2451,7 +2393,8 @@ void member_fptr() // member -> generic version
   }
 }
 
-void member_fptr(void *_8906, void *kont8860, void *item, void *lst) // member
+inline void member_spec(void *_8906, void *kont8860, void *item,
+                        void *lst) // member
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -2474,7 +2417,7 @@ void member_fptr(void *_8906, void *kont8860, void *item, void *lst) // member
     // clo-app
     arg_buffer[1] = f8861;
     arg_buffer[2] = xy8728;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8861))[0]);
 
     // calling next procedure using a function pointer
@@ -2485,7 +2428,7 @@ void member_fptr(void *_8906, void *kont8860, void *item, void *lst) // member
     // clo-app
     arg_buffer[1] = f8861;
     arg_buffer[2] = xy8729;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8861))[0]);
 
     // calling next procedure using a function pointer
@@ -2493,10 +2436,9 @@ void member_fptr(void *_8906, void *kont8860, void *item, void *lst) // member
   }
 }
 
-void member_u63_fptr() // member? -> generic version
+inline void member_u63_fptr() // member? -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8907 = arg_buffer[1];
   // reading env and args
@@ -2515,7 +2457,7 @@ void member_u63_fptr() // member? -> generic version
     // clo-app
     arg_buffer[1] = kont8862;
     arg_buffer[2] = xy8736;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8862))[0]);
 
     // calling next procedure using a function pointer
@@ -2532,7 +2474,7 @@ void member_u63_fptr() // member? -> generic version
       // clo-app
       arg_buffer[1] = kont8862;
       arg_buffer[2] = xy8739;
-      arg_buffer[0] = int8992;
+      numArgs = int8992;
       auto function_ptr =
           reinterpret_cast<void (*)()>((decode_clo(kont8862))[0]);
 
@@ -2542,12 +2484,13 @@ void member_u63_fptr() // member? -> generic version
       void *const id_8740 = apply_prim_cdr_1(lst);
 
       // clo-app
-      member_u63_fptr(member_u63, kont8862, x, id_8740);
+      member_u63_spec(member_u63, kont8862, x, id_8740);
     }
   }
 }
 
-void member_u63_fptr(void *_8907, void *kont8862, void *x, void *lst) // member?
+inline void member_u63_spec(void *_8907, void *kont8862, void *x,
+                            void *lst) // member?
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -2561,7 +2504,7 @@ void member_u63_fptr(void *_8907, void *kont8862, void *x, void *lst) // member?
     // clo-app
     arg_buffer[1] = kont8862;
     arg_buffer[2] = xy8736;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8862))[0]);
 
     // calling next procedure using a function pointer
@@ -2578,7 +2521,7 @@ void member_u63_fptr(void *_8907, void *kont8862, void *x, void *lst) // member?
       // clo-app
       arg_buffer[1] = kont8862;
       arg_buffer[2] = xy8739;
-      arg_buffer[0] = int8992;
+      numArgs = int8992;
       auto function_ptr =
           reinterpret_cast<void (*)()>((decode_clo(kont8862))[0]);
 
@@ -2588,15 +2531,14 @@ void member_u63_fptr(void *_8907, void *kont8862, void *x, void *lst) // member?
       void *const id_8740 = apply_prim_cdr_1(lst);
 
       // clo-app
-      member_u63_fptr(member_u63, kont8862, x, id_8740);
+      member_u63_spec(member_u63, kont8862, x, id_8740);
     }
   }
 }
 
-void lam8908_fptr() // lam8908 -> generic version
+inline void lam8908_fptr() // lam8908 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8909 = arg_buffer[1];
   // reading env and args
@@ -2610,17 +2552,16 @@ void lam8908_fptr() // lam8908 -> generic version
   // clo-app
   arg_buffer[2] = apply_prim__u43_2(id_8743, id_8745);
   arg_buffer[1] = kont8863;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8863))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void length_fptr() // length -> generic version
+inline void length_fptr() // length -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8910 = arg_buffer[1];
   // reading env and args
@@ -2638,7 +2579,7 @@ void length_fptr() // length -> generic version
     // clo-app
     arg_buffer[1] = kont8863;
     arg_buffer[2] = xy8742;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8863))[0]);
 
     // calling next procedure using a function pointer
@@ -2656,11 +2597,11 @@ void length_fptr() // length -> generic version
     void *f8864 = encode_clo(clo9221);
 
     // clo-app
-    length_fptr(length, f8864, id_8744);
+    length_spec(length, f8864, id_8744);
   }
 }
 
-void length_fptr(void *_8910, void *kont8863, void *lst) // length
+inline void length_spec(void *_8910, void *kont8863, void *lst) // length
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -2674,7 +2615,7 @@ void length_fptr(void *_8910, void *kont8863, void *lst) // length
     // clo-app
     arg_buffer[1] = kont8863;
     arg_buffer[2] = xy8742;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8863))[0]);
 
     // calling next procedure using a function pointer
@@ -2692,14 +2633,13 @@ void length_fptr(void *_8910, void *kont8863, void *lst) // length
     void *f8864 = encode_clo(clo9223);
 
     // clo-app
-    length_fptr(length, f8864, id_8744);
+    length_spec(length, f8864, id_8744);
   }
 }
 
-void lam8911_fptr() // lam8911 -> generic version
+inline void lam8911_fptr() // lam8911 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8912 = arg_buffer[1];
   // reading env and args
@@ -2713,17 +2653,16 @@ void lam8911_fptr() // lam8911 -> generic version
   // clo-app
   arg_buffer[2] = apply_prim_cons_2(id_8749, id_8751);
   arg_buffer[1] = kont8865;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8865))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void lam8913_fptr() // lam8913 -> generic version
+inline void lam8913_fptr() // lam8913 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8914 = arg_buffer[1];
   // reading env and args
@@ -2745,13 +2684,12 @@ void lam8913_fptr() // lam8913 -> generic version
   void *f8866 = encode_clo(clo9224);
 
   // clo-app
-  map_fptr(map, f8866, proc, id_8750);
+  map_spec(map, f8866, proc, id_8750);
 }
 
-void map_fptr() // map -> generic version
+inline void map_fptr() // map -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8915 = arg_buffer[1];
   // reading env and args
@@ -2770,7 +2708,7 @@ void map_fptr() // map -> generic version
     // clo-app
     arg_buffer[1] = kont8865;
     arg_buffer[2] = xy8747;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8865))[0]);
 
     // calling next procedure using a function pointer
@@ -2791,7 +2729,7 @@ void map_fptr() // map -> generic version
     arg_buffer[1] = proc;
     arg_buffer[2] = f8867;
     arg_buffer[3] = id_8748;
-    arg_buffer[0] = int8993;
+    numArgs = int8993;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(proc))[0]);
 
     // calling next procedure using a function pointer
@@ -2799,7 +2737,7 @@ void map_fptr() // map -> generic version
   }
 }
 
-void map_fptr(void *_8915, void *kont8865, void *proc, void *lst) // map
+inline void map_spec(void *_8915, void *kont8865, void *proc, void *lst) // map
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -2813,7 +2751,7 @@ void map_fptr(void *_8915, void *kont8865, void *proc, void *lst) // map
     // clo-app
     arg_buffer[1] = kont8865;
     arg_buffer[2] = xy8747;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8865))[0]);
 
     // calling next procedure using a function pointer
@@ -2834,7 +2772,7 @@ void map_fptr(void *_8915, void *kont8865, void *proc, void *lst) // map
     arg_buffer[1] = proc;
     arg_buffer[2] = f8867;
     arg_buffer[3] = id_8748;
-    arg_buffer[0] = int8993;
+    numArgs = int8993;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(proc))[0]);
 
     // calling next procedure using a function pointer
@@ -2842,10 +2780,9 @@ void map_fptr(void *_8915, void *kont8865, void *proc, void *lst) // map
   }
 }
 
-void lam8916_fptr() // lam8916 -> generic version
+inline void lam8916_fptr() // lam8916 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8917 = arg_buffer[1];
   // reading env and args
@@ -2859,17 +2796,16 @@ void lam8916_fptr() // lam8916 -> generic version
   // clo-app
   arg_buffer[2] = apply_prim_cons_2(id_8756, id_8758);
   arg_buffer[1] = kont8868;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8868))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void lam8918_fptr() // lam8918 -> generic version
+inline void lam8918_fptr() // lam8918 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8919 = arg_buffer[1];
   // reading env and args
@@ -2896,19 +2832,18 @@ void lam8918_fptr() // lam8918 -> generic version
     void *f8869 = encode_clo(clo9230);
 
     // clo-app
-    filter_fptr(filter, f8869, op, id_8757);
+    filter_spec(filter, f8869, op, id_8757);
   } else {
     void *const id_8759 = apply_prim_cdr_1(lst);
 
     // clo-app
-    filter_fptr(filter, kont8868, op, id_8759);
+    filter_spec(filter, kont8868, op, id_8759);
   }
 }
 
-void filter_fptr() // filter -> generic version
+inline void filter_fptr() // filter -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8920 = arg_buffer[1];
   // reading env and args
@@ -2927,7 +2862,7 @@ void filter_fptr() // filter -> generic version
     // clo-app
     arg_buffer[1] = kont8868;
     arg_buffer[2] = xy8753;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8868))[0]);
 
     // calling next procedure using a function pointer
@@ -2948,7 +2883,7 @@ void filter_fptr() // filter -> generic version
     arg_buffer[1] = op;
     arg_buffer[2] = f8870;
     arg_buffer[3] = id_8754;
-    arg_buffer[0] = int8993;
+    numArgs = int8993;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(op))[0]);
 
     // calling next procedure using a function pointer
@@ -2956,7 +2891,8 @@ void filter_fptr() // filter -> generic version
   }
 }
 
-void filter_fptr(void *_8920, void *kont8868, void *op, void *lst) // filter
+inline void filter_spec(void *_8920, void *kont8868, void *op,
+                        void *lst) // filter
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -2970,7 +2906,7 @@ void filter_fptr(void *_8920, void *kont8868, void *op, void *lst) // filter
     // clo-app
     arg_buffer[1] = kont8868;
     arg_buffer[2] = xy8753;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8868))[0]);
 
     // calling next procedure using a function pointer
@@ -2991,7 +2927,7 @@ void filter_fptr(void *_8920, void *kont8868, void *op, void *lst) // filter
     arg_buffer[1] = op;
     arg_buffer[2] = f8870;
     arg_buffer[3] = id_8754;
-    arg_buffer[0] = int8993;
+    numArgs = int8993;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(op))[0]);
 
     // calling next procedure using a function pointer
@@ -2999,10 +2935,9 @@ void filter_fptr(void *_8920, void *kont8868, void *op, void *lst) // filter
   }
 }
 
-void drop_fptr() // drop -> generic version
+inline void drop_fptr() // drop -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8921 = arg_buffer[1];
   // reading env and args
@@ -3021,7 +2956,7 @@ void drop_fptr() // drop -> generic version
     // clo-app
     arg_buffer[1] = kont8871;
     arg_buffer[2] = lst;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8871))[0]);
 
     // calling next procedure using a function pointer
@@ -3032,11 +2967,11 @@ void drop_fptr() // drop -> generic version
     void *const id_8764 = apply_prim__u45_2(n, id_8763);
 
     // clo-app
-    drop_fptr(drop, kont8871, id_8762, id_8764);
+    drop_spec(drop, kont8871, id_8762, id_8764);
   }
 }
 
-void drop_fptr(void *_8921, void *kont8871, void *lst, void *n) // drop
+inline void drop_spec(void *_8921, void *kont8871, void *lst, void *n) // drop
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -3050,7 +2985,7 @@ void drop_fptr(void *_8921, void *kont8871, void *lst, void *n) // drop
     // clo-app
     arg_buffer[1] = kont8871;
     arg_buffer[2] = lst;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8871))[0]);
 
     // calling next procedure using a function pointer
@@ -3061,14 +2996,13 @@ void drop_fptr(void *_8921, void *kont8871, void *lst, void *n) // drop
     void *const id_8764 = apply_prim__u45_2(n, id_8763);
 
     // clo-app
-    drop_fptr(drop, kont8871, id_8762, id_8764);
+    drop_spec(drop, kont8871, id_8762, id_8764);
   }
 }
 
-void lam8922_fptr() // lam8922 -> generic version
+inline void lam8922_fptr() // lam8922 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8923 = arg_buffer[1];
   // reading env and args
@@ -3082,13 +3016,12 @@ void lam8922_fptr() // lam8922 -> generic version
   void *const id_8768 = apply_prim_cdr_1(lst);
 
   // clo-app
-  foldl_fptr(foldl, kont8872, fun, id_8767, id_8768);
+  foldl_spec(foldl, kont8872, fun, id_8767, id_8768);
 }
 
-void foldl_fptr() // foldl -> generic version
+inline void foldl_fptr() // foldl -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8924 = arg_buffer[1];
   // reading env and args
@@ -3107,7 +3040,7 @@ void foldl_fptr() // foldl -> generic version
     // clo-app
     arg_buffer[1] = kont8872;
     arg_buffer[2] = acc;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8872))[0]);
 
     // calling next procedure using a function pointer
@@ -3129,7 +3062,7 @@ void foldl_fptr() // foldl -> generic version
     arg_buffer[2] = f8873;
     arg_buffer[3] = id_8766;
     arg_buffer[4] = acc;
-    arg_buffer[0] = int8994;
+    numArgs = int8994;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(fun))[0]);
 
     // calling next procedure using a function pointer
@@ -3137,8 +3070,8 @@ void foldl_fptr() // foldl -> generic version
   }
 }
 
-void foldl_fptr(void *_8924, void *kont8872, void *fun, void *acc,
-                void *lst) // foldl
+inline void foldl_spec(void *_8924, void *kont8872, void *fun, void *acc,
+                       void *lst) // foldl
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -3151,7 +3084,7 @@ void foldl_fptr(void *_8924, void *kont8872, void *fun, void *acc,
     // clo-app
     arg_buffer[1] = kont8872;
     arg_buffer[2] = acc;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8872))[0]);
 
     // calling next procedure using a function pointer
@@ -3173,7 +3106,7 @@ void foldl_fptr(void *_8924, void *kont8872, void *fun, void *acc,
     arg_buffer[2] = f8873;
     arg_buffer[3] = id_8766;
     arg_buffer[4] = acc;
-    arg_buffer[0] = int8994;
+    numArgs = int8994;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(fun))[0]);
 
     // calling next procedure using a function pointer
@@ -3181,10 +3114,9 @@ void foldl_fptr(void *_8924, void *kont8872, void *fun, void *acc,
   }
 }
 
-void lam8925_fptr() // lam8925 -> generic version
+inline void lam8925_fptr() // lam8925 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8926 = arg_buffer[1];
   // reading env and args
@@ -3201,17 +3133,16 @@ void lam8925_fptr() // lam8925 -> generic version
   arg_buffer[2] = kont8874;
   arg_buffer[3] = id_8770;
   arg_buffer[4] = id_8772;
-  arg_buffer[0] = int8994;
+  numArgs = int8994;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(fun))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void foldr_fptr() // foldr -> generic version
+inline void foldr_fptr() // foldr -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8927 = arg_buffer[1];
   // reading env and args
@@ -3230,7 +3161,7 @@ void foldr_fptr() // foldr -> generic version
     // clo-app
     arg_buffer[1] = kont8874;
     arg_buffer[2] = acc;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8874))[0]);
 
     // calling next procedure using a function pointer
@@ -3249,12 +3180,12 @@ void foldr_fptr() // foldr -> generic version
     void *f8875 = encode_clo(clo9242);
 
     // clo-app
-    foldr_fptr(foldr, f8875, fun, acc, id_8771);
+    foldr_spec(foldr, f8875, fun, acc, id_8771);
   }
 }
 
-void foldr_fptr(void *_8927, void *kont8874, void *fun, void *acc,
-                void *lst) // foldr
+inline void foldr_spec(void *_8927, void *kont8874, void *fun, void *acc,
+                       void *lst) // foldr
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -3267,7 +3198,7 @@ void foldr_fptr(void *_8927, void *kont8874, void *fun, void *acc,
     // clo-app
     arg_buffer[1] = kont8874;
     arg_buffer[2] = acc;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8874))[0]);
 
     // calling next procedure using a function pointer
@@ -3286,14 +3217,13 @@ void foldr_fptr(void *_8927, void *kont8874, void *fun, void *acc,
     void *f8875 = encode_clo(clo9244);
 
     // clo-app
-    foldr_fptr(foldr, f8875, fun, acc, id_8771);
+    foldr_spec(foldr, f8875, fun, acc, id_8771);
   }
 }
 
-void reverse_u45helper_fptr() // reverse-helper -> generic version
+inline void reverse_u45helper_fptr() // reverse-helper -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8928 = arg_buffer[1];
   // reading env and args
@@ -3311,7 +3241,7 @@ void reverse_u45helper_fptr() // reverse-helper -> generic version
     // clo-app
     arg_buffer[1] = kont8876;
     arg_buffer[2] = lst2;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8876))[0]);
 
     // calling next procedure using a function pointer
@@ -3322,12 +3252,12 @@ void reverse_u45helper_fptr() // reverse-helper -> generic version
     void *const id_8776 = apply_prim_cons_2(id_8775, lst2);
 
     // clo-app
-    reverse_u45helper_fptr(reverse_u45helper, kont8876, id_8774, id_8776);
+    reverse_u45helper_spec(reverse_u45helper, kont8876, id_8774, id_8776);
   }
 }
 
-void reverse_u45helper_fptr(void *_8928, void *kont8876, void *lst,
-                            void *lst2) // reverse-helper
+inline void reverse_u45helper_spec(void *_8928, void *kont8876, void *lst,
+                                   void *lst2) // reverse-helper
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -3340,7 +3270,7 @@ void reverse_u45helper_fptr(void *_8928, void *kont8876, void *lst,
     // clo-app
     arg_buffer[1] = kont8876;
     arg_buffer[2] = lst2;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8876))[0]);
 
     // calling next procedure using a function pointer
@@ -3351,14 +3281,13 @@ void reverse_u45helper_fptr(void *_8928, void *kont8876, void *lst,
     void *const id_8776 = apply_prim_cons_2(id_8775, lst2);
 
     // clo-app
-    reverse_u45helper_fptr(reverse_u45helper, kont8876, id_8774, id_8776);
+    reverse_u45helper_spec(reverse_u45helper, kont8876, id_8774, id_8776);
   }
 }
 
-void reverse_fptr() // reverse -> generic version
+inline void reverse_fptr() // reverse -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8929 = arg_buffer[1];
   // reading env and args
@@ -3369,23 +3298,22 @@ void reverse_fptr() // reverse -> generic version
   void *const id_8777 = apply_prim_list_0();
 
   // clo-app
-  reverse_u45helper_fptr(reverse_u45helper, kont8877, lst, id_8777);
+  reverse_u45helper_spec(reverse_u45helper, kont8877, lst, id_8777);
 }
 
-void reverse_fptr(void *_8929, void *kont8877, void *lst) // reverse
+inline void reverse_spec(void *_8929, void *kont8877, void *lst) // reverse
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
   void *const id_8777 = apply_prim_list_0();
 
   // clo-app
-  reverse_u45helper_fptr(reverse_u45helper, kont8877, lst, id_8777);
+  reverse_u45helper_spec(reverse_u45helper, kont8877, lst, id_8777);
 }
 
-void lam8930_fptr() // lam8930 -> generic version
+inline void lam8930_fptr() // lam8930 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8931 = arg_buffer[1];
   // reading env and args
@@ -3399,17 +3327,16 @@ void lam8930_fptr() // lam8930 -> generic version
   // clo-app
   arg_buffer[2] = apply_prim_cons_2(id_8779, id_8781);
   arg_buffer[1] = kont8878;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8878))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void append1_fptr() // append1 -> generic version
+inline void append1_fptr() // append1 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8932 = arg_buffer[1];
   // reading env and args
@@ -3427,7 +3354,7 @@ void append1_fptr() // append1 -> generic version
     // clo-app
     arg_buffer[1] = kont8878;
     arg_buffer[2] = rhs;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8878))[0]);
 
     // calling next procedure using a function pointer
@@ -3445,11 +3372,12 @@ void append1_fptr() // append1 -> generic version
     void *f8879 = encode_clo(clo9248);
 
     // clo-app
-    append1_fptr(append1, f8879, id_8780, rhs);
+    append1_spec(append1, f8879, id_8780, rhs);
   }
 }
 
-void append1_fptr(void *_8932, void *kont8878, void *lhs, void *rhs) // append1
+inline void append1_spec(void *_8932, void *kont8878, void *lhs,
+                         void *rhs) // append1
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -3462,7 +3390,7 @@ void append1_fptr(void *_8932, void *kont8878, void *lhs, void *rhs) // append1
     // clo-app
     arg_buffer[1] = kont8878;
     arg_buffer[2] = rhs;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8878))[0]);
 
     // calling next procedure using a function pointer
@@ -3480,14 +3408,13 @@ void append1_fptr(void *_8932, void *kont8878, void *lhs, void *rhs) // append1
     void *f8879 = encode_clo(clo9250);
 
     // clo-app
-    append1_fptr(append1, f8879, id_8780, rhs);
+    append1_spec(append1, f8879, id_8780, rhs);
   }
 }
 
-void lam8933_fptr() // lam8933 -> generic version
+inline void lam8933_fptr() // lam8933 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8934 = arg_buffer[1];
   // reading env and args
@@ -3499,13 +3426,12 @@ void lam8933_fptr() // lam8933 -> generic version
   void *const id_8786 = decode_clo_array[1];
 
   // clo-app
-  foldr_fptr(foldr, kont8880, append1, id_8786, id_8788);
+  foldr_spec(foldr, kont8880, append1, id_8786, id_8788);
 }
 
-void lam8935_fptr() // lam8935 -> generic version
+inline void lam8935_fptr() // lam8935 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8936 = arg_buffer[1];
   // reading env and args
@@ -3525,7 +3451,7 @@ void lam8935_fptr() // lam8935 -> generic version
     void *const id_8785 = apply_prim_car_1(x);
 
     // clo-app
-    append1_fptr(append1, kont8880, xs, id_8785);
+    append1_spec(append1, kont8880, xs, id_8785);
   } else {
     void *const id_8786 = apply_prim_list_0();
     void *const id_8787 = apply_prim_list_1(xs);
@@ -3539,14 +3465,13 @@ void lam8935_fptr() // lam8935 -> generic version
     void *f8881 = encode_clo(clo9252);
 
     // clo-app
-    append1_fptr(append1, f8881, id_8787, x);
+    append1_spec(append1, f8881, id_8787, x);
   }
 }
 
-void lam8937_fptr() // lam8937 -> generic version
+inline void lam8937_fptr() // lam8937 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8938 = arg_buffer[1];
   // reading env and args
@@ -3569,13 +3494,12 @@ void lam8937_fptr() // lam8937 -> generic version
   void *f8882 = encode_clo(clo9253);
 
   // clo-app
-  length_fptr(length, f8882, x);
+  length_spec(length, f8882, x);
 }
 
 void append_fptr() // append
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8939 = arg_buffer[1];
   // decoding closure array
@@ -3608,17 +3532,16 @@ void append_fptr() // append
   // clo-app
   arg_buffer[1] = f8883;
   arg_buffer[2] = vargs8714;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8883))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void lam8940_fptr() // lam8940 -> generic version
+inline void lam8940_fptr() // lam8940 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8941 = arg_buffer[1];
   // reading env and args
@@ -3631,17 +3554,16 @@ void lam8940_fptr() // lam8940 -> generic version
   // clo-app
   arg_buffer[1] = kont8884;
   arg_buffer[2] = xy8791;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8884))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void take_u45helper_fptr() // take-helper -> generic version
+inline void take_u45helper_fptr() // take-helper -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8942 = arg_buffer[1];
   // reading env and args
@@ -3666,7 +3588,7 @@ void take_u45helper_fptr() // take-helper -> generic version
     void *f8885 = encode_clo(clo9256);
 
     // clo-app
-    reverse_fptr(reverse, f8885, lst2);
+    reverse_spec(reverse, f8885, lst2);
   } else {
     void *const id_8792 = apply_prim_cdr_1(lst);
     void *const id_8793 = int8988;
@@ -3675,12 +3597,12 @@ void take_u45helper_fptr() // take-helper -> generic version
     void *const id_8796 = apply_prim_cons_2(id_8795, lst2);
 
     // clo-app
-    take_u45helper_fptr(take_u45helper, kont8884, id_8792, id_8794, id_8796);
+    take_u45helper_spec(take_u45helper, kont8884, id_8792, id_8794, id_8796);
   }
 }
 
-void take_u45helper_fptr(void *_8942, void *kont8884, void *lst, void *n,
-                         void *lst2) // take-helper
+inline void take_u45helper_spec(void *_8942, void *kont8884, void *lst, void *n,
+                                void *lst2) // take-helper
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -3699,7 +3621,7 @@ void take_u45helper_fptr(void *_8942, void *kont8884, void *lst, void *n,
     void *f8885 = encode_clo(clo9258);
 
     // clo-app
-    reverse_fptr(reverse, f8885, lst2);
+    reverse_spec(reverse, f8885, lst2);
   } else {
     void *const id_8792 = apply_prim_cdr_1(lst);
     void *const id_8793 = int8988;
@@ -3708,14 +3630,13 @@ void take_u45helper_fptr(void *_8942, void *kont8884, void *lst, void *n,
     void *const id_8796 = apply_prim_cons_2(id_8795, lst2);
 
     // clo-app
-    take_u45helper_fptr(take_u45helper, kont8884, id_8792, id_8794, id_8796);
+    take_u45helper_spec(take_u45helper, kont8884, id_8792, id_8794, id_8796);
   }
 }
 
-void take_fptr() // take -> generic version
+inline void take_fptr() // take -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8943 = arg_buffer[1];
   // reading env and args
@@ -3727,23 +3648,22 @@ void take_fptr() // take -> generic version
   void *const id_8797 = apply_prim_list_0();
 
   // clo-app
-  take_u45helper_fptr(take_u45helper, kont8886, lst, n, id_8797);
+  take_u45helper_spec(take_u45helper, kont8886, lst, n, id_8797);
 }
 
-void take_fptr(void *_8943, void *kont8886, void *lst, void *n) // take
+inline void take_spec(void *_8943, void *kont8886, void *lst, void *n) // take
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
   void *const id_8797 = apply_prim_list_0();
 
   // clo-app
-  take_u45helper_fptr(take_u45helper, kont8886, lst, n, id_8797);
+  take_u45helper_spec(take_u45helper, kont8886, lst, n, id_8797);
 }
 
-void lam8944_fptr() // lam8944 -> generic version
+inline void lam8944_fptr() // lam8944 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8945 = arg_buffer[1];
   // reading env and args
@@ -3764,14 +3684,14 @@ void lam8944_fptr() // lam8944 -> generic version
     void *const id_8814 = apply_prim_cdr_1(placed);
 
     // clo-app
-    ok_u63_fptr(ok_u63, kont8887, row, id_8813, id_8814);
+    ok_u63_spec(ok_u63, kont8887, row, id_8813, id_8814);
   } else {
     void *const xy8815 = bool_f8982;
 
     // clo-app
     arg_buffer[1] = kont8887;
     arg_buffer[2] = xy8815;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8887))[0]);
 
     // calling next procedure using a function pointer
@@ -3779,10 +3699,9 @@ void lam8944_fptr() // lam8944 -> generic version
   }
 }
 
-void lam8946_fptr() // lam8946 -> generic version
+inline void lam8946_fptr() // lam8946 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8947 = arg_buffer[1];
   // reading env and args
@@ -3820,7 +3739,7 @@ void lam8946_fptr() // lam8946 -> generic version
       // clo-app
       arg_buffer[1] = f8888;
       arg_buffer[2] = xy8809;
-      arg_buffer[0] = int8992;
+      numArgs = int8992;
       auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8888))[0]);
 
       // calling next procedure using a function pointer
@@ -3831,7 +3750,7 @@ void lam8946_fptr() // lam8946 -> generic version
       // clo-app
       arg_buffer[1] = f8888;
       arg_buffer[2] = xy8810;
-      arg_buffer[0] = int8992;
+      numArgs = int8992;
       auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8888))[0]);
 
       // calling next procedure using a function pointer
@@ -3844,7 +3763,7 @@ void lam8946_fptr() // lam8946 -> generic version
     // clo-app
     arg_buffer[1] = kont8887;
     arg_buffer[2] = xy8816;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8887))[0]);
 
     // calling next procedure using a function pointer
@@ -3852,10 +3771,9 @@ void lam8946_fptr() // lam8946 -> generic version
   }
 }
 
-void ok_u63_fptr() // ok? -> generic version
+inline void ok_u63_fptr() // ok? -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8948 = arg_buffer[1];
   // reading env and args
@@ -3875,7 +3793,7 @@ void ok_u63_fptr() // ok? -> generic version
     // clo-app
     arg_buffer[1] = kont8887;
     arg_buffer[2] = xy8799;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8887))[0]);
 
     // calling next procedure using a function pointer
@@ -3903,7 +3821,7 @@ void ok_u63_fptr() // ok? -> generic version
       // clo-app
       arg_buffer[1] = f8889;
       arg_buffer[2] = xy8803;
-      arg_buffer[0] = int8992;
+      numArgs = int8992;
       auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8889))[0]);
 
       // calling next procedure using a function pointer
@@ -3914,7 +3832,7 @@ void ok_u63_fptr() // ok? -> generic version
       // clo-app
       arg_buffer[1] = f8889;
       arg_buffer[2] = xy8804;
-      arg_buffer[0] = int8992;
+      numArgs = int8992;
       auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8889))[0]);
 
       // calling next procedure using a function pointer
@@ -3923,8 +3841,8 @@ void ok_u63_fptr() // ok? -> generic version
   }
 }
 
-void ok_u63_fptr(void *_8948, void *kont8887, void *row, void *dist,
-                 void *placed) // ok?
+inline void ok_u63_spec(void *_8948, void *kont8887, void *row, void *dist,
+                        void *placed) // ok?
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -3938,7 +3856,7 @@ void ok_u63_fptr(void *_8948, void *kont8887, void *row, void *dist,
     // clo-app
     arg_buffer[1] = kont8887;
     arg_buffer[2] = xy8799;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8887))[0]);
 
     // calling next procedure using a function pointer
@@ -3966,7 +3884,7 @@ void ok_u63_fptr(void *_8948, void *kont8887, void *row, void *dist,
       // clo-app
       arg_buffer[1] = f8889;
       arg_buffer[2] = xy8803;
-      arg_buffer[0] = int8992;
+      numArgs = int8992;
       auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8889))[0]);
 
       // calling next procedure using a function pointer
@@ -3977,7 +3895,7 @@ void ok_u63_fptr(void *_8948, void *kont8887, void *row, void *dist,
       // clo-app
       arg_buffer[1] = f8889;
       arg_buffer[2] = xy8804;
-      arg_buffer[0] = int8992;
+      numArgs = int8992;
       auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8889))[0]);
 
       // calling next procedure using a function pointer
@@ -3986,10 +3904,9 @@ void ok_u63_fptr(void *_8948, void *kont8887, void *row, void *dist,
   }
 }
 
-void lam8949_fptr() // lam8949 -> generic version
+inline void lam8949_fptr() // lam8949 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8950 = arg_buffer[1];
   // reading env and args
@@ -4010,17 +3927,16 @@ void lam8949_fptr() // lam8949 -> generic version
   // clo-app
   arg_buffer[2] = apply_prim_cons_2(id_8839, id_8840);
   arg_buffer[1] = f8891;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8891))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void lam8951_fptr() // lam8951 -> generic version
+inline void lam8951_fptr() // lam8951 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8952 = arg_buffer[1];
   // reading env and args
@@ -4034,13 +3950,12 @@ void lam8951_fptr() // lam8951 -> generic version
   void *const id_8843 = apply_prim_cons_2(id_8830, id_8842);
 
   // clo-app
-  q_u45helper_fptr(q_u45helper, kont8890, id_8843, count);
+  q_u45helper_spec(q_u45helper, kont8890, id_8843, count);
 }
 
-void lam8953_fptr() // lam8953 -> generic version
+inline void lam8953_fptr() // lam8953 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8954 = arg_buffer[1];
   // reading env and args
@@ -4085,7 +4000,7 @@ void lam8953_fptr() // lam8953 -> generic version
     arg_buffer[2] = f8892;
     arg_buffer[3] = id_8834;
     arg_buffer[4] = y;
-    arg_buffer[0] = int8994;
+    numArgs = int8994;
     append_fptr();
   } else {
     void *const xy8841 = apply_prim_cdr_1(stack);
@@ -4093,7 +4008,7 @@ void lam8953_fptr() // lam8953 -> generic version
     // clo-app
     arg_buffer[1] = f8891;
     arg_buffer[2] = xy8841;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8891))[0]);
 
     // calling next procedure using a function pointer
@@ -4101,10 +4016,9 @@ void lam8953_fptr() // lam8953 -> generic version
   }
 }
 
-void lam8955_fptr() // lam8955 -> generic version
+inline void lam8955_fptr() // lam8955 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8956 = arg_buffer[1];
   // reading env and args
@@ -4132,12 +4046,12 @@ void lam8955_fptr() // lam8955 -> generic version
       void *const id_8825 = apply_prim__u43_2(count, id_8824);
 
       // clo-app
-      q_u45helper_fptr(q_u45helper, kont8890, id_8823, id_8825);
+      q_u45helper_spec(q_u45helper, kont8890, id_8823, id_8825);
     } else {
       void *const id_8826 = apply_prim_cdr_1(stack);
 
       // clo-app
-      q_u45helper_fptr(q_u45helper, kont8890, id_8826, count);
+      q_u45helper_spec(q_u45helper, kont8890, id_8826, count);
     }
 
   } else {
@@ -4162,14 +4076,13 @@ void lam8955_fptr() // lam8955 -> generic version
     void *f8893 = encode_clo(clo9274);
 
     // clo-app
-    ok_u63_fptr(ok_u63, f8893, id_8831, id_8832, z);
+    ok_u63_spec(ok_u63, f8893, id_8831, id_8832, z);
   }
 }
 
-void lam8957_fptr() // lam8957 -> generic version
+inline void lam8957_fptr() // lam8957 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8958 = arg_buffer[1];
   // reading env and args
@@ -4200,17 +4113,16 @@ void lam8957_fptr() // lam8957 -> generic version
   // clo-app
   arg_buffer[2] = apply_prim_car_1(id_8820);
   arg_buffer[1] = f8894;
-  arg_buffer[0] = int8992;
+  numArgs = int8992;
   auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8894))[0]);
 
   // calling next procedure using a function pointer
   function_ptr();
 }
 
-void q_u45helper_fptr() // q-helper -> generic version
+inline void q_u45helper_fptr() // q-helper -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8959 = arg_buffer[1];
   // reading env and args
@@ -4228,7 +4140,7 @@ void q_u45helper_fptr() // q-helper -> generic version
     // clo-app
     arg_buffer[1] = kont8890;
     arg_buffer[2] = count;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8890))[0]);
 
     // calling next procedure using a function pointer
@@ -4253,7 +4165,7 @@ void q_u45helper_fptr() // q-helper -> generic version
     // clo-app
     arg_buffer[2] = apply_prim_car_1(id_8818);
     arg_buffer[1] = f8895;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8895))[0]);
 
     // calling next procedure using a function pointer
@@ -4261,8 +4173,8 @@ void q_u45helper_fptr() // q-helper -> generic version
   }
 }
 
-void q_u45helper_fptr(void *_8959, void *kont8890, void *stack,
-                      void *count) // q-helper
+inline void q_u45helper_spec(void *_8959, void *kont8890, void *stack,
+                             void *count) // q-helper
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -4275,7 +4187,7 @@ void q_u45helper_fptr(void *_8959, void *kont8890, void *stack,
     // clo-app
     arg_buffer[1] = kont8890;
     arg_buffer[2] = count;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8890))[0]);
 
     // calling next procedure using a function pointer
@@ -4300,7 +4212,7 @@ void q_u45helper_fptr(void *_8959, void *kont8890, void *stack,
     // clo-app
     arg_buffer[2] = apply_prim_car_1(id_8818);
     arg_buffer[1] = f8895;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(f8895))[0]);
 
     // calling next procedure using a function pointer
@@ -4308,10 +4220,9 @@ void q_u45helper_fptr(void *_8959, void *kont8890, void *stack,
   }
 }
 
-void iota1_fptr() // iota1 -> generic version
+inline void iota1_fptr() // iota1 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8960 = arg_buffer[1];
   // reading env and args
@@ -4330,7 +4241,7 @@ void iota1_fptr() // iota1 -> generic version
     // clo-app
     arg_buffer[1] = kont8896;
     arg_buffer[2] = l;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8896))[0]);
 
     // calling next procedure using a function pointer
@@ -4341,11 +4252,11 @@ void iota1_fptr() // iota1 -> generic version
     void *const id_8848 = apply_prim_cons_2(n, l);
 
     // clo-app
-    iota1_fptr(iota1, kont8896, id_8847, id_8848);
+    iota1_spec(iota1, kont8896, id_8847, id_8848);
   }
 }
 
-void iota1_fptr(void *_8960, void *kont8896, void *n, void *l) // iota1
+inline void iota1_spec(void *_8960, void *kont8896, void *n, void *l) // iota1
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -4359,7 +4270,7 @@ void iota1_fptr(void *_8960, void *kont8896, void *n, void *l) // iota1
     // clo-app
     arg_buffer[1] = kont8896;
     arg_buffer[2] = l;
-    arg_buffer[0] = int8992;
+    numArgs = int8992;
     auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(kont8896))[0]);
 
     // calling next procedure using a function pointer
@@ -4370,14 +4281,13 @@ void iota1_fptr(void *_8960, void *kont8896, void *n, void *l) // iota1
     void *const id_8848 = apply_prim_cons_2(n, l);
 
     // clo-app
-    iota1_fptr(iota1, kont8896, id_8847, id_8848);
+    iota1_spec(iota1, kont8896, id_8847, id_8848);
   }
 }
 
-void lam8961_fptr() // lam8961 -> generic version
+inline void lam8961_fptr() // lam8961 -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const env8962 = arg_buffer[1];
   // reading env and args
@@ -4393,13 +4303,12 @@ void lam8961_fptr() // lam8961 -> generic version
   void *const id_8855 = int8989;
 
   // clo-app
-  q_u45helper_fptr(q_u45helper, kont8897, id_8854, id_8855);
+  q_u45helper_spec(q_u45helper, kont8897, id_8854, id_8855);
 }
 
-void nqueens_fptr() // nqueens -> generic version
+inline void nqueens_fptr() // nqueens -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8963 = arg_buffer[1];
   // reading env and args
@@ -4417,10 +4326,10 @@ void nqueens_fptr() // nqueens -> generic version
   void *f8898 = encode_clo(clo9282);
 
   // clo-app
-  iota1_fptr(iota1, f8898, n, id_8849);
+  iota1_spec(iota1, f8898, n, id_8849);
 }
 
-void nqueens_fptr(void *_8963, void *kont8897, void *n) // nqueens
+inline void nqueens_spec(void *_8963, void *kont8897, void *n) // nqueens
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
@@ -4434,13 +4343,12 @@ void nqueens_fptr(void *_8963, void *kont8897, void *n) // nqueens
   void *f8898 = encode_clo(clo9283);
 
   // clo-app
-  iota1_fptr(iota1, f8898, n, id_8849);
+  iota1_spec(iota1, f8898, n, id_8849);
 }
 
-void brouhaha_main_fptr() // brouhaha_main -> generic version
+inline void brouhaha_main_fptr() // brouhaha_main -> generic version
 {
   // reading number of args
-  numArgs = reinterpret_cast<long>(arg_buffer[0]);
   // reading env
   void *const _8964 = arg_buffer[1];
   // reading env and args
@@ -4450,17 +4358,17 @@ void brouhaha_main_fptr() // brouhaha_main -> generic version
   void *const id_8856 = int8990;
 
   // clo-app
-  nqueens_fptr(nqueens, kont8899, id_8856);
+  nqueens_spec(nqueens, kont8899, id_8856);
 }
 
-void brouhaha_main_fptr(void *_8964, void *kont8899) // brouhaha_main
+inline void brouhaha_main_spec(void *_8964, void *kont8899) // brouhaha_main
 {
   // decoding closure array
   void **decode_clo_array = nullptr;
   void *const id_8856 = int8990;
 
   // clo-app
-  nqueens_fptr(nqueens, kont8899, id_8856);
+  nqueens_spec(nqueens, kont8899, id_8856);
 }
 
 int main(int argc, char **argv) {
@@ -4476,16 +4384,16 @@ int main(int argc, char **argv) {
   int8990 = reinterpret_cast<void *>(encode_int(14));
 
   // initializing global integer vars
-  int8991 = reinterpret_cast<void *>(1);
-  int8992 = reinterpret_cast<void *>(2);
-  int8993 = reinterpret_cast<void *>(3);
-  int8994 = reinterpret_cast<void *>(4);
-  int8995 = reinterpret_cast<void *>(5);
+  int8991 = 1;
+  int8992 = 2;
+  int8993 = 3;
+  int8994 = 4;
+  int8995 = 5;
 
   // making a call to the brouhaha main function to kick off our C++ emission.
   void *fhalt_clo = encode_clo(alloc_clo(fhalt, 0));
   arg_buffer[2] = fhalt_clo;
 
   // calling next procedure using a function pointer
-  brouhaha_main_fptr(nullptr, fhalt_clo);
+  brouhaha_main_spec(nullptr, fhalt_clo);
 }
