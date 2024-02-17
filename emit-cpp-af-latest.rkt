@@ -66,6 +66,8 @@
   (define global-symbols-set
     (let loop ([item-set (set)] [prog+ alphatized_cps_prog])
       (match prog+
+        ; [`((define (,ptr ,kont . ,param) ,body) ,rest ...)
+        ;  (loop (set-add (set-add item-set ptr) kont) rest)]
         [`((define (,ptr . ,param) ,body) ,rest ...)
          (loop (set-add item-set ptr) rest)]
         [`((define-prim ,ptr ,params ...) ,_ ...)
@@ -95,6 +97,9 @@
 
   (define global-int-vars
     (foldl (lambda (idx acc)
+             ;  (if (hash-has-key? find-global-constants idx)
+             ;      acc
+             ;      (hash-set acc idx (gensym 'int)))
              (hash-set acc idx (gensym 'int)))
            (hash)
            (range 1 6)))
@@ -102,6 +107,7 @@
   (append-line filepath "\n// declaring global integer variable")
   (hash-map global-int-vars
             (lambda (key val)
+              ; (append-line filepath (format "void* ~a;" val))
               (append-line filepath (format "int ~a;" val))
               ))
 
@@ -119,8 +125,13 @@
         [`((proc (,ptr ,env ,args ...) ,body) ,rest ...)
          (define args-str
            (foldl (lambda (arg acc) (string-append acc ", void* " (symbol->string arg)))
+                  ; (string-append "long numArgs, " (string-append "void* " (symbol->string env)))
                   (string-append "void* " (symbol->string env))
                   args))
+
+         ;  (if (string-prefix? (symbol->string ptr) "lam")
+         ;      (append-line filepath (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
+         ;      (append-line filepath (format "void ~a_fptr(~a); // ~a" (get-c-string ptr) args-str ptr)))
 
          (append-line filepath (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
 
@@ -190,7 +201,41 @@
   (append-line filepath "\n")
 
 
-  (define (convert-proc-body proc_name proc_env proc_arg body [arg_hash (hash)])
+
+
+
+  ; (append-line filepath "\n// pre-decoding global symbols")
+  ; (for ([item (set->list global-symbols-set)])
+  ;   ;r = reinterpret_cast<void (*)(long, void*, void*, void*, void*)>((decode_clo(q_u45helper))[0]);
+  ;   (define arg_size (hash-ref declare-top-level-funcs item))
+
+  ;   (define args-str
+  ;     (foldl (lambda (arg acc) (string-append acc ", " arg))
+  ;            "long"
+  ;            (map (λ (item) "void*") (range 0 arg_size))))
+
+  ;   (append-line filepath
+  ;                (if (hash-has-key? conflicting_c++_prims (get-c-string item))
+  ;                    (format "auto decoded_~a = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+  ;                            (get-c-string item) (hash-ref conflicting_c++_prims (get-c-string item)))
+  ;                    (format "auto decoded_~a = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" (get-c-string item) (get-c-string item))))
+
+  ;   ; (if (> arg_size 0)
+  ;   ;     (append-line filepath
+  ;   ;                  (if (hash-has-key? conflicting_c++_prims (get-c-string item))
+  ;   ;                      (format "auto decoded_~a = reinterpret_cast<void (*)(~a)>((decode_clo(~a))[0]);"
+  ;   ;                              (get-c-string item) (hash-ref conflicting_c++_prims (get-c-string item)))
+  ;   ;                      (format "auto decoded_~a = reinterpret_cast<void (*)(~a)>((decode_clo(~a))[0]);" (get-c-string item) args-str (get-c-string item))))
+  ;   ;     (append-line filepath
+  ;   ;                  (if (hash-has-key? conflicting_c++_prims (get-c-string item))
+  ;   ;                      (format "auto decoded_~a = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"
+  ;   ;                              (get-c-string item) (hash-ref conflicting_c++_prims (get-c-string item)))
+  ;   ;                      (format "auto decoded_~a = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" (get-c-string item) (get-c-string item)))))
+  ;   )
+  ; (append-line filepath "\n")
+
+
+  (define (convert-proc-body proc_name proc_env proc_arg body)
     ; (match (p-dbg body)
     (match body
       [`(let ([,lhs (make-closure ,ptr ,args ...)]) ,letbody)
@@ -198,6 +243,8 @@
 
        ; new-closure
        (append-line filepath "\n//creating new closure instance")
+
+       ;  (define ptrName (gensym 'ptr))
        (define cloName (gensym 'clo))
 
        (append-line filepath (format "void** ~a = alloc_clo(~a_fptr, ~a);" cloName ptr arglength))
@@ -206,70 +253,60 @@
          (append-line filepath "\n//setting env list"))
 
        (for ([i (in-range 1 (+ arglength 1))] [item args])
-         ; will think aobut conflicting prim later
-         ;  (if (hash-has-key? conflicting_c++_prims (get-c-string item))
-         ;      (append-line filepath (format "~a[~a] = ~a;" cloName i (hash-ref conflicting_c++_prims (get-c-string item))))
-         ;      (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item))))
-
-         (if (hash-has-key? arg_hash item)
-             (append-line filepath (format "~a[~a] = ~a;" cloName i (hash-ref arg_hash item)))
+         (if (hash-has-key? conflicting_c++_prims (get-c-string item))
+             (append-line filepath (format "~a[~a] = ~a;" cloName i (hash-ref conflicting_c++_prims (get-c-string item))))
              (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item)))))
 
        (append-line filepath (format "void* ~a = encode_clo(~a);" (get-c-string lhs) cloName))
 
+       ;  (when (> (+ arglength 1) 1) (append-line filepath "\n"))
        (append-line filepath "\n")
 
-       (convert-proc-body proc_name proc_env proc_arg letbody arg_hash)]
+       (convert-proc-body proc_name proc_env proc_arg letbody)]
 
       [`(let ([,lhs (prim ,op ,args ...)]) ,letbody)
        (define line
-         (format "apply_prim_~a_~a(~a)"
+         (format "void* const ~a = apply_prim_~a_~a(~a);"
+                 (get-c-string lhs)
                  (get-c-string op)
                  (length args)
-                 ;  (string-join (map (λ (item) (format "~a" (get-c-string item))) args) ", ")
-                 (string-join (map (λ (item) (format "~a"
-                                                     (if (hash-has-key? arg_hash item)
-                                                         (hash-ref arg_hash item)
-                                                         (get-c-string item))
-                                                     )) args) ", ")
-                 ))
+                 (string-join (map (λ (item) (format "~a" (get-c-string item))) args) ", ")))
 
-       (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-       ]
+       (append-line filepath line)
 
-      ; we don't have this case anymore!
-      ; [`(let ([,lhs (apply-prim ,op ,arg)]) ,letbody)
-      ;  (define line
-      ;    (format "void* ~a = apply_prim_~a(~a);"
-      ;            (get-c-string lhs)
-      ;            (get-c-string op)
-      ;            (get-c-string arg)))
+       (convert-proc-body proc_name proc_env proc_arg letbody)]
 
-      ;  (append-line filepath line)
+      [`(let ([,lhs (apply-prim ,op ,arg)]) ,letbody)
+       (define line
+         (format "void* ~a = apply_prim_~a(~a);"
+                 (get-c-string lhs)
+                 (get-c-string op)
+                 (get-c-string arg)))
 
-      ;  (convert-proc-body proc_name proc_env proc_arg letbody)]
+       (append-line filepath line)
+
+       (convert-proc-body proc_name proc_env proc_arg letbody)]
 
       [`(let ([,lhs (env-ref ,env ,idx)]) ,letbody)
-       (define line (format "decode_clo_array[~a]" idx))
-       (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-       ]
+       ; (append-line filepath (format "void* ~a = (decode_clo(~a))[~a];" (get-c-string lhs) env idx))
+       (append-line filepath (format "void* const ~a = decode_clo_array[~a];" (get-c-string lhs) idx))
+
+       (convert-proc-body proc_name proc_env proc_arg letbody)]
 
       [`(let ([,lhs ,val]) ,letbody)
+       ;  (match (p-dbg val)
        (match val
          [`(quote ,(? flonum? val))
           (match-define `(,type ,varname) (hash-ref find-global-constants val))
 
           (cond
             [(equal? type 'float)
-             (define line (format "~a" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
+             (append-line filepath (format "void* const ~a = ~a;" (get-c-string lhs) varname))]
             [(equal? type 'mpf)
-             (define line (format "encode_mpf(~a)" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
+             (append-line filepath (format "void* const ~a = encode_mpf(~a);" (get-c-string lhs) varname))]
             [else (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])
-          ]
+
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [`(quote ,(? exact-integer? val))
 
@@ -277,67 +314,59 @@
 
           (cond
             [(equal? type 'int)
-             (define line (format "~a" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
+             (append-line filepath (format "void* const ~a = ~a;" lhs varname))]
             [(equal? type 'mpz)
-             (define line (format "encode_mpz(~a)" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
+             (append-line filepath (format "void* const ~a = encode_mpz(~a);" (get-c-string lhs) varname))]
             [else (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])
-          ]
+
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [`(quote ,(? boolean? val))
 
           (match-define `(,type ,varname) (hash-ref find-global-constants val))
           (cond
             [(equal? type 'bool-true)
-             (define line (format "~a" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
+             (append-line filepath (format "void* const ~a = ~a;" (get-c-string lhs) varname))]
             [(equal? type 'bool-false)
-             (define line (format "~a" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
+             (append-line filepath (format "void* const ~a = ~a;" (get-c-string lhs) varname))]
             [else (error "Error occured in emit-cpp -> proc_body case: (quote ,(? boolean? val)")])
+
+          (convert-proc-body proc_name proc_env proc_arg letbody)
           ]
 
          [`(quote ,(? null? val))
-          (define line (format "encode_null()"))
-          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-          ]
+          (append-line filepath (format "void* ~a = encode_null();" (get-c-string lhs)))
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [`(quote ,(? string? val))
-          (define line (format "encode_str(new(GC) std::string(\"~a\"))" val))
-          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-          ]
+          (append-line
+           filepath
+           (format "void* ~a = encode_str(new(GC) std::string(\"~a\"));" (get-c-string lhs) val))
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [`(quote ,(? symbol? val))
-          (define line (format "encode_str(new(GC) std::string(\"~a\"))" (symbol->string val)))
-          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-          ]
+          (append-line
+           filepath
+           (format "void* ~a = encode_str(new(GC) std::string(\"~a\"));" (get-c-string lhs) (symbol->string val)))
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [(? symbol?) ; Not sure what this case does or supposed to do - SK
-          (define line (format "encode_str(new string(\"~a\"))" val))
-          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-          ]
+          ; (pretty-print (~a "cpb: " val))
+          (append-line filepath
+                       (format "void* ~a = encode_str(new string(\"~a\"));" (get-c-string lhs) val))
+          (convert-proc-body proc_name proc_env proc_arg letbody)]
 
          [_ (raise (format "Unknown datatype! ~a" val))])]
 
       [`(if ,grd ,texp ,fexp)
        (append-line filepath "\n//if-clause")
-       ;  (define guard (gensym 'if_guard))
+       (define guard (gensym 'if_guard))
 
        ;  (append-line filepath (format "bool ~a = is_true(~a);" guard grd))
-       ;  (displayln proc_name)
-       (append-line filepath (format "if(is_true(~a))\n{"
-                                     (if (hash-has-key? arg_hash grd)
-                                         (hash-ref arg_hash grd)
-                                         grd)))
-       ;  (append-line filepath (format "if(is_true(~a))\n{" grd))
-       (convert-proc-body proc_name proc_env proc_arg texp arg_hash)
+       (append-line filepath (format "if(is_true(~a))\n{" grd))
+       (convert-proc-body proc_name proc_env proc_arg texp)
        (append-line filepath "}\nelse\n{")
-       (convert-proc-body proc_name proc_env proc_arg fexp arg_hash)
+       (convert-proc-body proc_name proc_env proc_arg fexp)
        (append-line filepath "}\n")]
 
       [`(clo-apply ,func ,args)
@@ -486,11 +515,17 @@
           ; (displayln arg_count)
           ; (displayln "---------")
 
-          (cond
-            [(and is_define_prim is_callable)
-             (append-line filepath "\n//clo-app")
+          ; (lambda (arg acc) 
+          ;               (string-append
+          ;                     (if (hash-has-key? arg_hash acc) 
+          ;                         (hash-ref arg_hash acc)
+          ;                         acc)
+          ;                     ", " 
+          ;                     (if (hash-has-key? arg_hash arg) 
+          ;                       (hash-ref arg_hash (symbol->string arg))
+          ;                       (symbol->string arg))))
 
-             (define args-str
+          (define args-str
                (foldl (lambda (arg acc)
                         (string-append
                          (if (hash-has-key? arg_hash acc)
@@ -498,7 +533,7 @@
                              acc)
                          ", "
                          (if (hash-has-key? arg_hash arg)
-                             (hash-ref arg_hash arg)
+                             (hash-ref arg_hash (symbol->string arg))
                              (symbol->string arg))))
 
                       ; (symbol->string (cadr args))
@@ -508,16 +543,17 @@
 
                       (cddr args)))
 
-             (append-line filepath (format "arg_buffer[2] = apply_prim_~a_~a(~a);"
-                                           (if (hash-has-key? arg_hash func)
-                                               (hash-ref arg_hash func)
-                                               (get-c-string func))
-                                           arg_count args-str))
+          (cond
+            [(and is_define_prim is_callable)
+             (append-line filepath "\n//clo-app")
 
-             (append-line filepath (format "arg_buffer[1] = ~a;"
-                                           (if (hash-has-key? arg_hash (car args))
-                                               (hash-ref arg_hash (car args))
-                                               (get-c-string (car args)))))
+             (define args-str
+               (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
+                      (symbol->string (cadr args))
+                      (cddr args)))
+
+             (append-line filepath (format "arg_buffer[2] = apply_prim_~a_~a(~a);" (get-c-string func) arg_count args-str))
+             (append-line filepath (format "arg_buffer[1] = ~a;" (get-c-string (car args))))
              ;  (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
 
              (append-line filepath
@@ -542,32 +578,17 @@
                    ;  (append-line filepath "\n// calling next procedure using a function pointer")
                    ;  (append-line filepath "function_ptr();")
 
-                   ;  (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string (car args))))
-
-                   (append-line filepath
-                                (if (hash-has-key? arg_hash (car args))
-                                    (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (hash-ref arg_hash (car args)))
-                                    (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string (car args)))))
-
-
+                   (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string (car args))))
                    ))
              ]
 
             [is_define_prim
              (append-line filepath "\n//clo-app")
 
-             (append-line filepath (format "arg_buffer[1] = ~a;"
-                                           (if (hash-has-key? arg_hash func)
-                                               (hash-ref arg_hash func)
-                                               (get-c-string func)
-                                               )
-                                           ))
+             (append-line filepath  (format "arg_buffer[1] = ~a;" (get-c-string func)))
 
              (for ([i (in-range 1 (+ (length args) 1))] [item args])
-               (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1)
-                                             (if (hash-has-key? arg_hash item)
-                                                 (hash-ref arg_hash item)
-                                                 (get-c-string item)))))
+               (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
 
              ;  (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
 
@@ -582,26 +603,19 @@
                             ))
 
              (append-line filepath (format "~a_fptr();" (get-c-string func)))]
-
             [else
              (append-line filepath "\n//clo-app")
+
+
 
              (if (hash-has-key? declare-top-level-funcs func)
                  (if (= (hash-ref declare-top-level-funcs func) 0)
                      (begin
-                       (append-line filepath (format "arg_buffer[1] = ~a;"
-                                                     (if (hash-has-key? arg_hash func)
-                                                         (hash-ref arg_hash func)
-                                                         (get-c-string func)
-                                                         )
-                                                     ))
-
+                       (append-line filepath (format "arg_buffer[1] = ~a;" (get-c-string func)))
                        (for ([i (in-range 1 (+ (length args) 1))] [item args])
-                         (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1)
-                                                       (if (hash-has-key? arg_hash item)
-                                                           (hash-ref arg_hash item)
-                                                           (get-c-string item)))))
+                         (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
 
+                       ;  (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
                        (append-line filepath
                                     (cond
                                       ; [(hash-has-key? find-global-constants (+ (length args) 1))
@@ -615,41 +629,16 @@
 
                      (append-line filepath
                                   (format "~a_spec(~a);" (get-c-string func)
-                                          (foldl (lambda (arg acc)
-                                                   (string-append
-                                                    (if (hash-has-key? arg_hash acc)
-                                                        (hash-ref arg_hash acc)
-                                                        acc)
-                                                    ", "
-                                                    (if (hash-has-key? arg_hash arg)
-                                                        (hash-ref arg_hash arg)
-                                                        (symbol->string arg))
-                                                    ))
-
-                                                 (string-append
-                                                  (if (hash-has-key? arg_hash func)
-                                                      (hash-ref arg_hash func)
-                                                      (symbol->string (get-c-string func)))
-                                                  ", "
-                                                  (if (hash-has-key? arg_hash (car args))
-                                                      (hash-ref arg_hash (car args))
-                                                      (symbol->string (car args))))
-
-                                                 (cdr args))
-                                          )))
+                                          (foldl (lambda (arg acc) (string-append acc ", " (symbol->string arg)))
+                                                 ;  (string-append (number->string (+ (length args) 1)) ", " (symbol->string (get-c-string func)) ", " (symbol->string (car args)))
+                                                 (string-append (symbol->string (get-c-string func)) ", " (symbol->string (car args)))
+                                                 (cdr args)))))
                  (begin
-                   (append-line filepath (format "arg_buffer[1] = ~a;"
-                                                 (if (hash-has-key? arg_hash func)
-                                                     (hash-ref arg_hash func)
-                                                     (get-c-string func)
-                                                     )
-                                                 ))
+                   (append-line filepath (format "arg_buffer[1] = ~a;" (get-c-string func)))
                    (for ([i (in-range 1 (+ (length args) 1))] [item args])
-                     (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1)
-                                                   (if (hash-has-key? arg_hash item)
-                                                       (hash-ref arg_hash item)
-                                                       (get-c-string item)))))
+                     (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
 
+                   ;  (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
                    (append-line filepath
                                 (cond
                                   ; [(hash-has-key? find-global-constants (+ (length args) 1))
@@ -660,15 +649,19 @@
                                   ; [else (format "arg_buffer[0] = reinterpret_cast<void*> (~a);" (+ (length args) 1))]
                                   ))
 
-                   ; will think about c++ conflict later
-                   ;  (append-line filepath
-                   ;               (if (hash-has-key? conflicting_c++_prims (get-c-string func))
-                   ;                   (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (hash-ref conflicting_c++_prims (get-c-string func)))
-                   ;                   (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string func))))
+                   ;  (append-line
+                   ;   filepath
+                   ;   (if (hash-has-key? conflicting_c++_prims (get-c-string func))
+                   ;       (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" (hash-ref conflicting_c++_prims (get-c-string func)))
+                   ;       (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" (get-c-string func))
+                   ;       ))
+
+                   ;  (append-line filepath "\n// calling next procedure using a function pointer")
+                   ;  (append-line filepath "function_ptr();")
 
                    (append-line filepath
-                                (if (hash-has-key? arg_hash func)
-                                    (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (hash-ref arg_hash func))
+                                (if (hash-has-key? conflicting_c++_prims (get-c-string func))
+                                    (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (hash-ref conflicting_c++_prims (get-c-string func)))
                                     (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string func))))
 
 
@@ -697,6 +690,9 @@
          (append-line filepath "//reading env")
          (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env))))
 
+       ;  (append-line filepath "//reading env")
+       ;  (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
+
        (append-line filepath "//reading env and args")
        (for ([i (in-range 2 (+ (length args) 2))] [item args])
          (append-line filepath (format "void* const ~a = arg_buffer[~a];" (get-c-string item) i)))
@@ -714,6 +710,7 @@
        (when (not (string-prefix? (symbol->string ptr) "lam"))
          (define args-str
            (foldl (lambda (arg acc) (string-append acc ", void* " (symbol->string arg)))
+                  ; (string-append "long numArgs, " (string-append "void* " (symbol->string env)))
                   (string-append "void* " (symbol->string env))
                   args))
 
@@ -806,6 +803,7 @@
       [`(define-prim ,ptr ,args ...)
        (define k (gensym 'kont))
        (define x (gensym 'x))
+       (define env (gensym '_env))
        (define arg 'lst)
        (define newarg (gensym arg))
 
@@ -830,6 +828,8 @@
        ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
        ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
 
+       (append-line filepath "//reading env")
+       (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
 
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
@@ -853,12 +853,12 @@
                       [else (format "numArgs = 2;")]
                       ))
 
-       ;  (append-line
-       ;   filepath
-       ;   (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"  k))
+      ;  (append-line
+      ;   filepath
+      ;   (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"  k))
 
-       ;  (append-line filepath "\n// calling next procedure using a function pointer")
-       ;  (append-line filepath "function_ptr();")
+      ;  (append-line filepath "\n// calling next procedure using a function pointer")
+      ;  (append-line filepath "function_ptr();")
 
        (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" k))
 
@@ -881,12 +881,12 @@
                       [else (format "numArgs = 2;")]
                       ))
 
-       ;  (append-line
-       ;   filepath
-       ;   (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" k))
+      ;  (append-line
+      ;   filepath
+      ;   (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);" k))
 
-       ;  (append-line filepath "\n// calling next procedure using a function pointer")
-       ;  (append-line filepath "function_ptr();")
+      ;  (append-line filepath "\n// calling next procedure using a function pointer")
+      ;  (append-line filepath "function_ptr();")
 
        (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" k))
 

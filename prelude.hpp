@@ -23,7 +23,8 @@
 #define MASK(val) (((u64)(val)) & ~(7ULL))
 unsigned long long call_counter = 0;
 
-#define NULL_VALUE 0
+// #define NULL_VALUE 0
+#define NULL_VALUE 32
 #define TRUE_VALUE 8
 #define FALSE_VALUE 16
 #define FLOAT_VAL 24
@@ -121,13 +122,14 @@ inline void *encode_hash(const hamt<hash_struct, hash_struct> *val) {
   return reinterpret_cast<void *>(((u64)(val)) | HASH);
 }
 
-inline void *encode_null() { return NULL_VALUE; }
+inline void *encode_null() { return reinterpret_cast<void *>(NULL_VALUE); }
+// inline void *encode_null() { return NULL_VALUE;}
 
 // takes in a void * type and gets the tag, return it as an integer
 inline int get_tag(void *val) {
   u64 ptr = reinterpret_cast<u64>(val);
   if ((ptr & 0x7) == SPL)
-    return (ptr & 0x18);
+    return (ptr & 0x38);
 
   return (ptr & 7);
 }
@@ -236,8 +238,8 @@ std::string *decode_str(void *val) {
 }
 
 inline bool decode_bool(void *val) {
-  int tag = get_tag(val);
-    // u64 tag = (u64)val;
+  // int tag = get_tag(val);
+  u64 tag = (u64)val;
 
   if (tag == TRUE_VALUE) {
     return true;
@@ -337,10 +339,15 @@ inline void *apply_prim_cdr_1(void *arg1) { return prim_cdr(arg1); }
 
 // returns length of a list
 inline int length_counter(void *lst) {
-  if (lst == NULL_VALUE)
+  // if (lst == NULL_VALUE)
+  //   return 0;
+
+  int tag = get_tag(lst);
+
+  if (tag == NULL_VALUE)
     return 0;
 
-  if (get_tag(lst) != CONS)
+  if (tag != CONS)
     assert_type(false, "Error -> contact violation: expected list");
 
   // void *val = prim_car(lst);
@@ -356,13 +363,9 @@ inline int length_counter(void *lst) {
 
 inline bool is_null_val(void *val) {
   u64 tag = (u64)val;
-//   int tag = get_tag(val);
-  if (tag != TRUE_VALUE && tag != FALSE_VALUE && val == NULL_VALUE) {
-    //   if (val == NULL_VALUE) {
-    // means its null value = empty list = '()
-    // kludgy way of doing this, null should have it's own tag!
+  //   int tag = get_tag(val);
+  if (tag == NULL_VALUE)
     return true;
-  }
 
   return false;
 }
@@ -433,19 +436,24 @@ inline void *apply_prim_cdr_i(void *lst) {
 
 std::string print_cons(void *lst) {
   std::string ret_str;
-  ret_str.append("(list ");
-  while (is_cons(lst)) {
+  ret_str.append("(list");
+  while (get_tag(lst) == CONS) {
     void **cons_lst = decode_cons(lst);
+    ret_str.append(" ");
     ret_str.append(print_val(cons_lst[0]));
-    if (!is_cons(cons_lst[1])) {
-      if (get_tag(cons_lst[1]) != SPL) {
-        ret_str.append(" . ");
-        ret_str.append(print_val(cons_lst[1]));
-      }
+    int tag = get_tag(cons_lst[1]);
+
+    if (tag != CONS && tag != NULL_VALUE) {
+      // will have to see when this case get's true!
+      // something is not right here!
+      // if (get_tag(cons_lst[1]) != SPL) {
+      ret_str.append(" . ");
+      ret_str.append(print_val(cons_lst[1]));
+      //}
 
       break;
     }
-    ret_str.append(" ");
+
     lst = cons_lst[1];
   }
   ret_str.append(")");
@@ -457,12 +465,17 @@ std::string print_cons(void *lst) {
 #pragma region ArithOpFunctions
 
 inline bool is_true(void *val) {
-  if (is_null_val(val)) {
-    // kludgy way of doing this!
+  int tag = get_tag(val);
+
+  // if (is_null_val(val)) {
+  //   // kludgy way of doing this!
+  //   return true;
+  // } else if (get_tag(val) == CONS) {
+  //   return true;
+  // }
+
+  if (tag == NULL_VALUE || tag == CONS)
     return true;
-  } else if (get_tag(val) == CONS) {
-    return true;
-  }
 
   return decode_bool(val);
 }
@@ -892,7 +905,7 @@ inline void *apply_prim_eq_u63(void *lst) {
 
 // null?
 inline void *prim_null_u63(void *item) {
-  if (get_tag(item) == SPL) {
+  if (get_tag(item) == NULL_VALUE) {
     return encode_bool(true);
   }
   return encode_bool(false);
@@ -1212,111 +1225,133 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
 
-  if (arg1_tag == INT) {
-    if (arg2_tag == INT) {
-      const s64 a1 = decode_int(arg1);
-      const s64 a2 = decode_int(arg2);
+  // Handling INT + INT case directly
+  if (arg1_tag == INT && arg2_tag == INT) {
+    const s64 a1 = decode_int(arg1);
+    const s64 a2 = decode_int(arg2);
 
-      const s64 res = a1 + a2;
-      const s32 res32 = static_cast<s32>(res);
-      if (res32 == res) {
-        // no overflow
-        return reinterpret_cast<void *>(encode_int(res32));
-      } else {
-        // overflow occurred, promoting to mpz
-
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-
-        mpz_init(*result);
-
-        mpz_set_ui(*result, res);
-
-        return encode_mpz(result);
-      }
-    } else if (arg2_tag == MPZ) {
-      /// ....
+    s64 res;
+    if (__builtin_add_overflow(a1, a2, &res)) {
+      // Overflow handling, promote to mpz
+      mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+      mpz_init(*result);
+      mpz_set_ui(*result, res); // Note: mpz_set_ui may cause problems for s64
+      
+      return encode_mpz(result);
+    } else {
+      // No overflow
+      return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
     }
+  } else if (arg1_tag == INT && arg2_tag == MPZ) {
+
   }
+
+  // if (arg1_tag == INT) {
+  //   if (arg2_tag == INT) {
+  //     const s64 a1 = decode_int(arg1);
+  //     const s64 a2 = decode_int(arg2);
+
+  //     const s64 res = a1 + a2;
+  //     const s32 res32 = static_cast<s32>(res);
+  //     if (res32 == res) {
+  //       // no overflow
+  //       return reinterpret_cast<void *>(encode_int(res32));
+  //     } else {
+  //       // overflow occurred, promoting to mpz
+
+  //       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+
+  //       mpz_init(*result);
+
+  //       mpz_set_ui(*result, res);
+
+  //       return encode_mpz(result);
+  //     }
+  //   } else if (arg2_tag == MPZ) {
+  //     /// ....
+  //   }
+  // }
 
   // std::cout << "no overflow: " << arg1_tag << std::endl;
   // std::cout << "no overflow: " << arg2_tag << std::endl;
 
-  if (((arg1_tag == INT) || (arg1_tag == FLOAT_VAL) || (arg1_tag == MPZ) ||
-       (arg1_tag == MPF)) &&
-      ((arg2_tag == INT) || (arg2_tag == FLOAT_VAL) || (arg2_tag == MPZ) ||
-       (arg2_tag == MPF))) {
-    if (arg1_tag == arg2_tag) { // if both numbers have the same tag!
-      if (arg1_tag == INT) {
-        const u64 a1 = decode_int(arg1);
-        const u64 a2 = decode_int(arg2);
+  // if (((arg1_tag == INT) || (arg1_tag == FLOAT_VAL) || (arg1_tag == MPZ) ||
+  //      (arg1_tag == MPF)) &&
+  //     ((arg2_tag == INT) || (arg2_tag == FLOAT_VAL) || (arg2_tag == MPZ) ||
+  //      (arg2_tag == MPF))) {
+  //   if (arg1_tag == arg2_tag) { // if both numbers have the same tag!
+  //     if (arg1_tag == INT) {
+  //       const u64 a1 = decode_int(arg1);
+  //       const u64 a2 = decode_int(arg2);
 
-        const u64 res = a1 + a2;
-        const s32 res32 = static_cast<s32>(res);
-        if (res32 == res) {
-          // no overflow
-          return reinterpret_cast<void *>(encode_int(res32));
-        } else {
-          // overflow occurred, promoting to mpz
+  //       const u64 res = a1 + a2;
+  //       const s32 res32 = static_cast<s32>(res);
+  //       if (res32 == res) {
+  //         // no overflow
+  //         return reinterpret_cast<void *>(encode_int(res32));
+  //       } else {
+  //         // overflow occurred, promoting to mpz
 
-          mpz_t mpz_a1, mpz_a2;
-          mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+  //         mpz_t mpz_a1, mpz_a2;
+  //         mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
 
-          mpz_init(mpz_a1);
-          mpz_init(mpz_a2);
-          mpz_init(*result);
+  //         mpz_init(mpz_a1);
+  //         mpz_init(mpz_a2);
+  //         mpz_init(*result);
 
-          mpz_set_ui(mpz_a1, a1);
-          mpz_set_ui(mpz_a2, a2);
+  //         mpz_set_ui(mpz_a1, a1);
+  //         mpz_set_ui(mpz_a2, a2);
 
-          mpz_add(*result, mpz_a1, mpz_a2);
+  //         mpz_add(*result, mpz_a1, mpz_a2);
 
-          mpz_clear(mpz_a1);
-          mpz_clear(mpz_a2);
+  //         mpz_clear(mpz_a1);
+  //         mpz_clear(mpz_a2);
 
-          return encode_mpz(result);
-        }
-      } else if (arg1_tag == FLOAT_VAL) {
-        const float a1 = decode_float(arg1);
-        const float a2 = decode_float(arg2);
+  //         return encode_mpz(result);
+  //       }
+  //     } else if (arg1_tag == FLOAT_VAL) {
+  //       const float a1 = decode_float(arg1);
+  //       const float a2 = decode_float(arg2);
 
-        const float res = a1 + a2;
+  //       const float res = a1 + a2;
 
-        if (res <= std::numeric_limits<float>::max() &&
-            res >= -std::numeric_limits<float>::max()) {
-          // no overflow
-          return reinterpret_cast<void *>(encode_float(res));
-        } else {
-          // overflow occurred, promoting to mpz
-          mpf_t mpf_a1, mpf_a2;
-          mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+  //       if (res <= std::numeric_limits<float>::max() &&
+  //           res >= -std::numeric_limits<float>::max()) {
+  //         // no overflow
+  //         return reinterpret_cast<void *>(encode_float(res));
+  //       } else {
+  //         // overflow occurred, promoting to mpz
+  //         mpf_t mpf_a1, mpf_a2;
+  //         mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
 
-          mpf_init(mpf_a1);
-          mpf_init(mpf_a2);
-          mpf_init(*result);
+  //         mpf_init(mpf_a1);
+  //         mpf_init(mpf_a2);
+  //         mpf_init(*result);
 
-          mpf_set_d(mpf_a1, a1);
-          mpf_set_d(mpf_a2, a2);
+  //         mpf_set_d(mpf_a1, a1);
+  //         mpf_set_d(mpf_a2, a2);
 
-          mpf_add(*result, mpf_a1, mpf_a2);
+  //         mpf_add(*result, mpf_a1, mpf_a2);
 
-          mpf_clear(mpf_a1);
-          mpf_clear(mpf_a2);
+  //         mpf_clear(mpf_a1);
+  //         mpf_clear(mpf_a2);
 
-          return encode_mpf(result);
-        }
-      } else if (arg1_tag == MPZ) {
-        return add_mpz(arg1, arg2);
-      } else {
-        return add_mpf(arg1, arg2);
-      }
-    } else {
-      // will write later
-      // [int, float] [float, int] [mpz, mpf] [mpf, mpz]
-    }
-  } else {
-    assert_type(false, "Error in plus -> contact violation: The values in the "
-                       "list must be integers or floating-point numbers!");
-  }
+  //         return encode_mpf(result);
+  //       }
+  //     } else if (arg1_tag == MPZ) {
+  //       return add_mpz(arg1, arg2);
+  //     } else {
+  //       return add_mpf(arg1, arg2);
+  //     }
+  //   } else {
+  //     // will write later
+  //     // [int, float] [float, int] [mpz, mpf] [mpf, mpz]
+  //   }
+  // } else {
+  //   assert_type(false, "Error in plus -> contact violation: The values in the
+  //   "
+  //                      "list must be integers or floating-point numbers!");
+  // }
 
   return nullptr;
 }
@@ -1457,110 +1492,132 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
   // std::cout << "no overflow: " << arg1_tag << std::endl;
   // std::cout << "no overflow: " << arg2_tag << std::endl;
 
-  if (arg1_tag == INT) {
-    if (arg2_tag == INT) {
-      const s64 a1 = decode_int(arg1);
-      const s64 a2 = decode_int(arg2);
+   // Handling INT + INT case directly
+  if (arg1_tag == INT && arg2_tag == INT) {
+    const s64 a1 = decode_int(arg1);
+    const s64 a2 = decode_int(arg2);
 
-      const s64 res = a1 - a2;
-      const s32 res32 = static_cast<s32>(res);
-      if (res32 == res) {
-        // no overflow
-        return reinterpret_cast<void *>(encode_int(res32));
-      } else {
-        // overflow occurred, promoting to mpz
-
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-
-        mpz_init(*result);
-
-        mpz_set_ui(*result, res);
-
-        return encode_mpz(result);
-      }
-    } else if (arg2_tag == MPZ) {
-      /// ....
-    }
-  }
-
-  if (((arg1_tag == INT) || (arg1_tag == FLOAT_VAL) || (arg1_tag == MPZ) ||
-       (arg1_tag == MPF)) &&
-      ((arg2_tag == INT) || (arg2_tag == FLOAT_VAL) || (arg2_tag == MPZ) ||
-       (arg2_tag == MPF))) {
-    if (arg1_tag == arg2_tag) { // if both numbers have the same tag!
-      if (arg1_tag == INT) {
-        const u64 a1 = decode_int(arg1);
-        const u64 a2 = decode_int(arg2);
-
-        const u64 res = a1 - a2;
-        const s32 res32 = static_cast<s32>(res);
-        if (res32 == res) {
-          // no overflow
-          return reinterpret_cast<void *>(encode_int(res32));
-        } else {
-          // overflow occurred, promoting to mpz
-
-          mpz_t mpz_a1, mpz_a2;
-          mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-
-          mpz_init(mpz_a1);
-          mpz_init(mpz_a2);
-          mpz_init(*result);
-
-          mpz_set_ui(mpz_a1, a1);
-          mpz_set_ui(mpz_a2, a2);
-
-          mpz_sub(*result, mpz_a1, mpz_a2);
-
-          mpz_clear(mpz_a1);
-          mpz_clear(mpz_a2);
-
-          return encode_mpz(result);
-        }
-      } else if (arg1_tag == FLOAT_VAL) {
-        const float a1 = decode_float(arg1);
-        const float a2 = decode_float(arg2);
-
-        const float res = a1 - a2;
-
-        if (res <= std::numeric_limits<float>::max() &&
-            res >= -std::numeric_limits<float>::max()) {
-          // no overflow
-          return reinterpret_cast<void *>(encode_float(res));
-        } else {
-          // overflow occurred, promoting to mpz
-          mpf_t mpf_a1, mpf_a2;
-          mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-
-          mpf_init(mpf_a1);
-          mpf_init(mpf_a2);
-          mpf_init(*result);
-
-          mpf_set_d(mpf_a1, a1);
-          mpf_set_d(mpf_a2, a2);
-
-          mpf_sub(*result, mpf_a1, mpf_a2);
-
-          mpf_clear(mpf_a1);
-          mpf_clear(mpf_a2);
-
-          return encode_mpf(result);
-        }
-      } else if (arg1_tag == MPZ) {
-        return sub_mpz(arg1, arg2);
-      } else {
-        return sub_mpf(arg1, arg2);
-      }
+    s64 res;
+    if (__builtin_sub_overflow(a1, a2, &res)) {
+      // Overflow handling, promote to mpz
+      mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+      mpz_init(*result);
+      mpz_set_ui(*result, res); // Note: mpz_set_ui may cause problems for s64
+      
+      return encode_mpz(result);
     } else {
-      // will write later
-      // [int, float] [float, int] [mpz, mpf] [mpf, mpz]
+      // No overflow
+      return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
     }
-    return add(arg1, arg2);
+  } else if (arg1_tag == INT && arg2_tag == MPZ) {
 
-  } else {
-    assert_type(false, "Error in minus -> contact violation: The values in the "
-                       "list must be integers or floating-point numbers!");
   }
+
+  // if (arg1_tag == INT) {
+  //   if (arg2_tag == INT) {
+  //     const s64 a1 = decode_int(arg1);
+  //     const s64 a2 = decode_int(arg2);
+
+  //     const s64 res = a1 - a2;
+  //     const s32 res32 = static_cast<s32>(res);
+  //     if (res32 == res) {
+  //       // no overflow
+  //       return reinterpret_cast<void *>(encode_int(res32));
+  //     } else {
+  //       // overflow occurred, promoting to mpz
+
+  //       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+
+  //       mpz_init(*result);
+
+  //       mpz_set_ui(*result, res);
+
+  //       return encode_mpz(result);
+  //     }
+  //   } else if (arg2_tag == MPZ) {
+  //     /// ....
+  //   }
+  // }
+
+  // if (((arg1_tag == INT) || (arg1_tag == FLOAT_VAL) || (arg1_tag == MPZ) ||
+  //      (arg1_tag == MPF)) &&
+  //     ((arg2_tag == INT) || (arg2_tag == FLOAT_VAL) || (arg2_tag == MPZ) ||
+  //      (arg2_tag == MPF))) {
+  //   if (arg1_tag == arg2_tag) { // if both numbers have the same tag!
+  //     if (arg1_tag == INT) {
+  //       const u64 a1 = decode_int(arg1);
+  //       const u64 a2 = decode_int(arg2);
+
+  //       const u64 res = a1 - a2;
+  //       const s32 res32 = static_cast<s32>(res);
+  //       if (res32 == res) {
+  //         // no overflow
+  //         return reinterpret_cast<void *>(encode_int(res32));
+  //       } else {
+  //         // overflow occurred, promoting to mpz
+
+  //         mpz_t mpz_a1, mpz_a2;
+  //         mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+
+  //         mpz_init(mpz_a1);
+  //         mpz_init(mpz_a2);
+  //         mpz_init(*result);
+
+  //         mpz_set_ui(mpz_a1, a1);
+  //         mpz_set_ui(mpz_a2, a2);
+
+  //         mpz_sub(*result, mpz_a1, mpz_a2);
+
+  //         mpz_clear(mpz_a1);
+  //         mpz_clear(mpz_a2);
+
+  //         return encode_mpz(result);
+  //       }
+  //     } else if (arg1_tag == FLOAT_VAL) {
+  //       const float a1 = decode_float(arg1);
+  //       const float a2 = decode_float(arg2);
+
+  //       const float res = a1 - a2;
+
+  //       if (res <= std::numeric_limits<float>::max() &&
+  //           res >= -std::numeric_limits<float>::max()) {
+  //         // no overflow
+  //         return reinterpret_cast<void *>(encode_float(res));
+  //       } else {
+  //         // overflow occurred, promoting to mpz
+  //         mpf_t mpf_a1, mpf_a2;
+  //         mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+
+  //         mpf_init(mpf_a1);
+  //         mpf_init(mpf_a2);
+  //         mpf_init(*result);
+
+  //         mpf_set_d(mpf_a1, a1);
+  //         mpf_set_d(mpf_a2, a2);
+
+  //         mpf_sub(*result, mpf_a1, mpf_a2);
+
+  //         mpf_clear(mpf_a1);
+  //         mpf_clear(mpf_a2);
+
+  //         return encode_mpf(result);
+  //       }
+  //     } else if (arg1_tag == MPZ) {
+  //       return sub_mpz(arg1, arg2);
+  //     } else {
+  //       return sub_mpf(arg1, arg2);
+  //     }
+  //   } else {
+  //     // will write later
+  //     // [int, float] [float, int] [mpz, mpf] [mpf, mpz]
+  //   }
+  //   return add(arg1, arg2);
+
+  // } else {
+  //   assert_type(false, "Error in minus -> contact violation: The values in
+  //   the "
+  //                      "list must be integers or floating-point numbers!");
+  // }
 
   return nullptr;
 }
@@ -2362,48 +2419,65 @@ inline void *apply_prim__u61_2(void *arg1, void *arg2) // =
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
 
-  bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT_VAL) ||
-                    (arg1_tag == MPZ) || (arg1_tag == MPF);
+  if (arg1_tag != arg2_tag)
+    return encode_bool(false);
 
-  if (!type_check)
-    assert_type(false, "Error in modulo -> contact violation: argument type "
-                       "should be either integers or floating-point numbers!");
+  switch (arg1_tag) {
+  case INT:
+    return encode_bool(decode_int(arg1) == decode_int(arg2));
+  case FLOAT_VAL:
+    return encode_bool(decode_float(arg1) == decode_float(arg2));
 
-  bool type_check2 = (arg2_tag == INT) || (arg2_tag == FLOAT_VAL) ||
-                     (arg2_tag == MPZ) || (arg2_tag == MPF);
-
-  if (!type_check2)
-    assert_type(false, "Error in modulo -> contact violation: argument type "
-                       "should be either integers or floating-point numbers!");
-
-  if (arg1_tag == arg2_tag) {
-    if (arg1_tag == INT) {
-      if (decode_int(arg1) == decode_int(arg2))
-        return encode_bool(true);
-      else
-        return encode_bool(false);
-    } else if (arg1_tag == FLOAT_VAL) {
-      if (decode_float(arg1) == decode_float(arg2))
-        return encode_bool(true);
-      else
-        return encode_bool(false);
-    } else if (arg1_tag == MPZ) {
-      cmp_res = mpz_cmp(*(decode_mpz(arg1)), *(decode_mpz(arg2)));
-      if (equal_zero(cmp_res))
-        return encode_bool(true);
-      else
-        return encode_bool(false);
-    } else if (arg1_tag == MPF) {
-
-      cmp_res = mpf_cmp(*(decode_mpf(arg1)), *(decode_mpf(arg2)));
-      if (equal_zero(cmp_res))
-        return encode_bool(true);
-      else
-        return encode_bool(false);
-    }
-  } else {
-    // will write later
+  default:
+    break;
   }
+
+  // bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT_VAL) ||
+  //                   (arg1_tag == MPZ) || (arg1_tag == MPF);
+
+  // if (!type_check)
+  //   assert_type(false, "Error in modulo -> contact violation: argument type "
+  //                      "should be either integers or floating-point
+  //                      numbers!");
+
+  // bool type_check2 = (arg2_tag == INT) || (arg2_tag == FLOAT_VAL) ||
+  //                    (arg2_tag == MPZ) || (arg2_tag == MPF);
+
+  // if (!type_check2)
+  //   assert_type(false, "Error in modulo -> contact violation: argument type "
+  //                      "should be either integers or floating-point
+  //                      numbers!");
+
+  // if (arg1_tag == arg2_tag) {
+  //   if (arg1_tag == INT) {
+  //     if (decode_int(arg1) == decode_int(arg2))
+  //       return encode_bool(true);
+  //     else
+  //       return encode_bool(false);
+  //   } else if (arg1_tag == FLOAT_VAL) {
+  //     if (decode_float(arg1) == decode_float(arg2))
+  //       return encode_bool(true);
+  //     else
+  //       return encode_bool(false);
+  //   }
+  //   // else if (arg1_tag == MPZ) {
+  //   //   cmp_res = mpz_cmp(*(decode_mpz(arg1)), *(decode_mpz(arg2)));
+  //   //   if (equal_zero(cmp_res))
+  //   //     return encode_bool(true);
+  //   //   else
+  //   //     return encode_bool(false);
+  //   // } else if (arg1_tag == MPF) {
+
+  //   //   cmp_res = mpf_cmp(*(decode_mpf(arg1)), *(decode_mpf(arg2)));
+  //   //   if (equal_zero(cmp_res))
+  //   //     return encode_bool(true);
+  //   //   else
+  //   //     return encode_bool(false);
+  //   // }
+  // }
+  // else {
+  // will write later
+  // }
   // mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
   // mpf_init(*arg1_mpf);
   // mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
@@ -2652,7 +2726,8 @@ void *prim_hash_u45ref(void *h, void *k) {
   if (t) {
     return t->val;
   } else {
-    return NULL_VALUE;
+    // return NULL_VALUE;
+    return 0;
   }
 }
 
@@ -4149,19 +4224,26 @@ inline void *apply_prim_random(void *lst) // random
 
 std::string print_val(void *val) {
   switch (get_tag(val)) {
-  case SPL:
-    if (is_null_val(val)) {
-      // kludgy way of doing this!
-      return "(list)";
-    }
-    // now we are certain that it has to be a boolean value, well at least for
-    // now!
-    else if (decode_bool(val)) {
-      return "#t";
-    } else {
-      return "#f";
-    }
+  case TRUE_VALUE:
+    return "#t";
     break;
+  case FALSE_VALUE:
+    return "#f";
+    break;
+  case NULL_VALUE:
+    return "(list)";
+    break;
+  // case SPL:
+  //   if (is_null_val(val)) {
+  //     // kludgy way of doing this!
+  //     return "(list)";
+  //   }
+  //   else if (decode_bool(val)) {
+  //     return "#t";
+  //   } else {
+  //     return "#f";
+  //   }
+  //   break;
   case HASH: {
     return print_hash(val);
     break;
