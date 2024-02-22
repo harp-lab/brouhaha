@@ -22,8 +22,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Add compiler flags for optimization and inlining
-set(CMAKE_CXX_FLAGS_RELEASE "-O3") # for release builds
-# set(CMAKE_CXX_FLAGS_RELEASE "-O3 -finline-functions")
+# set(CMAKE_CXX_FLAGS_RELEASE "-O3") # for release builds
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -finline-functions")
 # set(CMAKE_CXX_FLAGS_DEBUG "-O2") # for debug builds
 # set(CMAKE_CXX_FLAGS_DEBUG) # for debug builds
 

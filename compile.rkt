@@ -67,6 +67,11 @@
       [`(let* () ,ebody) (coverage (desugar-exp ebody))]
       [`(let* ([,lhs ,rhs] ,e-pairs ...) ,ebody)
        (coverage (desugar-exp (coverage `(let ([,lhs ,rhs]) (let* ,e-pairs ,ebody)))))]
+
+      ; [`(let ,var ([,xs ,rhss] ...) ,body)
+      ;  (define loop-var (gensym var))
+      ;  (desugar-define `(define (,loop-var ,@xs) ,body) (,loop-var ,@rhss))]
+
       [`(lambda (,xs ...) ,body) (coverage `(lambda ,xs ,(desugar-exp body)))]
       [`(lambda ,(? symbol? x) ,body) (coverage `(lambda ,x ,(desugar-exp body)))]
       [`(lambda ,args ,body) (coverage (desugar-exp (coverage `(lambda vargs ,(unroll-args args body)))))]
@@ -88,6 +93,14 @@
                       ,(desugar-exp e1)
                       ,(desugar-exp `(cond ,@es))))]
       [`(cond [,exp]) (desugar-exp exp)]
+
+      [`(call/cc ,e0)
+       `(call/cc
+         ,(desugar-exp
+           `(lambda (k)
+              (,e0
+               (lambda (x)
+                 (k x))))))]
 
       [`(apply ,e0 ,e1) (coverage `(apply ,(desugar-exp e0) ,(desugar-exp e1)))]
       [`(,es ...) (coverage (map desugar-exp es))]))
@@ -137,6 +150,9 @@
       [`(apply-prim ,op ,e0) (coverage `(apply-prim ,op ,((alpha-rename env) e0)))]
       [`(if ,e0 ,e1 ,e2)
        (coverage `(if ,((alpha-rename env) e0) ,((alpha-rename env) e1) ,((alpha-rename env) e2)))]
+
+      [`(call/cc ,e0) `(call/cc ,e0)]
+
       [`(apply ,e0 ,e1) (coverage `(apply ,((alpha-rename env) e0) ,((alpha-rename env) e1)))]
       [(? symbol? x) (coverage (hash-ref env x))]
       [`',dat (coverage `',dat)]
@@ -278,6 +294,11 @@
      (coverage (normalize-ae ec (lambda (xc) (k `(if ,xc ,(normalize-anf et) ,(normalize-anf ef))))))]
     [`(prim ,op ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(prim ,op . ,xs)))))]
     [`(apply-prim ,op ,e0) (coverage (normalize-ae e0 (lambda (x) (k `(apply-prim ,op ,x)))))]
+
+    [`(call/cc ,e0)
+     (normalize e0
+                (lambda (param)
+                  (k `(call/cc ,param))))]
     [`(apply ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(apply . ,xs)))))]
     [`(,es ...) (normalize-aes es k)]
     ))
@@ -320,22 +341,24 @@
          (callable-define-prim? proc-name-shadowed? (car rhs) (length (cdr rhs))))
 
 
-      ;  (pretty-print `(let ([,x ,rhs]) e0))
-      ;  ;(when (and is_define_prim is_callable)
-      ;  (displayln (car rhs))
-      ;  (displayln (cdr rhs))
-      ;  (displayln (length (cdr rhs)))
-      ;  (displayln is_define_prim)
-      ;  (displayln is_callable)
-      ;  (displayln arg_count)
-      ;  ;)
-      ;  (displayln "---------")
+       ;  (pretty-print `(let ([,x ,rhs]) e0))
+       ;  ;(when (and is_define_prim is_callable)
+       ;  (displayln (car rhs))
+       ;  (displayln (cdr rhs))
+       ;  (displayln (length (cdr rhs)))
+       ;  (displayln is_define_prim)
+       ;  (displayln is_callable)
+       ;  (displayln arg_count)
+       ;  ;)
+       ;  (displayln "---------")
 
-        (if (and is_define_prim is_callable)
-          `(let ([,x (prim ,@rhs)]) ,(tag-body e0))
-          `(let ([,x ,(tag-body rhs)]) ,(tag-body e0))) ]
+       (if (and is_define_prim is_callable)
+           `(let ([,x (prim ,@rhs)]) ,(tag-body e0))
+           `(let ([,x ,(tag-body rhs)]) ,(tag-body e0))) ]
 
       [`(if ,ae ,e0 ,e1)  `(if ,ae ,(tag-body e0) ,(tag-body e1))]
+
+      [`(call/cc ,e0) `(call/cc ,e0)]
       [`(apply ,ae0 ,ae1)
        `(apply ,ae0 ,ae1)]
 
@@ -372,7 +395,7 @@
 
   (define (T e cae)
     (if (not (symbol? cae))
-        (let ([f (gensym 'f)]) `(let ([,f ,cae]) ,(T e f)))
+        (let ([f (gensym 'f_lam_)]) `(let ([,f ,cae]) ,(T e f)))
         ; (match (p-dbg e)
         (match e
           ; [(? string? x) `(,cae ,x)]
@@ -393,6 +416,9 @@
 
           [`(let ([,x ,rhs]) ,e0) (coverage (T rhs `(lambda (,x) ,(T e0 cae))))]
           [`(if ,ae ,e0 ,e1) (coverage `(if ,(T-ae ae) ,(T e0 cae) ,(T e1 cae)))]
+
+          [`(call/cc ,e0) `(,(T-ae e0) ,cae ,cae)]
+
           [`(apply ,ae0 ,ae1)
            (define xlst (gensym 'cps-lst))
            (coverage `(let ([,xlst (prim cons ,cae ,(T-ae ae1))]) (apply ,(T-ae ae0) ,xlst)))]
@@ -510,33 +536,37 @@
 
 
 
-; (define our-call
-;   `(
-;     (define-prim + 1 2 3)
-;     (define-prim - 1 2 3)
-;     ; (define-prim > 1 2 3)
-;     (define-prim < 1 2 3)
+(define our-call
+  `(
+    (define-prim + 1 2 3)
+    (define-prim - 1 2 3)
+    ; (define-prim > 1 2 3)
+    (define-prim < 1 2 3)
 
-;     (define (list . x) x)
+    (define (list . x) x)
 
-;     (define (do-minus n)
-;       (if (< n 3.0)
-;           n
-;           10.0
-;           )
-;       )
-;     (define (call n)
-;       ; (+ (do-minus 2 1.0) (do-minus 2 2.0))
-;       ;  (+ (do-minus (- 4.0 1.0)) (do-minus (- 2.0 1.0)))
-;       (+ (do-minus 3.0) (do-minus 1.0))
+    (define (do-minus n)
+      (if (< n 3.0)
+          n
+          10.0
+          )
+      )
+    (define (call n)
+      ; (+ (do-minus 2 1.0) (do-minus 2 2.0))
+      ;  (+ (do-minus (- 4.0 1.0)) (do-minus (- 2.0 1.0)))
+      ; (+ (do-minus 3.0) (do-minus 1.0))
+      ; (let loop ([i 10] [sum 11]) (+ i sum))
+      ; (call/cc
+      ;  (lambda (top)
+      ;    (let ((cc (call/cc (lambda (cc) (cc cc)))))
+      ;      (if (call/cc (lambda (k) (if (cc (lambda (x) (top #f))) (k #f) (k #f))))
+      ;          #t
+      ;          #t))))
+      (((call/cc (lambda (x) ((x x) x))) (lambda (y) y)) #t)
+      )
 
-
-;       )
-
-;     (define (brouhaha_main)
-;       (call 10.0))
-
-;     ))
+    (define (brouhaha_main) (call 10.0))
+    ))
 
 
 ; just for testing purpose--> all of them are working after removal of prov tag
@@ -683,3 +713,6 @@
 ; (pretty-print (cps-convert (optimize-prog prog))
 ; (pretty-print (closure-convert (alphatize (cps-convert ( optimize-prog prog)))))
 ; (pretty-print (closure-convert (alphatize (cps-convert prog))))
+
+
+; (pretty-print (cps-convert (anf-convert (optimize-prog (alphatize (desugar our-call))))))

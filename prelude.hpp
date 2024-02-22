@@ -306,7 +306,10 @@ inline void *prim_cons(void *arg1, void *arg2) {
 }
 
 inline void *apply_prim_cons_2(void *arg1, void *arg2) {
-  return prim_cons(arg1, arg2);
+  void **cell = (void **)GC_MALLOC(2 * sizeof(void *));
+  cell[0] = arg1;
+  cell[1] = arg2;
+  return encode_cons(cell);
 }
 
 // cons?
@@ -1022,15 +1025,9 @@ inline void *apply_prim_list(void *arg) {
   return x;
 }
 
-inline void *apply_prim_list_0() {
-  return encode_null();
-
-  // return prim_cons(arg, encode_null());
-}
+inline void *apply_prim_list_0() { return encode_null(); }
 
 inline void *apply_prim_list_1(void *arg) {
-  void *x = encode_null();
-
   return prim_cons(arg, encode_null());
 }
 
@@ -1236,14 +1233,13 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
       mpz_init(*result);
       mpz_set_ui(*result, res); // Note: mpz_set_ui may cause problems for s64
-      
+
       return encode_mpz(result);
     } else {
       // No overflow
       return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
-
   }
 
   // if (arg1_tag == INT) {
@@ -1492,7 +1488,7 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
   // std::cout << "no overflow: " << arg1_tag << std::endl;
   // std::cout << "no overflow: " << arg2_tag << std::endl;
 
-   // Handling INT + INT case directly
+  // Handling INT + INT case directly
   if (arg1_tag == INT && arg2_tag == INT) {
     const s64 a1 = decode_int(arg1);
     const s64 a2 = decode_int(arg2);
@@ -1503,14 +1499,13 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
       mpz_init(*result);
       mpz_set_ui(*result, res); // Note: mpz_set_ui may cause problems for s64
-      
+
       return encode_mpz(result);
     } else {
       // No overflow
       return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
-
   }
 
   // if (arg1_tag == INT) {
