@@ -253,8 +253,8 @@ inline bool decode_bool(void *val) {
 }
 
 inline void **decode_cons(void *val) {
-  if (get_tag(val) != CONS)
-    assert_type(false, "Error in decode_cons -> Type error: Not CONS");
+  // if (get_tag(val) != CONS)
+  //   assert_type(false, "Error in decode_cons -> Type error: Not CONS");
   return reinterpret_cast<void **>(MASK(val));
 }
 
@@ -274,14 +274,22 @@ const hamt<hash_struct, hash_struct> *decode_hash(void *val) {
 inline void **alloc_clo(void (*fptr)(), int num) {
   // call_counter++;
   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
-  obj[0] = 0;
 
-  if (obj != NULL) {
-    obj[0] = reinterpret_cast<void *>(fptr);
-  }
-
+  obj[0] = reinterpret_cast<void *>(fptr);
+  
   return obj;
 }
+
+inline void **alloc_kont(void (*fptr)(), void *f_spec, int num) {
+  void **obj = (void **)(GC_MALLOC((num + 2) * sizeof(void *)));
+
+  obj[0] = reinterpret_cast<void *>(fptr);
+  obj[1] = f_spec;
+  
+  return obj;
+}
+
+
 
 // template <typename Func> void **alloc_clo(Func fptr, int num) {
 //   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
@@ -4307,5 +4315,11 @@ void fhalt() {
   // std::endl; std::cout << "Total # calls made (plus): " << plus_counter <<
   // std::endl; std::cout << "Total # calls made (minus): " << minus_counter
   // << std::endl; print_val(arg_buffer[2]);
+  exit(0);
+}
+
+void fhalt_spec(void* _dummy_arg, void* result) {
+  // std::cout << "In fhalt_spec" << std::endl;
+  std::cout << print_val(result) << std::endl;
   exit(0);
 }

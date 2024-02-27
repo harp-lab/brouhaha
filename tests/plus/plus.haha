@@ -1,6 +1,7 @@
 (define (addd y z) (+ y z))
 (define (call x)
-        (list (addd x 19))
+        ; (list (addd x 19))
+        (addd (+ x x) 19)
     ; (+ 1 (+ 2) (+ 3 4))
     ; (let ([a 5]
     ;       [b 6]
