@@ -280,11 +280,12 @@ inline void **alloc_clo(void (*fptr)(), int num) {
   return obj;
 }
 
-inline void **alloc_kont(void (*fptr)(), void *f_spec, int num) {
+// inline void **alloc_kont(void (*fptr)(), void *f_spec, int num) {
+inline void **alloc_kont(void (*fptr)(), void (*f_spec)(void*, void*), int num) {
   void **obj = (void **)(GC_MALLOC((num + 2) * sizeof(void *)));
 
   obj[0] = reinterpret_cast<void *>(fptr);
-  obj[1] = f_spec;
+  obj[1] = reinterpret_cast<void *>(f_spec); //f_spec;
 
   return obj;
 }

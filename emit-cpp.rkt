@@ -40,16 +40,14 @@
   (define find-global-constants
     (let loop ([env+ (hash)] [prog+ anf_prog])
       (match prog+
-        [`((define (,name . ,param) ,body) ,rest ...)
+        [`((define (,_ . ,_) ,body) ,rest ...)
          (loop (find-global-constants-helper body env+) rest)]
-        [`((define-prim ,f-name ,params ...) ,_ ...)
+        [`((define-prim ,_ ,_ ...) ,_ ...)
          (loop env+ (cdr prog+))]
-        [`() env+]
-        )))
+        [`() env+])))
 
   ; (pretty-print anf_prog)
   ; (pretty-print find-global-constants)
-
 
   ; (define global-kont-set
   ;   (let loop ([item-set (set)] [prog+ alphatized_cps_prog])
@@ -93,17 +91,17 @@
               ))
   (append-line filepath "\n")
 
-  (define global-int-vars
-    (foldl (lambda (idx acc)
-             (hash-set acc idx (gensym 'int)))
-           (hash)
-           (range 1 6)))
+  ; (define global-int-vars
+  ;   (foldl (lambda (idx acc)
+  ;            (hash-set acc idx (gensym 'int)))
+  ;          (hash)
+  ;          (range 1 6)))
 
-  (append-line filepath "\n// declaring global integer variable")
-  (hash-map global-int-vars
-            (lambda (key val)
-              (append-line filepath (format "int ~a;" val))
-              ))
+  ; (append-line filepath "\n// declaring global integer variable")
+  ; (hash-map global-int-vars
+  ;           (lambda (key val)
+  ;             (append-line filepath (format "int ~a;" val))
+  ;             ))
 
 
   ; (append-line filepath "\n// declaring global konts at the top")
@@ -116,7 +114,7 @@
     (let loop ([env+ (hash)] [prog+ proc_list])
       (match prog+
 
-        [`((proc (,ptr ,env ,args ...) ,body) ,rest ...)
+        [`((proc (,ptr ,env ,args ...) ,_) ,_ ...)
          (define args-str
            (foldl (lambda (arg acc) (string-append acc ", void* " (symbol->string arg)))
                   (string-append "void* " (symbol->string env))
@@ -124,13 +122,8 @@
 
          (append-line filepath (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
 
-         ;  (when (not (string-prefix? (symbol->string ptr) "lam"))
-         ;    (define func_name (format "void ~a_spec(~a); // ~a" (get-c-string ptr) args-str ptr))
-         ;    (append-line filepath func_name))
-
          (define func_name (format "void ~a_spec(~a); // ~a" (get-c-string ptr) args-str ptr))
          (append-line filepath func_name)
-
 
          (if (hash-has-key? conflicting_c++_prims (get-c-string ptr))
              (append-line filepath
@@ -146,13 +139,9 @@
                                   0)))
 
          ; (+ (length args) 1)) => +1, because we are including the env
-         (loop (hash-set env+ ptr (+ (length args) 1)) (cdr prog+))
-         ;  (if (string-prefix? (symbol->string ptr) "lam")
-         ;      (loop (hash-set env+ ptr 0) (cdr prog+))
-         ;      (loop (hash-set env+ ptr (+ (length args) 1)) (cdr prog+)))
-         ]
+         (loop (hash-set env+ ptr (+ (length args) 1)) (cdr prog+))]
 
-        [`((proc (,ptr ,env . ,arg) ,body) ,rest ...)
+        [`((proc (,ptr ,_ . ,_) ,_) ,_ ...)
          (define func_name (format "void ~a_fptr(); // ~a" (get-c-string ptr) ptr))
          (append-line filepath func_name)
 
@@ -205,7 +194,7 @@
 
        (append-line filepath (format "void** ~a = alloc_clo(~a_fptr, ~a);" cloName ptr arglength))
 
-       (when (> (+ arglength 1) 1)
+       (when (> arglength 0)
          (append-line filepath "\n//setting env list"))
 
        (for ([i (in-range 1 (+ arglength 1))] [item args])
@@ -226,8 +215,7 @@
        (append-line filepath "\n//creating new make-kont closure")
        (define cloName (gensym 'clo))
 
-       (append-line filepath (format "void** ~a = alloc_kont(~a_fptr, reinterpret_cast<void*>(~a_spec), ~a);"
-                                     cloName ptr ptr arglength))
+       (append-line filepath (format "void** ~a = alloc_kont(~a_fptr, ~a_spec, ~a);" cloName ptr ptr arglength))
 
        (when (> arglength 0)
          (append-line filepath "\n//setting env list"))
@@ -239,11 +227,9 @@
                  (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item))))
              (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item)))))
 
-       ;  (append-line filepath (format "void* ~a = ~a;" (get-c-string lhs) lhs))
        (append-line filepath (format "void* ~a = encode_clo(~a);" (get-c-string lhs) cloName))
 
        (append-line filepath "\n")
-       ;  (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs (symbol->string lhs)))]
        (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs (symbol->string ptr)))]
 
       [`(let ([,lhs (prim kont-to-lam ,args ...)]) ,letbody)
@@ -275,13 +261,12 @@
           (cond
             [(equal? type 'float)
              (define line (format "~a" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
+             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))]
             [(equal? type 'mpf)
              (define line (format "encode_mpf(~a)" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
-            [else (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])]
+             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))]
+            [else
+             (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])]
 
          [`(quote ,(? exact-integer? val))
           (match-define `(,type ,varname) (hash-ref find-global-constants val))
@@ -289,62 +274,48 @@
           (cond
             [(equal? type 'int)
              (define line (format "~a" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
+             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))]
             [(equal? type 'mpz)
              (define line (format "encode_mpz(~a)" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
-            [else (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])]
+             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))]
+            [else
+             (error "Error occured in emit-cpp -> proc_body case: (let ([,lhs ,val]) ,letbody)")])]
 
          [`(quote ,(? boolean? val))
-
           (match-define `(,type ,varname) (hash-ref find-global-constants val))
+
           (cond
             [(equal? type 'bool-true)
              (define line (format "~a" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
+             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))]
             [(equal? type 'bool-false)
              (define line (format "~a" varname))
-             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-             ]
-            [else (error "Error occured in emit-cpp -> proc_body case: (quote ,(? boolean? val)")])
-          ]
+             (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line)) ]
+            [else
+             (error "Error occured in emit-cpp -> proc_body case: (quote ,(? boolean? val)")])]
 
          [`(quote ,(? null? val))
           (define line (format "encode_null()"))
-          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-          ]
+          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))]
 
          [`(quote ,(? string? val))
           (define line (format "encode_str(new(GC) std::string(\"~a\"))" val))
-          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-          ]
+          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))]
 
          [`(quote ,(? symbol? val))
           (define line (format "encode_str(new(GC) std::string(\"~a\"))" (symbol->string val)))
-          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-          ]
+          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))]
 
          [(? symbol?) ; Not sure what this case does or supposed to do - SK
           (define line (format "encode_str(new string(\"~a\"))" val))
-          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))
-          ]
+          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))]
 
          [_ (raise (format "Unknown datatype! ~a" val))])]
 
       [`(if ,grd ,texp ,fexp)
        (append-line filepath "\n//if-clause")
-       ;  (define guard (gensym 'if_guard))
 
-       ;  (append-line filepath (format "bool ~a = is_true(~a);" guard grd))
-       ;  (displayln proc_name)
-       (append-line filepath (format "if(is_true(~a))\n{"
-                                     (if (hash-has-key? arg_hash grd)
-                                         (hash-ref arg_hash grd)
-                                         grd)))
-       ;  (append-line filepath (format "if(is_true(~a))\n{" grd))
+       (append-line filepath (format "if(is_true(~a))\n{" (hash-ref arg_hash grd (lambda () grd))))
        (convert-proc-body proc_name proc_env proc_arg texp arg_hash)
        (append-line filepath "}\nelse\n{")
        (convert-proc-body proc_name proc_env proc_arg fexp arg_hash)
@@ -362,9 +333,7 @@
           (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
           (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
 
-          (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
-          ; (append-line filepath "return nullptr;")
-          ]
+          (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))]
          [else
           (append-line filepath "\n//clo-apply")
 
@@ -385,31 +354,25 @@
             [is_define_prim
              (append-line filepath (format "arg_buffer[1] = ~a;" (get-c-string func)))
              (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
-             ;  (append-line filepath (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2)))
-             (append-line filepath (format "numArgs = ~a;" (hash-ref global-int-vars 2)))
+             (append-line filepath (format "numArgs = ~a;" 2))
 
-             (append-line filepath (format "~a_fptr();" (get-c-string func)))
-             ]
+             (append-line filepath (format "~a_fptr();" (get-c-string func)))]
             [else
              (append-line filepath (format "arg_buffer[1] = ~a;" (get-c-string func)))
              (append-line filepath (format "arg_buffer[2] = ~a;" (get-c-string args)))
-             ;  (append-line filepath (format "arg_buffer[0] = ~a;" (hash-ref global-int-vars 2)))
-             (append-line filepath (format "numArgs = ~a;" (hash-ref global-int-vars 2)))
+             (append-line filepath (format "numArgs = ~a;" 2))
 
-             (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string func)))
-             ])]
-         )]
+             (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string func)))])])]
 
       [`(clo-app ,func ,args ...)
-
        ; builtin-func will hold, either the called builtin define-prim
        ; or the aliased builtin define-prim by the "func" at the call-site
        (match-define `(,builtin-func ,res1) (if slog-flag
                                                 (is-define-prim ast-root func)
                                                 `(,func #f)))
-       (match-define `(,temp-func ,res2) (if slog-flag
-                                             (check-define-prim-arg-count ast-root builtin-func (- (length args) 1))
-                                             `(,func #f)))
+       (match-define `(,_ ,res2) (if slog-flag
+                                     (check-define-prim-arg-count ast-root builtin-func (- (length args) 1))
+                                     `(,func #f)))
 
        (cond
          ; builtin define-prim with a specific argument count
@@ -423,16 +386,8 @@
           (append-line filepath (format "arg_buffer[2] = apply_prim_~a_~a(~a);" (get-c-string builtin-func) (- (length args) 1) args-str))
           (append-line filepath (format "arg_buffer[1] = ~a;" (get-c-string (car args))))
 
-
-          (append-line filepath
-                       (cond
-                         [(hash-has-key? global-int-vars 2) (format "numArgs = ~a;" (hash-ref global-int-vars 2))]
-                         [else (format "numArgs = 2;")]
-                         ;  [else (format "arg_buffer[0] = reinterpret_cast<void*> (2);")]
-                         )
-                       )
-
-          (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string (car args)))) ]
+          (append-line filepath "numArgs = 2;")
+          (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string (car args))))]
 
          ; not specific argument count, but still one of the builtin so calling that directly
          ; instead of unpacking the closure
@@ -444,26 +399,15 @@
           (for ([i (in-range 1 (+ (length args) 1))] [item args])
             (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1) (get-c-string item))))
 
-          (append-line filepath
-                       (cond
-                         [(hash-has-key? global-int-vars (+ (length args) 1)) (format "numArgs = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
-                         ;  [else (format "arg_buffer[0] = reinterpret_cast<void*> (~a);" (+ (length args) 1))]
-                         [else (format "numArgs = ~a;" (+ (length args) 1))]
-                         )
-
-                       )
+          (append-line filepath (format "numArgs = ~a;" (+ (length args) 1)))
 
           (if (hash-has-key? conflicting_c++_prims (get-c-string func))
               (append-line filepath (format "~a_fptr();" (hash-ref conflicting_c++_prims (get-c-string builtin-func))))
-              (append-line filepath (format "~a_fptr();" (get-c-string builtin-func)))
-              )
-
-          ]
+              (append-line filepath (format "~a_fptr();" (get-c-string builtin-func))))]
          [else
           (match-define `(,is_define_prim ,is_callable ,arg_count)
             (callable-define-prim? proc-name-shadowed? func (- (length args) 1)))
-          ; (pretty-print proc-name-shadowed?)
-          ; (pretty-print global-symbols-set)
+
           ; (set! is_define_prim #f)
           ; (set! is_callable #f)
           ; (set! arg_count 0)
@@ -509,7 +453,8 @@
                                                    (hash-ref arg_hash func)
                                                    (get-c-string func))
                                                (get-c-string func))
-                                           arg_count args-str))
+                                           arg_count
+                                           args-str))
 
              (append-line filepath (format "arg_buffer[1] = ~a;"
                                            (if (hash-has-key? arg_hash (car args))
@@ -517,15 +462,8 @@
                                                    (hash-ref arg_hash (car args))
                                                    (get-c-string (car args)))
                                                (get-c-string (car args)))))
-             ;  (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
 
-             (append-line filepath
-                          (cond
-                            [(hash-has-key? global-int-vars 2) (format "numArgs = ~a;" (hash-ref global-int-vars 2))]
-                            ; [else (format "arg_buffer[0] = reinterpret_cast<void*> (2);")]
-                            [else (format "numArgs = 2;")]
-                            ))
-
+             (append-line filepath "numArgs = 2;")
 
              (if (set-member? global-symbols-set (car args))
                  (begin
@@ -570,17 +508,11 @@
                (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1)
                                              (if (hash-has-key? arg_hash item)
                                                  (if (not (string-prefix? (hash-ref arg_hash item) "lam"))
-                                                   (hash-ref arg_hash item)
-                                                   (get-c-string item))
+                                                     (hash-ref arg_hash item)
+                                                     (get-c-string item))
                                                  (get-c-string item)))))
 
-             ;  (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
-
-             (append-line filepath
-                          (cond
-                            [(hash-has-key? global-int-vars (+ (length args) 1)) (format "numArgs = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
-                            [else (format "numArgs = ~a;" (+ (length args) 1))]
-                            ))
+             (append-line filepath (format "numArgs = ~a;" (+ (length args) 1)))
 
              (append-line filepath (format "~a_fptr();" (get-c-string func)))]
 
@@ -608,11 +540,8 @@
 
                                                            (get-c-string item)))))
 
-                       (append-line filepath
-                                    (cond
-                                      [(hash-has-key? global-int-vars (+ (length args) 1)) (format "numArgs = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
-                                      [else (format "numArgs = ~a;" (+ (length args) 1))]
-                                      ))
+                       (append-line filepath (format "numArgs = ~a;" (+ (length args) 1)))
+
                        (append-line filepath (format "~a_fptr();" (get-c-string func))) )
 
                      (append-line filepath
@@ -700,12 +629,7 @@
                                                                  (get-c-string item))
                                                              (get-c-string item)))))
 
-                         (append-line filepath
-                                      (cond
-                                        [(hash-has-key? global-int-vars (+ (length args) 1)) (format "numArgs = ~a;" (hash-ref global-int-vars (+ (length args) 1)))]
-                                        [else (format "numArgs = ~a;" (+ (length args) 1))]
-                                        ; [else (format "arg_buffer[0] = reinterpret_cast<void*> (~a);" (+ (length args) 1))]
-                                        ))
+                         (append-line filepath (format "numArgs = ~a;" (+ (length args) 1)))
 
                          ; will think about c++ conflict later
                          ;  (append-line filepath
@@ -719,11 +643,9 @@
                                                   (if (not (string-prefix? (hash-ref arg_hash func) "lam"))
                                                       (hash-ref arg_hash func)
                                                       (get-c-string func)))
-                                          (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string func))))
-                         )
+                                          (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string func)))))
                        ))
                  )])
-
           ])]
 
       [`(kont-clo-app ,func ,arg)
@@ -739,11 +661,15 @@
                                               (hash-ref arg_hash arg (lambda () arg))
                                               ))]
                [(or (string-prefix? (hash-ref arg_hash func) "f_lam") (string-prefix? (hash-ref arg_hash func) "lam"))
-                (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[1])(~a, ~a);"
+                ; (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[1])(~a, ~a);"
+                ;                               (get-c-string func)
+                ;                               (get-c-string func)
+                ;                               (hash-ref arg_hash arg (lambda () arg))
+                ;                               ))
+                (append-line filepath (format "~a_spec(~a, ~a);"
+                                              (hash-ref arg_hash func)
                                               (get-c-string func)
-                                              (get-c-string func)
-                                              (hash-ref arg_hash arg (lambda () arg))
-                                              ))]
+                                              (hash-ref arg_hash arg (lambda () arg))))]
                [else
                 (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[1])(~a, ~a);"
                                               (hash-ref arg_hash func (lambda () get-c-string func))
@@ -752,8 +678,7 @@
            (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[1])(~a, ~a);"
                                          (get-c-string func)
                                          (get-c-string func)
-                                         (hash-ref arg_hash arg (lambda () arg)))))]
-      ))
+                                         (hash-ref arg_hash arg (lambda () arg)))))]))
 
   (define (convert-procs proc)
     ; (pretty-print proc)
@@ -761,8 +686,7 @@
       [`(proc (,ptr ,env ,args ...) ,body)
        (append-line filepath (format "inline void ~a_fptr() // ~a -> generic version ~a" (get-c-string ptr) ptr "\n{"))
        ; uncomment these two lines for debugging!
-      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: generic version\"<<std::endl;" (get-c-string ptr)))
-       ;  (append-line filepath (format "print_arg_buffer();\n"))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: generic version\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath "call_counter++;")
 
        (when (not (string-prefix? (symbol->string env) "_"))
@@ -783,7 +707,6 @@
        (append-line filepath "}\n")
 
 
-       ;  (when (not (string-prefix? (symbol->string ptr) "lam"))
        (define args-str
          (foldl (lambda (arg acc) (string-append acc ", void* " (symbol->string arg)))
                 (string-append "void* " (symbol->string env))
@@ -791,10 +714,8 @@
 
        (append-line filepath (format "inline void ~a_spec(~a) // ~a ~a" (get-c-string ptr) args-str ptr "\n{"))
 
-
        ; uncomment these two lines for debugging!
-      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: spec\"<<std::endl;" (get-c-string ptr)))
-       ;  (append-line filepath (format "print_arg_buffer();\n"))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: spec\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath "call_counter++;")
 
        (if (hash-has-key? declare-top-level-funcs ptr)
@@ -805,17 +726,14 @@
 
                (append-line filepath "//reading env and args")
                (for ([i (in-range 2 (+ (length args) 2))] [item args])
-                 (append-line filepath (format "void* const ~a = arg_buffer[~a];" (get-c-string item) i))))
-             )
+                 (append-line filepath (format "void* const ~a = arg_buffer[~a];" (get-c-string item) i)))))
            (begin
              (append-line filepath "//reading env")
              (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
 
              (append-line filepath "//reading env and args")
              (for ([i (in-range 2 (+ (length args) 2))] [item args])
-               (append-line filepath (format "void* const ~a = arg_buffer[~a];" (get-c-string item) i)))
-             )
-           )
+               (append-line filepath (format "void* const ~a = arg_buffer[~a];" (get-c-string item) i)))))
 
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
@@ -824,8 +742,7 @@
 
        (convert-proc-body (get-c-string ptr) (get-c-string env) args body)
 
-       (append-line filepath "}\n")
-       ]
+       (append-line filepath "}\n")]
 
       [`(proc (,ptr ,env . ,arg) ,body)
        (define func_name (format "void ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
@@ -834,13 +751,8 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
-       ;  (append-line filepath (format "print_arg_buffer();\n"))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath "call_counter++;")
-
-       ;  (append-line filepath "//reading number of args")
-       ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
-       ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
 
        (append-line filepath "//reading env")
        (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
@@ -875,27 +787,14 @@
        (define arg 'lst)
        (define newarg (gensym arg))
 
-       ;  (define make-generic-apply-prim-body
-       ;    `(let ([,k (prim car ,arg)])
-       ;       (let ([,newarg (prim cdr ,arg)])
-       ;         (let ((,x (apply-prim ,ptr ,newarg)))
-       ;           (clo-app ,k ,x)))))
-
        (define func_name (format "inline void ~a_fptr() // ~a ~a" (get-c-string ptr) ptr "\n{"))
 
        ; start of function definitions
        (append-line filepath func_name)
 
        ;  uncomment these two lines for debugging!
-        ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
-       ;  (append-line filepath (format "print_arg_buffer();\n"))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath "call_counter++;")
-
-       ;  (append-line filepath "//reading number of args")
-       ;  (append-line filepath "// This is the second type of the functions")
-       ;  (append-line filepath (format "int numArgs = reinterpret_cast<int>(arg_buffer[0]);"))
-       ;  (append-line filepath (format "numArgs = reinterpret_cast<long>(arg_buffer[0]);"))
-
 
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
@@ -910,22 +809,9 @@
        (append-line filepath (format "arg_buffer[1] = ~a;" k))
        (append-line filepath (format "arg_buffer[2] = ~a;" x))
 
-       (append-line filepath
-                    (cond
-                      [(hash-has-key? global-int-vars 2) (format "numArgs = ~a;" (hash-ref global-int-vars 2))]
-                      ; [else (format "arg_buffer[0] = reinterpret_cast<void*>(2);")]
-                      [else (format "numArgs = 2;")]
-                      ))
-
-       ;  (append-line
-       ;   filepath
-       ;   (format "auto function_ptr = reinterpret_cast<void (*)()>((decode_clo(~a))[0]);"  k))
-
-       ;  (append-line filepath "\n// calling next procedure using a function pointer")
-       ;  (append-line filepath "function_ptr();")
+       (append-line filepath  "numArgs = 2;")
 
        (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" k))
-
 
        (append-line filepath "}\nelse\n{")
 
@@ -935,28 +821,17 @@
        (append-line filepath (format "arg_buffer[1] = ~a;" k))
        (append-line filepath (format "arg_buffer[2] = ~a;" x))
 
-       ;  (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" 2))
-       (append-line filepath
-                    (cond
-                      [(hash-has-key? global-int-vars 2) (format "numArgs = ~a;" (hash-ref global-int-vars 2))]
-                      ; [else (format "arg_buffer[0] = reinterpret_cast<void*>(2);")]
-                      [else (format "numArgs = 2;")]
-                      ))
+       (append-line filepath  "numArgs = 2;")
 
        (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" k))
-
        (append-line filepath "}\n")
-       (append-line filepath "}\n")
-       ]
+       (append-line filepath "}\n")]
       ) ;end of match
-    ;end of function definitions.
-    )
+    );end of function definitions.
 
   (map convert-procs proc_list)
-
   ; writing the main function.
   (append-line filepath "int main(int argc, char **argv)\n{")
-
 
   (append-line filepath
                "mp_set_memory_functions(&allocate_function,
@@ -980,24 +855,16 @@
                 [(equal? (car type) 'bool-false)
                  (append-line filepath (format "~a = encode_bool(false);" (cadr type)))]
                 [else (error "Error occured could not find value in -> find-global-constants!")]
-                )
-              ))
+                )))
 
   (append-line filepath "\n")
-
-  (append-line filepath "\n// initializing global integer vars")
-  (hash-map global-int-vars
-            (lambda (key val)
-              ; (append-line filepath (format "~a = reinterpret_cast<void*>(encode_int(~a));" val key))
-              ; (append-line filepath (format "~a = reinterpret_cast<void *>(~a);" val key))
-              (append-line filepath (format "~a = ~a;" val key))
-              ))
 
   (append-line filepath "\n//making a call to the brouhaha main function to kick off our C++ emission.")
   ; (append-line filepath "call_counter++;")
   ; (append-line filepath "void *fhalt_clo = encode_clo(alloc_clo(fhalt,0));")
 
-  (append-line filepath (format "void** f_halt_clo = alloc_kont(fhalt, reinterpret_cast<void*>(fhalt_spec), 0);"))
+  ; (append-line filepath (format "void** f_halt_clo = alloc_kont(fhalt, reinterpret_cast<void*>(fhalt_spec), 0);"))
+  (append-line filepath (format "void** f_halt_clo = alloc_kont(fhalt, fhalt_spec, 0);"))
   (append-line filepath (format "void* fhalt_clo = encode_clo(f_halt_clo);"))
 
   ; (append-line filepath "arg_buffer[0] = 0;")

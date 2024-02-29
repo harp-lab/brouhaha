@@ -1,6 +1,6 @@
 (define (call n)
-    ; ((lambda x x) (list (list 1 2 3 4 n)))
-    ((lambda x x) (list 1 2 3 4 n))
+    ((lambda x x) (list (list 1 2 3 4 n)))
+    ; ((lambda x x) (list 1 2 3 4 n))
     )
 
 (define (brouhaha_main) 

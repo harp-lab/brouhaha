@@ -13,13 +13,6 @@ void* int9052;
 
 
 
-// declaring global integer variable
-int int9053;
-int int9054;
-int int9055;
-int int9056;
-int int9057;
-
 // declaring functions at the top
 void _u43_fptr(); // +
 void* _u43 = encode_clo(alloc_clo(_u43_fptr, 0));
@@ -361,22 +354,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9058 = prim_car(lst);
-void* const lst9060 = prim_cdr(lst);
-void* const x9059 = apply_prim__u43(lst9060);
-arg_buffer[1] = kont9058;
-arg_buffer[2] = x9059;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9058))[0])();
+void* const kont9053 = prim_car(lst);
+void* const lst9055 = prim_cdr(lst);
+void* const x9054 = apply_prim__u43(lst9055);
+arg_buffer[1] = kont9053;
+arg_buffer[2] = x9054;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9053))[0])();
 }
 else
 {
-void* const kont9058 = arg_buffer[2];
-void* const x9059 = apply_prim__u43(arg_buffer);
-arg_buffer[1] = kont9058;
-arg_buffer[2] = x9059;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9058))[0])();
+void* const kont9053 = arg_buffer[2];
+void* const x9054 = apply_prim__u43(arg_buffer);
+arg_buffer[1] = kont9053;
+arg_buffer[2] = x9054;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9053))[0])();
 }
 
 }
@@ -389,22 +382,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9061 = prim_car(lst);
-void* const lst9063 = prim_cdr(lst);
-void* const x9062 = apply_prim__u45(lst9063);
-arg_buffer[1] = kont9061;
-arg_buffer[2] = x9062;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9061))[0])();
+void* const kont9056 = prim_car(lst);
+void* const lst9058 = prim_cdr(lst);
+void* const x9057 = apply_prim__u45(lst9058);
+arg_buffer[1] = kont9056;
+arg_buffer[2] = x9057;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9056))[0])();
 }
 else
 {
-void* const kont9061 = arg_buffer[2];
-void* const x9062 = apply_prim__u45(arg_buffer);
-arg_buffer[1] = kont9061;
-arg_buffer[2] = x9062;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9061))[0])();
+void* const kont9056 = arg_buffer[2];
+void* const x9057 = apply_prim__u45(arg_buffer);
+arg_buffer[1] = kont9056;
+arg_buffer[2] = x9057;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9056))[0])();
 }
 
 }
@@ -417,22 +410,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9064 = prim_car(lst);
-void* const lst9066 = prim_cdr(lst);
-void* const x9065 = apply_prim__u42(lst9066);
-arg_buffer[1] = kont9064;
-arg_buffer[2] = x9065;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9064))[0])();
+void* const kont9059 = prim_car(lst);
+void* const lst9061 = prim_cdr(lst);
+void* const x9060 = apply_prim__u42(lst9061);
+arg_buffer[1] = kont9059;
+arg_buffer[2] = x9060;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9059))[0])();
 }
 else
 {
-void* const kont9064 = arg_buffer[2];
-void* const x9065 = apply_prim__u42(arg_buffer);
-arg_buffer[1] = kont9064;
-arg_buffer[2] = x9065;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9064))[0])();
+void* const kont9059 = arg_buffer[2];
+void* const x9060 = apply_prim__u42(arg_buffer);
+arg_buffer[1] = kont9059;
+arg_buffer[2] = x9060;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9059))[0])();
 }
 
 }
@@ -445,22 +438,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9067 = prim_car(lst);
-void* const lst9069 = prim_cdr(lst);
-void* const x9068 = apply_prim__u47(lst9069);
-arg_buffer[1] = kont9067;
-arg_buffer[2] = x9068;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9067))[0])();
+void* const kont9062 = prim_car(lst);
+void* const lst9064 = prim_cdr(lst);
+void* const x9063 = apply_prim__u47(lst9064);
+arg_buffer[1] = kont9062;
+arg_buffer[2] = x9063;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9062))[0])();
 }
 else
 {
-void* const kont9067 = arg_buffer[2];
-void* const x9068 = apply_prim__u47(arg_buffer);
-arg_buffer[1] = kont9067;
-arg_buffer[2] = x9068;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9067))[0])();
+void* const kont9062 = arg_buffer[2];
+void* const x9063 = apply_prim__u47(arg_buffer);
+arg_buffer[1] = kont9062;
+arg_buffer[2] = x9063;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9062))[0])();
 }
 
 }
@@ -473,22 +466,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9070 = prim_car(lst);
-void* const lst9072 = prim_cdr(lst);
-void* const x9071 = apply_prim__u61(lst9072);
-arg_buffer[1] = kont9070;
-arg_buffer[2] = x9071;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9070))[0])();
+void* const kont9065 = prim_car(lst);
+void* const lst9067 = prim_cdr(lst);
+void* const x9066 = apply_prim__u61(lst9067);
+arg_buffer[1] = kont9065;
+arg_buffer[2] = x9066;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9065))[0])();
 }
 else
 {
-void* const kont9070 = arg_buffer[2];
-void* const x9071 = apply_prim__u61(arg_buffer);
-arg_buffer[1] = kont9070;
-arg_buffer[2] = x9071;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9070))[0])();
+void* const kont9065 = arg_buffer[2];
+void* const x9066 = apply_prim__u61(arg_buffer);
+arg_buffer[1] = kont9065;
+arg_buffer[2] = x9066;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9065))[0])();
 }
 
 }
@@ -501,22 +494,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9073 = prim_car(lst);
-void* const lst9075 = prim_cdr(lst);
-void* const x9074 = apply_prim__u62(lst9075);
-arg_buffer[1] = kont9073;
-arg_buffer[2] = x9074;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9073))[0])();
+void* const kont9068 = prim_car(lst);
+void* const lst9070 = prim_cdr(lst);
+void* const x9069 = apply_prim__u62(lst9070);
+arg_buffer[1] = kont9068;
+arg_buffer[2] = x9069;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9068))[0])();
 }
 else
 {
-void* const kont9073 = arg_buffer[2];
-void* const x9074 = apply_prim__u62(arg_buffer);
-arg_buffer[1] = kont9073;
-arg_buffer[2] = x9074;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9073))[0])();
+void* const kont9068 = arg_buffer[2];
+void* const x9069 = apply_prim__u62(arg_buffer);
+arg_buffer[1] = kont9068;
+arg_buffer[2] = x9069;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9068))[0])();
 }
 
 }
@@ -529,22 +522,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9076 = prim_car(lst);
-void* const lst9078 = prim_cdr(lst);
-void* const x9077 = apply_prim__u60(lst9078);
-arg_buffer[1] = kont9076;
-arg_buffer[2] = x9077;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9076))[0])();
+void* const kont9071 = prim_car(lst);
+void* const lst9073 = prim_cdr(lst);
+void* const x9072 = apply_prim__u60(lst9073);
+arg_buffer[1] = kont9071;
+arg_buffer[2] = x9072;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9071))[0])();
 }
 else
 {
-void* const kont9076 = arg_buffer[2];
-void* const x9077 = apply_prim__u60(arg_buffer);
-arg_buffer[1] = kont9076;
-arg_buffer[2] = x9077;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9076))[0])();
+void* const kont9071 = arg_buffer[2];
+void* const x9072 = apply_prim__u60(arg_buffer);
+arg_buffer[1] = kont9071;
+arg_buffer[2] = x9072;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9071))[0])();
 }
 
 }
@@ -557,22 +550,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9079 = prim_car(lst);
-void* const lst9081 = prim_cdr(lst);
-void* const x9080 = apply_prim__u60_u61(lst9081);
-arg_buffer[1] = kont9079;
-arg_buffer[2] = x9080;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9079))[0])();
+void* const kont9074 = prim_car(lst);
+void* const lst9076 = prim_cdr(lst);
+void* const x9075 = apply_prim__u60_u61(lst9076);
+arg_buffer[1] = kont9074;
+arg_buffer[2] = x9075;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9074))[0])();
 }
 else
 {
-void* const kont9079 = arg_buffer[2];
-void* const x9080 = apply_prim__u60_u61(arg_buffer);
-arg_buffer[1] = kont9079;
-arg_buffer[2] = x9080;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9079))[0])();
+void* const kont9074 = arg_buffer[2];
+void* const x9075 = apply_prim__u60_u61(arg_buffer);
+arg_buffer[1] = kont9074;
+arg_buffer[2] = x9075;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9074))[0])();
 }
 
 }
@@ -585,22 +578,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9082 = prim_car(lst);
-void* const lst9084 = prim_cdr(lst);
-void* const x9083 = apply_prim__u62_u61(lst9084);
-arg_buffer[1] = kont9082;
-arg_buffer[2] = x9083;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9082))[0])();
+void* const kont9077 = prim_car(lst);
+void* const lst9079 = prim_cdr(lst);
+void* const x9078 = apply_prim__u62_u61(lst9079);
+arg_buffer[1] = kont9077;
+arg_buffer[2] = x9078;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9077))[0])();
 }
 else
 {
-void* const kont9082 = arg_buffer[2];
-void* const x9083 = apply_prim__u62_u61(arg_buffer);
-arg_buffer[1] = kont9082;
-arg_buffer[2] = x9083;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9082))[0])();
+void* const kont9077 = arg_buffer[2];
+void* const x9078 = apply_prim__u62_u61(arg_buffer);
+arg_buffer[1] = kont9077;
+arg_buffer[2] = x9078;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9077))[0])();
 }
 
 }
@@ -613,22 +606,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9085 = prim_car(lst);
-void* const lst9087 = prim_cdr(lst);
-void* const x9086 = apply_prim_modulo(lst9087);
-arg_buffer[1] = kont9085;
-arg_buffer[2] = x9086;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9085))[0])();
+void* const kont9080 = prim_car(lst);
+void* const lst9082 = prim_cdr(lst);
+void* const x9081 = apply_prim_modulo(lst9082);
+arg_buffer[1] = kont9080;
+arg_buffer[2] = x9081;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9080))[0])();
 }
 else
 {
-void* const kont9085 = arg_buffer[2];
-void* const x9086 = apply_prim_modulo(arg_buffer);
-arg_buffer[1] = kont9085;
-arg_buffer[2] = x9086;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9085))[0])();
+void* const kont9080 = arg_buffer[2];
+void* const x9081 = apply_prim_modulo(arg_buffer);
+arg_buffer[1] = kont9080;
+arg_buffer[2] = x9081;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9080))[0])();
 }
 
 }
@@ -641,22 +634,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9088 = prim_car(lst);
-void* const lst9090 = prim_cdr(lst);
-void* const x9089 = apply_prim_null_u63(lst9090);
-arg_buffer[1] = kont9088;
-arg_buffer[2] = x9089;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9088))[0])();
+void* const kont9083 = prim_car(lst);
+void* const lst9085 = prim_cdr(lst);
+void* const x9084 = apply_prim_null_u63(lst9085);
+arg_buffer[1] = kont9083;
+arg_buffer[2] = x9084;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9083))[0])();
 }
 else
 {
-void* const kont9088 = arg_buffer[2];
-void* const x9089 = apply_prim_null_u63(arg_buffer);
-arg_buffer[1] = kont9088;
-arg_buffer[2] = x9089;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9088))[0])();
+void* const kont9083 = arg_buffer[2];
+void* const x9084 = apply_prim_null_u63(arg_buffer);
+arg_buffer[1] = kont9083;
+arg_buffer[2] = x9084;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9083))[0])();
 }
 
 }
@@ -669,22 +662,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9091 = prim_car(lst);
-void* const lst9093 = prim_cdr(lst);
-void* const x9092 = apply_prim_equal_u63(lst9093);
-arg_buffer[1] = kont9091;
-arg_buffer[2] = x9092;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9091))[0])();
+void* const kont9086 = prim_car(lst);
+void* const lst9088 = prim_cdr(lst);
+void* const x9087 = apply_prim_equal_u63(lst9088);
+arg_buffer[1] = kont9086;
+arg_buffer[2] = x9087;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9086))[0])();
 }
 else
 {
-void* const kont9091 = arg_buffer[2];
-void* const x9092 = apply_prim_equal_u63(arg_buffer);
-arg_buffer[1] = kont9091;
-arg_buffer[2] = x9092;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9091))[0])();
+void* const kont9086 = arg_buffer[2];
+void* const x9087 = apply_prim_equal_u63(arg_buffer);
+arg_buffer[1] = kont9086;
+arg_buffer[2] = x9087;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9086))[0])();
 }
 
 }
@@ -697,22 +690,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9094 = prim_car(lst);
-void* const lst9096 = prim_cdr(lst);
-void* const x9095 = apply_prim_eq_u63(lst9096);
-arg_buffer[1] = kont9094;
-arg_buffer[2] = x9095;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9094))[0])();
+void* const kont9089 = prim_car(lst);
+void* const lst9091 = prim_cdr(lst);
+void* const x9090 = apply_prim_eq_u63(lst9091);
+arg_buffer[1] = kont9089;
+arg_buffer[2] = x9090;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9089))[0])();
 }
 else
 {
-void* const kont9094 = arg_buffer[2];
-void* const x9095 = apply_prim_eq_u63(arg_buffer);
-arg_buffer[1] = kont9094;
-arg_buffer[2] = x9095;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9094))[0])();
+void* const kont9089 = arg_buffer[2];
+void* const x9090 = apply_prim_eq_u63(arg_buffer);
+arg_buffer[1] = kont9089;
+arg_buffer[2] = x9090;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9089))[0])();
 }
 
 }
@@ -725,22 +718,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9097 = prim_car(lst);
-void* const lst9099 = prim_cdr(lst);
-void* const x9098 = apply_prim_cons(lst9099);
-arg_buffer[1] = kont9097;
-arg_buffer[2] = x9098;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9097))[0])();
+void* const kont9092 = prim_car(lst);
+void* const lst9094 = prim_cdr(lst);
+void* const x9093 = apply_prim_cons(lst9094);
+arg_buffer[1] = kont9092;
+arg_buffer[2] = x9093;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9092))[0])();
 }
 else
 {
-void* const kont9097 = arg_buffer[2];
-void* const x9098 = apply_prim_cons(arg_buffer);
-arg_buffer[1] = kont9097;
-arg_buffer[2] = x9098;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9097))[0])();
+void* const kont9092 = arg_buffer[2];
+void* const x9093 = apply_prim_cons(arg_buffer);
+arg_buffer[1] = kont9092;
+arg_buffer[2] = x9093;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9092))[0])();
 }
 
 }
@@ -753,22 +746,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9100 = prim_car(lst);
-void* const lst9102 = prim_cdr(lst);
-void* const x9101 = apply_prim_car(lst9102);
-arg_buffer[1] = kont9100;
-arg_buffer[2] = x9101;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9100))[0])();
+void* const kont9095 = prim_car(lst);
+void* const lst9097 = prim_cdr(lst);
+void* const x9096 = apply_prim_car(lst9097);
+arg_buffer[1] = kont9095;
+arg_buffer[2] = x9096;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9095))[0])();
 }
 else
 {
-void* const kont9100 = arg_buffer[2];
-void* const x9101 = apply_prim_car(arg_buffer);
-arg_buffer[1] = kont9100;
-arg_buffer[2] = x9101;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9100))[0])();
+void* const kont9095 = arg_buffer[2];
+void* const x9096 = apply_prim_car(arg_buffer);
+arg_buffer[1] = kont9095;
+arg_buffer[2] = x9096;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9095))[0])();
 }
 
 }
@@ -781,22 +774,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9103 = prim_car(lst);
-void* const lst9105 = prim_cdr(lst);
-void* const x9104 = apply_prim_cdr(lst9105);
-arg_buffer[1] = kont9103;
-arg_buffer[2] = x9104;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9103))[0])();
+void* const kont9098 = prim_car(lst);
+void* const lst9100 = prim_cdr(lst);
+void* const x9099 = apply_prim_cdr(lst9100);
+arg_buffer[1] = kont9098;
+arg_buffer[2] = x9099;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9098))[0])();
 }
 else
 {
-void* const kont9103 = arg_buffer[2];
-void* const x9104 = apply_prim_cdr(arg_buffer);
-arg_buffer[1] = kont9103;
-arg_buffer[2] = x9104;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9103))[0])();
+void* const kont9098 = arg_buffer[2];
+void* const x9099 = apply_prim_cdr(arg_buffer);
+arg_buffer[1] = kont9098;
+arg_buffer[2] = x9099;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9098))[0])();
 }
 
 }
@@ -809,22 +802,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9106 = prim_car(lst);
-void* const lst9108 = prim_cdr(lst);
-void* const x9107 = apply_prim_float_u45_u62int(lst9108);
-arg_buffer[1] = kont9106;
-arg_buffer[2] = x9107;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9106))[0])();
+void* const kont9101 = prim_car(lst);
+void* const lst9103 = prim_cdr(lst);
+void* const x9102 = apply_prim_float_u45_u62int(lst9103);
+arg_buffer[1] = kont9101;
+arg_buffer[2] = x9102;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9101))[0])();
 }
 else
 {
-void* const kont9106 = arg_buffer[2];
-void* const x9107 = apply_prim_float_u45_u62int(arg_buffer);
-arg_buffer[1] = kont9106;
-arg_buffer[2] = x9107;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9106))[0])();
+void* const kont9101 = arg_buffer[2];
+void* const x9102 = apply_prim_float_u45_u62int(arg_buffer);
+arg_buffer[1] = kont9101;
+arg_buffer[2] = x9102;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9101))[0])();
 }
 
 }
@@ -837,22 +830,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9109 = prim_car(lst);
-void* const lst9111 = prim_cdr(lst);
-void* const x9110 = apply_prim_int_u45_u62float(lst9111);
-arg_buffer[1] = kont9109;
-arg_buffer[2] = x9110;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9109))[0])();
+void* const kont9104 = prim_car(lst);
+void* const lst9106 = prim_cdr(lst);
+void* const x9105 = apply_prim_int_u45_u62float(lst9106);
+arg_buffer[1] = kont9104;
+arg_buffer[2] = x9105;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9104))[0])();
 }
 else
 {
-void* const kont9109 = arg_buffer[2];
-void* const x9110 = apply_prim_int_u45_u62float(arg_buffer);
-arg_buffer[1] = kont9109;
-arg_buffer[2] = x9110;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9109))[0])();
+void* const kont9104 = arg_buffer[2];
+void* const x9105 = apply_prim_int_u45_u62float(arg_buffer);
+arg_buffer[1] = kont9104;
+arg_buffer[2] = x9105;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9104))[0])();
 }
 
 }
@@ -865,22 +858,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9112 = prim_car(lst);
-void* const lst9114 = prim_cdr(lst);
-void* const x9113 = apply_prim_hash(lst9114);
-arg_buffer[1] = kont9112;
-arg_buffer[2] = x9113;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9112))[0])();
+void* const kont9107 = prim_car(lst);
+void* const lst9109 = prim_cdr(lst);
+void* const x9108 = apply_prim_hash(lst9109);
+arg_buffer[1] = kont9107;
+arg_buffer[2] = x9108;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9107))[0])();
 }
 else
 {
-void* const kont9112 = arg_buffer[2];
-void* const x9113 = apply_prim_hash(arg_buffer);
-arg_buffer[1] = kont9112;
-arg_buffer[2] = x9113;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9112))[0])();
+void* const kont9107 = arg_buffer[2];
+void* const x9108 = apply_prim_hash(arg_buffer);
+arg_buffer[1] = kont9107;
+arg_buffer[2] = x9108;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9107))[0])();
 }
 
 }
@@ -893,22 +886,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9115 = prim_car(lst);
-void* const lst9117 = prim_cdr(lst);
-void* const x9116 = apply_prim_hash_u45ref(lst9117);
-arg_buffer[1] = kont9115;
-arg_buffer[2] = x9116;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9115))[0])();
+void* const kont9110 = prim_car(lst);
+void* const lst9112 = prim_cdr(lst);
+void* const x9111 = apply_prim_hash_u45ref(lst9112);
+arg_buffer[1] = kont9110;
+arg_buffer[2] = x9111;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9110))[0])();
 }
 else
 {
-void* const kont9115 = arg_buffer[2];
-void* const x9116 = apply_prim_hash_u45ref(arg_buffer);
-arg_buffer[1] = kont9115;
-arg_buffer[2] = x9116;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9115))[0])();
+void* const kont9110 = arg_buffer[2];
+void* const x9111 = apply_prim_hash_u45ref(arg_buffer);
+arg_buffer[1] = kont9110;
+arg_buffer[2] = x9111;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9110))[0])();
 }
 
 }
@@ -921,22 +914,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9118 = prim_car(lst);
-void* const lst9120 = prim_cdr(lst);
-void* const x9119 = apply_prim_hash_u45set(lst9120);
-arg_buffer[1] = kont9118;
-arg_buffer[2] = x9119;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9118))[0])();
+void* const kont9113 = prim_car(lst);
+void* const lst9115 = prim_cdr(lst);
+void* const x9114 = apply_prim_hash_u45set(lst9115);
+arg_buffer[1] = kont9113;
+arg_buffer[2] = x9114;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9113))[0])();
 }
 else
 {
-void* const kont9118 = arg_buffer[2];
-void* const x9119 = apply_prim_hash_u45set(arg_buffer);
-arg_buffer[1] = kont9118;
-arg_buffer[2] = x9119;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9118))[0])();
+void* const kont9113 = arg_buffer[2];
+void* const x9114 = apply_prim_hash_u45set(arg_buffer);
+arg_buffer[1] = kont9113;
+arg_buffer[2] = x9114;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9113))[0])();
 }
 
 }
@@ -949,22 +942,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9121 = prim_car(lst);
-void* const lst9123 = prim_cdr(lst);
-void* const x9122 = apply_prim_hash_u45keys(lst9123);
-arg_buffer[1] = kont9121;
-arg_buffer[2] = x9122;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9121))[0])();
+void* const kont9116 = prim_car(lst);
+void* const lst9118 = prim_cdr(lst);
+void* const x9117 = apply_prim_hash_u45keys(lst9118);
+arg_buffer[1] = kont9116;
+arg_buffer[2] = x9117;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9116))[0])();
 }
 else
 {
-void* const kont9121 = arg_buffer[2];
-void* const x9122 = apply_prim_hash_u45keys(arg_buffer);
-arg_buffer[1] = kont9121;
-arg_buffer[2] = x9122;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9121))[0])();
+void* const kont9116 = arg_buffer[2];
+void* const x9117 = apply_prim_hash_u45keys(arg_buffer);
+arg_buffer[1] = kont9116;
+arg_buffer[2] = x9117;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9116))[0])();
 }
 
 }
@@ -977,22 +970,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9124 = prim_car(lst);
-void* const lst9126 = prim_cdr(lst);
-void* const x9125 = apply_prim_hash_u45has_u45key_u63(lst9126);
-arg_buffer[1] = kont9124;
-arg_buffer[2] = x9125;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9124))[0])();
+void* const kont9119 = prim_car(lst);
+void* const lst9121 = prim_cdr(lst);
+void* const x9120 = apply_prim_hash_u45has_u45key_u63(lst9121);
+arg_buffer[1] = kont9119;
+arg_buffer[2] = x9120;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9119))[0])();
 }
 else
 {
-void* const kont9124 = arg_buffer[2];
-void* const x9125 = apply_prim_hash_u45has_u45key_u63(arg_buffer);
-arg_buffer[1] = kont9124;
-arg_buffer[2] = x9125;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9124))[0])();
+void* const kont9119 = arg_buffer[2];
+void* const x9120 = apply_prim_hash_u45has_u45key_u63(arg_buffer);
+arg_buffer[1] = kont9119;
+arg_buffer[2] = x9120;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9119))[0])();
 }
 
 }
@@ -1005,22 +998,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9127 = prim_car(lst);
-void* const lst9129 = prim_cdr(lst);
-void* const x9128 = apply_prim_hash_u45count(lst9129);
-arg_buffer[1] = kont9127;
-arg_buffer[2] = x9128;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9127))[0])();
+void* const kont9122 = prim_car(lst);
+void* const lst9124 = prim_cdr(lst);
+void* const x9123 = apply_prim_hash_u45count(lst9124);
+arg_buffer[1] = kont9122;
+arg_buffer[2] = x9123;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9122))[0])();
 }
 else
 {
-void* const kont9127 = arg_buffer[2];
-void* const x9128 = apply_prim_hash_u45count(arg_buffer);
-arg_buffer[1] = kont9127;
-arg_buffer[2] = x9128;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9127))[0])();
+void* const kont9122 = arg_buffer[2];
+void* const x9123 = apply_prim_hash_u45count(arg_buffer);
+arg_buffer[1] = kont9122;
+arg_buffer[2] = x9123;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9122))[0])();
 }
 
 }
@@ -1033,22 +1026,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9130 = prim_car(lst);
-void* const lst9132 = prim_cdr(lst);
-void* const x9131 = apply_prim_set(lst9132);
-arg_buffer[1] = kont9130;
-arg_buffer[2] = x9131;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9130))[0])();
+void* const kont9125 = prim_car(lst);
+void* const lst9127 = prim_cdr(lst);
+void* const x9126 = apply_prim_set(lst9127);
+arg_buffer[1] = kont9125;
+arg_buffer[2] = x9126;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9125))[0])();
 }
 else
 {
-void* const kont9130 = arg_buffer[2];
-void* const x9131 = apply_prim_set(arg_buffer);
-arg_buffer[1] = kont9130;
-arg_buffer[2] = x9131;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9130))[0])();
+void* const kont9125 = arg_buffer[2];
+void* const x9126 = apply_prim_set(arg_buffer);
+arg_buffer[1] = kont9125;
+arg_buffer[2] = x9126;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9125))[0])();
 }
 
 }
@@ -1061,22 +1054,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9133 = prim_car(lst);
-void* const lst9135 = prim_cdr(lst);
-void* const x9134 = apply_prim_set_u45_u62list(lst9135);
-arg_buffer[1] = kont9133;
-arg_buffer[2] = x9134;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9133))[0])();
+void* const kont9128 = prim_car(lst);
+void* const lst9130 = prim_cdr(lst);
+void* const x9129 = apply_prim_set_u45_u62list(lst9130);
+arg_buffer[1] = kont9128;
+arg_buffer[2] = x9129;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9128))[0])();
 }
 else
 {
-void* const kont9133 = arg_buffer[2];
-void* const x9134 = apply_prim_set_u45_u62list(arg_buffer);
-arg_buffer[1] = kont9133;
-arg_buffer[2] = x9134;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9133))[0])();
+void* const kont9128 = arg_buffer[2];
+void* const x9129 = apply_prim_set_u45_u62list(arg_buffer);
+arg_buffer[1] = kont9128;
+arg_buffer[2] = x9129;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9128))[0])();
 }
 
 }
@@ -1089,22 +1082,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9136 = prim_car(lst);
-void* const lst9138 = prim_cdr(lst);
-void* const x9137 = apply_prim_list_u45_u62set(lst9138);
-arg_buffer[1] = kont9136;
-arg_buffer[2] = x9137;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9136))[0])();
+void* const kont9131 = prim_car(lst);
+void* const lst9133 = prim_cdr(lst);
+void* const x9132 = apply_prim_list_u45_u62set(lst9133);
+arg_buffer[1] = kont9131;
+arg_buffer[2] = x9132;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9131))[0])();
 }
 else
 {
-void* const kont9136 = arg_buffer[2];
-void* const x9137 = apply_prim_list_u45_u62set(arg_buffer);
-arg_buffer[1] = kont9136;
-arg_buffer[2] = x9137;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9136))[0])();
+void* const kont9131 = arg_buffer[2];
+void* const x9132 = apply_prim_list_u45_u62set(arg_buffer);
+arg_buffer[1] = kont9131;
+arg_buffer[2] = x9132;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9131))[0])();
 }
 
 }
@@ -1117,22 +1110,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9139 = prim_car(lst);
-void* const lst9141 = prim_cdr(lst);
-void* const x9140 = apply_prim_set_u45add(lst9141);
-arg_buffer[1] = kont9139;
-arg_buffer[2] = x9140;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9139))[0])();
+void* const kont9134 = prim_car(lst);
+void* const lst9136 = prim_cdr(lst);
+void* const x9135 = apply_prim_set_u45add(lst9136);
+arg_buffer[1] = kont9134;
+arg_buffer[2] = x9135;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9134))[0])();
 }
 else
 {
-void* const kont9139 = arg_buffer[2];
-void* const x9140 = apply_prim_set_u45add(arg_buffer);
-arg_buffer[1] = kont9139;
-arg_buffer[2] = x9140;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9139))[0])();
+void* const kont9134 = arg_buffer[2];
+void* const x9135 = apply_prim_set_u45add(arg_buffer);
+arg_buffer[1] = kont9134;
+arg_buffer[2] = x9135;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9134))[0])();
 }
 
 }
@@ -1145,22 +1138,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9142 = prim_car(lst);
-void* const lst9144 = prim_cdr(lst);
-void* const x9143 = apply_prim_set_u45member_u63(lst9144);
-arg_buffer[1] = kont9142;
-arg_buffer[2] = x9143;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9142))[0])();
+void* const kont9137 = prim_car(lst);
+void* const lst9139 = prim_cdr(lst);
+void* const x9138 = apply_prim_set_u45member_u63(lst9139);
+arg_buffer[1] = kont9137;
+arg_buffer[2] = x9138;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9137))[0])();
 }
 else
 {
-void* const kont9142 = arg_buffer[2];
-void* const x9143 = apply_prim_set_u45member_u63(arg_buffer);
-arg_buffer[1] = kont9142;
-arg_buffer[2] = x9143;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9142))[0])();
+void* const kont9137 = arg_buffer[2];
+void* const x9138 = apply_prim_set_u45member_u63(arg_buffer);
+arg_buffer[1] = kont9137;
+arg_buffer[2] = x9138;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9137))[0])();
 }
 
 }
@@ -1173,22 +1166,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9145 = prim_car(lst);
-void* const lst9147 = prim_cdr(lst);
-void* const x9146 = apply_prim_set_u45remove(lst9147);
-arg_buffer[1] = kont9145;
-arg_buffer[2] = x9146;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9145))[0])();
+void* const kont9140 = prim_car(lst);
+void* const lst9142 = prim_cdr(lst);
+void* const x9141 = apply_prim_set_u45remove(lst9142);
+arg_buffer[1] = kont9140;
+arg_buffer[2] = x9141;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9140))[0])();
 }
 else
 {
-void* const kont9145 = arg_buffer[2];
-void* const x9146 = apply_prim_set_u45remove(arg_buffer);
-arg_buffer[1] = kont9145;
-arg_buffer[2] = x9146;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9145))[0])();
+void* const kont9140 = arg_buffer[2];
+void* const x9141 = apply_prim_set_u45remove(arg_buffer);
+arg_buffer[1] = kont9140;
+arg_buffer[2] = x9141;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9140))[0])();
 }
 
 }
@@ -1201,22 +1194,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9148 = prim_car(lst);
-void* const lst9150 = prim_cdr(lst);
-void* const x9149 = apply_prim_set_u45count(lst9150);
-arg_buffer[1] = kont9148;
-arg_buffer[2] = x9149;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9148))[0])();
+void* const kont9143 = prim_car(lst);
+void* const lst9145 = prim_cdr(lst);
+void* const x9144 = apply_prim_set_u45count(lst9145);
+arg_buffer[1] = kont9143;
+arg_buffer[2] = x9144;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9143))[0])();
 }
 else
 {
-void* const kont9148 = arg_buffer[2];
-void* const x9149 = apply_prim_set_u45count(arg_buffer);
-arg_buffer[1] = kont9148;
-arg_buffer[2] = x9149;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9148))[0])();
+void* const kont9143 = arg_buffer[2];
+void* const x9144 = apply_prim_set_u45count(arg_buffer);
+arg_buffer[1] = kont9143;
+arg_buffer[2] = x9144;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9143))[0])();
 }
 
 }
@@ -1229,22 +1222,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9151 = prim_car(lst);
-void* const lst9153 = prim_cdr(lst);
-void* const x9152 = apply_prim_string_u63(lst9153);
-arg_buffer[1] = kont9151;
-arg_buffer[2] = x9152;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9151))[0])();
+void* const kont9146 = prim_car(lst);
+void* const lst9148 = prim_cdr(lst);
+void* const x9147 = apply_prim_string_u63(lst9148);
+arg_buffer[1] = kont9146;
+arg_buffer[2] = x9147;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9146))[0])();
 }
 else
 {
-void* const kont9151 = arg_buffer[2];
-void* const x9152 = apply_prim_string_u63(arg_buffer);
-arg_buffer[1] = kont9151;
-arg_buffer[2] = x9152;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9151))[0])();
+void* const kont9146 = arg_buffer[2];
+void* const x9147 = apply_prim_string_u63(arg_buffer);
+arg_buffer[1] = kont9146;
+arg_buffer[2] = x9147;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9146))[0])();
 }
 
 }
@@ -1257,22 +1250,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9154 = prim_car(lst);
-void* const lst9156 = prim_cdr(lst);
-void* const x9155 = apply_prim_string_u45length(lst9156);
-arg_buffer[1] = kont9154;
-arg_buffer[2] = x9155;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9154))[0])();
+void* const kont9149 = prim_car(lst);
+void* const lst9151 = prim_cdr(lst);
+void* const x9150 = apply_prim_string_u45length(lst9151);
+arg_buffer[1] = kont9149;
+arg_buffer[2] = x9150;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9149))[0])();
 }
 else
 {
-void* const kont9154 = arg_buffer[2];
-void* const x9155 = apply_prim_string_u45length(arg_buffer);
-arg_buffer[1] = kont9154;
-arg_buffer[2] = x9155;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9154))[0])();
+void* const kont9149 = arg_buffer[2];
+void* const x9150 = apply_prim_string_u45length(arg_buffer);
+arg_buffer[1] = kont9149;
+arg_buffer[2] = x9150;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9149))[0])();
 }
 
 }
@@ -1285,22 +1278,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9157 = prim_car(lst);
-void* const lst9159 = prim_cdr(lst);
-void* const x9158 = apply_prim_string_u45ref(lst9159);
-arg_buffer[1] = kont9157;
-arg_buffer[2] = x9158;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9157))[0])();
+void* const kont9152 = prim_car(lst);
+void* const lst9154 = prim_cdr(lst);
+void* const x9153 = apply_prim_string_u45ref(lst9154);
+arg_buffer[1] = kont9152;
+arg_buffer[2] = x9153;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9152))[0])();
 }
 else
 {
-void* const kont9157 = arg_buffer[2];
-void* const x9158 = apply_prim_string_u45ref(arg_buffer);
-arg_buffer[1] = kont9157;
-arg_buffer[2] = x9158;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9157))[0])();
+void* const kont9152 = arg_buffer[2];
+void* const x9153 = apply_prim_string_u45ref(arg_buffer);
+arg_buffer[1] = kont9152;
+arg_buffer[2] = x9153;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9152))[0])();
 }
 
 }
@@ -1313,22 +1306,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9160 = prim_car(lst);
-void* const lst9162 = prim_cdr(lst);
-void* const x9161 = apply_prim_substring(lst9162);
-arg_buffer[1] = kont9160;
-arg_buffer[2] = x9161;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9160))[0])();
+void* const kont9155 = prim_car(lst);
+void* const lst9157 = prim_cdr(lst);
+void* const x9156 = apply_prim_substring(lst9157);
+arg_buffer[1] = kont9155;
+arg_buffer[2] = x9156;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9155))[0])();
 }
 else
 {
-void* const kont9160 = arg_buffer[2];
-void* const x9161 = apply_prim_substring(arg_buffer);
-arg_buffer[1] = kont9160;
-arg_buffer[2] = x9161;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9160))[0])();
+void* const kont9155 = arg_buffer[2];
+void* const x9156 = apply_prim_substring(arg_buffer);
+arg_buffer[1] = kont9155;
+arg_buffer[2] = x9156;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9155))[0])();
 }
 
 }
@@ -1341,22 +1334,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9163 = prim_car(lst);
-void* const lst9165 = prim_cdr(lst);
-void* const x9164 = apply_prim_string_u45append(lst9165);
-arg_buffer[1] = kont9163;
-arg_buffer[2] = x9164;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9163))[0])();
+void* const kont9158 = prim_car(lst);
+void* const lst9160 = prim_cdr(lst);
+void* const x9159 = apply_prim_string_u45append(lst9160);
+arg_buffer[1] = kont9158;
+arg_buffer[2] = x9159;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9158))[0])();
 }
 else
 {
-void* const kont9163 = arg_buffer[2];
-void* const x9164 = apply_prim_string_u45append(arg_buffer);
-arg_buffer[1] = kont9163;
-arg_buffer[2] = x9164;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9163))[0])();
+void* const kont9158 = arg_buffer[2];
+void* const x9159 = apply_prim_string_u45append(arg_buffer);
+arg_buffer[1] = kont9158;
+arg_buffer[2] = x9159;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9158))[0])();
 }
 
 }
@@ -1369,22 +1362,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9166 = prim_car(lst);
-void* const lst9168 = prim_cdr(lst);
-void* const x9167 = apply_prim_string_u45_u62list(lst9168);
-arg_buffer[1] = kont9166;
-arg_buffer[2] = x9167;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9166))[0])();
+void* const kont9161 = prim_car(lst);
+void* const lst9163 = prim_cdr(lst);
+void* const x9162 = apply_prim_string_u45_u62list(lst9163);
+arg_buffer[1] = kont9161;
+arg_buffer[2] = x9162;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9161))[0])();
 }
 else
 {
-void* const kont9166 = arg_buffer[2];
-void* const x9167 = apply_prim_string_u45_u62list(arg_buffer);
-arg_buffer[1] = kont9166;
-arg_buffer[2] = x9167;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9166))[0])();
+void* const kont9161 = arg_buffer[2];
+void* const x9162 = apply_prim_string_u45_u62list(arg_buffer);
+arg_buffer[1] = kont9161;
+arg_buffer[2] = x9162;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9161))[0])();
 }
 
 }
@@ -1397,22 +1390,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9169 = prim_car(lst);
-void* const lst9171 = prim_cdr(lst);
-void* const x9170 = apply_prim_exact_u45floor(lst9171);
-arg_buffer[1] = kont9169;
-arg_buffer[2] = x9170;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9169))[0])();
+void* const kont9164 = prim_car(lst);
+void* const lst9166 = prim_cdr(lst);
+void* const x9165 = apply_prim_exact_u45floor(lst9166);
+arg_buffer[1] = kont9164;
+arg_buffer[2] = x9165;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9164))[0])();
 }
 else
 {
-void* const kont9169 = arg_buffer[2];
-void* const x9170 = apply_prim_exact_u45floor(arg_buffer);
-arg_buffer[1] = kont9169;
-arg_buffer[2] = x9170;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9169))[0])();
+void* const kont9164 = arg_buffer[2];
+void* const x9165 = apply_prim_exact_u45floor(arg_buffer);
+arg_buffer[1] = kont9164;
+arg_buffer[2] = x9165;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9164))[0])();
 }
 
 }
@@ -1425,22 +1418,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9172 = prim_car(lst);
-void* const lst9174 = prim_cdr(lst);
-void* const x9173 = apply_prim_exact_u45ceiling(lst9174);
-arg_buffer[1] = kont9172;
-arg_buffer[2] = x9173;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9172))[0])();
+void* const kont9167 = prim_car(lst);
+void* const lst9169 = prim_cdr(lst);
+void* const x9168 = apply_prim_exact_u45ceiling(lst9169);
+arg_buffer[1] = kont9167;
+arg_buffer[2] = x9168;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9167))[0])();
 }
 else
 {
-void* const kont9172 = arg_buffer[2];
-void* const x9173 = apply_prim_exact_u45ceiling(arg_buffer);
-arg_buffer[1] = kont9172;
-arg_buffer[2] = x9173;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9172))[0])();
+void* const kont9167 = arg_buffer[2];
+void* const x9168 = apply_prim_exact_u45ceiling(arg_buffer);
+arg_buffer[1] = kont9167;
+arg_buffer[2] = x9168;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9167))[0])();
 }
 
 }
@@ -1453,22 +1446,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9175 = prim_car(lst);
-void* const lst9177 = prim_cdr(lst);
-void* const x9176 = apply_prim_exact_u45round(lst9177);
-arg_buffer[1] = kont9175;
-arg_buffer[2] = x9176;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9175))[0])();
+void* const kont9170 = prim_car(lst);
+void* const lst9172 = prim_cdr(lst);
+void* const x9171 = apply_prim_exact_u45round(lst9172);
+arg_buffer[1] = kont9170;
+arg_buffer[2] = x9171;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9170))[0])();
 }
 else
 {
-void* const kont9175 = arg_buffer[2];
-void* const x9176 = apply_prim_exact_u45round(arg_buffer);
-arg_buffer[1] = kont9175;
-arg_buffer[2] = x9176;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9175))[0])();
+void* const kont9170 = arg_buffer[2];
+void* const x9171 = apply_prim_exact_u45round(arg_buffer);
+arg_buffer[1] = kont9170;
+arg_buffer[2] = x9171;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9170))[0])();
 }
 
 }
@@ -1481,22 +1474,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9178 = prim_car(lst);
-void* const lst9180 = prim_cdr(lst);
-void* const x9179 = apply_prim_abs(lst9180);
-arg_buffer[1] = kont9178;
-arg_buffer[2] = x9179;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9178))[0])();
+void* const kont9173 = prim_car(lst);
+void* const lst9175 = prim_cdr(lst);
+void* const x9174 = apply_prim_abs(lst9175);
+arg_buffer[1] = kont9173;
+arg_buffer[2] = x9174;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9173))[0])();
 }
 else
 {
-void* const kont9178 = arg_buffer[2];
-void* const x9179 = apply_prim_abs(arg_buffer);
-arg_buffer[1] = kont9178;
-arg_buffer[2] = x9179;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9178))[0])();
+void* const kont9173 = arg_buffer[2];
+void* const x9174 = apply_prim_abs(arg_buffer);
+arg_buffer[1] = kont9173;
+arg_buffer[2] = x9174;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9173))[0])();
 }
 
 }
@@ -1509,22 +1502,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9181 = prim_car(lst);
-void* const lst9183 = prim_cdr(lst);
-void* const x9182 = apply_prim_max(lst9183);
-arg_buffer[1] = kont9181;
-arg_buffer[2] = x9182;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9181))[0])();
+void* const kont9176 = prim_car(lst);
+void* const lst9178 = prim_cdr(lst);
+void* const x9177 = apply_prim_max(lst9178);
+arg_buffer[1] = kont9176;
+arg_buffer[2] = x9177;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9176))[0])();
 }
 else
 {
-void* const kont9181 = arg_buffer[2];
-void* const x9182 = apply_prim_max(arg_buffer);
-arg_buffer[1] = kont9181;
-arg_buffer[2] = x9182;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9181))[0])();
+void* const kont9176 = arg_buffer[2];
+void* const x9177 = apply_prim_max(arg_buffer);
+arg_buffer[1] = kont9176;
+arg_buffer[2] = x9177;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9176))[0])();
 }
 
 }
@@ -1537,22 +1530,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9184 = prim_car(lst);
-void* const lst9186 = prim_cdr(lst);
-void* const x9185 = apply_prim_min(lst9186);
-arg_buffer[1] = kont9184;
-arg_buffer[2] = x9185;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9184))[0])();
+void* const kont9179 = prim_car(lst);
+void* const lst9181 = prim_cdr(lst);
+void* const x9180 = apply_prim_min(lst9181);
+arg_buffer[1] = kont9179;
+arg_buffer[2] = x9180;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9179))[0])();
 }
 else
 {
-void* const kont9184 = arg_buffer[2];
-void* const x9185 = apply_prim_min(arg_buffer);
-arg_buffer[1] = kont9184;
-arg_buffer[2] = x9185;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9184))[0])();
+void* const kont9179 = arg_buffer[2];
+void* const x9180 = apply_prim_min(arg_buffer);
+arg_buffer[1] = kont9179;
+arg_buffer[2] = x9180;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9179))[0])();
 }
 
 }
@@ -1565,22 +1558,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9187 = prim_car(lst);
-void* const lst9189 = prim_cdr(lst);
-void* const x9188 = apply_prim_expt(lst9189);
-arg_buffer[1] = kont9187;
-arg_buffer[2] = x9188;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9187))[0])();
+void* const kont9182 = prim_car(lst);
+void* const lst9184 = prim_cdr(lst);
+void* const x9183 = apply_prim_expt(lst9184);
+arg_buffer[1] = kont9182;
+arg_buffer[2] = x9183;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9182))[0])();
 }
 else
 {
-void* const kont9187 = arg_buffer[2];
-void* const x9188 = apply_prim_expt(arg_buffer);
-arg_buffer[1] = kont9187;
-arg_buffer[2] = x9188;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9187))[0])();
+void* const kont9182 = arg_buffer[2];
+void* const x9183 = apply_prim_expt(arg_buffer);
+arg_buffer[1] = kont9182;
+arg_buffer[2] = x9183;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9182))[0])();
 }
 
 }
@@ -1593,22 +1586,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9190 = prim_car(lst);
-void* const lst9192 = prim_cdr(lst);
-void* const x9191 = apply_prim_sqrt(lst9192);
-arg_buffer[1] = kont9190;
-arg_buffer[2] = x9191;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9190))[0])();
+void* const kont9185 = prim_car(lst);
+void* const lst9187 = prim_cdr(lst);
+void* const x9186 = apply_prim_sqrt(lst9187);
+arg_buffer[1] = kont9185;
+arg_buffer[2] = x9186;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9185))[0])();
 }
 else
 {
-void* const kont9190 = arg_buffer[2];
-void* const x9191 = apply_prim_sqrt(arg_buffer);
-arg_buffer[1] = kont9190;
-arg_buffer[2] = x9191;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9190))[0])();
+void* const kont9185 = arg_buffer[2];
+void* const x9186 = apply_prim_sqrt(arg_buffer);
+arg_buffer[1] = kont9185;
+arg_buffer[2] = x9186;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9185))[0])();
 }
 
 }
@@ -1621,22 +1614,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9193 = prim_car(lst);
-void* const lst9195 = prim_cdr(lst);
-void* const x9194 = apply_prim_remainder(lst9195);
-arg_buffer[1] = kont9193;
-arg_buffer[2] = x9194;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9193))[0])();
+void* const kont9188 = prim_car(lst);
+void* const lst9190 = prim_cdr(lst);
+void* const x9189 = apply_prim_remainder(lst9190);
+arg_buffer[1] = kont9188;
+arg_buffer[2] = x9189;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9188))[0])();
 }
 else
 {
-void* const kont9193 = arg_buffer[2];
-void* const x9194 = apply_prim_remainder(arg_buffer);
-arg_buffer[1] = kont9193;
-arg_buffer[2] = x9194;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9193))[0])();
+void* const kont9188 = arg_buffer[2];
+void* const x9189 = apply_prim_remainder(arg_buffer);
+arg_buffer[1] = kont9188;
+arg_buffer[2] = x9189;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9188))[0])();
 }
 
 }
@@ -1649,22 +1642,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9196 = prim_car(lst);
-void* const lst9198 = prim_cdr(lst);
-void* const x9197 = apply_prim_quotient(lst9198);
-arg_buffer[1] = kont9196;
-arg_buffer[2] = x9197;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9196))[0])();
+void* const kont9191 = prim_car(lst);
+void* const lst9193 = prim_cdr(lst);
+void* const x9192 = apply_prim_quotient(lst9193);
+arg_buffer[1] = kont9191;
+arg_buffer[2] = x9192;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9191))[0])();
 }
 else
 {
-void* const kont9196 = arg_buffer[2];
-void* const x9197 = apply_prim_quotient(arg_buffer);
-arg_buffer[1] = kont9196;
-arg_buffer[2] = x9197;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9196))[0])();
+void* const kont9191 = arg_buffer[2];
+void* const x9192 = apply_prim_quotient(arg_buffer);
+arg_buffer[1] = kont9191;
+arg_buffer[2] = x9192;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9191))[0])();
 }
 
 }
@@ -1677,22 +1670,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9199 = prim_car(lst);
-void* const lst9201 = prim_cdr(lst);
-void* const x9200 = apply_prim_random(lst9201);
-arg_buffer[1] = kont9199;
-arg_buffer[2] = x9200;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9199))[0])();
+void* const kont9194 = prim_car(lst);
+void* const lst9196 = prim_cdr(lst);
+void* const x9195 = apply_prim_random(lst9196);
+arg_buffer[1] = kont9194;
+arg_buffer[2] = x9195;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9194))[0])();
 }
 else
 {
-void* const kont9199 = arg_buffer[2];
-void* const x9200 = apply_prim_random(arg_buffer);
-arg_buffer[1] = kont9199;
-arg_buffer[2] = x9200;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9199))[0])();
+void* const kont9194 = arg_buffer[2];
+void* const x9195 = apply_prim_random(arg_buffer);
+arg_buffer[1] = kont9194;
+arg_buffer[2] = x9195;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9194))[0])();
 }
 
 }
@@ -1705,22 +1698,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9202 = prim_car(lst);
-void* const lst9204 = prim_cdr(lst);
-void* const x9203 = apply_prim_symbol_u63(lst9204);
-arg_buffer[1] = kont9202;
-arg_buffer[2] = x9203;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9202))[0])();
+void* const kont9197 = prim_car(lst);
+void* const lst9199 = prim_cdr(lst);
+void* const x9198 = apply_prim_symbol_u63(lst9199);
+arg_buffer[1] = kont9197;
+arg_buffer[2] = x9198;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9197))[0])();
 }
 else
 {
-void* const kont9202 = arg_buffer[2];
-void* const x9203 = apply_prim_symbol_u63(arg_buffer);
-arg_buffer[1] = kont9202;
-arg_buffer[2] = x9203;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9202))[0])();
+void* const kont9197 = arg_buffer[2];
+void* const x9198 = apply_prim_symbol_u63(arg_buffer);
+arg_buffer[1] = kont9197;
+arg_buffer[2] = x9198;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9197))[0])();
 }
 
 }
@@ -1733,22 +1726,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9205 = prim_car(lst);
-void* const lst9207 = prim_cdr(lst);
-void* const x9206 = apply_prim_pair_u63(lst9207);
-arg_buffer[1] = kont9205;
-arg_buffer[2] = x9206;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9205))[0])();
+void* const kont9200 = prim_car(lst);
+void* const lst9202 = prim_cdr(lst);
+void* const x9201 = apply_prim_pair_u63(lst9202);
+arg_buffer[1] = kont9200;
+arg_buffer[2] = x9201;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9200))[0])();
 }
 else
 {
-void* const kont9205 = arg_buffer[2];
-void* const x9206 = apply_prim_pair_u63(arg_buffer);
-arg_buffer[1] = kont9205;
-arg_buffer[2] = x9206;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9205))[0])();
+void* const kont9200 = arg_buffer[2];
+void* const x9201 = apply_prim_pair_u63(arg_buffer);
+arg_buffer[1] = kont9200;
+arg_buffer[2] = x9201;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9200))[0])();
 }
 
 }
@@ -1761,22 +1754,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9208 = prim_car(lst);
-void* const lst9210 = prim_cdr(lst);
-void* const x9209 = apply_prim_positive_u63(lst9210);
-arg_buffer[1] = kont9208;
-arg_buffer[2] = x9209;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9208))[0])();
+void* const kont9203 = prim_car(lst);
+void* const lst9205 = prim_cdr(lst);
+void* const x9204 = apply_prim_positive_u63(lst9205);
+arg_buffer[1] = kont9203;
+arg_buffer[2] = x9204;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9203))[0])();
 }
 else
 {
-void* const kont9208 = arg_buffer[2];
-void* const x9209 = apply_prim_positive_u63(arg_buffer);
-arg_buffer[1] = kont9208;
-arg_buffer[2] = x9209;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9208))[0])();
+void* const kont9203 = arg_buffer[2];
+void* const x9204 = apply_prim_positive_u63(arg_buffer);
+arg_buffer[1] = kont9203;
+arg_buffer[2] = x9204;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9203))[0])();
 }
 
 }
@@ -1789,22 +1782,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9211 = prim_car(lst);
-void* const lst9213 = prim_cdr(lst);
-void* const x9212 = apply_prim_negative_u63(lst9213);
-arg_buffer[1] = kont9211;
-arg_buffer[2] = x9212;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9211))[0])();
+void* const kont9206 = prim_car(lst);
+void* const lst9208 = prim_cdr(lst);
+void* const x9207 = apply_prim_negative_u63(lst9208);
+arg_buffer[1] = kont9206;
+arg_buffer[2] = x9207;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9206))[0])();
 }
 else
 {
-void* const kont9211 = arg_buffer[2];
-void* const x9212 = apply_prim_negative_u63(arg_buffer);
-arg_buffer[1] = kont9211;
-arg_buffer[2] = x9212;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9211))[0])();
+void* const kont9206 = arg_buffer[2];
+void* const x9207 = apply_prim_negative_u63(arg_buffer);
+arg_buffer[1] = kont9206;
+arg_buffer[2] = x9207;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9206))[0])();
 }
 
 }
@@ -1817,22 +1810,22 @@ if(is_cons(arg_buffer[2]))
 {
 //(apply e0 e0) case
 void* const lst = arg_buffer[2];
-void* const kont9214 = prim_car(lst);
-void* const lst9216 = prim_cdr(lst);
-void* const x9215 = apply_prim_list(lst9216);
-arg_buffer[1] = kont9214;
-arg_buffer[2] = x9215;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9214))[0])();
+void* const kont9209 = prim_car(lst);
+void* const lst9211 = prim_cdr(lst);
+void* const x9210 = apply_prim_list(lst9211);
+arg_buffer[1] = kont9209;
+arg_buffer[2] = x9210;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9209))[0])();
 }
 else
 {
-void* const kont9214 = arg_buffer[2];
-void* const x9215 = apply_prim_list(arg_buffer);
-arg_buffer[1] = kont9214;
-arg_buffer[2] = x9215;
-numArgs = int9054;
-reinterpret_cast<void (*)()>((decode_clo(kont9214))[0])();
+void* const kont9209 = arg_buffer[2];
+void* const x9210 = apply_prim_list(arg_buffer);
+arg_buffer[1] = kont9209;
+arg_buffer[2] = x9210;
+numArgs = 2;
+reinterpret_cast<void (*)()>((decode_clo(kont9209))[0])();
 }
 
 }
@@ -1997,13 +1990,13 @@ void* const lst = arg_buffer[4];
 void** decode_clo_array = nullptr;
 
 //creating new make-kont closure
-void** clo9217 = alloc_kont(lam8962_fptr, reinterpret_cast<void*>(lam8962_spec), 3);
+void** clo9212 = alloc_kont(lam8962_fptr, lam8962_spec, 3);
 
 //setting env list
-clo9217[2] = kont8918;
-clo9217[3] = item;
-clo9217[4] = lst;
-void* f_lam_8919 = encode_clo(clo9217);
+clo9212[2] = kont8918;
+clo9212[3] = item;
+clo9212[4] = lst;
+void* f_lam_8919 = encode_clo(clo9212);
 
 
 
@@ -2011,12 +2004,12 @@ void* f_lam_8919 = encode_clo(clo9217);
 if(is_true(apply_prim_null_u63_1(item)))
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8919)[1])(f_lam_8919, apply_prim_null_u63_1(item));
+lam8962_spec(f_lam_8919, apply_prim_null_u63_1(item));
 }
 else
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8919)[1])(f_lam_8919, apply_prim_null_u63_1(lst));
+lam8962_spec(f_lam_8919, apply_prim_null_u63_1(lst));
 }
 
 }
@@ -2027,13 +2020,13 @@ inline void member_spec(void* _8964, void* kont8918, void* item, void* lst) // m
 void** decode_clo_array = nullptr;
 
 //creating new make-kont closure
-void** clo9218 = alloc_kont(lam8962_fptr, reinterpret_cast<void*>(lam8962_spec), 3);
+void** clo9213 = alloc_kont(lam8962_fptr, lam8962_spec, 3);
 
 //setting env list
-clo9218[2] = kont8918;
-clo9218[3] = item;
-clo9218[4] = lst;
-void* f_lam_8919 = encode_clo(clo9218);
+clo9213[2] = kont8918;
+clo9213[3] = item;
+clo9213[4] = lst;
+void* f_lam_8919 = encode_clo(clo9213);
 
 
 
@@ -2041,12 +2034,12 @@ void* f_lam_8919 = encode_clo(clo9218);
 if(is_true(apply_prim_null_u63_1(item)))
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8919)[1])(f_lam_8919, apply_prim_null_u63_1(item));
+lam8962_spec(f_lam_8919, apply_prim_null_u63_1(item));
 }
 else
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8919)[1])(f_lam_8919, apply_prim_null_u63_1(lst));
+lam8962_spec(f_lam_8919, apply_prim_null_u63_1(lst));
 }
 
 }
@@ -2127,7 +2120,7 @@ void* const id_8760 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8967);
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[2])[1])(decode_clo_array[2], apply_prim__u43_2(decode_clo_array[3], id_8760));
+reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[3])[1])(decode_clo_array[3], apply_prim__u43_2(decode_clo_array[2], id_8760));
 }
 
 inline void lam8966_spec(void* env8967, void* id_8760) // lam8966 
@@ -2136,7 +2129,7 @@ inline void lam8966_spec(void* env8967, void* id_8760) // lam8966
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8967);
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[2])[1])(decode_clo_array[2], apply_prim__u43_2(decode_clo_array[3], id_8760));
+reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[3])[1])(decode_clo_array[3], apply_prim__u43_2(decode_clo_array[2], id_8760));
 }
 
 inline void length_fptr() // length -> generic version 
@@ -2157,12 +2150,12 @@ else
 {
 
 //creating new make-kont closure
-void** clo9219 = alloc_kont(lam8966_fptr, reinterpret_cast<void*>(lam8966_spec), 2);
+void** clo9214 = alloc_kont(lam8966_fptr, lam8966_spec, 2);
 
 //setting env list
-clo9219[2] = kont8921;
-clo9219[3] = int9050;
-void* f_lam_8922 = encode_clo(clo9219);
+clo9214[2] = int9050;
+clo9214[3] = kont8921;
+void* f_lam_8922 = encode_clo(clo9214);
 
 
 
@@ -2187,12 +2180,12 @@ else
 {
 
 //creating new make-kont closure
-void** clo9220 = alloc_kont(lam8966_fptr, reinterpret_cast<void*>(lam8966_spec), 2);
+void** clo9215 = alloc_kont(lam8966_fptr, lam8966_spec, 2);
 
 //setting env list
-clo9220[2] = kont8921;
-clo9220[3] = int9050;
-void* f_lam_8922 = encode_clo(clo9220);
+clo9215[2] = int9050;
+clo9215[3] = kont8921;
+void* f_lam_8922 = encode_clo(clo9215);
 
 
 
@@ -2212,7 +2205,7 @@ void* const id_8766 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8970);
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[2])[1])(decode_clo_array[2], apply_prim_cons_2(decode_clo_array[3], id_8766));
+reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[3])[1])(decode_clo_array[3], apply_prim_cons_2(decode_clo_array[2], id_8766));
 }
 
 inline void lam8969_spec(void* env8970, void* id_8766) // lam8969 
@@ -2221,7 +2214,7 @@ inline void lam8969_spec(void* env8970, void* id_8766) // lam8969
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8970);
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[2])[1])(decode_clo_array[2], apply_prim_cons_2(decode_clo_array[3], id_8766));
+reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[3])[1])(decode_clo_array[3], apply_prim_cons_2(decode_clo_array[2], id_8766));
 }
 
 inline void lam8971_fptr() // lam8971 -> generic version 
@@ -2235,17 +2228,17 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8972);
 
 //creating new make-kont closure
-void** clo9221 = alloc_kont(lam8969_fptr, reinterpret_cast<void*>(lam8969_spec), 2);
+void** clo9216 = alloc_kont(lam8969_fptr, lam8969_spec, 2);
 
 //setting env list
-clo9221[2] = decode_clo_array[2];
-clo9221[3] = id_8764;
-void* f_lam_8924 = encode_clo(clo9221);
+clo9216[2] = id_8764;
+clo9216[3] = decode_clo_array[4];
+void* f_lam_8924 = encode_clo(clo9216);
 
 
 
 //clo-app
-map_spec(map, f_lam_8924, decode_clo_array[3], apply_prim_cdr_1(decode_clo_array[4]));
+map_spec(map, f_lam_8924, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[3]));
 }
 
 inline void lam8971_spec(void* env8972, void* id_8764) // lam8971 
@@ -2255,17 +2248,17 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8972);
 
 //creating new make-kont closure
-void** clo9222 = alloc_kont(lam8969_fptr, reinterpret_cast<void*>(lam8969_spec), 2);
+void** clo9217 = alloc_kont(lam8969_fptr, lam8969_spec, 2);
 
 //setting env list
-clo9222[2] = decode_clo_array[2];
-clo9222[3] = id_8764;
-void* f_lam_8924 = encode_clo(clo9222);
+clo9217[2] = id_8764;
+clo9217[3] = decode_clo_array[4];
+void* f_lam_8924 = encode_clo(clo9217);
 
 
 
 //clo-app
-map_spec(map, f_lam_8924, decode_clo_array[3], apply_prim_cdr_1(decode_clo_array[4]));
+map_spec(map, f_lam_8924, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[3]));
 }
 
 inline void map_fptr() // map -> generic version 
@@ -2287,13 +2280,13 @@ else
 {
 
 //creating new make-kont closure
-void** clo9223 = alloc_kont(lam8971_fptr, reinterpret_cast<void*>(lam8971_spec), 3);
+void** clo9218 = alloc_kont(lam8971_fptr, lam8971_spec, 3);
 
 //setting env list
-clo9223[2] = kont8923;
-clo9223[3] = proc;
-clo9223[4] = lst;
-void* f_lam_8925 = encode_clo(clo9223);
+clo9218[2] = proc;
+clo9218[3] = lst;
+clo9218[4] = kont8923;
+void* f_lam_8925 = encode_clo(clo9218);
 
 
 
@@ -2301,7 +2294,7 @@ void* f_lam_8925 = encode_clo(clo9223);
 arg_buffer[1] = proc;
 arg_buffer[2] = f_lam_8925;
 arg_buffer[3] = apply_prim_car_1(lst);
-numArgs = int9055;
+numArgs = 3;
 // generic else-case
 reinterpret_cast<void (*)()>((decode_clo(proc))[0])();
 }
@@ -2323,13 +2316,13 @@ else
 {
 
 //creating new make-kont closure
-void** clo9224 = alloc_kont(lam8971_fptr, reinterpret_cast<void*>(lam8971_spec), 3);
+void** clo9219 = alloc_kont(lam8971_fptr, lam8971_spec, 3);
 
 //setting env list
-clo9224[2] = kont8923;
-clo9224[3] = proc;
-clo9224[4] = lst;
-void* f_lam_8925 = encode_clo(clo9224);
+clo9219[2] = proc;
+clo9219[3] = lst;
+clo9219[4] = kont8923;
+void* f_lam_8925 = encode_clo(clo9219);
 
 
 
@@ -2337,7 +2330,7 @@ void* f_lam_8925 = encode_clo(clo9224);
 arg_buffer[1] = proc;
 arg_buffer[2] = f_lam_8925;
 arg_buffer[3] = apply_prim_car_1(lst);
-numArgs = int9055;
+numArgs = 3;
 // generic else-case
 reinterpret_cast<void (*)()>((decode_clo(proc))[0])();
 }
@@ -2381,23 +2374,23 @@ if(is_true(id_8770))
 {
 
 //creating new make-kont closure
-void** clo9225 = alloc_kont(lam8974_fptr, reinterpret_cast<void*>(lam8974_spec), 2);
+void** clo9220 = alloc_kont(lam8974_fptr, lam8974_spec, 2);
 
 //setting env list
-clo9225[2] = apply_prim_car_1(decode_clo_array[3]);
-clo9225[3] = decode_clo_array[4];
-void* f_lam_8927 = encode_clo(clo9225);
+clo9220[2] = apply_prim_car_1(decode_clo_array[4]);
+clo9220[3] = decode_clo_array[3];
+void* f_lam_8927 = encode_clo(clo9220);
 
 
 
 //clo-app
-filter_spec(filter, f_lam_8927, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[3]));
+filter_spec(filter, f_lam_8927, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[4]));
 }
 else
 {
 
 //clo-app
-filter_spec(filter, decode_clo_array[4], decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[3]));
+filter_spec(filter, decode_clo_array[3], decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[4]));
 }
 
 }
@@ -2413,23 +2406,23 @@ if(is_true(id_8770))
 {
 
 //creating new make-kont closure
-void** clo9226 = alloc_kont(lam8974_fptr, reinterpret_cast<void*>(lam8974_spec), 2);
+void** clo9221 = alloc_kont(lam8974_fptr, lam8974_spec, 2);
 
 //setting env list
-clo9226[2] = apply_prim_car_1(decode_clo_array[3]);
-clo9226[3] = decode_clo_array[4];
-void* f_lam_8927 = encode_clo(clo9226);
+clo9221[2] = apply_prim_car_1(decode_clo_array[4]);
+clo9221[3] = decode_clo_array[3];
+void* f_lam_8927 = encode_clo(clo9221);
 
 
 
 //clo-app
-filter_spec(filter, f_lam_8927, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[3]));
+filter_spec(filter, f_lam_8927, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[4]));
 }
 else
 {
 
 //clo-app
-filter_spec(filter, decode_clo_array[4], decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[3]));
+filter_spec(filter, decode_clo_array[3], decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[4]));
 }
 
 }
@@ -2453,13 +2446,13 @@ else
 {
 
 //creating new make-kont closure
-void** clo9227 = alloc_kont(lam8976_fptr, reinterpret_cast<void*>(lam8976_spec), 3);
+void** clo9222 = alloc_kont(lam8976_fptr, lam8976_spec, 3);
 
 //setting env list
-clo9227[2] = op;
-clo9227[3] = lst;
-clo9227[4] = kont8926;
-void* f_lam_8928 = encode_clo(clo9227);
+clo9222[2] = op;
+clo9222[3] = kont8926;
+clo9222[4] = lst;
+void* f_lam_8928 = encode_clo(clo9222);
 
 
 
@@ -2467,7 +2460,7 @@ void* f_lam_8928 = encode_clo(clo9227);
 arg_buffer[1] = op;
 arg_buffer[2] = f_lam_8928;
 arg_buffer[3] = apply_prim_car_1(lst);
-numArgs = int9055;
+numArgs = 3;
 // generic else-case
 reinterpret_cast<void (*)()>((decode_clo(op))[0])();
 }
@@ -2489,13 +2482,13 @@ else
 {
 
 //creating new make-kont closure
-void** clo9228 = alloc_kont(lam8976_fptr, reinterpret_cast<void*>(lam8976_spec), 3);
+void** clo9223 = alloc_kont(lam8976_fptr, lam8976_spec, 3);
 
 //setting env list
-clo9228[2] = op;
-clo9228[3] = lst;
-clo9228[4] = kont8926;
-void* f_lam_8928 = encode_clo(clo9228);
+clo9223[2] = op;
+clo9223[3] = kont8926;
+clo9223[4] = lst;
+void* f_lam_8928 = encode_clo(clo9223);
 
 
 
@@ -2503,7 +2496,7 @@ void* f_lam_8928 = encode_clo(clo9228);
 arg_buffer[1] = op;
 arg_buffer[2] = f_lam_8928;
 arg_buffer[3] = apply_prim_car_1(lst);
-numArgs = int9055;
+numArgs = 3;
 // generic else-case
 reinterpret_cast<void (*)()>((decode_clo(op))[0])();
 }
@@ -2598,13 +2591,13 @@ else
 {
 
 //creating new make-kont closure
-void** clo9229 = alloc_kont(lam8980_fptr, reinterpret_cast<void*>(lam8980_spec), 3);
+void** clo9224 = alloc_kont(lam8980_fptr, lam8980_spec, 3);
 
 //setting env list
-clo9229[2] = fun;
-clo9229[3] = kont8930;
-clo9229[4] = lst;
-void* f_lam_8931 = encode_clo(clo9229);
+clo9224[2] = fun;
+clo9224[3] = kont8930;
+clo9224[4] = lst;
+void* f_lam_8931 = encode_clo(clo9224);
 
 
 
@@ -2613,7 +2606,7 @@ arg_buffer[1] = fun;
 arg_buffer[2] = f_lam_8931;
 arg_buffer[3] = apply_prim_car_1(lst);
 arg_buffer[4] = acc;
-numArgs = int9056;
+numArgs = 4;
 // generic else-case
 reinterpret_cast<void (*)()>((decode_clo(fun))[0])();
 }
@@ -2635,13 +2628,13 @@ else
 {
 
 //creating new make-kont closure
-void** clo9230 = alloc_kont(lam8980_fptr, reinterpret_cast<void*>(lam8980_spec), 3);
+void** clo9225 = alloc_kont(lam8980_fptr, lam8980_spec, 3);
 
 //setting env list
-clo9230[2] = fun;
-clo9230[3] = kont8930;
-clo9230[4] = lst;
-void* f_lam_8931 = encode_clo(clo9230);
+clo9225[2] = fun;
+clo9225[3] = kont8930;
+clo9225[4] = lst;
+void* f_lam_8931 = encode_clo(clo9225);
 
 
 
@@ -2650,7 +2643,7 @@ arg_buffer[1] = fun;
 arg_buffer[2] = f_lam_8931;
 arg_buffer[3] = apply_prim_car_1(lst);
 arg_buffer[4] = acc;
-numArgs = int9056;
+numArgs = 4;
 // generic else-case
 reinterpret_cast<void (*)()>((decode_clo(fun))[0])();
 }
@@ -2668,13 +2661,13 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8984);
 
 //clo-app
-arg_buffer[1] = decode_clo_array[2];
-arg_buffer[2] = decode_clo_array[3];
+arg_buffer[1] = decode_clo_array[3];
+arg_buffer[2] = decode_clo_array[2];
 arg_buffer[3] = decode_clo_array[4];
 arg_buffer[4] = id_8787;
-numArgs = int9056;
+numArgs = 4;
 // generic else-case
-reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[2]))[0])();
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[3]))[0])();
 }
 
 inline void lam8983_spec(void* env8984, void* id_8787) // lam8983 
@@ -2684,13 +2677,13 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8984);
 
 //clo-app
-arg_buffer[1] = decode_clo_array[2];
-arg_buffer[2] = decode_clo_array[3];
+arg_buffer[1] = decode_clo_array[3];
+arg_buffer[2] = decode_clo_array[2];
 arg_buffer[3] = decode_clo_array[4];
 arg_buffer[4] = id_8787;
-numArgs = int9056;
+numArgs = 4;
 // generic else-case
-reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[2]))[0])();
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[3]))[0])();
 }
 
 inline void foldr_fptr() // foldr -> generic version 
@@ -2713,13 +2706,13 @@ else
 {
 
 //creating new make-kont closure
-void** clo9231 = alloc_kont(lam8983_fptr, reinterpret_cast<void*>(lam8983_spec), 3);
+void** clo9226 = alloc_kont(lam8983_fptr, lam8983_spec, 3);
 
 //setting env list
-clo9231[2] = fun;
-clo9231[3] = kont8932;
-clo9231[4] = apply_prim_car_1(lst);
-void* f_lam_8933 = encode_clo(clo9231);
+clo9226[2] = kont8932;
+clo9226[3] = fun;
+clo9226[4] = apply_prim_car_1(lst);
+void* f_lam_8933 = encode_clo(clo9226);
 
 
 
@@ -2744,13 +2737,13 @@ else
 {
 
 //creating new make-kont closure
-void** clo9232 = alloc_kont(lam8983_fptr, reinterpret_cast<void*>(lam8983_spec), 3);
+void** clo9227 = alloc_kont(lam8983_fptr, lam8983_spec, 3);
 
 //setting env list
-clo9232[2] = fun;
-clo9232[3] = kont8932;
-clo9232[4] = apply_prim_car_1(lst);
-void* f_lam_8933 = encode_clo(clo9232);
+clo9227[2] = kont8932;
+clo9227[3] = fun;
+clo9227[4] = apply_prim_car_1(lst);
+void* f_lam_8933 = encode_clo(clo9227);
 
 
 
@@ -2866,12 +2859,12 @@ else
 {
 
 //creating new make-kont closure
-void** clo9233 = alloc_kont(lam8988_fptr, reinterpret_cast<void*>(lam8988_spec), 2);
+void** clo9228 = alloc_kont(lam8988_fptr, lam8988_spec, 2);
 
 //setting env list
-clo9233[2] = apply_prim_car_1(lhs);
-clo9233[3] = kont8936;
-void* f_lam_8937 = encode_clo(clo9233);
+clo9228[2] = apply_prim_car_1(lhs);
+clo9228[3] = kont8936;
+void* f_lam_8937 = encode_clo(clo9228);
 
 
 
@@ -2896,12 +2889,12 @@ else
 {
 
 //creating new make-kont closure
-void** clo9234 = alloc_kont(lam8988_fptr, reinterpret_cast<void*>(lam8988_spec), 2);
+void** clo9229 = alloc_kont(lam8988_fptr, lam8988_spec, 2);
 
 //setting env list
-clo9234[2] = apply_prim_car_1(lhs);
-clo9234[3] = kont8936;
-void* f_lam_8937 = encode_clo(clo9234);
+clo9229[2] = apply_prim_car_1(lhs);
+clo9229[3] = kont8936;
+void* f_lam_8937 = encode_clo(clo9229);
 
 
 
@@ -2922,7 +2915,7 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8992);
 
 //clo-app
-foldr_spec(foldr, decode_clo_array[2], append1, decode_clo_array[3], id_8803);
+foldr_spec(foldr, decode_clo_array[3], append1, decode_clo_array[2], id_8803);
 }
 
 inline void lam8991_spec(void* env8992, void* id_8803) // lam8991 
@@ -2932,7 +2925,7 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8992);
 
 //clo-app
-foldr_spec(foldr, decode_clo_array[2], append1, decode_clo_array[3], id_8803);
+foldr_spec(foldr, decode_clo_array[3], append1, decode_clo_array[2], id_8803);
 }
 
 inline void lam8993_fptr() // lam8993 -> generic version 
@@ -2946,27 +2939,27 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8994);
 
 //if-clause
-if(is_true(apply_prim__u61_2(decode_clo_array[5], id_8798)))
+if(is_true(apply_prim__u61_2(decode_clo_array[4], id_8798)))
 {
 
 //clo-app
-append1_spec(append1, decode_clo_array[3], decode_clo_array[2], apply_prim_car_1(decode_clo_array[4]));
+append1_spec(append1, decode_clo_array[5], decode_clo_array[2], apply_prim_car_1(decode_clo_array[3]));
 }
 else
 {
 
 //creating new make-kont closure
-void** clo9235 = alloc_kont(lam8991_fptr, reinterpret_cast<void*>(lam8991_spec), 2);
+void** clo9230 = alloc_kont(lam8991_fptr, lam8991_spec, 2);
 
 //setting env list
-clo9235[2] = decode_clo_array[3];
-clo9235[3] = apply_prim_list_0();
-void* f_lam_8939 = encode_clo(clo9235);
+clo9230[2] = apply_prim_list_0();
+clo9230[3] = decode_clo_array[5];
+void* f_lam_8939 = encode_clo(clo9230);
 
 
 
 //clo-app
-append1_spec(append1, f_lam_8939, apply_prim_list_1(decode_clo_array[2]), decode_clo_array[4]);
+append1_spec(append1, f_lam_8939, apply_prim_list_1(decode_clo_array[2]), decode_clo_array[3]);
 }
 
 }
@@ -2978,27 +2971,27 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8994);
 
 //if-clause
-if(is_true(apply_prim__u61_2(decode_clo_array[5], id_8798)))
+if(is_true(apply_prim__u61_2(decode_clo_array[4], id_8798)))
 {
 
 //clo-app
-append1_spec(append1, decode_clo_array[3], decode_clo_array[2], apply_prim_car_1(decode_clo_array[4]));
+append1_spec(append1, decode_clo_array[5], decode_clo_array[2], apply_prim_car_1(decode_clo_array[3]));
 }
 else
 {
 
 //creating new make-kont closure
-void** clo9236 = alloc_kont(lam8991_fptr, reinterpret_cast<void*>(lam8991_spec), 2);
+void** clo9231 = alloc_kont(lam8991_fptr, lam8991_spec, 2);
 
 //setting env list
-clo9236[2] = decode_clo_array[3];
-clo9236[3] = apply_prim_list_0();
-void* f_lam_8939 = encode_clo(clo9236);
+clo9231[2] = apply_prim_list_0();
+clo9231[3] = decode_clo_array[5];
+void* f_lam_8939 = encode_clo(clo9231);
 
 
 
 //clo-app
-append1_spec(append1, f_lam_8939, apply_prim_list_1(decode_clo_array[2]), decode_clo_array[4]);
+append1_spec(append1, f_lam_8939, apply_prim_list_1(decode_clo_array[2]), decode_clo_array[3]);
 }
 
 }
@@ -3014,14 +3007,14 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8996);
 
 //creating new make-kont closure
-void** clo9237 = alloc_kont(lam8993_fptr, reinterpret_cast<void*>(lam8993_spec), 4);
+void** clo9232 = alloc_kont(lam8993_fptr, lam8993_spec, 4);
 
 //setting env list
-clo9237[2] = decode_clo_array[2];
-clo9237[3] = decode_clo_array[3];
-clo9237[4] = x;
-clo9237[5] = int9050;
-void* f_lam_8940 = encode_clo(clo9237);
+clo9232[2] = decode_clo_array[2];
+clo9232[3] = x;
+clo9232[4] = int9050;
+clo9232[5] = decode_clo_array[3];
+void* f_lam_8940 = encode_clo(clo9232);
 
 
 
@@ -3036,14 +3029,14 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8996);
 
 //creating new make-kont closure
-void** clo9238 = alloc_kont(lam8993_fptr, reinterpret_cast<void*>(lam8993_spec), 4);
+void** clo9233 = alloc_kont(lam8993_fptr, lam8993_spec, 4);
 
 //setting env list
-clo9238[2] = decode_clo_array[2];
-clo9238[3] = decode_clo_array[3];
-clo9238[4] = x;
-clo9238[5] = int9050;
-void* f_lam_8940 = encode_clo(clo9238);
+clo9233[2] = decode_clo_array[2];
+clo9233[3] = x;
+clo9233[4] = int9050;
+clo9233[5] = decode_clo_array[3];
+void* f_lam_8940 = encode_clo(clo9233);
 
 
 
@@ -3077,16 +3070,16 @@ vargs = prim_cons(arg_buffer[i], vargs);
 
 
 //creating new make-kont closure
-void** clo9239 = alloc_kont(lam8995_fptr, reinterpret_cast<void*>(lam8995_spec), 2);
+void** clo9234 = alloc_kont(lam8995_fptr, lam8995_spec, 2);
 
 //setting env list
-clo9239[2] = apply_prim_car_1(apply_prim_cdr_1(vargs));
-clo9239[3] = apply_prim_car_1(vargs);
-void* f_lam_8941 = encode_clo(clo9239);
+clo9234[2] = apply_prim_car_1(apply_prim_cdr_1(vargs));
+clo9234[3] = apply_prim_car_1(vargs);
+void* f_lam_8941 = encode_clo(clo9234);
 
 
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8941)[1])(f_lam_8941, apply_prim_cdr_1(apply_prim_cdr_1(vargs)));
+lam8995_spec(f_lam_8941, apply_prim_cdr_1(apply_prim_cdr_1(vargs)));
 }
 
 inline void lam8998_fptr() // lam8998 -> generic version 
@@ -3126,11 +3119,11 @@ if(is_true(apply_prim__u61_2(n, int9051)))
 {
 
 //creating new make-kont closure
-void** clo9240 = alloc_kont(lam8998_fptr, reinterpret_cast<void*>(lam8998_spec), 1);
+void** clo9235 = alloc_kont(lam8998_fptr, lam8998_spec, 1);
 
 //setting env list
-clo9240[2] = kont8942;
-void* f_lam_8943 = encode_clo(clo9240);
+clo9235[2] = kont8942;
+void* f_lam_8943 = encode_clo(clo9235);
 
 
 
@@ -3156,11 +3149,11 @@ if(is_true(apply_prim__u61_2(n, int9051)))
 {
 
 //creating new make-kont closure
-void** clo9241 = alloc_kont(lam8998_fptr, reinterpret_cast<void*>(lam8998_spec), 1);
+void** clo9236 = alloc_kont(lam8998_fptr, lam8998_spec, 1);
 
 //setting env list
-clo9241[2] = kont8942;
-void* f_lam_8943 = encode_clo(clo9241);
+clo9236[2] = kont8942;
+void* f_lam_8943 = encode_clo(clo9236);
 
 
 
@@ -3259,14 +3252,14 @@ if(is_true(id_8820))
 {
 
 //creating new make-kont closure
-void** clo9242 = alloc_kont(lam9002_fptr, reinterpret_cast<void*>(lam9002_spec), 4);
+void** clo9237 = alloc_kont(lam9002_fptr, lam9002_spec, 4);
 
 //setting env list
-clo9242[2] = decode_clo_array[2];
-clo9242[3] = decode_clo_array[3];
-clo9242[4] = decode_clo_array[4];
-clo9242[5] = decode_clo_array[5];
-void* f_lam_8946 = encode_clo(clo9242);
+clo9237[2] = decode_clo_array[2];
+clo9237[3] = decode_clo_array[3];
+clo9237[4] = decode_clo_array[4];
+clo9237[5] = decode_clo_array[5];
+void* f_lam_8946 = encode_clo(clo9237);
 
 
 
@@ -3274,12 +3267,12 @@ void* f_lam_8946 = encode_clo(clo9242);
 if(is_true(apply_prim__u61_2(apply_prim_car_1(decode_clo_array[2]), apply_prim__u45_2(decode_clo_array[3], decode_clo_array[5]))))
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8946)[1])(f_lam_8946, bool_f9044);
+lam9002_spec(f_lam_8946, bool_f9044);
 }
 else
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8946)[1])(f_lam_8946, bool_t9046);
+lam9002_spec(f_lam_8946, bool_t9046);
 }
 
 }
@@ -3302,14 +3295,14 @@ if(is_true(id_8820))
 {
 
 //creating new make-kont closure
-void** clo9243 = alloc_kont(lam9002_fptr, reinterpret_cast<void*>(lam9002_spec), 4);
+void** clo9238 = alloc_kont(lam9002_fptr, lam9002_spec, 4);
 
 //setting env list
-clo9243[2] = decode_clo_array[2];
-clo9243[3] = decode_clo_array[3];
-clo9243[4] = decode_clo_array[4];
-clo9243[5] = decode_clo_array[5];
-void* f_lam_8946 = encode_clo(clo9243);
+clo9238[2] = decode_clo_array[2];
+clo9238[3] = decode_clo_array[3];
+clo9238[4] = decode_clo_array[4];
+clo9238[5] = decode_clo_array[5];
+void* f_lam_8946 = encode_clo(clo9238);
 
 
 
@@ -3317,12 +3310,12 @@ void* f_lam_8946 = encode_clo(clo9243);
 if(is_true(apply_prim__u61_2(apply_prim_car_1(decode_clo_array[2]), apply_prim__u45_2(decode_clo_array[3], decode_clo_array[5]))))
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8946)[1])(f_lam_8946, bool_f9044);
+lam9002_spec(f_lam_8946, bool_f9044);
 }
 else
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8946)[1])(f_lam_8946, bool_t9046);
+lam9002_spec(f_lam_8946, bool_t9046);
 }
 
 }
@@ -3354,14 +3347,14 @@ else
 {
 
 //creating new make-kont closure
-void** clo9244 = alloc_kont(lam9004_fptr, reinterpret_cast<void*>(lam9004_spec), 4);
+void** clo9239 = alloc_kont(lam9004_fptr, lam9004_spec, 4);
 
 //setting env list
-clo9244[2] = placed;
-clo9244[3] = row;
-clo9244[4] = kont8945;
-clo9244[5] = dist;
-void* f_lam_8947 = encode_clo(clo9244);
+clo9239[2] = placed;
+clo9239[3] = row;
+clo9239[4] = kont8945;
+clo9239[5] = dist;
+void* f_lam_8947 = encode_clo(clo9239);
 
 
 
@@ -3369,12 +3362,12 @@ void* f_lam_8947 = encode_clo(clo9244);
 if(is_true(apply_prim__u61_2(apply_prim_car_1(placed), apply_prim__u43_2(row, dist))))
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8947)[1])(f_lam_8947, bool_f9044);
+lam9004_spec(f_lam_8947, bool_f9044);
 }
 else
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8947)[1])(f_lam_8947, bool_t9046);
+lam9004_spec(f_lam_8947, bool_t9046);
 }
 
 }
@@ -3396,14 +3389,14 @@ else
 {
 
 //creating new make-kont closure
-void** clo9245 = alloc_kont(lam9004_fptr, reinterpret_cast<void*>(lam9004_spec), 4);
+void** clo9240 = alloc_kont(lam9004_fptr, lam9004_spec, 4);
 
 //setting env list
-clo9245[2] = placed;
-clo9245[3] = row;
-clo9245[4] = kont8945;
-clo9245[5] = dist;
-void* f_lam_8947 = encode_clo(clo9245);
+clo9240[2] = placed;
+clo9240[3] = row;
+clo9240[4] = kont8945;
+clo9240[5] = dist;
+void* f_lam_8947 = encode_clo(clo9240);
 
 
 
@@ -3411,12 +3404,12 @@ void* f_lam_8947 = encode_clo(clo9245);
 if(is_true(apply_prim__u61_2(apply_prim_car_1(placed), apply_prim__u43_2(row, dist))))
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8947)[1])(f_lam_8947, bool_f9044);
+lam9004_spec(f_lam_8947, bool_f9044);
 }
 else
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8947)[1])(f_lam_8947, bool_t9046);
+lam9004_spec(f_lam_8947, bool_t9046);
 }
 
 }
@@ -3433,7 +3426,7 @@ void* const id_8850 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9008);
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[2])[1])(decode_clo_array[2], apply_prim_cons_2(apply_prim_list_3(id_8850, apply_prim_list_0(), apply_prim_cons_2(apply_prim_car_1(decode_clo_array[4]), decode_clo_array[3])), apply_prim_cdr_1(decode_clo_array[5])));
+reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[2])[1])(decode_clo_array[2], apply_prim_cons_2(apply_prim_list_3(id_8850, apply_prim_list_0(), apply_prim_cons_2(apply_prim_car_1(decode_clo_array[3]), decode_clo_array[4])), apply_prim_cdr_1(decode_clo_array[5])));
 }
 
 inline void lam9007_spec(void* env9008, void* id_8850) // lam9007 
@@ -3442,7 +3435,7 @@ inline void lam9007_spec(void* env9008, void* id_8850) // lam9007
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9008);
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[2])[1])(decode_clo_array[2], apply_prim_cons_2(apply_prim_list_3(id_8850, apply_prim_list_0(), apply_prim_cons_2(apply_prim_car_1(decode_clo_array[4]), decode_clo_array[3])), apply_prim_cdr_1(decode_clo_array[5])));
+reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[2])[1])(decode_clo_array[2], apply_prim_cons_2(apply_prim_list_3(id_8850, apply_prim_list_0(), apply_prim_cons_2(apply_prim_car_1(decode_clo_array[3]), decode_clo_array[4])), apply_prim_cdr_1(decode_clo_array[5])));
 }
 
 inline void lam9009_fptr() // lam9009 -> generic version 
@@ -3456,7 +3449,7 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9010);
 
 //clo-app
-q_u45helper_spec(q_u45helper, decode_clo_array[2], apply_prim_cons_2(decode_clo_array[4], id_8857), decode_clo_array[3]);
+q_u45helper_spec(q_u45helper, decode_clo_array[2], apply_prim_cons_2(decode_clo_array[3], id_8857), decode_clo_array[4]);
 }
 
 inline void lam9009_spec(void* env9010, void* id_8857) // lam9009 
@@ -3466,7 +3459,7 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9010);
 
 //clo-app
-q_u45helper_spec(q_u45helper, decode_clo_array[2], apply_prim_cons_2(decode_clo_array[4], id_8857), decode_clo_array[3]);
+q_u45helper_spec(q_u45helper, decode_clo_array[2], apply_prim_cons_2(decode_clo_array[3], id_8857), decode_clo_array[4]);
 }
 
 inline void lam9011_fptr() // lam9011 -> generic version 
@@ -3480,13 +3473,13 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9012);
 
 //creating new make-kont closure
-void** clo9246 = alloc_kont(lam9009_fptr, reinterpret_cast<void*>(lam9009_spec), 3);
+void** clo9241 = alloc_kont(lam9009_fptr, lam9009_spec, 3);
 
 //setting env list
-clo9246[2] = decode_clo_array[5];
-clo9246[3] = decode_clo_array[6];
-clo9246[4] = decode_clo_array[7];
-void* f_lam_8949 = encode_clo(clo9246);
+clo9241[2] = decode_clo_array[2];
+clo9241[3] = decode_clo_array[6];
+clo9241[4] = decode_clo_array[7];
+void* f_lam_8949 = encode_clo(clo9241);
 
 
 
@@ -3495,29 +3488,29 @@ if(is_true(id_8848))
 {
 
 //creating new make-kont closure
-void** clo9247 = alloc_kont(lam9007_fptr, reinterpret_cast<void*>(lam9007_spec), 4);
+void** clo9242 = alloc_kont(lam9007_fptr, lam9007_spec, 4);
 
 //setting env list
-clo9247[2] = f_lam_8949;
-clo9247[3] = decode_clo_array[4];
-clo9247[4] = decode_clo_array[2];
-clo9247[5] = decode_clo_array[8];
-void* f_lam_8950 = encode_clo(clo9247);
+clo9242[2] = f_lam_8949;
+clo9242[3] = decode_clo_array[3];
+clo9242[4] = decode_clo_array[5];
+clo9242[5] = decode_clo_array[8];
+void* f_lam_8950 = encode_clo(clo9242);
 
 
 
 //clo-app
 arg_buffer[1] = append;
 arg_buffer[2] = f_lam_8950;
-arg_buffer[3] = apply_prim_cdr_1(decode_clo_array[2]);
-arg_buffer[4] = decode_clo_array[3];
-numArgs = int9056;
+arg_buffer[3] = apply_prim_cdr_1(decode_clo_array[3]);
+arg_buffer[4] = decode_clo_array[4];
+numArgs = 4;
 append_fptr();
 }
 else
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8949)[1])(f_lam_8949, apply_prim_cdr_1(decode_clo_array[8]));
+lam9009_spec(f_lam_8949, apply_prim_cdr_1(decode_clo_array[8]));
 }
 
 }
@@ -3529,13 +3522,13 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9012);
 
 //creating new make-kont closure
-void** clo9248 = alloc_kont(lam9009_fptr, reinterpret_cast<void*>(lam9009_spec), 3);
+void** clo9243 = alloc_kont(lam9009_fptr, lam9009_spec, 3);
 
 //setting env list
-clo9248[2] = decode_clo_array[5];
-clo9248[3] = decode_clo_array[6];
-clo9248[4] = decode_clo_array[7];
-void* f_lam_8949 = encode_clo(clo9248);
+clo9243[2] = decode_clo_array[2];
+clo9243[3] = decode_clo_array[6];
+clo9243[4] = decode_clo_array[7];
+void* f_lam_8949 = encode_clo(clo9243);
 
 
 
@@ -3544,29 +3537,29 @@ if(is_true(id_8848))
 {
 
 //creating new make-kont closure
-void** clo9249 = alloc_kont(lam9007_fptr, reinterpret_cast<void*>(lam9007_spec), 4);
+void** clo9244 = alloc_kont(lam9007_fptr, lam9007_spec, 4);
 
 //setting env list
-clo9249[2] = f_lam_8949;
-clo9249[3] = decode_clo_array[4];
-clo9249[4] = decode_clo_array[2];
-clo9249[5] = decode_clo_array[8];
-void* f_lam_8950 = encode_clo(clo9249);
+clo9244[2] = f_lam_8949;
+clo9244[3] = decode_clo_array[3];
+clo9244[4] = decode_clo_array[5];
+clo9244[5] = decode_clo_array[8];
+void* f_lam_8950 = encode_clo(clo9244);
 
 
 
 //clo-app
 arg_buffer[1] = append;
 arg_buffer[2] = f_lam_8950;
-arg_buffer[3] = apply_prim_cdr_1(decode_clo_array[2]);
-arg_buffer[4] = decode_clo_array[3];
-numArgs = int9056;
+arg_buffer[3] = apply_prim_cdr_1(decode_clo_array[3]);
+arg_buffer[4] = decode_clo_array[4];
+numArgs = 4;
 append_fptr();
 }
 else
 {
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8949)[1])(f_lam_8949, apply_prim_cdr_1(decode_clo_array[8]));
+lam9009_spec(f_lam_8949, apply_prim_cdr_1(decode_clo_array[8]));
 }
 
 }
@@ -3582,21 +3575,21 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9014);
 
 //if-clause
-if(is_true(apply_prim_null_u63_1(decode_clo_array[2])))
-{
-
-//if-clause
 if(is_true(apply_prim_null_u63_1(decode_clo_array[3])))
 {
 
+//if-clause
+if(is_true(apply_prim_null_u63_1(decode_clo_array[4])))
+{
+
 //clo-app
-q_u45helper_spec(q_u45helper, decode_clo_array[4], apply_prim_cdr_1(decode_clo_array[6]), apply_prim__u43_2(decode_clo_array[5], int9050));
+q_u45helper_spec(q_u45helper, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[6]), apply_prim__u43_2(decode_clo_array[5], int9050));
 }
 else
 {
 
 //clo-app
-q_u45helper_spec(q_u45helper, decode_clo_array[4], apply_prim_cdr_1(decode_clo_array[6]), decode_clo_array[5]);
+q_u45helper_spec(q_u45helper, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[6]), decode_clo_array[5]);
 }
 
 }
@@ -3604,22 +3597,22 @@ else
 {
 
 //creating new make-kont closure
-void** clo9250 = alloc_kont(lam9011_fptr, reinterpret_cast<void*>(lam9011_spec), 7);
+void** clo9245 = alloc_kont(lam9011_fptr, lam9011_spec, 7);
 
 //setting env list
-clo9250[2] = decode_clo_array[2];
-clo9250[3] = decode_clo_array[3];
-clo9250[4] = z;
-clo9250[5] = decode_clo_array[4];
-clo9250[6] = decode_clo_array[5];
-clo9250[7] = apply_prim_list_3(apply_prim_cdr_1(decode_clo_array[2]), apply_prim_cons_2(apply_prim_car_1(decode_clo_array[2]), decode_clo_array[3]), z);
-clo9250[8] = decode_clo_array[6];
-void* f_lam_8951 = encode_clo(clo9250);
+clo9245[2] = decode_clo_array[2];
+clo9245[3] = decode_clo_array[3];
+clo9245[4] = decode_clo_array[4];
+clo9245[5] = z;
+clo9245[6] = apply_prim_list_3(apply_prim_cdr_1(decode_clo_array[3]), apply_prim_cons_2(apply_prim_car_1(decode_clo_array[3]), decode_clo_array[4]), z);
+clo9245[7] = decode_clo_array[5];
+clo9245[8] = decode_clo_array[6];
+void* f_lam_8951 = encode_clo(clo9245);
 
 
 
 //clo-app
-ok_u63_spec(ok_u63, f_lam_8951, apply_prim_car_1(decode_clo_array[2]), int9050, z);
+ok_u63_spec(ok_u63, f_lam_8951, apply_prim_car_1(decode_clo_array[3]), int9050, z);
 }
 
 }
@@ -3631,21 +3624,21 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9014);
 
 //if-clause
-if(is_true(apply_prim_null_u63_1(decode_clo_array[2])))
-{
-
-//if-clause
 if(is_true(apply_prim_null_u63_1(decode_clo_array[3])))
 {
 
+//if-clause
+if(is_true(apply_prim_null_u63_1(decode_clo_array[4])))
+{
+
 //clo-app
-q_u45helper_spec(q_u45helper, decode_clo_array[4], apply_prim_cdr_1(decode_clo_array[6]), apply_prim__u43_2(decode_clo_array[5], int9050));
+q_u45helper_spec(q_u45helper, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[6]), apply_prim__u43_2(decode_clo_array[5], int9050));
 }
 else
 {
 
 //clo-app
-q_u45helper_spec(q_u45helper, decode_clo_array[4], apply_prim_cdr_1(decode_clo_array[6]), decode_clo_array[5]);
+q_u45helper_spec(q_u45helper, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[6]), decode_clo_array[5]);
 }
 
 }
@@ -3653,22 +3646,22 @@ else
 {
 
 //creating new make-kont closure
-void** clo9251 = alloc_kont(lam9011_fptr, reinterpret_cast<void*>(lam9011_spec), 7);
+void** clo9246 = alloc_kont(lam9011_fptr, lam9011_spec, 7);
 
 //setting env list
-clo9251[2] = decode_clo_array[2];
-clo9251[3] = decode_clo_array[3];
-clo9251[4] = z;
-clo9251[5] = decode_clo_array[4];
-clo9251[6] = decode_clo_array[5];
-clo9251[7] = apply_prim_list_3(apply_prim_cdr_1(decode_clo_array[2]), apply_prim_cons_2(apply_prim_car_1(decode_clo_array[2]), decode_clo_array[3]), z);
-clo9251[8] = decode_clo_array[6];
-void* f_lam_8951 = encode_clo(clo9251);
+clo9246[2] = decode_clo_array[2];
+clo9246[3] = decode_clo_array[3];
+clo9246[4] = decode_clo_array[4];
+clo9246[5] = z;
+clo9246[6] = apply_prim_list_3(apply_prim_cdr_1(decode_clo_array[3]), apply_prim_cons_2(apply_prim_car_1(decode_clo_array[3]), decode_clo_array[4]), z);
+clo9246[7] = decode_clo_array[5];
+clo9246[8] = decode_clo_array[6];
+void* f_lam_8951 = encode_clo(clo9246);
 
 
 
 //clo-app
-ok_u63_spec(ok_u63, f_lam_8951, apply_prim_car_1(decode_clo_array[2]), int9050, z);
+ok_u63_spec(ok_u63, f_lam_8951, apply_prim_car_1(decode_clo_array[3]), int9050, z);
 }
 
 }
@@ -3684,19 +3677,19 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9016);
 
 //creating new make-kont closure
-void** clo9252 = alloc_kont(lam9013_fptr, reinterpret_cast<void*>(lam9013_spec), 5);
+void** clo9247 = alloc_kont(lam9013_fptr, lam9013_spec, 5);
 
 //setting env list
-clo9252[2] = decode_clo_array[2];
-clo9252[3] = y;
-clo9252[4] = decode_clo_array[3];
-clo9252[5] = decode_clo_array[4];
-clo9252[6] = decode_clo_array[6];
-void* f_lam_8952 = encode_clo(clo9252);
+clo9247[2] = decode_clo_array[2];
+clo9247[3] = decode_clo_array[3];
+clo9247[4] = y;
+clo9247[5] = decode_clo_array[4];
+clo9247[6] = decode_clo_array[6];
+void* f_lam_8952 = encode_clo(clo9247);
 
 
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8952)[1])(f_lam_8952, apply_prim_car_1(apply_prim_cdr_1(apply_prim_cdr_1(decode_clo_array[5]))));
+lam9013_spec(f_lam_8952, apply_prim_car_1(apply_prim_cdr_1(apply_prim_cdr_1(decode_clo_array[5]))));
 }
 
 inline void lam9015_spec(void* env9016, void* y) // lam9015 
@@ -3706,19 +3699,19 @@ void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env9016);
 
 //creating new make-kont closure
-void** clo9253 = alloc_kont(lam9013_fptr, reinterpret_cast<void*>(lam9013_spec), 5);
+void** clo9248 = alloc_kont(lam9013_fptr, lam9013_spec, 5);
 
 //setting env list
-clo9253[2] = decode_clo_array[2];
-clo9253[3] = y;
-clo9253[4] = decode_clo_array[3];
-clo9253[5] = decode_clo_array[4];
-clo9253[6] = decode_clo_array[6];
-void* f_lam_8952 = encode_clo(clo9253);
+clo9248[2] = decode_clo_array[2];
+clo9248[3] = decode_clo_array[3];
+clo9248[4] = y;
+clo9248[5] = decode_clo_array[4];
+clo9248[6] = decode_clo_array[6];
+void* f_lam_8952 = encode_clo(clo9248);
 
 
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8952)[1])(f_lam_8952, apply_prim_car_1(apply_prim_cdr_1(apply_prim_cdr_1(decode_clo_array[5]))));
+lam9013_spec(f_lam_8952, apply_prim_car_1(apply_prim_cdr_1(apply_prim_cdr_1(decode_clo_array[5]))));
 }
 
 inline void q_u45helper_fptr() // q-helper -> generic version 
@@ -3740,19 +3733,19 @@ else
 {
 
 //creating new make-kont closure
-void** clo9254 = alloc_kont(lam9015_fptr, reinterpret_cast<void*>(lam9015_spec), 5);
+void** clo9249 = alloc_kont(lam9015_fptr, lam9015_spec, 5);
 
 //setting env list
-clo9254[2] = apply_prim_car_1(apply_prim_car_1(stack));
-clo9254[3] = kont8948;
-clo9254[4] = count;
-clo9254[5] = apply_prim_car_1(stack);
-clo9254[6] = stack;
-void* f_lam_8953 = encode_clo(clo9254);
+clo9249[2] = kont8948;
+clo9249[3] = apply_prim_car_1(apply_prim_car_1(stack));
+clo9249[4] = count;
+clo9249[5] = apply_prim_car_1(stack);
+clo9249[6] = stack;
+void* f_lam_8953 = encode_clo(clo9249);
 
 
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8953)[1])(f_lam_8953, apply_prim_car_1(apply_prim_cdr_1(apply_prim_car_1(stack))));
+lam9015_spec(f_lam_8953, apply_prim_car_1(apply_prim_cdr_1(apply_prim_car_1(stack))));
 }
 
 }
@@ -3772,19 +3765,19 @@ else
 {
 
 //creating new make-kont closure
-void** clo9255 = alloc_kont(lam9015_fptr, reinterpret_cast<void*>(lam9015_spec), 5);
+void** clo9250 = alloc_kont(lam9015_fptr, lam9015_spec, 5);
 
 //setting env list
-clo9255[2] = apply_prim_car_1(apply_prim_car_1(stack));
-clo9255[3] = kont8948;
-clo9255[4] = count;
-clo9255[5] = apply_prim_car_1(stack);
-clo9255[6] = stack;
-void* f_lam_8953 = encode_clo(clo9255);
+clo9250[2] = kont8948;
+clo9250[3] = apply_prim_car_1(apply_prim_car_1(stack));
+clo9250[4] = count;
+clo9250[5] = apply_prim_car_1(stack);
+clo9250[6] = stack;
+void* f_lam_8953 = encode_clo(clo9250);
 
 
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(f_lam_8953)[1])(f_lam_8953, apply_prim_car_1(apply_prim_cdr_1(apply_prim_car_1(stack))));
+lam9015_spec(f_lam_8953, apply_prim_car_1(apply_prim_cdr_1(apply_prim_car_1(stack))));
 }
 
 }
@@ -3866,11 +3859,11 @@ void* const n = arg_buffer[3];
 void** decode_clo_array = nullptr;
 
 //creating new make-kont closure
-void** clo9256 = alloc_kont(lam9019_fptr, reinterpret_cast<void*>(lam9019_spec), 1);
+void** clo9251 = alloc_kont(lam9019_fptr, lam9019_spec, 1);
 
 //setting env list
-clo9256[2] = kont8955;
-void* f_lam_8956 = encode_clo(clo9256);
+clo9251[2] = kont8955;
+void* f_lam_8956 = encode_clo(clo9251);
 
 
 
@@ -3884,11 +3877,11 @@ inline void nqueens_spec(void* _9021, void* kont8955, void* n) // nqueens
 void** decode_clo_array = nullptr;
 
 //creating new make-kont closure
-void** clo9257 = alloc_kont(lam9019_fptr, reinterpret_cast<void*>(lam9019_spec), 1);
+void** clo9252 = alloc_kont(lam9019_fptr, lam9019_spec, 1);
 
 //setting env list
-clo9257[2] = kont8955;
-void* f_lam_8956 = encode_clo(clo9257);
+clo9252[2] = kont8955;
+void* f_lam_8956 = encode_clo(clo9252);
 
 
 
@@ -3928,19 +3921,12 @@ bool_t9046 = encode_bool(true);
 int9050 = reinterpret_cast<void *>(encode_int(1));
 bool_f9044 = encode_bool(false);
 int9026 = reinterpret_cast<void *>(encode_int(2));
-int9052 = reinterpret_cast<void *>(encode_int(14));
+int9052 = reinterpret_cast<void *>(encode_int(8));
 
 
-
-// initializing global integer vars
-int9053 = 1;
-int9054 = 2;
-int9055 = 3;
-int9056 = 4;
-int9057 = 5;
 
 //making a call to the brouhaha main function to kick off our C++ emission.
-void** f_halt_clo = alloc_kont(fhalt, reinterpret_cast<void*>(fhalt_spec), 0);
+void** f_halt_clo = alloc_kont(fhalt, fhalt_spec, 0);
 void* fhalt_clo = encode_clo(f_halt_clo);
 arg_buffer[2] = fhalt_clo;
 
