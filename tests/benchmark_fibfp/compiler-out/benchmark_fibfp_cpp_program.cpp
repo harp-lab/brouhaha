@@ -1,3831 +1,3521 @@
-#include <cstdint>
-#include <functional>
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <bitset>
-#include <math.h>
-#include <random>
-#include <unordered_map>
+#include<stdio.h>
+#include<string.h>
+#include "gmp_func.h"
+#include "../../prelude.hpp"
 
-// GMP and gc headers
-#include "gc.h"
-#include "gc_cpp.h"
-#include "gmp.h"
-#include "gmpxx.h"
+// declaring global constants at the top
+void* int8944;
+void* float8948;
+void* float8947;
+void* float8949;
+void* bool_t8937;
+void* int8945;
+void* bool_f8938;
+void* int8933;
 
-// hamt headers
-#include "hamt.h"
 
-#define MASK(val) (((u64)(val)) & ~(7ULL))
 
-#define NULL_VALUE 0
-#define TRUE_VALUE 8
-#define FALSE_VALUE 16
-#define ENV_ARRAY 1
-#define RANDOM_VALUE 63 // 00111111
+// declaring global integer variable
+int int8950;
+int int8951;
+int int8952;
+int int8953;
+int int8954;
 
-// Making the choice not to use them because the intptr_t is available.
-typedef uint64_t u64;
-typedef int64_t s64;
-typedef uint32_t u32;
-typedef int32_t s32;
+// declaring functions at the top
+void _u43_fptr(); // +
+void* _u43 = encode_clo(alloc_clo(_u43_fptr, 0));
 
-enum DataType
-{
-    SPL = 0x0,
-    MPZ = 0x1,
-    HASH = 0x2,
-    STRING = 0x3,
-    MPF = 0x4,
-    CLO = 0x5,
-    // ENV = 0x6,
-    CONS = 0x7
-};
+void _u45_fptr(); // -
+void* _u45 = encode_clo(alloc_clo(_u45_fptr, 0));
+
+void _u42_fptr(); // *
+void* _u42 = encode_clo(alloc_clo(_u42_fptr, 0));
+
+void _u47_fptr(); // /
+void* _u47 = encode_clo(alloc_clo(_u47_fptr, 0));
+
+void _u61_fptr(); // =
+void* _u61 = encode_clo(alloc_clo(_u61_fptr, 0));
+
+void _u62_fptr(); // >
+void* _u62 = encode_clo(alloc_clo(_u62_fptr, 0));
+
+void _u60_fptr(); // <
+void* _u60 = encode_clo(alloc_clo(_u60_fptr, 0));
+
+void _u60_u61_fptr(); // <=
+void* _u60_u61 = encode_clo(alloc_clo(_u60_u61_fptr, 0));
+
+void _u62_u61_fptr(); // >=
+void* _u62_u61 = encode_clo(alloc_clo(_u62_u61_fptr, 0));
+
+void modulo_fptr(); // modulo
+void* modulo = encode_clo(alloc_clo(modulo_fptr, 0));
+
+void null_u63_fptr(); // null?
+void* null_u63 = encode_clo(alloc_clo(null_u63_fptr, 0));
+
+void equal_u63_fptr(); // equal?
+void* equal_u63 = encode_clo(alloc_clo(equal_u63_fptr, 0));
+
+void eq_u63_fptr(); // eq?
+void* eq_u63 = encode_clo(alloc_clo(eq_u63_fptr, 0));
+
+void cons_fptr(); // cons
+void* cons = encode_clo(alloc_clo(cons_fptr, 0));
+
+void car_fptr(); // car
+void* car = encode_clo(alloc_clo(car_fptr, 0));
+
+void cdr_fptr(); // cdr
+void* cdr = encode_clo(alloc_clo(cdr_fptr, 0));
+
+void float_u45_u62int_fptr(); // float->int
+void* float_u45_u62int = encode_clo(alloc_clo(float_u45_u62int_fptr, 0));
+
+void int_u45_u62float_fptr(); // int->float
+void* int_u45_u62float = encode_clo(alloc_clo(int_u45_u62float_fptr, 0));
+
+void hash_fptr(); // hash
+void* hash = encode_clo(alloc_clo(hash_fptr, 0));
+
+void hash_u45ref_fptr(); // hash-ref
+void* hash_u45ref = encode_clo(alloc_clo(hash_u45ref_fptr, 0));
+
+void hash_u45set_fptr(); // hash-set
+void* hash_u45set = encode_clo(alloc_clo(hash_u45set_fptr, 0));
+
+void hash_u45keys_fptr(); // hash-keys
+void* hash_u45keys = encode_clo(alloc_clo(hash_u45keys_fptr, 0));
+
+void hash_u45has_u45key_u63_fptr(); // hash-has-key?
+void* hash_u45has_u45key_u63 = encode_clo(alloc_clo(hash_u45has_u45key_u63_fptr, 0));
+
+void hash_u45count_fptr(); // hash-count
+void* hash_u45count = encode_clo(alloc_clo(hash_u45count_fptr, 0));
+
+void set_fptr(); // set
+void* set = encode_clo(alloc_clo(set_fptr, 0));
+
+void set_u45_u62list_fptr(); // set->list
+void* set_u45_u62list = encode_clo(alloc_clo(set_u45_u62list_fptr, 0));
+
+void list_u45_u62set_fptr(); // list->set
+void* list_u45_u62set = encode_clo(alloc_clo(list_u45_u62set_fptr, 0));
+
+void set_u45add_fptr(); // set-add
+void* set_u45add = encode_clo(alloc_clo(set_u45add_fptr, 0));
+
+void set_u45member_u63_fptr(); // set-member?
+void* set_u45member_u63 = encode_clo(alloc_clo(set_u45member_u63_fptr, 0));
+
+void set_u45remove_fptr(); // set-remove
+void* set_u45remove = encode_clo(alloc_clo(set_u45remove_fptr, 0));
+
+void set_u45count_fptr(); // set-count
+void* set_u45count = encode_clo(alloc_clo(set_u45count_fptr, 0));
+
+void string_u63_fptr(); // string?
+void* string_u63 = encode_clo(alloc_clo(string_u63_fptr, 0));
+
+void string_u45length_fptr(); // string-length
+void* string_u45length = encode_clo(alloc_clo(string_u45length_fptr, 0));
+
+void string_u45ref_fptr(); // string-ref
+void* string_u45ref = encode_clo(alloc_clo(string_u45ref_fptr, 0));
+
+void substring_fptr(); // substring
+void* substring = encode_clo(alloc_clo(substring_fptr, 0));
+
+void string_u45append_fptr(); // string-append
+void* string_u45append = encode_clo(alloc_clo(string_u45append_fptr, 0));
+
+void string_u45_u62list_fptr(); // string->list
+void* string_u45_u62list = encode_clo(alloc_clo(string_u45_u62list_fptr, 0));
+
+void exact_u45floor_fptr(); // exact-floor
+void* exact_u45floor = encode_clo(alloc_clo(exact_u45floor_fptr, 0));
+
+void exact_u45ceiling_fptr(); // exact-ceiling
+void* exact_u45ceiling = encode_clo(alloc_clo(exact_u45ceiling_fptr, 0));
+
+void exact_u45round_fptr(); // exact-round
+void* exact_u45round = encode_clo(alloc_clo(exact_u45round_fptr, 0));
+
+void abs_fptr(); // abs
+void* abs_brouhaha = encode_clo(alloc_clo(abs_fptr, 0));
+
+void max_fptr(); // max
+void* max = encode_clo(alloc_clo(max_fptr, 0));
+
+void min_fptr(); // min
+void* min = encode_clo(alloc_clo(min_fptr, 0));
+
+void expt_fptr(); // expt
+void* expt = encode_clo(alloc_clo(expt_fptr, 0));
+
+void sqrt_fptr(); // sqrt
+void* sqrt_brouhaha = encode_clo(alloc_clo(sqrt_fptr, 0));
+
+void remainder_fptr(); // remainder
+void* remainder_brouhaha = encode_clo(alloc_clo(remainder_fptr, 0));
 
-struct hash_struct;
-std::string print_val(void *val);
-void *equal_(void *arg1, void *arg2);
-u64 hash_(void *val);
+void quotient_fptr(); // quotient
+void* quotient = encode_clo(alloc_clo(quotient_fptr, 0));
 
-#pragma region Types
-// region Encoding and Decoding and Tags
+void random_fptr(); // random
+void* random_brouhaha = encode_clo(alloc_clo(random_fptr, 0));
 
-void assert_type(bool cond, const char *msg)
+void symbol_u63_fptr(); // symbol?
+void* symbol_u63 = encode_clo(alloc_clo(symbol_u63_fptr, 0));
+
+void pair_u63_fptr(); // pair?
+void* pair_u63 = encode_clo(alloc_clo(pair_u63_fptr, 0));
+
+void positive_u63_fptr(); // positive?
+void* positive_u63 = encode_clo(alloc_clo(positive_u63_fptr, 0));
+
+void negative_u63_fptr(); // negative?
+void* negative_u63 = encode_clo(alloc_clo(negative_u63_fptr, 0));
+
+void list_fptr(); // list
+void* list = encode_clo(alloc_clo(list_fptr, 0));
+
+void even_u63_fptr(); // even?
+void even_u63_spec(void* _8881, void* kont8846, void* x); // even?
+void* even_u63 = encode_clo(alloc_clo(even_u63_fptr, 0));
+
+void odd_u63_fptr(); // odd?
+void odd_u63_spec(void* _8882, void* kont8847, void* x); // odd?
+void* odd_u63 = encode_clo(alloc_clo(odd_u63_fptr, 0));
+
+void list_u45ref_fptr(); // list-ref
+void list_u45ref_spec(void* _8883, void* kont8848, void* lst, void* n); // list-ref
+void* list_u45ref = encode_clo(alloc_clo(list_u45ref_fptr, 0));
+
+void lam8884_fptr(); // lam8884
+void lam8884_spec(void* env8885, void* id_8735); // lam8884
+void* lam8884 = encode_clo(alloc_clo(lam8884_fptr, 0));
+
+void member_fptr(); // member
+void member_spec(void* _8886, void* kont8849, void* item, void* lst); // member
+void* member = encode_clo(alloc_clo(member_fptr, 0));
+
+void member_u63_fptr(); // member?
+void member_u63_spec(void* _8887, void* kont8851, void* x, void* lst); // member?
+void* member_u63 = encode_clo(alloc_clo(member_u63_fptr, 0));
+
+void lam8888_fptr(); // lam8888
+void lam8888_spec(void* env8889, void* id_8750); // lam8888
+void* lam8888 = encode_clo(alloc_clo(lam8888_fptr, 0));
+
+void length_fptr(); // length
+void length_spec(void* _8890, void* kont8852, void* lst); // length
+void* length = encode_clo(alloc_clo(length_fptr, 0));
+
+void lam8891_fptr(); // lam8891
+void lam8891_spec(void* env8892, void* id_8756); // lam8891
+void* lam8891 = encode_clo(alloc_clo(lam8891_fptr, 0));
+
+void lam8893_fptr(); // lam8893
+void lam8893_spec(void* env8894, void* id_8754); // lam8893
+void* lam8893 = encode_clo(alloc_clo(lam8893_fptr, 0));
+
+void map_fptr(); // map
+void map_spec(void* _8895, void* kont8854, void* proc, void* lst); // map
+void* map = encode_clo(alloc_clo(map_fptr, 0));
+
+void lam8896_fptr(); // lam8896
+void lam8896_spec(void* env8897, void* id_8763); // lam8896
+void* lam8896 = encode_clo(alloc_clo(lam8896_fptr, 0));
+
+void lam8898_fptr(); // lam8898
+void lam8898_spec(void* env8899, void* id_8760); // lam8898
+void* lam8898 = encode_clo(alloc_clo(lam8898_fptr, 0));
+
+void filter_fptr(); // filter
+void filter_spec(void* _8900, void* kont8857, void* op, void* lst); // filter
+void* filter = encode_clo(alloc_clo(filter_fptr, 0));
+
+void drop_fptr(); // drop
+void drop_spec(void* _8901, void* kont8860, void* lst, void* n); // drop
+void* drop = encode_clo(alloc_clo(drop_fptr, 0));
+
+void lam8902_fptr(); // lam8902
+void lam8902_spec(void* env8903, void* id_8772); // lam8902
+void* lam8902 = encode_clo(alloc_clo(lam8902_fptr, 0));
+
+void foldl_fptr(); // foldl
+void foldl_spec(void* _8904, void* kont8861, void* fun, void* acc, void* lst); // foldl
+void* foldl = encode_clo(alloc_clo(foldl_fptr, 0));
+
+void lam8905_fptr(); // lam8905
+void lam8905_spec(void* env8906, void* id_8777); // lam8905
+void* lam8905 = encode_clo(alloc_clo(lam8905_fptr, 0));
+
+void foldr_fptr(); // foldr
+void foldr_spec(void* _8907, void* kont8863, void* fun, void* acc, void* lst); // foldr
+void* foldr = encode_clo(alloc_clo(foldr_fptr, 0));
+
+void reverse_u45helper_fptr(); // reverse-helper
+void reverse_u45helper_spec(void* _8908, void* kont8865, void* lst, void* lst2); // reverse-helper
+void* reverse_u45helper = encode_clo(alloc_clo(reverse_u45helper_fptr, 0));
+
+void reverse_fptr(); // reverse
+void reverse_spec(void* _8909, void* kont8866, void* lst); // reverse
+void* reverse = encode_clo(alloc_clo(reverse_fptr, 0));
+
+void lam8910_fptr(); // lam8910
+void lam8910_spec(void* env8911, void* id_8786); // lam8910
+void* lam8910 = encode_clo(alloc_clo(lam8910_fptr, 0));
+
+void append1_fptr(); // append1
+void append1_spec(void* _8912, void* kont8867, void* lhs, void* rhs); // append1
+void* append1 = encode_clo(alloc_clo(append1_fptr, 0));
+
+void lam8913_fptr(); // lam8913
+void lam8913_spec(void* env8914, void* id_8793); // lam8913
+void* lam8913 = encode_clo(alloc_clo(lam8913_fptr, 0));
+
+void lam8915_fptr(); // lam8915
+void lam8915_spec(void* env8916, void* id_8788); // lam8915
+void* lam8915 = encode_clo(alloc_clo(lam8915_fptr, 0));
+
+void lam8917_fptr(); // lam8917
+void lam8917_spec(void* env8918, void* x); // lam8917
+void* lam8917 = encode_clo(alloc_clo(lam8917_fptr, 0));
+
+void append_fptr(); // append
+void* append = encode_clo(alloc_clo(append_fptr, 0));
+
+void lam8920_fptr(); // lam8920
+void lam8920_spec(void* env8921, void* xy8796); // lam8920
+void* lam8920 = encode_clo(alloc_clo(lam8920_fptr, 0));
+
+void take_u45helper_fptr(); // take-helper
+void take_u45helper_spec(void* _8922, void* kont8873, void* lst, void* n, void* lst2); // take-helper
+void* take_u45helper = encode_clo(alloc_clo(take_u45helper_fptr, 0));
+
+void take_fptr(); // take
+void take_spec(void* _8923, void* kont8875, void* lst, void* n); // take
+void* take = encode_clo(alloc_clo(take_fptr, 0));
+
+void lam8924_fptr(); // lam8924
+void lam8924_spec(void* env8925, void* id_8810); // lam8924
+void* lam8924 = encode_clo(alloc_clo(lam8924_fptr, 0));
+
+void lam8926_fptr(); // lam8926
+void lam8926_spec(void* env8927, void* id_8807); // lam8926
+void* lam8926 = encode_clo(alloc_clo(lam8926_fptr, 0));
+
+void fibfp_fptr(); // fibfp
+void fibfp_spec(void* _8928, void* kont8876, void* n); // fibfp
+void* fibfp = encode_clo(alloc_clo(fibfp_fptr, 0));
+
+void brouhaha_main_fptr(); // brouhaha_main
+void brouhaha_main_spec(void* _8929, void* kont8879); // brouhaha_main
+void* brouhaha_main = encode_clo(alloc_clo(brouhaha_main_fptr, 0));
+
+
+
+inline void _u43_fptr() // + 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    if (!cond)
-    {
-        std::cout << "type assertion failed-> " << msg << std ::endl;
-        exit(1);
-    }
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8955 = prim_car(lst);
+void* const lst8957 = prim_cdr(lst);
+void* const x8956 = apply_prim__u43(lst8957);
+arg_buffer[1] = kont8955;
+arg_buffer[2] = x8956;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8955))[0])();
 }
-// ??why encode and decode functions for every type, just have one and make it
-// take a void* and the type we want the tag variable to returns a void* that is
-// tagged
-
-void *encode_mpz(mpz_t *val)
+else
 {
-    return reinterpret_cast<void *>(((u64)val) | MPZ);
+void* const kont8955 = arg_buffer[2];
+void* const x8956 = apply_prim__u43(arg_buffer);
+arg_buffer[1] = kont8955;
+arg_buffer[2] = x8956;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8955))[0])();
 }
 
-void *encode_mpf(mpf_t *val)
-{
-    return reinterpret_cast<void *>(((u64)val) | MPF);
 }
 
-void *encode_str(std::string *val)
+inline void _u45_fptr() // - 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    return reinterpret_cast<void *>(((u64)val) | STRING);
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8958 = prim_car(lst);
+void* const lst8960 = prim_cdr(lst);
+void* const x8959 = apply_prim__u45(lst8960);
+arg_buffer[1] = kont8958;
+arg_buffer[2] = x8959;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8958))[0])();
 }
-
-void *encode_clo(void **val)
+else
 {
-    return reinterpret_cast<void *>(((u64)(val)) | CLO);
+void* const kont8958 = arg_buffer[2];
+void* const x8959 = apply_prim__u45(arg_buffer);
+arg_buffer[1] = kont8958;
+arg_buffer[2] = x8959;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8958))[0])();
 }
 
-void *encode_bool(bool val)
-{
-    if (val)
-    {
-        return reinterpret_cast<void *>(TRUE_VALUE);
-    }
-    return reinterpret_cast<void *>(FALSE_VALUE);
 }
-void *encode_cons(void **val)
+
+inline void _u42_fptr() // * 
 {
-    return reinterpret_cast<void *>(((u64)(val)) | CONS);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8961 = prim_car(lst);
+void* const lst8963 = prim_cdr(lst);
+void* const x8962 = apply_prim__u42(lst8963);
+arg_buffer[1] = kont8961;
+arg_buffer[2] = x8962;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8961))[0])();
 }
-
-void *encode_hash(const hamt<hash_struct, hash_struct> *val)
+else
 {
-    return reinterpret_cast<void *>(((u64)(val)) | HASH);
+void* const kont8961 = arg_buffer[2];
+void* const x8962 = apply_prim__u42(arg_buffer);
+arg_buffer[1] = kont8961;
+arg_buffer[2] = x8962;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8961))[0])();
 }
 
-void *encode_null() { return NULL_VALUE; }
+}
 
-// takes in a void * type and gets the tag, return it as an integer
-int get_tag(void *val)
+inline void _u47_fptr() // / 
 {
-    u64 ptr = reinterpret_cast<u64>(val);
-    return (ptr & 7);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8964 = prim_car(lst);
+void* const lst8966 = prim_cdr(lst);
+void* const x8965 = apply_prim__u47(lst8966);
+arg_buffer[1] = kont8964;
+arg_buffer[2] = x8965;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8964))[0])();
 }
-
-// for debugging purpose!
-void print_mpf(mpf_t *arg)
+else
 {
-    // std::cout << "-----start of print_mpf-----" << std::endl;
-    char buffer[1000];
-    std::string str(buffer);
-
-    gmp_sprintf(buffer, "%.10Ff", *arg);
-
-    std::cout << "print_mpf: val: " << std::string(buffer) << std::endl;
+void* const kont8964 = arg_buffer[2];
+void* const x8965 = apply_prim__u47(arg_buffer);
+arg_buffer[1] = kont8964;
+arg_buffer[2] = x8965;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8964))[0])();
+}
 
-    // std::cout << "-----end of print_mpf-----" << std::endl;
 }
 
-void print_mpz(mpz_t *arg)
+inline void _u61_fptr() // = 
 {
-    // std::cout << "-----start of print_mpz-----" << std::endl;
-    // mpz_t *final_mpz;
-    // final_mpz = decode_mpz(arg1);
-    std::string str(mpz_get_str(nullptr, 10, *arg));
-
-    int num = std::stoi(str);
-    std::cout << "print_mpz: val: " << num << std::endl;
-    // std::cout << "-----end of print_mpz-----" << std::endl;
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8967 = prim_car(lst);
+void* const lst8969 = prim_cdr(lst);
+void* const x8968 = apply_prim__u61(lst8969);
+arg_buffer[1] = kont8967;
+arg_buffer[2] = x8968;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8967))[0])();
 }
-
-bool is_cons(void *lst)
+else
 {
-    if (get_tag(lst) == CONS)
-    {
-        return true;
-    }
-    return false;
+void* const kont8967 = arg_buffer[2];
+void* const x8968 = apply_prim__u61(arg_buffer);
+arg_buffer[1] = kont8967;
+arg_buffer[2] = x8968;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8967))[0])();
 }
 
-// decode functions
+}
 
-mpz_t *decode_mpz(void *val)
+inline void _u62_fptr() // > 
 {
-    // MASK does the casting to u64
-    if (get_tag(val) != MPZ)
-        assert_type(false, "Error in decode_mpz -> Type error: Not MPZ");
-
-    return reinterpret_cast<mpz_t *>(MASK(val));
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8970 = prim_car(lst);
+void* const lst8972 = prim_cdr(lst);
+void* const x8971 = apply_prim__u62(lst8972);
+arg_buffer[1] = kont8970;
+arg_buffer[2] = x8971;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8970))[0])();
 }
-mpf_t *decode_mpf(void *val)
+else
 {
-    // MASK does the casting to u64
-    if (get_tag(val) != MPF)
-        assert_type(false, "Error in decode_mpf -> Type error: Not MPF");
+void* const kont8970 = arg_buffer[2];
+void* const x8971 = apply_prim__u62(arg_buffer);
+arg_buffer[1] = kont8970;
+arg_buffer[2] = x8971;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8970))[0])();
+}
 
-    return reinterpret_cast<mpf_t *>(MASK(val));
 }
-std::string *decode_str(void *val)
+
+inline void _u60_fptr() // < 
 {
-    // MASK does the casting to u64
-    if (get_tag(val) != STRING)
-        assert_type(false, "Error in decode_str -> Type error: Not STRING");
-    return reinterpret_cast<std::string *>(MASK(val));
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8973 = prim_car(lst);
+void* const lst8975 = prim_cdr(lst);
+void* const x8974 = apply_prim__u60(lst8975);
+arg_buffer[1] = kont8973;
+arg_buffer[2] = x8974;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8973))[0])();
 }
-bool decode_bool(void *val)
+else
 {
-    // MASK does the casting to u64
-    if (get_tag(val) != SPL)
-        assert_type(false, "Error in decode_bool -> Type error : Not BOOLEAN");
+void* const kont8973 = arg_buffer[2];
+void* const x8974 = apply_prim__u60(arg_buffer);
+arg_buffer[1] = kont8973;
+arg_buffer[2] = x8974;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8973))[0])();
+}
 
-    u64 temp = (u64)val;
-    if (temp == TRUE_VALUE)
-    {
-        return true;
-    }
-    else if (temp == FALSE_VALUE)
-    {
-        return false;
-    }
-    else
-    {
-        assert_type(false, "Error in decode_bool -> Type error: Not BOOLEAN");
-    }
-    return false;
 }
-void **decode_cons(void *val)
+
+inline void _u60_u61_fptr() // <= 
 {
-    if (get_tag(val) != CONS)
-        assert_type(false, "Error in decode_cons -> Type error: Not CONS");
-    return reinterpret_cast<void **>(MASK(val));
-}
-void **decode_clo(void *val)
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    if (get_tag(val) != CLO)
-        assert_type(false, "Error in decode_clo -> Type error: Not CLO");
-    return reinterpret_cast<void **>(MASK(val));
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8976 = prim_car(lst);
+void* const lst8978 = prim_cdr(lst);
+void* const x8977 = apply_prim__u60_u61(lst8978);
+arg_buffer[1] = kont8976;
+arg_buffer[2] = x8977;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8976))[0])();
 }
-const hamt<hash_struct, hash_struct> *decode_hash(void *val)
+else
 {
-    if (get_tag(val) != HASH)
-        assert_type(false, "Error in decode_hash -> Type error: Not HASH");
-    return reinterpret_cast<const hamt<hash_struct, hash_struct> *>(MASK(val));
+void* const kont8976 = arg_buffer[2];
+void* const x8977 = apply_prim__u60_u61(arg_buffer);
+arg_buffer[1] = kont8976;
+arg_buffer[2] = x8977;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8976))[0])();
 }
-// Closure Allocation, alloc_clo
-void **alloc_clo(void (*fptr)(), int num)
-{
-    void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
-    obj[0] = 0;
-    // obj[1] = 0;
-    if (obj != NULL)
-    {
-        obj[0] = reinterpret_cast<void *>(fptr);
-    }
 
-    return obj;
 }
 
-#pragma endregion
-
-#pragma region ConsMethods
-
-static void *prim_cons(void *arg1, void *arg2)
+inline void _u62_u61_fptr() // >= 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    void **cell = (void **)GC_MALLOC(2 * sizeof(void *));
-    cell[0] = arg1;
-    cell[1] = arg2;
-    return encode_cons(cell);
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8979 = prim_car(lst);
+void* const lst8981 = prim_cdr(lst);
+void* const x8980 = apply_prim__u62_u61(lst8981);
+arg_buffer[1] = kont8979;
+arg_buffer[2] = x8980;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8979))[0])();
 }
-
-void *apply_prim_cons_2(void *arg1, void *arg2)
+else
 {
-    // void *lst = encode_null();
-    return prim_cons(arg1, arg2);
+void* const kont8979 = arg_buffer[2];
+void* const x8980 = apply_prim__u62_u61(arg_buffer);
+arg_buffer[1] = kont8979;
+arg_buffer[2] = x8980;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8979))[0])();
 }
 
-// cons?
-void *prim_cons_u63(void *lst)
-{
-    if (get_tag(lst) == CONS)
-    {
-        return encode_bool(true);
-    }
-    return encode_bool(false);
 }
 
-void *prim_car(void *val)
+inline void modulo_fptr() // modulo 
 {
-    if (get_tag(val) != CONS)
-        assert_type(false, "Error in car -> not a cons cell");
-
-    void **cell = decode_cons(val);
-    return cell[0];
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8982 = prim_car(lst);
+void* const lst8984 = prim_cdr(lst);
+void* const x8983 = apply_prim_modulo(lst8984);
+arg_buffer[1] = kont8982;
+arg_buffer[2] = x8983;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8982))[0])();
 }
-
-void *apply_prim_car_1(void *arg1)
+else
 {
-    // return prim_car(arg1);
-    if (get_tag(arg1) != CONS)
-        assert_type(false, "Error in car -> not a cons cell");
+void* const kont8982 = arg_buffer[2];
+void* const x8983 = apply_prim_modulo(arg_buffer);
+arg_buffer[1] = kont8982;
+arg_buffer[2] = x8983;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8982))[0])();
+}
 
-    void **cell = decode_cons(arg1);
-    return cell[0];
 }
 
-void *prim_cdr(void *val)
+inline void null_u63_fptr() // null? 
 {
-    if (get_tag(val) != CONS)
-        assert_type(false, "Error in cdr -> not a cons cell");
-
-    void **cell = decode_cons(val);
-    return cell[1];
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8985 = prim_car(lst);
+void* const lst8987 = prim_cdr(lst);
+void* const x8986 = apply_prim_null_u63(lst8987);
+arg_buffer[1] = kont8985;
+arg_buffer[2] = x8986;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8985))[0])();
 }
-
-void *apply_prim_cdr_1(void *arg1)
+else
 {
-    // return prim_cdr(arg1);
-    if (get_tag(arg1) != CONS)
-        assert_type(false, "Error in cdr -> not a cons cell");
+void* const kont8985 = arg_buffer[2];
+void* const x8986 = apply_prim_null_u63(arg_buffer);
+arg_buffer[1] = kont8985;
+arg_buffer[2] = x8986;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8985))[0])();
+}
 
-    void **cell = decode_cons(arg1);
-    return cell[1];
 }
 
-// returns length of a list
-int length_counter(void *lst)
+inline void equal_u63_fptr() // equal? 
 {
-    if (lst == NULL_VALUE)
-        return 0;
-
-    if (get_tag(lst) != CONS)
-        assert_type(false, "Error -> contact violation: expected list");
-
-    // void *val = prim_car(lst);
-    // void *rest = prim_cdr(lst);
-
-    // if (get_tag(val) == CONS)
-    //     return length_counter(val) + length_counter(rest);
-    // else
-    //     return 1 + length_counter(rest);
-
-    return 1 + length_counter(prim_cdr(lst));
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8988 = prim_car(lst);
+void* const lst8990 = prim_cdr(lst);
+void* const x8989 = apply_prim_equal_u63(lst8990);
+arg_buffer[1] = kont8988;
+arg_buffer[2] = x8989;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8988))[0])();
 }
-
-bool is_null_val(void *val)
+else
 {
-    // assert_type(((get_tag(val)) == SPL), "Error in decode_bool -> Type error: Unknown Datatype!");
-    u64 temp = (u64)val;
-    if (temp != TRUE_VALUE && temp != FALSE_VALUE && val == NULL_VALUE)
-    {
-        // means its null value = empty list = '()
-        // kludgy way of doing this!
-        // null and booleans should have had their own cases
-        // but unfortunately we took that path, when we didn't consider this issue might arise
-        // that we won't be able differentiate between booleans and nulls
-        // an SPL could be anything right? not just boolean!
-        return true;
-    }
+void* const kont8988 = arg_buffer[2];
+void* const x8989 = apply_prim_equal_u63(arg_buffer);
+arg_buffer[1] = kont8988;
+arg_buffer[2] = x8989;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8988))[0])();
+}
 
-    return false;
 }
 
-void *apply_prim_cons(void *lst)
+inline void eq_u63_fptr() // eq? 
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in cons -> arity mismatch: number of arguments should be 2!");
-
-    return prim_cons(prim_car(lst), prim_car(prim_cdr(lst)));
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8991 = prim_car(lst);
+void* const lst8993 = prim_cdr(lst);
+void* const x8992 = apply_prim_eq_u63(lst8993);
+arg_buffer[1] = kont8991;
+arg_buffer[2] = x8992;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8991))[0])();
 }
-
-void *apply_prim_car(void *lst)
+else
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in car -> arity mismatch: number of arguments should be 1!");
+void* const kont8991 = arg_buffer[2];
+void* const x8992 = apply_prim_eq_u63(arg_buffer);
+arg_buffer[1] = kont8991;
+arg_buffer[2] = x8992;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8991))[0])();
+}
 
-    // because apply of car takes exp like, (list (list 10 2))
-    return prim_car(prim_car(lst));
 }
 
-void *apply_prim_cdr(void *lst)
+inline void cons_fptr() // cons 
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in cdr -> arity mismatch: number of arguments should be 1!");
-
-    // because apply of cdr takes exp like, (list (list 10 2))
-    return prim_cdr(prim_car(lst));
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8994 = prim_car(lst);
+void* const lst8996 = prim_cdr(lst);
+void* const x8995 = apply_prim_cons(lst8996);
+arg_buffer[1] = kont8994;
+arg_buffer[2] = x8995;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8994))[0])();
 }
-
-std::string print_cons(void *lst)
+else
 {
-    std::string ret_str;
-    ret_str.append("(list ");
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        ret_str.append(print_val(cons_lst[0]));
-        if (!is_cons(cons_lst[1]))
-        {
-            if (get_tag(cons_lst[1]) != SPL)
-            {
-                ret_str.append(" . ");
-                ret_str.append(print_val(cons_lst[1]));
-            }
-
-            break;
-        }
-        ret_str.append(" ");
-        lst = cons_lst[1];
-    }
-    ret_str.append(")");
-    return ret_str;
+void* const kont8994 = arg_buffer[2];
+void* const x8995 = apply_prim_cons(arg_buffer);
+arg_buffer[1] = kont8994;
+arg_buffer[2] = x8995;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8994))[0])();
 }
-
-#pragma endregion
 
-#pragma region ArithOpFunctions
+}
 
-bool is_true(void *val)
+inline void car_fptr() // car 
 {
-    if (is_null_val(val))
-    {
-        // kludgy way of doing this!
-        // null and booleans should have had their own cases
-        // but unfortunately we took that path, when we didn't consider this issue might arise
-        // that we won't be able differentiate between booleans and nulls
-        // an SPL could be anything right? not just boolean!
-        return true;
-    }
-    else if (get_tag(val) == CONS)
-    {
-        return true;
-    }
-
-    return decode_bool(val);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont8997 = prim_car(lst);
+void* const lst8999 = prim_cdr(lst);
+void* const x8998 = apply_prim_car(lst8999);
+arg_buffer[1] = kont8997;
+arg_buffer[2] = x8998;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8997))[0])();
 }
-
-#pragma region EQUALITY
-
-// this function assumes that both the args passed are mpz_t and doesn't perform a check
-// tho decode_mpz when called by this function does the check.
-void *mpz_equal(void *arg1, void *arg2)
+else
 {
-    mpz_t *arg1_mpz = decode_mpz(arg1);
-    mpz_t *arg2_mpz = decode_mpz(arg2);
-
-    if (mpz_cmp(*arg1_mpz, *arg2_mpz) == 0)
-    {
-        return encode_bool(true);
-    }
+void* const kont8997 = arg_buffer[2];
+void* const x8998 = apply_prim_car(arg_buffer);
+arg_buffer[1] = kont8997;
+arg_buffer[2] = x8998;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8997))[0])();
+}
 
-    return encode_bool(false);
 }
 
-void *mpf_equal(void *arg1, void *arg2)
+inline void cdr_fptr() // cdr 
 {
-    mpf_t *arg1_mpf = decode_mpf(arg1);
-    mpf_t *arg2_mpf = decode_mpf(arg2);
-
-    if (mpf_cmp(*arg1_mpf, *arg2_mpf) == 0)
-    {
-        return encode_bool(true);
-    }
-    return encode_bool(false);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9000 = prim_car(lst);
+void* const lst9002 = prim_cdr(lst);
+void* const x9001 = apply_prim_cdr(lst9002);
+arg_buffer[1] = kont9000;
+arg_buffer[2] = x9001;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9000))[0])();
 }
-
-// casting functions
-mpf_t *mpz_2_mpf(mpz_t *val)
+else
 {
-    mpf_t *ret_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*ret_val);
-    mpf_set_z(*ret_val, *val);
-    return ret_val;
+void* const kont9000 = arg_buffer[2];
+void* const x9001 = apply_prim_cdr(arg_buffer);
+arg_buffer[1] = kont9000;
+arg_buffer[2] = x9001;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9000))[0])();
 }
 
-mpz_t *mpf_2_mpz(mpf_t *val)
-{
-    mpz_t *ret_val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*ret_val);
-    mpz_set_f(*ret_val, *val);
-    return ret_val;
 }
 
-void *str_equal(void *arg1, void *arg2)
+inline void float_u45_u62int_fptr() // float->int 
 {
-    std::string *arg1_str = decode_str(arg1);
-    std::string *arg2_str = decode_str(arg2);
-
-    if (arg1_str->compare(*arg2_str) == 0)
-    {
-        return encode_bool(true);
-    }
-    return encode_bool(false);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9003 = prim_car(lst);
+void* const lst9005 = prim_cdr(lst);
+void* const x9004 = apply_prim_float_u45_u62int(lst9005);
+arg_buffer[1] = kont9003;
+arg_buffer[2] = x9004;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9003))[0])();
 }
-void *spl_equal(void *arg1, void *arg2)
+else
 {
-    // we don't care if the values are bools are nulls, we just care about
-    // both the arguments have the same value, so we cast to u64 compare and return.
-    u64 arg1_u64 = (u64)arg1;
-    u64 arg2_u64 = (u64)arg2;
+void* const kont9003 = arg_buffer[2];
+void* const x9004 = apply_prim_float_u45_u62int(arg_buffer);
+arg_buffer[1] = kont9003;
+arg_buffer[2] = x9004;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9003))[0])();
+}
 
-    if (arg1_u64 == arg2_u64)
-    {
-        return encode_bool(true);
-    }
-    return encode_bool(false);
 }
 
-void *cons_equal(void *arg1, void *arg2)
+inline void int_u45_u62float_fptr() // int->float 
 {
-    // tags have to be equal or false
-    // if both are cons, then we fetch the car and call equal on them if not equal return false
-    // update to cdr and continue
-    // if not cons, call equal on the value and if not return false or return true
-    while ((get_tag(arg1) == get_tag(arg2)))
-    {
-        if (is_cons(arg1) && is_cons(arg2))
-        {
-            void **cons_arg1 = decode_cons(arg1);
-            void **cons_arg2 = decode_cons(arg2);
-
-            // std::cout << print_val(cons_arg1[0]) << std::endl;
-            // std::cout << print_val(cons_arg2[0]) << std::endl;
-            // std::cout << print_val(equal_(cons_arg1[0], cons_arg2[0])) << std::endl;
-
-            // comparing the car values of two cons using the equal function
-            if (!decode_bool(equal_(cons_arg1[0], cons_arg2[0])))
-            {
-                return encode_bool(false);
-            }
-            arg1 = cons_arg1[1];
-            arg2 = cons_arg2[1];
-        }
-        else
-        {
-            if (decode_bool(equal_(arg1, arg2)))
-            {
-                return encode_bool(true);
-            }
-            return encode_bool(false);
-        }
-    }
-    return encode_bool(false);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9006 = prim_car(lst);
+void* const lst9008 = prim_cdr(lst);
+void* const x9007 = apply_prim_int_u45_u62float(lst9008);
+arg_buffer[1] = kont9006;
+arg_buffer[2] = x9007;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9006))[0])();
 }
-
-void *hash_equal(void *arg1, void *arg2)
+else
 {
-    const hamt<hash_struct, hash_struct> *h_arg1 = decode_hash(arg1);
-    const hamt<hash_struct, hash_struct> *h_arg2 = decode_hash(arg2);
+void* const kont9006 = arg_buffer[2];
+void* const x9007 = apply_prim_int_u45_u62float(arg_buffer);
+arg_buffer[1] = kont9006;
+arg_buffer[2] = x9007;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9006))[0])();
+}
 
-    if (h_arg1->getHash() == h_arg2->getHash())
-    {
-        return encode_bool(true);
-    }
-    return encode_bool(false);
 }
 
-void *equal_(void *arg1, void *arg2)
+inline void hash_fptr() // hash 
 {
-    // takes in two voids,
-    // checks if they have the same tag, if not return false else
-    // switches based on the tag to the appropriate function for the type
-    int type_arg1 = get_tag(arg1);
-    // checking the tags match
-    if (!(type_arg1 == get_tag(arg2)))
-    {
-        return encode_bool(false);
-    }
-    switch (type_arg1)
-    {
-    case MPZ:
-    {
-        return mpz_equal(arg1, arg2);
-        break;
-    }
-    case MPF:
-    {
-        return mpf_equal(arg1, arg2);
-        break;
-    }
-    case STRING:
-    {
-        return str_equal(arg1, arg2);
-        break;
-    }
-    case SPL:
-    {
-        return spl_equal(arg1, arg2);
-        break;
-    }
-    case CONS:
-    {
-        return cons_equal(arg1, arg2);
-        break;
-    }
-    case HASH:
-    {
-        return hash_equal(arg1, arg2);
-        break;
-    }
-    default:
-    {
-        return encode_bool(false);
-        break;
-    }
-    }
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9009 = prim_car(lst);
+void* const lst9011 = prim_cdr(lst);
+void* const x9010 = apply_prim_hash(lst9011);
+arg_buffer[1] = kont9009;
+arg_buffer[2] = x9010;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9009))[0])();
 }
-
-#pragma endregion
-
-#pragma region HASHING
-
-// these function assume the type passed is the expected one
-// all the three hash function have a very similar structure
-// get the the number of limbs/chars to process, and get the array pointer to them
-// for loop over them to compute FNV1A and return the hash
-u64 mpz_hash(void *val)
+else
 {
-    u64 h = 0xcbf29ce484222325;
-    mpz_t *mpz_val = decode_mpz(val);
-    // the mpz_sgn is a macro in gmp that just looks at _mp_size for sign info
-    int is_negative = mpz_sgn(*mpz_val); // < 0 if negative, = 0 if zero and > 0 if_positive
-    u64 limb_cnt = mpz_size(*mpz_val);
-    const mp_limb_t *limb_ptr = mpz_limbs_read(*mpz_val);
-    if (is_negative < 0)
-    {
-        h = h ^ 0x00000000000000ff;
-        h = h * 0x100000001b3;
-    }
-    else
-    {
-        h = h ^ 0x0000000000000000; // this doesn't do anything, not sure what to XOR it with for change
-        h = h * 0x100000001b3;
-    }
+void* const kont9009 = arg_buffer[2];
+void* const x9010 = apply_prim_hash(arg_buffer);
+arg_buffer[1] = kont9009;
+arg_buffer[2] = x9010;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9009))[0])();
+}
 
-    for (u32 i = 0; i < limb_cnt; i++)
-    {
-        u64 limb = limb_ptr[i];
-        for (u32 j = 0; j < 8; j++)
-        {
-            h = h ^ ((limb >> j * 8) & 0x00000000000000ff);
-            h = h * 0x100000001b3;
-        }
-    }
-    return h;
 }
 
-u64 mpf_hash(void *val)
+inline void hash_u45ref_fptr() // hash-ref 
 {
-    u64 h = 0xcbf29ce484222325;
-    mpf_t *mpf_val = decode_mpf(val);
-    u64 limb_cnt = mpf_size(*mpf_val);
-    const mp_limb_t *limb_ptr = (*mpf_val)->_mp_d;
-    int is_negative = mpf_sgn(*mpf_val);
-
-    if (is_negative < 0)
-    {
-        h = h ^ 0x00000000000000ff;
-        h = h * 0x100000001b3;
-    }
-    else
-    {
-        h = h ^ 0x0000000000000000; // this doesn't do anything, not sure what to XOR it with for change
-        h = h * 0x100000001b3;
-    }
-
-    for (u32 i = 0; i < limb_cnt; i++)
-    {
-        u64 limb = limb_ptr[i];
-        for (u32 j = 0; j < 8; j++)
-        {
-            h = h ^ ((limb >> j * 8) & 0x00000000000000ff);
-            h = h * 0x100000001b3;
-        }
-    }
-
-    return h;
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9012 = prim_car(lst);
+void* const lst9014 = prim_cdr(lst);
+void* const x9013 = apply_prim_hash_u45ref(lst9014);
+arg_buffer[1] = kont9012;
+arg_buffer[2] = x9013;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9012))[0])();
 }
-
-u64 str_hash(void *val)
+else
 {
-    std::string *str = decode_str(val);
-    const u8 *data = reinterpret_cast<const u8 *>(str->data());
-    int length = str->length();
-    u64 h = 0xcbf29ce484222325;
-    for (u32 i = 0; i < length; ++i && ++data)
-    {
-        h = h ^ *data;
-        h = h * 0x100000001b3;
-    }
+void* const kont9012 = arg_buffer[2];
+void* const x9013 = apply_prim_hash_u45ref(arg_buffer);
+arg_buffer[1] = kont9012;
+arg_buffer[2] = x9013;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9012))[0])();
+}
 
-    return h;
 }
 
-u64 hamt_hash(void *h)
+inline void hash_u45set_fptr() // hash-set 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
-    return h_hamt->getHash();
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9015 = prim_car(lst);
+void* const lst9017 = prim_cdr(lst);
+void* const x9016 = apply_prim_hash_u45set(lst9017);
+arg_buffer[1] = kont9015;
+arg_buffer[2] = x9016;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9015))[0])();
 }
-
-u64 cons_hash(void *lst)
+else
 {
-    if (get_tag(lst) != CONS)
-        assert_type(false, "Error in cons_hash -> Type passed to cons_hash is not a CONS cell!");
-
-    u64 *h = (u64 *)GC_MALLOC(sizeof(u64));
-    *h = 0xcbf29ce484222325;
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int car_tag = get_tag(cons_lst[0]);
-        bool type_check = (car_tag == MPZ) || (car_tag == MPF) || (car_tag == STRING) || (car_tag == HASH) || (car_tag == CONS);
-
-        if (!type_check)
-            assert_type(false, "Error in cons_hash -> values in the list are not hashable!");
-
-        *h ^= hash_(cons_lst[0]) + 0x9e3779b9 + (*h << 6) + (*h >> 2);
+void* const kont9015 = arg_buffer[2];
+void* const x9016 = apply_prim_hash_u45set(arg_buffer);
+arg_buffer[1] = kont9015;
+arg_buffer[2] = x9016;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9015))[0])();
+}
 
-        lst = cons_lst[1];
-    }
-    return *h;
 }
 
-u64 hash_(void *val)
+inline void hash_u45keys_fptr() // hash-keys 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    switch (get_tag(val))
-    {
-    case MPZ:
-    {
-        return mpz_hash(val);
-        break;
-    }
-    case MPF:
-    {
-        return mpf_hash(val);
-        break;
-    }
-    case STRING:
-    {
-        return str_hash(val);
-        break;
-    }
-    case HASH:
-    {
-        return hamt_hash(val);
-        break;
-    }
-    case CONS:
-    {
-        return cons_hash(val);
-        break;
-    }
-    default:
-    {
-        assert_type(false, "Error in hash_ -> type passed cannot be hashed!");
-    }
-    }
-    return 0;
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9018 = prim_car(lst);
+void* const lst9020 = prim_cdr(lst);
+void* const x9019 = apply_prim_hash_u45keys(lst9020);
+arg_buffer[1] = kont9018;
+arg_buffer[2] = x9019;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9018))[0])();
 }
+else
+{
+void* const kont9018 = arg_buffer[2];
+void* const x9019 = apply_prim_hash_u45keys(arg_buffer);
+arg_buffer[1] = kont9018;
+arg_buffer[2] = x9019;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9018))[0])();
+}
 
-#pragma endregion
+}
 
-// Function to check if val is an integer
-int is_integer_val(void *val)
+inline void hash_u45has_u45key_u63_fptr() // hash-has-key? 
 {
-    if (get_tag(val) == MPZ)
-        return true;
-    else if (get_tag(val) == MPF)
-    {
-        mpf_t *fval = decode_mpf(val);
-        mpf_t flr;
-        mpf_init(flr);
-        mpf_floor(flr, *fval);
-        int result = mpf_cmp(*fval, flr) == 0;
-        mpf_clear(flr);
-        return result;
-    }
-    return false;
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9021 = prim_car(lst);
+void* const lst9023 = prim_cdr(lst);
+void* const x9022 = apply_prim_hash_u45has_u45key_u63(lst9023);
+arg_buffer[1] = kont9021;
+arg_buffer[2] = x9022;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9021))[0])();
 }
-
-// helper function to calculate the modulo
-mpz_t *calc_modulo(mpz_t *first, mpz_t *second)
+else
 {
-    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*result);
-
-    // if (mpz_sgn(*mpz_arg1) >= 0 && mpz_sgn(*second) > 0)
-    if (mpz_sgn(*second) > 0)
-    {
-        // both positive
-        mpz_mod(*result, *first, *second);
-    }
-    else if (mpz_sgn(*first) >= 0 && mpz_sgn(*second) < 0)
-    {
-        // positive, negative
-        mpz_mod(*result, *first, *second);
-        mpz_add(*result, *result, *second);
-    }
-    // else if (mpz_sgn(*first)) < 0 && mpz_sgn(*second) > 0)
-    // {
-    //     // negative, positive
-    //     mpz_mod(*result, *first), *second);
-    // }
-    else
-    {
-        // both negative
-        mpz_mod(*result, *first, *second);
-        mpz_add(*result, *result, *second);
-    }
+void* const kont9021 = arg_buffer[2];
+void* const x9022 = apply_prim_hash_u45has_u45key_u63(arg_buffer);
+arg_buffer[1] = kont9021;
+arg_buffer[2] = x9022;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9021))[0])();
+}
 
-    return result;
 }
 
-void *prim_modulo(void *first, void *second)
+inline void hash_u45count_fptr() // hash-count 
 {
-    void *result = nullptr;
-
-    if (!is_integer_val(first) || !is_integer_val(second))
-    { // to see either of the numbers has fraction in it!
-        assert_type(false, "Error in modulo: contract violation -> expected integer arguments!");
-    }
-    else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
-    { // both numbers are mpz
-        mpz_t *mpz_arg1 = decode_mpz(first);
-        mpz_t *mpz_arg2 = decode_mpz(second);
-
-        return encode_mpz(calc_modulo(mpz_arg1, mpz_arg2));
-    }
-    else if (get_tag(first) == MPF && get_tag(second) == MPF)
-    { // both number are mpf
-        mpz_t *mpz_arg1 = mpf_2_mpz(decode_mpf(first));
-        mpz_t *mpz_arg2 = mpf_2_mpz(decode_mpf(second));
-
-        return encode_mpf(mpz_2_mpf(calc_modulo(mpz_arg1, mpz_arg2)));
-    }
-    else if (get_tag(first) == MPZ && get_tag(second) == MPF)
-    { // first number is mpz but second is mpf
-        mpz_t *mpz_arg2 = mpf_2_mpz(decode_mpf(second));
-
-        return encode_mpf(mpz_2_mpf(calc_modulo(decode_mpz(first), mpz_arg2)));
-    }
-    else
-    { // second number is mpz but but first is mpf
-        mpz_t *mpz_arg1 = mpf_2_mpz(decode_mpf(first));
-
-        return encode_mpf(mpz_2_mpf(calc_modulo(mpz_arg1, decode_mpz(second))));
-    }
-
-    return result;
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9024 = prim_car(lst);
+void* const lst9026 = prim_cdr(lst);
+void* const x9025 = apply_prim_hash_u45count(lst9026);
+arg_buffer[1] = kont9024;
+arg_buffer[2] = x9025;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9024))[0])();
 }
-
-void *apply_prim_modulo(void *lst)
+else
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in modulo -> arity mismatch: expected number of argument is 2!");
-
-    void **cons_lst = decode_cons(lst);
-    int car_tag = get_tag(cons_lst[0]);
-    bool type_check = (car_tag == MPZ) || (car_tag == MPF);
-
-    if (!type_check)
-        assert_type(type_check, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
+void* const kont9024 = arg_buffer[2];
+void* const x9025 = apply_prim_hash_u45count(arg_buffer);
+arg_buffer[1] = kont9024;
+arg_buffer[2] = x9025;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9024))[0])();
+}
 
-    return prim_modulo(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
-void *apply_prim_modulo_2(void *a, void *b)
+inline void set_fptr() // set 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    return prim_modulo(a, b);
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9027 = prim_car(lst);
+void* const lst9029 = prim_cdr(lst);
+void* const x9028 = apply_prim_set(lst9029);
+arg_buffer[1] = kont9027;
+arg_buffer[2] = x9028;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9027))[0])();
 }
-
-void *prim_equal_u63(void *arg1, void *arg2)
+else
 {
-    return equal_(arg1, arg2);
+void* const kont9027 = arg_buffer[2];
+void* const x9028 = apply_prim_set(arg_buffer);
+arg_buffer[1] = kont9027;
+arg_buffer[2] = x9028;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9027))[0])();
 }
 
-void *apply_prim_equal_u63_2(void *x, void *y)
-{
-    return equal_(x, y);
 }
 
-void *apply_prim_equal_u63(void *lst)
+inline void set_u45_u62list_fptr() // set->list 
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in equal? -> arity mismatch: expected number of argument is 2.");
-
-    return prim_equal_u63(prim_car(lst), prim_car(prim_cdr(lst)));
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9030 = prim_car(lst);
+void* const lst9032 = prim_cdr(lst);
+void* const x9031 = apply_prim_set_u45_u62list(lst9032);
+arg_buffer[1] = kont9030;
+arg_buffer[2] = x9031;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9030))[0])();
 }
-
-void *prim_eq_u63(void *arg1, void *arg2)
+else
 {
-    if (is_cons(arg1) || is_cons(arg2))
-        return encode_bool(false);
+void* const kont9030 = arg_buffer[2];
+void* const x9031 = apply_prim_set_u45_u62list(arg_buffer);
+arg_buffer[1] = kont9030;
+arg_buffer[2] = x9031;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9030))[0])();
+}
 
-    return equal_(arg1, arg2);
 }
 
-void *apply_prim_eq_u63_2(void *arg1, void *arg2)
+inline void list_u45_u62set_fptr() // list->set 
 {
-    // return prim_eq_u63(x, y);
-    if (is_cons(arg1) || is_cons(arg2))
-        return encode_bool(false);
-
-    return equal_(arg1, arg2);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9033 = prim_car(lst);
+void* const lst9035 = prim_cdr(lst);
+void* const x9034 = apply_prim_list_u45_u62set(lst9035);
+arg_buffer[1] = kont9033;
+arg_buffer[2] = x9034;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9033))[0])();
 }
-
-void *apply_prim_eq_u63(void *lst)
+else
 {
-    if (length_counter(lst) > 2)
-        assert_type(false, "Error in eq? -> arity mismatch: expected number of argument is 2.");
-
-    if (is_cons(prim_car(lst)) || is_cons(prim_car(prim_cdr(lst))))
-        return encode_bool(false);
+void* const kont9033 = arg_buffer[2];
+void* const x9034 = apply_prim_list_u45_u62set(arg_buffer);
+arg_buffer[1] = kont9033;
+arg_buffer[2] = x9034;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9033))[0])();
+}
 
-    return apply_prim_eq_u63_2(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
-// null?
-void *prim_null_u63(void *item)
+inline void set_u45add_fptr() // set-add 
 {
-    if (get_tag(item) == SPL)
-    {
-        return encode_bool(true);
-    }
-    return encode_bool(false);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9036 = prim_car(lst);
+void* const lst9038 = prim_cdr(lst);
+void* const x9037 = apply_prim_set_u45add(lst9038);
+arg_buffer[1] = kont9036;
+arg_buffer[2] = x9037;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9036))[0])();
 }
-
-void *apply_prim_null_u63(void *lst)
+else
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in null? -> arity mismatch: expected number of argument is 1.");
+void* const kont9036 = arg_buffer[2];
+void* const x9037 = apply_prim_set_u45add(arg_buffer);
+arg_buffer[1] = kont9036;
+arg_buffer[2] = x9037;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9036))[0])();
+}
 
-    return prim_null_u63(prim_car(lst));
 }
 
-void *apply_prim_null_u63_1(void *item)
+inline void set_u45member_u63_fptr() // set-member? 
 {
-    return prim_null_u63(item);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9039 = prim_car(lst);
+void* const lst9041 = prim_cdr(lst);
+void* const x9040 = apply_prim_set_u45member_u63(lst9041);
+arg_buffer[1] = kont9039;
+arg_buffer[2] = x9040;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9039))[0])();
 }
-
-void *apply_prim_positive_u63_1(void *val)
+else
 {
-    int val_tag = get_tag(val);
-    if (val_tag != MPF && val_tag != MPZ)
-    {
-        assert_type(false, "Error in positive? -> contract violation: expected integers or floating-point numbers as argument!");
-    }
-
-    if (val_tag == MPZ)
-    {
-        if (mpz_sgn(*(decode_mpz(val))) > 0)
-            return encode_bool(true);
-        else
-            return encode_bool(false);
-    }
-    else if (val_tag == MPF)
-    {
-        if (mpf_sgn(*(decode_mpf(val))) > 0)
-            return encode_bool(true);
-        else
-            return encode_bool(false);
-    }
+void* const kont9039 = arg_buffer[2];
+void* const x9040 = apply_prim_set_u45member_u63(arg_buffer);
+arg_buffer[1] = kont9039;
+arg_buffer[2] = x9040;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9039))[0])();
+}
 
-    return nullptr;
 }
 
-void *apply_prim_positive_u63(void *lst)
+inline void set_u45remove_fptr() // set-remove 
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in positive? -> arity mismatch: expected number of argument is 1.");
-
-    return apply_prim_positive_u63_1(prim_car(lst));
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9042 = prim_car(lst);
+void* const lst9044 = prim_cdr(lst);
+void* const x9043 = apply_prim_set_u45remove(lst9044);
+arg_buffer[1] = kont9042;
+arg_buffer[2] = x9043;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9042))[0])();
 }
-
-void *apply_prim_negative_u63_1(void *val)
+else
 {
-    int val_tag = get_tag(val);
-    if (val_tag != MPF && val_tag != MPZ)
-    {
-        assert_type(false, "Error in negative? -> contract violation: expected integers or floating-point numbers as argument!");
-    }
-
-    if (val_tag == MPZ)
-    {
-        if (mpz_sgn(*(decode_mpz(val))) < 0)
-            return encode_bool(true);
-        else
-            return encode_bool(false);
-    }
-    else if (val_tag == MPF)
-    {
-        if (mpf_sgn(*(decode_mpf(val))) < 0)
-            return encode_bool(true);
-        else
-            return encode_bool(false);
-    }
+void* const kont9042 = arg_buffer[2];
+void* const x9043 = apply_prim_set_u45remove(arg_buffer);
+arg_buffer[1] = kont9042;
+arg_buffer[2] = x9043;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9042))[0])();
+}
 
-    return nullptr;
 }
 
-void *apply_prim_negative_u63(void *lst)
+inline void set_u45count_fptr() // set-count 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9045 = prim_car(lst);
+void* const lst9047 = prim_cdr(lst);
+void* const x9046 = apply_prim_set_u45count(lst9047);
+arg_buffer[1] = kont9045;
+arg_buffer[2] = x9046;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9045))[0])();
+}
+else
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in negative? -> arity mismatch: expected number of argument is 1.");
+void* const kont9045 = arg_buffer[2];
+void* const x9046 = apply_prim_set_u45count(arg_buffer);
+arg_buffer[1] = kont9045;
+arg_buffer[2] = x9046;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9045))[0])();
+}
 
-    return apply_prim_negative_u63_1(prim_car(lst));
 }
 
-// pair?
-void *apply_prim_pair_u63_1(void *item)
+inline void string_u63_fptr() // string? 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    if (get_tag(item) == CONS)
-    {
-        return encode_bool(true);
-    }
-    return encode_bool(false);
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9048 = prim_car(lst);
+void* const lst9050 = prim_cdr(lst);
+void* const x9049 = apply_prim_string_u63(lst9050);
+arg_buffer[1] = kont9048;
+arg_buffer[2] = x9049;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9048))[0])();
 }
-
-void *apply_prim_pair_u63(void *lst)
+else
 {
-
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in pair? -> arity mismatch: expected number of argument is 1.");
-
-    return apply_prim_pair_u63_1(prim_car(lst));
+void* const kont9048 = arg_buffer[2];
+void* const x9049 = apply_prim_string_u63(arg_buffer);
+arg_buffer[1] = kont9048;
+arg_buffer[2] = x9049;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9048))[0])();
 }
 
-#pragma region Addition
-void *add_mpz(void *arg1, void *arg2)
-{
-    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*result);
-    mpz_add(*result, *(decode_mpz(arg1)), *(decode_mpz(arg2)));
-    return encode_mpz(result);
 }
 
-void *add_mpf(void *arg1, void *arg2)
+inline void string_u45length_fptr() // string-length 
 {
-    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*result);
-    mpf_add(*result, *(decode_mpf(arg1)), *(decode_mpf(arg2)));
-    return encode_mpf(result);
-}
-void *add_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    if (get_tag(arg1) == MPZ)
-    { // arg1 is mpz, arg2 is mpf
-        mpf_t *mpf_arg1 = mpz_2_mpf(decode_mpz(arg1));
-        mpf_add(*mpf_arg1, *mpf_arg1, *(decode_mpf(arg2)));
-        return encode_mpf(mpf_arg1);
-    }
-    mpf_t *mpf_arg2 = mpz_2_mpf(decode_mpz(arg2)); // arg1 is mpf and arg2 is mpz
-    mpf_add(*mpf_arg2, *(decode_mpf(arg1)), *mpf_arg2);
-    return encode_mpf(mpf_arg2);
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9051 = prim_car(lst);
+void* const lst9053 = prim_cdr(lst);
+void* const x9052 = apply_prim_string_u45length(lst9053);
+arg_buffer[1] = kont9051;
+arg_buffer[2] = x9052;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9051))[0])();
 }
-
-void *add(void *arg1, void *arg2)
+else
 {
-    bool is_mpf = false;
-    int arg1_tag = get_tag(arg1);
-    int arg2_tag = get_tag(arg2);
-
-    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)))
-    {
-        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*arg1_mpf);
-        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*arg2_mpf);
-
-        if (arg1_tag == MPZ)
-        {
-            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
-        }
-        else
-        {
-            is_mpf = true;
-            arg1_mpf = decode_mpf(arg1);
-        }
-
-        if (arg2_tag == MPZ)
-        {
-            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
-        }
-        else
-        {
-            is_mpf = true;
-            arg2_mpf = decode_mpf(arg2);
-        }
-
-        mpf_t *res1 = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*res1);
-        mpf_add(*res1, *arg1_mpf, *arg2_mpf);
-
-        mpf_clear(*arg1_mpf);
-        mpf_clear(*arg2_mpf);
-
-        void *res = encode_mpf(res1);
-
-        if (is_mpf || !is_integer_val(res))
-        {
-            return res;
-        }
-        else
-        {
-            // none of the values were mpf, and the result do no have any fractional part
-            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-            mpz_init(*ress);
-            mpz_set_f(*ress, *(decode_mpf(res)));
-            return encode_mpz(ress);
-        }
-    }
-    else
-    {
-        assert_type(false, "Error in plus -> contact violation: The values in the list must be integers or floating-point numbers!");
-    }
+void* const kont9051 = arg_buffer[2];
+void* const x9052 = apply_prim_string_u45length(arg_buffer);
+arg_buffer[1] = kont9051;
+arg_buffer[2] = x9052;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9051))[0])();
+}
 
-    return nullptr;
 }
 
-// takes in two number?, gets the tags,  does the castings as required and adds them.
-// the numbers could be mpz_t or mpf_t, if different, mpz_t gets casted to mpf_t
-void *add_old(void *arg1, void *arg2)
+inline void string_u45ref_fptr() // string-ref 
 {
-    int arg1_tag = get_tag(arg1);
-    int arg2_tag = get_tag(arg2);
-    if (arg1_tag == arg2_tag)
-    {
-        if (arg1_tag == MPZ)
-        {
-            return add_mpz(arg1, arg2);
-        }
-        else
-        {
-            return add_mpf(arg1, arg2);
-        }
-    }
-    else
-    {
-        return add_mpz_mpf(arg1, arg2);
-    }
-    return 0;
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9054 = prim_car(lst);
+void* const lst9056 = prim_cdr(lst);
+void* const x9055 = apply_prim_string_u45ref(lst9056);
+arg_buffer[1] = kont9054;
+arg_buffer[2] = x9055;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9054))[0])();
 }
-
-void *apply_prim__u43(void *lst) //+
+else
 {
-    void *result = nullptr;
-
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int car_tag = get_tag(cons_lst[0]);
-        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
-
-        if (!type_check)
-            assert_type(false, "Error in addition -> contact violation: The values in the list must be integers or floating-point numbers!");
-
-        if (!result)
-        {
-            result = cons_lst[0];
-        }
-        else
-        {
-            result = add(result, cons_lst[0]);
-        }
-
-        lst = cons_lst[1];
-    }
+void* const kont9054 = arg_buffer[2];
+void* const x9055 = apply_prim_string_u45ref(arg_buffer);
+arg_buffer[1] = kont9054;
+arg_buffer[2] = x9055;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9054))[0])();
+}
 
-    if (result == nullptr)
-    {
-        mpz_t *val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init_set_str(*val, "0", 10);
-        return encode_mpz(val);
-    }
-    return result;
 }
 
-void *apply_prim__u43_1(void *arg1) //+
+inline void substring_fptr() // substring 
 {
-    int arg1_tag = get_tag(arg1);
-
-    if (arg1_tag == MPZ || arg1_tag == MPF)
-        return arg1;
-
-    assert_type(false, "Error in plus -> contact violation: The values in the list must be integers or floating-point numbers!");
-
-    return nullptr;
-}
-void *apply_prim__u43_2(void *arg1, void *arg2) //+
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    return add(arg1, arg2);
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9057 = prim_car(lst);
+void* const lst9059 = prim_cdr(lst);
+void* const x9058 = apply_prim_substring(lst9059);
+arg_buffer[1] = kont9057;
+arg_buffer[2] = x9058;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9057))[0])();
 }
-void *apply_prim__u43_3(void *arg1, void *arg2, void *arg3) //+
+else
 {
-    return add(arg1, add(arg2, arg3));
+void* const kont9057 = arg_buffer[2];
+void* const x9058 = apply_prim_substring(arg_buffer);
+arg_buffer[1] = kont9057;
+arg_buffer[2] = x9058;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9057))[0])();
 }
 
-#pragma endregion
+}
 
-#pragma region Subtraction
-void *sub_mpz(void *arg1, void *arg2)
+inline void string_u45append_fptr() // string-append 
 {
-    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*result);
-    mpz_sub(*result, *(decode_mpz(arg1)), *(decode_mpz(arg2)));
-    return encode_mpz(result);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9060 = prim_car(lst);
+void* const lst9062 = prim_cdr(lst);
+void* const x9061 = apply_prim_string_u45append(lst9062);
+arg_buffer[1] = kont9060;
+arg_buffer[2] = x9061;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9060))[0])();
 }
-
-void *sub_mpf(void *arg1, void *arg2)
+else
 {
-    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*result);
-    mpf_sub(*result, *(decode_mpf(arg1)), *(decode_mpf(arg2)));
-    return encode_mpf(result);
+void* const kont9060 = arg_buffer[2];
+void* const x9061 = apply_prim_string_u45append(arg_buffer);
+arg_buffer[1] = kont9060;
+arg_buffer[2] = x9061;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9060))[0])();
 }
 
-void *sub_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
-{
-    if (get_tag(arg1) == MPZ)
-    { // arg1 is mpz, arg2 is mpf
-        mpf_t *mpf_arg1 = mpz_2_mpf(decode_mpz(arg1));
-        mpf_sub(*mpf_arg1, *mpf_arg1, *(decode_mpf(arg2)));
-        return encode_mpf(mpf_arg1);
-    }
-    mpf_t *mpf_arg2 = mpz_2_mpf(decode_mpz(arg2)); // arg1 is mpf and arg2 is mpz
-    mpf_sub(*mpf_arg2, *(decode_mpf(arg1)), *mpf_arg2);
-    return encode_mpf(mpf_arg2);
 }
 
-// takes in two number?, gets the tags,  does the castings as required and adds them.
-// the numbers could be mpz_t or mpf_t, if different, mpz_t gets casted to mpf_t
-void *sub(void *arg1, void *arg2)
+inline void string_u45_u62list_fptr() // string->list 
 {
-    bool is_mpf = false;
-    int arg1_tag = get_tag(arg1);
-    int arg2_tag = get_tag(arg2);
-
-    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)))
-    {
-        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*arg1_mpf);
-        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*arg2_mpf);
-
-        if (arg1_tag == MPZ)
-        {
-            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
-        }
-        else
-        {
-            is_mpf = true;
-            arg1_mpf = decode_mpf(arg1);
-        }
-
-        if (arg2_tag == MPZ)
-        {
-            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
-        }
-        else
-        {
-            is_mpf = true;
-            arg2_mpf = decode_mpf(arg2);
-        }
-
-        mpf_t *res1 = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*res1);
-        mpf_sub(*res1, *arg1_mpf, *arg2_mpf);
-
-        mpf_clear(*arg1_mpf);
-        mpf_clear(*arg2_mpf);
-
-        void *res = encode_mpf(res1);
-
-        if (is_mpf || !is_integer_val(res))
-        {
-            return res;
-        }
-        else
-        {
-            // none of the values were mpf, and the result do no have any fractional part
-            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-            mpz_init(*ress);
-            mpz_set_f(*ress, *(decode_mpf(res)));
-            return encode_mpz(ress);
-        }
-    }
-    else
-    {
-        assert_type(false, "Error in minus -> contact violation: The values in the list must be integers or floating-point numbers!");
-    }
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9063 = prim_car(lst);
+void* const lst9065 = prim_cdr(lst);
+void* const x9064 = apply_prim_string_u45_u62list(lst9065);
+arg_buffer[1] = kont9063;
+arg_buffer[2] = x9064;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9063))[0])();
+}
+else
+{
+void* const kont9063 = arg_buffer[2];
+void* const x9064 = apply_prim_string_u45_u62list(arg_buffer);
+arg_buffer[1] = kont9063;
+arg_buffer[2] = x9064;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9063))[0])();
+}
 
-    return nullptr;
 }
 
-void *sub_old(void *arg1, void *arg2)
+inline void exact_u45floor_fptr() // exact-floor 
 {
-    int arg1_tag = get_tag(arg1);
-    int arg2_tag = get_tag(arg2);
-    if (arg1_tag == arg2_tag)
-    {
-        if (arg1_tag == MPZ)
-        {
-            return sub_mpz(arg1, arg2);
-        }
-        else
-        {
-            return sub_mpf(arg1, arg2);
-        }
-    }
-    else
-    {
-        return sub_mpz_mpf(arg1, arg2);
-    }
-    return 0;
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9066 = prim_car(lst);
+void* const lst9068 = prim_cdr(lst);
+void* const x9067 = apply_prim_exact_u45floor(lst9068);
+arg_buffer[1] = kont9066;
+arg_buffer[2] = x9067;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9066))[0])();
 }
-
-void *apply_prim__u45_1(void *arg1) //-
+else
 {
-    // adding dummy parameter
-    int arg1_tag = get_tag(arg1);
-
-    if (arg1_tag == MPZ || arg1_tag == MPF)
-    {
-        if (arg1_tag == MPZ)
-        {
-            mpz_t *final_mpz = decode_mpz(arg1);
-            mpz_neg(*final_mpz, *final_mpz);
-
-            return encode_mpz(final_mpz);
-        }
-        else
-        {
-            mpf_t *final_mpf = decode_mpf(arg1);
-            mpf_neg(*final_mpf, *final_mpf);
-
-            return encode_mpf(final_mpf);
-        }
-    }
-
-    assert_type(false, "Error in substraction -> contact violation: The values in the list must be integers or floating-point numbers!");
+void* const kont9066 = arg_buffer[2];
+void* const x9067 = apply_prim_exact_u45floor(arg_buffer);
+arg_buffer[1] = kont9066;
+arg_buffer[2] = x9067;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9066))[0])();
+}
 
-    return nullptr;
 }
-void *apply_prim__u45_2(void *arg1, void *arg2) //-
+
+inline void exact_u45ceiling_fptr() // exact-ceiling 
 {
-    return sub(arg1, arg2);
-}
-void *apply_prim__u45_3(void *arg1, void *arg2, void *arg3) //-
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    return sub(sub(arg1, arg2), arg3);
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9069 = prim_car(lst);
+void* const lst9071 = prim_cdr(lst);
+void* const x9070 = apply_prim_exact_u45ceiling(lst9071);
+arg_buffer[1] = kont9069;
+arg_buffer[2] = x9070;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9069))[0])();
 }
-
-void *apply_prim__u45(void *lst) //-
+else
 {
-
-    if (length_counter(lst) == 1)
-        return apply_prim__u45_1(prim_car(lst));
-
-    void *result = nullptr;
-
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int car_tag = get_tag(cons_lst[0]);
-        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
-
-        if (!type_check)
-            assert_type(false, "Error in subtraction -> contact violation: The values in the list must be integers or floating-point numbers!");
-
-        if (!result)
-        {
-            result = cons_lst[0];
-        }
-        else
-        {
-            result = sub(result, cons_lst[0]);
-        }
-
-        lst = cons_lst[1];
-    }
-
-    if (result == nullptr)
-    {
-        assert_type(false, "Error in subtraction -> arity mismatch: at least 1 argument is required!");
-    }
-
-    return result;
+void* const kont9069 = arg_buffer[2];
+void* const x9070 = apply_prim_exact_u45ceiling(arg_buffer);
+arg_buffer[1] = kont9069;
+arg_buffer[2] = x9070;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9069))[0])();
 }
 
-#pragma endregion
+}
 
-#pragma region Multiplication
-void *mul_mpz(void *arg1, void *arg2)
+inline void exact_u45round_fptr() // exact-round 
 {
-    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*result);
-    mpz_mul(*result, *(decode_mpz(arg1)), *(decode_mpz(arg2)));
-    return encode_mpz(result);
-}
-void *mul_mpf(void *arg1, void *arg2)
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*result);
-    mpf_mul(*result, *(decode_mpf(arg1)), *(decode_mpf(arg2)));
-    return encode_mpf(result);
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9072 = prim_car(lst);
+void* const lst9074 = prim_cdr(lst);
+void* const x9073 = apply_prim_exact_u45round(lst9074);
+arg_buffer[1] = kont9072;
+arg_buffer[2] = x9073;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9072))[0])();
 }
-void *mul_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
+else
 {
-    if (get_tag(arg1) == MPZ)
-    { // arg1 is mpz, arg2 is mpf
-        mpf_t *mpf_arg1 = mpz_2_mpf(decode_mpz(arg1));
-        mpf_mul(*mpf_arg1, *mpf_arg1, *(decode_mpf(arg2)));
-        return encode_mpf(mpf_arg1);
-    }
-    mpf_t *mpf_arg2 = mpz_2_mpf(decode_mpz(arg2)); // arg1 is mpf and arg2 is mpz
-    mpf_mul(*mpf_arg2, *(decode_mpf(arg1)), *mpf_arg2);
-    return encode_mpf(mpf_arg2);
+void* const kont9072 = arg_buffer[2];
+void* const x9073 = apply_prim_exact_u45round(arg_buffer);
+arg_buffer[1] = kont9072;
+arg_buffer[2] = x9073;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9072))[0])();
 }
-
-// takes in two number?, gets the tags,  does the castings as required and adds them.
-// the numbers could be mpz_t or mpf_t, if different, mpz_t gets casted to mpf_t
-void *mul(void *arg1, void *arg2)
-{
-    int arg1_tag = get_tag(arg1);
-    int arg2_tag = get_tag(arg2);
 
-    if (arg1_tag == arg2_tag)
-    {
-        if (arg1_tag == MPZ)
-        {
-            return mul_mpz(arg1, arg2);
-        }
-        else
-        {
-            return mul_mpf(arg1, arg2);
-        }
-    }
-    else
-    {
-        return mul_mpz_mpf(arg1, arg2);
-    }
-    return 0;
 }
 
-void *apply_prim__u42(void *lst) //*
+inline void abs_fptr() // abs 
 {
-    void *result = nullptr;
-
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int car_tag = get_tag(cons_lst[0]);
-        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
-
-        if (!type_check)
-            assert_type(false, "Error in multiplication -> contact violation: The values in the list must be integers or floating-point numbers!");
-
-        if (!result)
-        {
-            result = cons_lst[0];
-        }
-        else
-        {
-            result = mul(result, cons_lst[0]);
-        }
-
-        lst = cons_lst[1];
-    }
-
-    if (result == nullptr)
-    {
-        mpz_t *val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init_set_str(*val, "1", 10);
-        return encode_mpz(val);
-    }
-
-    return result;
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9075 = prim_car(lst);
+void* const lst9077 = prim_cdr(lst);
+void* const x9076 = apply_prim_abs(lst9077);
+arg_buffer[1] = kont9075;
+arg_buffer[2] = x9076;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9075))[0])();
 }
-
-void *apply_prim__u42_1(void *arg1) //*
+else
 {
-    int arg1_tag = get_tag(arg1);
+void* const kont9075 = arg_buffer[2];
+void* const x9076 = apply_prim_abs(arg_buffer);
+arg_buffer[1] = kont9075;
+arg_buffer[2] = x9076;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9075))[0])();
+}
 
-    if (arg1_tag == MPZ || arg1_tag == MPF)
-        return arg1;
+}
 
-    assert_type(false, "Error in multiplication -> contact violation: The values in the list must be integers or floating-point numbers!");
+inline void max_fptr() // max 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9078 = prim_car(lst);
+void* const lst9080 = prim_cdr(lst);
+void* const x9079 = apply_prim_max(lst9080);
+arg_buffer[1] = kont9078;
+arg_buffer[2] = x9079;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9078))[0])();
+}
+else
+{
+void* const kont9078 = arg_buffer[2];
+void* const x9079 = apply_prim_max(arg_buffer);
+arg_buffer[1] = kont9078;
+arg_buffer[2] = x9079;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9078))[0])();
+}
 
-    return nullptr;
 }
 
-void *apply_prim__u42_2(void *arg1, void *arg2) //*
+inline void min_fptr() // min 
 {
-    return mul(arg1, arg2);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9081 = prim_car(lst);
+void* const lst9083 = prim_cdr(lst);
+void* const x9082 = apply_prim_min(lst9083);
+arg_buffer[1] = kont9081;
+arg_buffer[2] = x9082;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9081))[0])();
 }
-
-void *apply_prim__u42_3(void *arg1, void *arg2, void *arg3) //*
+else
 {
-    return mul(mul(arg1, arg2), arg3);
+void* const kont9081 = arg_buffer[2];
+void* const x9082 = apply_prim_min(arg_buffer);
+arg_buffer[1] = kont9081;
+arg_buffer[2] = x9082;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9081))[0])();
 }
 
-#pragma endregion
-
-#pragma region Division
+}
 
-void *div_mpz(void *arg1, void *arg2)
+inline void expt_fptr() // expt 
 {
-    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*result);
-    mpz_div(*result, *(decode_mpz(arg1)), *(decode_mpz(arg2)));
-    return encode_mpz(result);
-}
-void *div_mpf(void *arg1, void *arg2)
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*result);
-    mpf_div(*result, *(decode_mpf(arg1)), *(decode_mpf(arg2)));
-    return encode_mpf(result);
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9084 = prim_car(lst);
+void* const lst9086 = prim_cdr(lst);
+void* const x9085 = apply_prim_expt(lst9086);
+arg_buffer[1] = kont9084;
+arg_buffer[2] = x9085;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9084))[0])();
 }
-void *div_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
+else
 {
-    if (get_tag(arg1) == MPZ)
-    { // arg1 is mpz, arg2 is mpf
-        mpf_t *mpf_arg1 = mpz_2_mpf(decode_mpz(arg1));
-        // print_val(mpf_arg1);
-        mpf_div(*mpf_arg1, *mpf_arg1, *(decode_mpf(arg2)));
-        return encode_mpf(mpf_arg1);
-    }
-    mpf_t *mpf_arg2 = mpz_2_mpf(decode_mpz(arg2)); // arg1 is mpf and arg2 is mpz
-    mpf_div(*mpf_arg2, *(decode_mpf(arg1)), *mpf_arg2);
-    return encode_mpf(mpf_arg2);
+void* const kont9084 = arg_buffer[2];
+void* const x9085 = apply_prim_expt(arg_buffer);
+arg_buffer[1] = kont9084;
+arg_buffer[2] = x9085;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9084))[0])();
 }
 
-// takes in two number?, gets the tags,  does the castings as required and adds them.
-// the numbers could be mpz_t or mpf_t, if different, mpz_t gets casted to mpf_t
-void *div(void *arg1, void *arg2)
-{
-    int arg1_tag = get_tag(arg1);
-    int arg2_tag = get_tag(arg2);
-    if (arg1_tag == arg2_tag)
-    {
-        if (arg1_tag == MPZ)
-        {
-            return div_mpz(arg1, arg2);
-        }
-        else
-        {
-            return div_mpf(arg1, arg2);
-        }
-    }
-    else
-    {
-        return div_mpz_mpf(arg1, arg2);
-    }
-    return 0;
 }
 
-void *apply_prim__u47_2(void *arg1, void *arg2) // / division
+inline void sqrt_fptr() // sqrt 
 {
-    bool is_mpf = false;
-    int arg1_tag = get_tag(arg1);
-    int arg2_tag = get_tag(arg2);
-
-    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)))
-    {
-        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*arg1_mpf);
-        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*arg2_mpf);
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9087 = prim_car(lst);
+void* const lst9089 = prim_cdr(lst);
+void* const x9088 = apply_prim_sqrt(lst9089);
+arg_buffer[1] = kont9087;
+arg_buffer[2] = x9088;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9087))[0])();
+}
+else
+{
+void* const kont9087 = arg_buffer[2];
+void* const x9088 = apply_prim_sqrt(arg_buffer);
+arg_buffer[1] = kont9087;
+arg_buffer[2] = x9088;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9087))[0])();
+}
 
-        if (arg1_tag == MPZ)
-        {
-            // if first number is 0 return exactly that!
-            if (mpz_sgn(*(decode_mpz(arg1))) == 0)
-            {
-                mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-                mpz_init_set_str(*tempMpzVal, "0", 10);
-                return encode_mpz(tempMpzVal);
-            }
+}
 
-            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
-        }
-        else
-        {
-            // if first number is 0 return exactly that!
-            if (mpf_sgn(*(decode_mpf(arg1))) == 0)
-            {
-                mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-                mpf_init_set_str(*tempMpfVal, "0.0", 10);
-                return encode_mpf(tempMpfVal);
-            }
+inline void remainder_fptr() // remainder 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9090 = prim_car(lst);
+void* const lst9092 = prim_cdr(lst);
+void* const x9091 = apply_prim_remainder(lst9092);
+arg_buffer[1] = kont9090;
+arg_buffer[2] = x9091;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9090))[0])();
+}
+else
+{
+void* const kont9090 = arg_buffer[2];
+void* const x9091 = apply_prim_remainder(arg_buffer);
+arg_buffer[1] = kont9090;
+arg_buffer[2] = x9091;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9090))[0])();
+}
 
-            is_mpf = true;
-            arg1_mpf = decode_mpf(arg1);
-        }
+}
 
-        if (arg2_tag == MPZ)
-        {
-            if (mpz_sgn(*(decode_mpz(arg2))) == 0)
-            {
-                assert_type(false, "Error in division -> division by zero is not allowed!");
-            }
+inline void quotient_fptr() // quotient 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9093 = prim_car(lst);
+void* const lst9095 = prim_cdr(lst);
+void* const x9094 = apply_prim_quotient(lst9095);
+arg_buffer[1] = kont9093;
+arg_buffer[2] = x9094;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9093))[0])();
+}
+else
+{
+void* const kont9093 = arg_buffer[2];
+void* const x9094 = apply_prim_quotient(arg_buffer);
+arg_buffer[1] = kont9093;
+arg_buffer[2] = x9094;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9093))[0])();
+}
 
-            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
-        }
-        else
-        {
-            if (mpf_sgn(*(decode_mpf(arg2))) == 0)
-            {
-                assert_type(false, "Error in division -> division by zero is not allowed!");
-            }
+}
 
-            is_mpf = true;
-            arg2_mpf = decode_mpf(arg2);
-        }
+inline void random_fptr() // random 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9096 = prim_car(lst);
+void* const lst9098 = prim_cdr(lst);
+void* const x9097 = apply_prim_random(lst9098);
+arg_buffer[1] = kont9096;
+arg_buffer[2] = x9097;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9096))[0])();
+}
+else
+{
+void* const kont9096 = arg_buffer[2];
+void* const x9097 = apply_prim_random(arg_buffer);
+arg_buffer[1] = kont9096;
+arg_buffer[2] = x9097;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9096))[0])();
+}
 
-        void *res = div_mpf(encode_mpf(arg1_mpf), encode_mpf(arg2_mpf));
+}
 
-        if (is_mpf || !is_integer_val(res))
-            return res;
-        else
-        {
-            // none of the values were mpf, and the result do no have any fractional part
-            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-            mpz_init(*ress);
-            mpz_set_f(*ress, *(decode_mpf(res)));
-            return encode_mpz(ress);
-        }
-    }
-    else
-    {
-        assert_type(false, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
-    }
+inline void symbol_u63_fptr() // symbol? 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9099 = prim_car(lst);
+void* const lst9101 = prim_cdr(lst);
+void* const x9100 = apply_prim_symbol_u63(lst9101);
+arg_buffer[1] = kont9099;
+arg_buffer[2] = x9100;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9099))[0])();
+}
+else
+{
+void* const kont9099 = arg_buffer[2];
+void* const x9100 = apply_prim_symbol_u63(arg_buffer);
+arg_buffer[1] = kont9099;
+arg_buffer[2] = x9100;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9099))[0])();
+}
 
-    return nullptr;
 }
 
-void *apply_prim__u47_3(void *arg1, void *arg2, void *arg3) // / division
+inline void pair_u63_fptr() // pair? 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    bool is_mpf = false;
-    int arg1_tag = get_tag(arg1);
-    int arg2_tag = get_tag(arg2);
-    int arg3_tag = get_tag(arg3);
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9102 = prim_car(lst);
+void* const lst9104 = prim_cdr(lst);
+void* const x9103 = apply_prim_pair_u63(lst9104);
+arg_buffer[1] = kont9102;
+arg_buffer[2] = x9103;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9102))[0])();
+}
+else
+{
+void* const kont9102 = arg_buffer[2];
+void* const x9103 = apply_prim_pair_u63(arg_buffer);
+arg_buffer[1] = kont9102;
+arg_buffer[2] = x9103;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9102))[0])();
+}
 
-    if (((arg1_tag == MPZ) || (arg1_tag == MPF)) && ((arg2_tag == MPZ) || (arg2_tag == MPF)) && ((arg3_tag == MPZ) || (arg3_tag == MPF)))
-    {
-        mpf_t *arg3_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*arg3_mpf);
+}
 
-        if (arg3_tag == MPZ)
-        {
-            if (mpz_sgn(*(decode_mpz(arg3))) == 0)
-            {
-                assert_type(false, "Error in division -> division by zero is not allowed!");
-            }
+inline void positive_u63_fptr() // positive? 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9105 = prim_car(lst);
+void* const lst9107 = prim_cdr(lst);
+void* const x9106 = apply_prim_positive_u63(lst9107);
+arg_buffer[1] = kont9105;
+arg_buffer[2] = x9106;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9105))[0])();
+}
+else
+{
+void* const kont9105 = arg_buffer[2];
+void* const x9106 = apply_prim_positive_u63(arg_buffer);
+arg_buffer[1] = kont9105;
+arg_buffer[2] = x9106;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9105))[0])();
+}
 
-            arg3_mpf = mpz_2_mpf(decode_mpz(arg3));
-        }
-        else
-        {
-            if (mpf_sgn(*(decode_mpf(arg3))) == 0)
-            {
-                assert_type(false, "Error in division -> division by zero is not allowed!");
-            }
+}
 
-            is_mpf = true;
-            arg3_mpf = decode_mpf(arg3);
-        }
+inline void negative_u63_fptr() // negative? 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9108 = prim_car(lst);
+void* const lst9110 = prim_cdr(lst);
+void* const x9109 = apply_prim_negative_u63(lst9110);
+arg_buffer[1] = kont9108;
+arg_buffer[2] = x9109;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9108))[0])();
+}
+else
+{
+void* const kont9108 = arg_buffer[2];
+void* const x9109 = apply_prim_negative_u63(arg_buffer);
+arg_buffer[1] = kont9108;
+arg_buffer[2] = x9109;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9108))[0])();
+}
 
-        void *res = div(apply_prim__u47_2(arg1, arg2), encode_mpf(arg3_mpf));
-        // void *res = div(div(encode_mpf(arg1_mpf), encode_mpf(arg2_mpf)), encode_mpf(arg3_mpf));
+}
 
-        if (is_mpf || !is_integer_val(res))
-            return res;
-        else
-        {
-            // none of the values were mpf, and the result do no have any fractional part
-            mpz_t *ress = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-            mpz_init(*ress);
-            mpz_set_f(*ress, *(decode_mpf(res)));
-            return encode_mpz(ress);
-        }
-    }
-    else
-    {
-        assert_type(false, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
-    }
+inline void list_fptr() // list 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+if(is_cons(arg_buffer[2]))
+{
+//(apply e0 e0) case
+void* const lst = arg_buffer[2];
+void* const kont9111 = prim_car(lst);
+void* const lst9113 = prim_cdr(lst);
+void* const x9112 = apply_prim_list(lst9113);
+arg_buffer[1] = kont9111;
+arg_buffer[2] = x9112;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9111))[0])();
+}
+else
+{
+void* const kont9111 = arg_buffer[2];
+void* const x9112 = apply_prim_list(arg_buffer);
+arg_buffer[1] = kont9111;
+arg_buffer[2] = x9112;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont9111))[0])();
+}
 
-    return nullptr;
 }
 
-void *apply_prim__u47_1(void *arg1) // / division
+inline void even_u63_fptr() // even? -> generic version 
 {
-    int arg1_tag = get_tag(arg1);
+//reading env and args
+void* const kont8846 = arg_buffer[2];
+void* const x = arg_buffer[3];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    if (arg1_tag == MPZ || arg1_tag == MPF)
-    {
-        if (arg1_tag == MPZ)
-        {
-            if (mpz_sgn(*(decode_mpz(arg1))) == 0)
-            {
-                assert_type(false, "Error in division -> division by zero is not allowed!");
-            }
-
-            // adding dummy parameter
-            mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-            mpz_init_set_str(*tempMpzVal, "1", 10);
-            void *arg2 = encode_mpz(tempMpzVal);
+//clo-app
+arg_buffer[1] = kont8846;
+arg_buffer[2] = apply_prim_equal_u63_2(int8944, apply_prim_modulo_2(x, int8933));
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8846))[0])();
+}
 
-            return apply_prim__u47_2(arg2, arg1);
-        }
-        else
-        {
-            if (mpf_sgn(*(decode_mpf(arg1))) == 0)
-            {
-                assert_type(false, "Error in division -> division by zero is not allowed!");
-            }
+inline void even_u63_spec(void* _8881, void* kont8846, void* x) // even? 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-            // adding dummy parameter
-            mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-            mpf_init_set_str(*tempMpfVal, "1.0", 10);
-            void *arg2 = encode_mpf(tempMpfVal);
+//clo-app
+arg_buffer[1] = kont8846;
+arg_buffer[2] = apply_prim_equal_u63_2(int8944, apply_prim_modulo_2(x, int8933));
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8846))[0])();
+}
 
-            return apply_prim__u47_2(arg2, arg1);
-        }
-    }
-    else
-    {
-        assert_type(false, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
-    }
+inline void odd_u63_fptr() // odd? -> generic version 
+{
+//reading env and args
+void* const kont8847 = arg_buffer[2];
+void* const x = arg_buffer[3];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    return nullptr;
+//clo-app
+arg_buffer[1] = kont8847;
+arg_buffer[2] = apply_prim_equal_u63_2(int8945, apply_prim_modulo_2(x, int8933));
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8847))[0])();
 }
 
-void *apply_prim__u47(void *lst) // / division
+inline void odd_u63_spec(void* _8882, void* kont8847, void* x) // odd? 
 {
-    if (length_counter(lst) < 1)
-        assert_type(false, "Error in division -> arity mismatch: at least 1 argument is expected!");
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    if (length_counter(lst) == 1)
-        return apply_prim__u47_1(prim_car(lst));
+//clo-app
+arg_buffer[1] = kont8847;
+arg_buffer[2] = apply_prim_equal_u63_2(int8945, apply_prim_modulo_2(x, int8933));
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8847))[0])();
+}
 
-    void *result = nullptr;
+inline void list_u45ref_fptr() // list-ref -> generic version 
+{
+//reading env and args
+void* const kont8848 = arg_buffer[2];
+void* const lst = arg_buffer[3];
+void* const n = arg_buffer[4];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    bool is_mpf = false;
+//if-clause
+if(is_true(apply_prim__u61_2(int8944, n)))
+{
 
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int car_tag = get_tag(cons_lst[0]);
-        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+//clo-app
+arg_buffer[1] = kont8848;
+arg_buffer[2] = apply_prim_car_1(lst);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8848))[0])();
+}
+else
+{
 
-        if (!type_check)
-            assert_type(false, "Error in division -> contact violation: The values in the list must be integers or floating-point numbers!");
+//clo-app
+list_u45ref_spec(list_u45ref, kont8848, apply_prim_cdr_1(lst), apply_prim__u45_2(n, int8945));
+}
 
-        // don't care if it's mpz/mpf, going to turn it to mpf
+}
 
-        mpf_t *val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*val);
+inline void list_u45ref_spec(void* _8883, void* kont8848, void* lst, void* n) // list-ref 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-        if (car_tag == MPZ)
-            val = mpz_2_mpf(decode_mpz(cons_lst[0]));
-        else
-        {
-            is_mpf = true;
-            val = decode_mpf(cons_lst[0]);
-        }
+//if-clause
+if(is_true(apply_prim__u61_2(int8944, n)))
+{
 
-        if (!result)
-        {
-            // if first number is 0 return exactly that!
-            if (car_tag == MPZ)
-            {
-                if (mpz_sgn(*(decode_mpz(cons_lst[0]))) == 0)
-                {
-                    mpz_t *tempMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-                    mpz_init_set_str(*tempMpzVal, "0", 10);
-                    return encode_mpz(tempMpzVal);
-                }
-            }
-            else
-            {
-                if (mpf_sgn(*(decode_mpf(cons_lst[0]))) == 0)
-                {
-                    mpf_t *tempMpfVal = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-                    mpf_init_set_str(*tempMpfVal, "0.0", 10);
-                    return encode_mpf(tempMpfVal);
-                }
-            }
+//clo-app
+arg_buffer[1] = kont8848;
+arg_buffer[2] = apply_prim_car_1(lst);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8848))[0])();
+}
+else
+{
 
-            result = encode_mpf(val);
-        }
-        else
-        {
-            // if any of the number in the list is 0, exit out with an error
-            if (mpf_sgn(*val) == 0)
-            {
-                assert_type(false, "Error in division -> division by zero is not allowed!");
-            }
+//clo-app
+list_u45ref_spec(list_u45ref, kont8848, apply_prim_cdr_1(lst), apply_prim__u45_2(n, int8945));
+}
 
-            result = div(result, encode_mpf(val));
-        }
+}
 
-        lst = cons_lst[1];
-    }
+inline void lam8884_fptr() // lam8884 -> generic version 
+{
+//reading env
+void* const env8885 = arg_buffer[1];
+//reading env and args
+void* const id_8735 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8885);
 
-    // none of the values were mpf, but the result has fraction
-    if (is_mpf || !is_integer_val(result))
-        return result;
-    else
-    {
-        // none of the values were mpf, and the result do no have any fractional part
-        mpz_t *res = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init(*res);
-        mpz_set_f(*res, *(decode_mpf(result)));
-        return encode_mpz(res);
-    }
+//if-clause
+if(is_true(id_8735))
+{
 
-    return result;
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = bool_f8938;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
 }
+else
+{
 
-#pragma endregion
-void *apply_prim_and(void *lst)
+//if-clause
+if(is_true(apply_prim_equal_u63_2(decode_clo_array[3], apply_prim_car_1(decode_clo_array[2]))))
 {
-    bool result = false;
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        // decoding a boolean run the required assertions, so directly decoding and assigninh
 
-        if (decode_bool(cons_lst[0]))
-        {
-            lst = cons_lst[1];
-            result = true;
-            continue;
-        }
-        return encode_bool(false);
-    }
-    return encode_bool(result);
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = decode_clo_array[2];
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
 }
-
-void *apply_prim_or(void *lst)
+else
 {
-    bool result = false;
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        // decoding a boolean run the required assertions, so directly decoding and assigninh
 
-        if (!decode_bool(cons_lst[0]))
-        {
-            lst = cons_lst[1];
-            continue;
-        }
-        return encode_bool(true);
-    }
-    return encode_bool(result);
+//clo-app
+member_spec(member, decode_clo_array[1], decode_clo_array[3], apply_prim_cdr_1(decode_clo_array[2]));
 }
 
-bool less_equal_zero(long cmp)
-{
-    if (cmp <= 0)
-    {
-        return true;
-    }
-    return false;
 }
 
-bool great_equal_zero(long cmp)
-{
-    if (cmp >= 0)
-    {
-        return true;
-    }
-    return false;
 }
 
-bool great_zero(long cmp)
+inline void lam8884_spec(void* env8885, void* id_8735) // lam8884 
 {
-    if (cmp > 0)
-    {
-        return true;
-    }
-    return false;
-}
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8885);
 
-bool less_zero(long cmp)
+//if-clause
+if(is_true(id_8735))
 {
-    if (cmp < 0)
-    {
-        return true;
-    }
-    return false;
-}
 
-bool equal_zero(long cmp)
-{
-    if (cmp == 0)
-    {
-        return true;
-    }
-    return false;
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = bool_f8938;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
 }
-
-void *compare_lst(void *lst, bool (*cmp_op)(long))
+else
 {
-    if (length_counter(lst) < 1)
-        assert_type(false, "Error -> arity mismatch: number of arguments should be at least 1!");
 
-    mpf_t *old_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*old_car);
-    mpf_t *mpf_new_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*mpf_new_car);
-
-    bool iteration_one = false;
-    int cmp_res = 0;
-
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int car_tag = get_tag(cons_lst[0]);
-        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+//if-clause
+if(is_true(apply_prim_equal_u63_2(decode_clo_array[3], apply_prim_car_1(decode_clo_array[2]))))
+{
 
-        if (!type_check)
-            assert_type(false, "Error -> contact violation: argument type should be either integers or floating-point numbers!");
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = decode_clo_array[2];
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
+}
+else
+{
 
-        if (!iteration_one)
-        {
-            iteration_one = true;
-            if (car_tag == MPZ)
-            {
-                // old_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
-                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
+//clo-app
+member_spec(member, decode_clo_array[1], decode_clo_array[3], apply_prim_cdr_1(decode_clo_array[2]));
+}
 
-                mpf_t *temp_mpf = mpz_2_mpf(temp_mpz_ptr);
-                mpf_set(*old_car, *temp_mpf);
-                mpf_clear(*temp_mpf);
-            }
-            else
-            {
-                // old_car = decode_mpf(cons_lst[0]);
-                mpf_set(*old_car, *decode_mpf(cons_lst[0]));
-            }
-        }
-        else
-        {
-            if (car_tag == MPZ)
-            {
-                // mpf_new_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
+}
 
-                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
-                mpf_t *temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+}
 
-                mpf_set(*mpf_new_car, *temp_mpf);
-                mpf_clear(*temp_mpf);
-            }
-            else
-            {
-                // mpf_new_car = decode_mpf(cons_lst[0]);
-                mpf_set(*mpf_new_car, *decode_mpf(cons_lst[0]));
-            }
+inline void member_fptr() // member -> generic version 
+{
+//reading env and args
+void* const kont8849 = arg_buffer[2];
+void* const item = arg_buffer[3];
+void* const lst = arg_buffer[4];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-            cmp_res = mpf_cmp(*old_car, *mpf_new_car);
+//creating new closure instance
+void** clo9114 = alloc_clo(lam8884_fptr, 3);
 
-            if (cmp_op(cmp_res))
-                mpf_set(*old_car, *mpf_new_car);
-            else
-            {
-                mpf_clear(*old_car);
-                mpf_clear(*mpf_new_car);
+//setting env list
+clo9114[1] = kont8849;
+clo9114[2] = lst;
+clo9114[3] = item;
+void* f_lam_8850 = encode_clo(clo9114);
 
-                return encode_bool(false);
-            }
-        }
 
-        lst = cons_lst[1];
-    }
 
-    mpf_clear(*old_car);
-    mpf_clear(*mpf_new_car);
+//if-clause
+if(is_true(apply_prim_null_u63_1(item)))
+{
 
-    return encode_bool(true);
+//clo-app
+lam8884_spec(f_lam_8850, apply_prim_null_u63_1(item));
 }
-
-void *compare_op(void *arg1, void *arg2, bool (*cmp_op)(long))
+else
 {
-    int cmp_res = 0;
-
-    int arg1_tag = get_tag(arg1);
-    int arg2_tag = get_tag(arg2);
 
-    bool type_check = (arg1_tag == MPZ) || (arg1_tag == MPF);
-
-    if (!type_check)
-        assert_type(false, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
-
-    bool type_check2 = (arg2_tag == MPZ) || (arg2_tag == MPF);
-
-    if (!type_check2)
-        assert_type(false, "Error in modulo -> contact violation: argument type should be either integers or floating-point numbers!");
+//clo-app
+lam8884_spec(f_lam_8850, apply_prim_null_u63_1(lst));
+}
 
-    mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*arg1_mpf);
-    mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*arg2_mpf);
+}
 
-    if (arg1_tag == MPZ)
-        arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
-    else
-        arg1_mpf = decode_mpf(arg1);
+inline void member_spec(void* _8886, void* kont8849, void* item, void* lst) // member 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    if (arg2_tag == MPZ)
-        arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
-    else
-        arg2_mpf = decode_mpf(arg2);
+//creating new closure instance
+void** clo9115 = alloc_clo(lam8884_fptr, 3);
 
-    cmp_res = mpf_cmp(*arg1_mpf, *arg2_mpf);
+//setting env list
+clo9115[1] = kont8849;
+clo9115[2] = lst;
+clo9115[3] = item;
+void* f_lam_8850 = encode_clo(clo9115);
 
-    mpf_clear(*arg1_mpf);
-    mpf_clear(*arg2_mpf);
 
-    if (cmp_op(cmp_res))
-        return encode_bool(true);
-    else
-        return encode_bool(false);
-}
 
-// checks if a list is equal
-void *apply_prim__u61(void *lst) // =
+//if-clause
+if(is_true(apply_prim_null_u63_1(item)))
 {
-    return compare_lst(lst, *equal_zero);
+
+//clo-app
+lam8884_spec(f_lam_8850, apply_prim_null_u63_1(item));
 }
-void *apply_prim__u61_1(void *arg1) // =
+else
 {
-    return encode_bool(true);
+
+//clo-app
+lam8884_spec(f_lam_8850, apply_prim_null_u63_1(lst));
 }
-void *apply_prim__u61_2(void *arg1, void *arg2) // =
-{
-    return compare_op(arg1, arg2, *equal_zero);
+
 }
-void *apply_prim__u61_3(void *arg1, void *arg2, void *arg3) // =
+
+inline void member_u63_fptr() // member? -> generic version 
 {
-    if (decode_bool(compare_op(arg1, arg2, *equal_zero)))
-        return compare_op(arg2, arg3, *equal_zero);
-    else
-        return encode_bool(false);
-}
+//reading env and args
+void* const kont8851 = arg_buffer[2];
+void* const x = arg_buffer[3];
+void* const lst = arg_buffer[4];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-// Checks if the list is strictly decreasing
-void *apply_prim__u62(void *lst) // >
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
 {
-    return compare_lst(lst, *great_zero);
+
+//clo-app
+arg_buffer[1] = kont8851;
+arg_buffer[2] = bool_f8938;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8851))[0])();
 }
-void *apply_prim__u62_1(void *arg1) // >
+else
 {
-    return encode_bool(true);
-}
-void *apply_prim__u62_2(void *arg1, void *arg2) // >
+
+//if-clause
+if(is_true(apply_prim_equal_u63_2(apply_prim_car_1(lst), x)))
 {
-    return compare_op(arg1, arg2, *great_zero);
+
+//clo-app
+arg_buffer[1] = kont8851;
+arg_buffer[2] = bool_t8937;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8851))[0])();
 }
-void *apply_prim__u62_3(void *arg1, void *arg2, void *arg3) // >
+else
 {
-    if (decode_bool(compare_op(arg1, arg2, *great_zero)))
-        return compare_op(arg2, arg3, *great_zero);
-    else
-        return encode_bool(false);
-}
 
-// checks if a list is strictly increasing
-void *apply_prim__u60(void *lst) // <
-{
-    return compare_lst(lst, *less_zero);
+//clo-app
+member_u63_spec(member_u63, kont8851, x, apply_prim_cdr_1(lst));
 }
-void *apply_prim__u60_1(void *arg1) // <
-{
-    return encode_bool(true);
+
 }
-void *apply_prim__u60_2(void *arg1, void *arg2) // <
-{
-    return compare_op(arg1, arg2, *less_zero);
+
 }
-void *apply_prim__u60_3(void *arg1, void *arg2, void *arg3) // <
+
+inline void member_u63_spec(void* _8887, void* kont8851, void* x, void* lst) // member? 
 {
-    if (decode_bool(compare_op(arg1, arg2, *less_zero)))
-        return compare_op(arg2, arg3, *less_zero);
-    else
-        return encode_bool(false);
-}
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-// checks if elements are decreasing >=
-void *apply_prim__u62_u61(void *lst)
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
 {
-    return compare_lst(lst, *great_equal_zero);
+
+//clo-app
+arg_buffer[1] = kont8851;
+arg_buffer[2] = bool_f8938;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8851))[0])();
 }
-void *apply_prim__u62_u61_1(void *arg1) // >=
+else
 {
-    return encode_bool(true);
-}
-void *apply_prim__u62_u61_2(void *arg1, void *arg2) // >=
+
+//if-clause
+if(is_true(apply_prim_equal_u63_2(apply_prim_car_1(lst), x)))
 {
-    return compare_op(arg1, arg2, *great_equal_zero);
+
+//clo-app
+arg_buffer[1] = kont8851;
+arg_buffer[2] = bool_t8937;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8851))[0])();
 }
-void *apply_prim__u62_u61_3(void *arg1, void *arg2, void *arg3) // >=
+else
 {
-    if (decode_bool(compare_op(arg1, arg2, *great_equal_zero)))
-        return compare_op(arg2, arg3, *great_equal_zero);
-    else
-        return encode_bool(false);
+
+//clo-app
+member_u63_spec(member_u63, kont8851, x, apply_prim_cdr_1(lst));
 }
 
-// checks if elements are increasing <=
-void *apply_prim__u60_u61(void *lst)
-{
-    return compare_lst(lst, *less_equal_zero);
 }
-void *apply_prim__u60_u61_1(void *arg1) // <=
-{
-    return encode_bool(true);
+
 }
-void *apply_prim__u60_u61_2(void *arg1, void *arg2) // <=
+
+inline void lam8888_fptr() // lam8888 -> generic version 
 {
-    return compare_op(arg1, arg2, *less_equal_zero);
+//reading env
+void* const env8889 = arg_buffer[1];
+//reading env and args
+void* const id_8750 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8889);
+
+//clo-app
+arg_buffer[1] = decode_clo_array[2];
+arg_buffer[2] = apply_prim__u43_2(decode_clo_array[1], id_8750);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[2]))[0])();
 }
-void *apply_prim__u60_u61_3(void *arg1, void *arg2, void *arg3) // <=
+
+inline void lam8888_spec(void* env8889, void* id_8750) // lam8888 
 {
-    if (decode_bool(compare_op(arg1, arg2, *less_equal_zero)))
-        return compare_op(arg2, arg3, *less_equal_zero);
-    else
-        return encode_bool(false);
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8889);
+
+//clo-app
+arg_buffer[1] = decode_clo_array[2];
+arg_buffer[2] = apply_prim__u43_2(decode_clo_array[1], id_8750);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[2]))[0])();
 }
 
-#pragma endregion
+inline void length_fptr() // length -> generic version 
+{
+//reading env and args
+void* const kont8852 = arg_buffer[2];
+void* const lst = arg_buffer[3];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-#pragma region hash-prims
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
+{
 
-struct hash_struct
+//clo-app
+arg_buffer[1] = kont8852;
+arg_buffer[2] = int8944;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8852))[0])();
+}
+else
 {
-    void *val;
 
-    hash_struct(void *arg)
-    {
-        this->val = arg;
-    }
+//creating new closure instance
+void** clo9116 = alloc_clo(lam8888_fptr, 2);
 
-    u64 hash() const
-    {
-        return hash_(this->val);
-    }
+//setting env list
+clo9116[1] = int8945;
+clo9116[2] = kont8852;
+void* f_lam_8853 = encode_clo(clo9116);
 
-    bool operator==(const hash_struct &s) const
-    {
-        return decode_bool(equal_(this->val, s.val));
-    }
 
-    void print_hash_val() const
-    {
-        print_val(this->val);
-    }
-};
 
-std::string print_set(void *s)
-{
-    const hamt<hash_struct, hash_struct> *h_set = decode_hash(s);
-    const hash_struct **keys = h_set->getKeys();
-    std::string ret_str = "(set";
-    for (int i = 0; i < (h_set->size() * 2); i += 2)
-    {
-        ret_str += " " + print_val(keys[i]->val);
-    }
-    return ret_str + ")";
+//clo-app
+length_spec(length, f_lam_8853, apply_prim_cdr_1(lst));
 }
-
-// doesn't work now just prints the keys in a list like set
-std::string print_hash(void *h)
-{
-    if (get_tag(h) != HASH)
-        assert_type(false, "Error in print_hash -> contact violation: Passed type is not a hash.");
 
-    const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
-    if (h_hamt->whatami() == hamt_ds_type::set_type)
-    {
-        return print_set(h);
-    }
-    std::string ret_str;
-    ret_str.append("'#hash(");
-    const hash_struct **keys = h_hamt->getKeys();
-    for (int i = 0; i < (h_hamt->size() * 2); i += 2)
-    {
-        ret_str += "(" + print_val(keys[i]->val);
-        ret_str += " . " + print_val(keys[i + 1]->val) + ") ";
-    }
-    return ret_str + ")";
-    // return ret_str;
 }
 
-// we'd atleast want to accept and work with strings and numbers
-// but we will start with just numbers(mpz_t's)
-// void *apply_prim_hash(void *lst) // generates a hash based on the k v pairs
-// in the list
-void *apply_prim_hash(void *lst)
+inline void length_spec(void* _8890, void* kont8852, void* lst) // length 
 {
-    // For Keys : MPZ, MPF, STRING
-    // For Values: Everything(void*)
-    const hamt<hash_struct, hash_struct> *h = new ((hamt<hash_struct, hash_struct> *)GC_MALLOC(sizeof(hamt<hash_struct, hash_struct>))) hamt<hash_struct, hash_struct>();
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int elem_tag = get_tag(cons_lst[0]);
-        bool type_check = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH) || (elem_tag == CONS);
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-        if (!is_cons(cons_lst[1]))
-        {
-            assert_type(false, "Error in hash -> contact violation: key does not have a value!");
-        }
-        void **cdr_cons_lst = decode_cons(cons_lst[1]);
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
+{
 
-        if (type_check)
-        {
-            const hash_struct *const k = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(cons_lst[0]);
-            //?? hash_struct for value is not required, have to ask and remove.
-            const hash_struct *const v = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(cdr_cons_lst[0]);
-            h = h->insert(k, v);
-            lst = cdr_cons_lst[1];
-            continue;
-        }
-        assert_type(false, "Error in hash -> contact violation: Key should be one of the following types: integer,  floating-point number or a string");
-    }
-    // std::cout << h->size() << std::endl;
-    return encode_hash(h);
+//clo-app
+arg_buffer[1] = kont8852;
+arg_buffer[2] = int8944;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8852))[0])();
 }
-
-void *prim_hash_u45ref(void *h, void *k)
+else
 {
-    // check if h is a hash
-    // check if k is an mpz
-    // decode the hash and call hash-ref functions
-    // return the key
-    bool type_check_hash = get_tag(h) == HASH;
-    if (!type_check_hash)
-    {
-        assert_type(false, "Error in the hash-ref: contact violation -> First argument should be a hash!");
-    }
+
+//creating new closure instance
+void** clo9117 = alloc_clo(lam8888_fptr, 2);
 
-    int elem_tag = get_tag(k);
-    bool type_check_key = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH);
+//setting env list
+clo9117[1] = int8945;
+clo9117[2] = kont8852;
+void* f_lam_8853 = encode_clo(clo9117);
 
-    if (!type_check_key)
-    {
-        assert_type(false, "Error in the hash-ref: contact violoation -> Second argument should be one of the following type: integer, floating-point number, string or a hash!");
-    }
 
-    const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
-    const hash_struct *const key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(k);
-    const hash_struct *const t = h_hamt->get(key);
 
-    if (t)
-    {
-        return t->val;
-    }
-    else
-    {
-        return NULL_VALUE;
-    }
+//clo-app
+length_spec(length, f_lam_8853, apply_prim_cdr_1(lst));
 }
 
-void *apply_prim_hash_u45ref_2(void *arg1, void *arg2)
-{
-    return prim_hash_u45ref(arg1, arg2);
 }
 
-void *apply_prim_hash_u45ref(void *lst)
+inline void lam8891_fptr() // lam8891 -> generic version 
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in hash-ref -> arity mismatch: number of arguments should be 2!");
+//reading env
+void* const env8892 = arg_buffer[1];
+//reading env and args
+void* const id_8756 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8892);
 
-    return prim_hash_u45ref(prim_car(lst), prim_car(prim_cdr(lst)));
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = apply_prim_cons_2(decode_clo_array[2], id_8756);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
 }
 
-void *prim_hash_u45set(void *h, void *k, void *v)
+inline void lam8891_spec(void* env8892, void* id_8756) // lam8891 
 {
-    // check if h is hash
-    // check if k, v are mpz's
-    // check and update if there and create if new
-    bool type_check_hash = get_tag(h) == HASH;
-    if (!type_check_hash)
-    {
-        assert_type(false, "Error in the hash-set: contact violation -> First argument should be a hash!");
-    }
-    int key_tag = get_tag(k);
-    bool type_check_key = (key_tag == MPZ) || (key_tag == MPF) || (key_tag == STRING);
-    if (!type_check_key)
-    {
-        assert_type(false, "Error in the hash-set: contact violoation -> Second argument should be one of the following type: integer, floating-point numbers or a string");
-    }
-
-    const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
-    const hash_struct *const key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(k);
-    //?? hash_struct for value is not required, have to ask and remove.
-    const hash_struct *const value = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(v);
-    h_hamt = h_hamt->insert(key, value);
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8892);
 
-    return encode_hash(h_hamt);
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = apply_prim_cons_2(decode_clo_array[2], id_8756);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
 }
 
-void *apply_prim_hash_u45set_3(void *arg1, void *arg2, void *arg3)
+inline void lam8893_fptr() // lam8893 -> generic version 
 {
-    return prim_hash_u45set(arg1, arg2, arg3);
-}
+//reading env
+void* const env8894 = arg_buffer[1];
+//reading env and args
+void* const id_8754 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8894);
 
-void *apply_prim_hash_u45set(void *lst)
-{
-    if (length_counter(lst) < 3 || length_counter(lst) > 3)
-        assert_type(false, "Error in hash-set -> arity mismatch: number of arguments should be 3!");
+//creating new closure instance
+void** clo9118 = alloc_clo(lam8891_fptr, 2);
+
+//setting env list
+clo9118[1] = decode_clo_array[2];
+clo9118[2] = id_8754;
+void* f_lam_8855 = encode_clo(clo9118);
+
 
-    return prim_hash_u45set(prim_car(lst), prim_car(prim_cdr(lst)), prim_car(prim_cdr(prim_cdr(lst))));
+
+//clo-app
+map_spec(map, f_lam_8855, decode_clo_array[1], apply_prim_cdr_1(decode_clo_array[3]));
 }
 
-void *prim_set_u45add(void *s, void *val)
+inline void lam8893_spec(void* env8894, void* id_8754) // lam8893 
 {
-    int tag = get_tag(s);
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8894);
+
+//creating new closure instance
+void** clo9119 = alloc_clo(lam8891_fptr, 2);
 
-    if (tag == CONS)
-    {
-        // if the first argument is a list, append the val and return it!
-        return prim_cons(val, s);
-    }
-    else if (tag == HASH)
-    {
-        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(s);
-        if (h_hamt->whatami() == hamt_ds_type::set_type)
-        {
-            // if the argument is a set, call hash-set
-            return prim_hash_u45set(s, val, encode_bool(true));
-        }
+//setting env list
+clo9119[1] = decode_clo_array[2];
+clo9119[2] = id_8754;
+void* f_lam_8855 = encode_clo(clo9119);
 
-        // otherwise shoot error, because, a hash should not be passed as an argument
-        assert_type(false, "Error in set-add: contact violation -> First argument should be a set");
-    }
-    // otherwise not sure what it is, thus shooting an error!
 
-    assert_type(false, "Error in set-add: contact violation -> First argument should be a set");
 
-    return prim_hash_u45set(s, val, encode_bool(true));
+//clo-app
+map_spec(map, f_lam_8855, decode_clo_array[1], apply_prim_cdr_1(decode_clo_array[3]));
 }
 
-void *apply_prim_set_u45add_2(void *s, void *val)
+inline void map_fptr() // map -> generic version 
 {
-    return prim_set_u45add(s, val);
-}
+//reading env and args
+void* const kont8854 = arg_buffer[2];
+void* const proc = arg_buffer[3];
+void* const lst = arg_buffer[4];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-void *apply_prim_set_u45add(void *lst)
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in set-add -> arity mismatch: number of arguments should be 2!");
 
-    return prim_set_u45add(prim_car(lst), prim_car(prim_cdr(lst)));
+//clo-app
+arg_buffer[1] = kont8854;
+arg_buffer[2] = apply_prim_list_0();
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8854))[0])();
 }
-
-void *apply_prim_set_u45member_u63_2(void *arg1, void *arg2)
+else
 {
-    int tag = get_tag(arg1);
 
-    if (tag != CONS && tag != HASH)
-    {
-        assert_type(false, "Error in the set-member? -> contact violation: First argument should be a set or a list");
-    }
+//creating new closure instance
+void** clo9120 = alloc_clo(lam8893_fptr, 3);
 
-    if (tag == HASH)
-    {
-        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
-        if (h_hamt->whatami() == hamt_ds_type::set_type)
-        {
-            if (get_tag(arg2) == CLO)
-            {
-                return encode_bool(false);
-            }
+//setting env list
+clo9120[1] = proc;
+clo9120[2] = kont8854;
+clo9120[3] = lst;
+void* f_lam_8856 = encode_clo(clo9120);
 
-            // if the argument is a set
-            const hash_struct *const key = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(arg2);
-            const hash_struct *const t = h_hamt->get(key);
 
-            if (t)
-            {
-                return encode_bool(true);
-            }
-            else
-            {
-                return encode_bool(false);
-            }
-        }
 
-        // otherwise shoot error, because, a hash should not be passed as an argument
-        assert_type(false, "Error in the set-member? -> contact violation: First argument should be a set or a list");
-    }
-    else if (tag == CONS)
-    {
-        void *result = nullptr;
-
-        while (is_cons(arg1))
-        {
-            void **cons_lst = decode_cons(arg1);
-            // int car_tag = get_tag(cons_lst[0]);
-
-            if (!result)
-            {
-                result = cons_lst[0];
-                if (decode_bool(prim_equal_u63(result, arg2)))
-                    return encode_bool(true);
-            }
-            else
-            {
-                if (decode_bool(prim_equal_u63(arg2, cons_lst[0])))
-                    return encode_bool(true);
-            }
+//clo-app
+arg_buffer[1] = proc;
+arg_buffer[2] = f_lam_8856;
+arg_buffer[3] = apply_prim_car_1(lst);
+numArgs = int8952;
+reinterpret_cast<void (*)()>((decode_clo(proc))[0])();
+}
 
-            arg1 = cons_lst[1];
-        }
+}
 
-        if (result == nullptr)
-        {
-            return encode_bool(false);
-        }
-        return encode_bool(false);
-    }
+inline void map_spec(void* _8895, void* kont8854, void* proc, void* lst) // map 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    assert_type(false, "Error in set-member -> contact violation: Argument should be a set or a list");
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
+{
 
-    return nullptr;
+//clo-app
+arg_buffer[1] = kont8854;
+arg_buffer[2] = apply_prim_list_0();
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8854))[0])();
 }
-
-void *apply_prim_set_u45member_u63(void *lst)
+else
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in set-member -> arity mismatch: number of arguments should be 2!");
 
-    return apply_prim_set_u45member_u63_2(prim_car(lst), prim_car(prim_cdr(lst)));
-}
+//creating new closure instance
+void** clo9121 = alloc_clo(lam8893_fptr, 3);
 
-void *prim_hash_u45has_u45key_u63(void *h, void *k)
-{
-    bool type_check_hash = get_tag(h) == HASH;
-    if (!type_check_hash)
-    {
-        assert_type(false, "Error in the hash-has-key? -> contact violation: First argument should be a hash");
-    }
+//setting env list
+clo9121[1] = proc;
+clo9121[2] = kont8854;
+clo9121[3] = lst;
+void* f_lam_8856 = encode_clo(clo9121);
 
-    int elem_tag = get_tag(k);
-    bool type_check_key = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH);
 
-    if (!type_check_key)
-    {
-        assert_type(false, "Error in the hash-has-key? -> contact violoation: Second argument should be one of the following type: integer, floating-point number, string or a hash");
-    }
 
-    void *ret_val = prim_hash_u45ref(h, k);
-    if (ret_val)
-    {
-        return encode_bool(true);
-    }
-    else
-    {
-        return encode_bool(false);
-    }
+//clo-app
+arg_buffer[1] = proc;
+arg_buffer[2] = f_lam_8856;
+arg_buffer[3] = apply_prim_car_1(lst);
+numArgs = int8952;
+reinterpret_cast<void (*)()>((decode_clo(proc))[0])();
 }
 
-void *apply_prim_hash_u45has_u45key_u63_2(void *arg1, void *arg2)
-{
-    return prim_hash_u45has_u45key_u63(arg1, arg2);
 }
 
-void *apply_prim_hash_u45has_u45key_u63(void *lst)
+inline void lam8896_fptr() // lam8896 -> generic version 
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in hash-has-key? -> arity mismatch: number of arguments should be 2!");
+//reading env
+void* const env8897 = arg_buffer[1];
+//reading env and args
+void* const id_8763 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8897);
 
-    return prim_hash_u45has_u45key_u63(prim_car(lst), prim_car(prim_cdr(lst)));
+//clo-app
+arg_buffer[1] = decode_clo_array[2];
+arg_buffer[2] = apply_prim_cons_2(decode_clo_array[1], id_8763);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[2]))[0])();
 }
 
-void *prim_hash_u45count(void *h)
+inline void lam8896_spec(void* env8897, void* id_8763) // lam8896 
 {
-    bool type_check_hash = get_tag(h) == HASH;
-    if (!type_check_hash)
-    {
-        assert_type(false, "Error in the hash-count -> contact violation: argument should be a hash");
-    }
-    const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
-    mpz_t *count = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init_set_ui(*count, h_hamt->size());
-    return encode_mpz(count);
-}
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8897);
 
-void *apply_prim_hash_u45count_1(void *arg1)
-{
-    return prim_hash_u45count(arg1);
+//clo-app
+arg_buffer[1] = decode_clo_array[2];
+arg_buffer[2] = apply_prim_cons_2(decode_clo_array[1], id_8763);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[2]))[0])();
 }
 
-void *apply_prim_hash_u45count(void *lst)
+inline void lam8898_fptr() // lam8898 -> generic version 
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in hash-count -> arity mismatch: number of arguments should be 1!");
+//reading env
+void* const env8899 = arg_buffer[1];
+//reading env and args
+void* const id_8760 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8899);
 
-    return prim_hash_u45count(prim_car(lst));
-}
-
-void *prim_hash_u45keys(void *h)
+//if-clause
+if(is_true(id_8760))
 {
-    bool type_check_hash = get_tag(h) == HASH;
-    if (!type_check_hash)
-    {
-        assert_type(false, "Error in the hash-keys -> contact violation: argument should be a hash");
-    }
-    const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
-    const hash_struct **keys_array = h_hamt->getKeys();
-    // std::cout << "The size of the hash is: " << h_hamt->size() << std::endl;
-    void *keys_cons_lst = encode_null();
-    //+=2 and *2 coz getKeys returns an array that also has values.
-    for (long i = 0; i < (h_hamt->size() * 2); i += 2)
-    {
-        keys_cons_lst = prim_cons(keys_array[i]->val, keys_cons_lst);
-    }
-    // std::cout << print_val(keys_cons_lst) << std::endl;
-    return keys_cons_lst;
-}
 
-void *apply_prim_hash_u45keys_1(void *arg)
-{
-    return prim_hash_u45keys(arg);
-}
+//creating new closure instance
+void** clo9122 = alloc_clo(lam8896_fptr, 2);
 
-void *apply_prim_hash_u45keys(void *lst)
-{
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in hash-keys -> arity mismatch: number of arguments should be 1!");
+//setting env list
+clo9122[1] = apply_prim_car_1(decode_clo_array[3]);
+clo9122[2] = decode_clo_array[1];
+void* f_lam_8858 = encode_clo(clo9122);
 
-    return prim_hash_u45keys(prim_car(lst));
-}
-#pragma endregion
 
-#pragma region set-prims
-void *apply_prim_set(void *lst)
-{
-    const hamt<hash_struct, hash_struct> *h = new ((hamt<hash_struct, hash_struct> *)GC_MALLOC(sizeof(hamt<hash_struct, hash_struct>))) hamt<hash_struct, hash_struct>(hamt_ds_type::set_type);
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int elem_tag = get_tag(cons_lst[0]);
-        bool type_check = (elem_tag == MPZ) || (elem_tag == MPF) || (elem_tag == STRING) || (elem_tag == HASH);
 
-        if (type_check)
-        {
-            const hash_struct *const k = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(cons_lst[0]);
-            const hash_struct *const v = new ((hash_struct *)GC_MALLOC(sizeof(hash_struct))) hash_struct(encode_bool(true));
-            h = h->insert(k, v);
-            lst = cons_lst[1];
-            continue;
-        }
-        assert_type(false, "Error in set -> contact violation: key should be one of following types: integer, floating-point number or a string");
-    }
-    // std::cout << "the size of the set being returned is" << h->size() << std::endl;
-    return encode_hash(h);
+//clo-app
+filter_spec(filter, f_lam_8858, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[3]));
 }
-
-void *prim_set_u45_u62list(void *h)
+else
 {
-    // encoding/decoding for set is missing
-
-    int tag = get_tag(h);
-
-    if (tag == CONS)
-    {
-        // if the argument is a list, return as it is!
-        return h;
-    }
-    else if (tag == HASH)
-    {
-        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
-        if (h_hamt->whatami() == hamt_ds_type::set_type)
-        {
-            // if the argument is a set
-            return prim_hash_u45keys(h);
-        }
-
-        // otherwise shoot error, because, a hash should not be passed as an argument
-        assert_type(false, "Error in set->list -> contact violation: argument should be a set");
-    }
-    // otherwise we are assuming a set/something is passed, which is not always true!, thus shooting an error!
 
-    assert_type(false, "Error in set->list -> contact violation: argument should be a set");
+//clo-app
+filter_spec(filter, decode_clo_array[1], decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[3]));
+}
 
-    return prim_hash_u45keys(h);
 }
 
-void *apply_prim_set_u45_u62list_1(void *arg)
+inline void lam8898_spec(void* env8899, void* id_8760) // lam8898 
 {
-    return prim_set_u45_u62list(arg);
-}
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8899);
 
-void *apply_prim_set_u45_u62list(void *lst)
+//if-clause
+if(is_true(id_8760))
 {
 
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in set->list -> arity mismatch: number of arguments should be 1!");
+//creating new closure instance
+void** clo9123 = alloc_clo(lam8896_fptr, 2);
 
-    return prim_set_u45_u62list(prim_car(lst));
-}
+//setting env list
+clo9123[1] = apply_prim_car_1(decode_clo_array[3]);
+clo9123[2] = decode_clo_array[1];
+void* f_lam_8858 = encode_clo(clo9123);
 
-void *prim_list_u45_u62set(void *lst)
-{
-    int tag = get_tag(lst);
 
-    if (tag == CONS)
-    {
-        // if the argument is a list, convert it to set!
-        return apply_prim_set(lst);
-    }
-    else if (tag == HASH)
-    {
-        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(lst);
-        if (h_hamt->whatami() == hamt_ds_type::set_type)
-        {
-            // if the argument is a set, return as it is!
-            return lst;
-        }
 
-        // otherwise shoot error, because, a hash should not be passed as an argument
-        assert_type(false, "Error in list->set -> contact violation: argument should be a list");
-    }
-    // otherwise we are not sure what it is, thus shooting an error!
+//clo-app
+filter_spec(filter, f_lam_8858, decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[3]));
+}
+else
+{
 
-    assert_type(false, "Error in list->set -> contact violation: argument should be a list");
+//clo-app
+filter_spec(filter, decode_clo_array[1], decode_clo_array[2], apply_prim_cdr_1(decode_clo_array[3]));
+}
 
-    return apply_prim_set(lst);
 }
 
-void *apply_prim_list_u45_u62set_1(void *arg)
+inline void filter_fptr() // filter -> generic version 
 {
-    return prim_list_u45_u62set(arg);
-}
+//reading env and args
+void* const kont8857 = arg_buffer[2];
+void* const op = arg_buffer[3];
+void* const lst = arg_buffer[4];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-void *apply_prim_list_u45_u62set(void *lst)
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in list->set -> arity mismatch: number of arguments should be 1!");
 
-    return prim_list_u45_u62set(prim_car(lst));
+//clo-app
+arg_buffer[1] = kont8857;
+arg_buffer[2] = apply_prim_list_0();
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8857))[0])();
 }
-
-void *apply_prim_set_u45remove_2(void *arg1, void *arg2)
+else
 {
-    int tag = get_tag(arg1);
 
-    if (tag != CONS && tag != HASH)
-    {
-        assert_type(false, "Error in the set-remove -> contact violation: first argument should be a set or a list");
-    }
+//creating new closure instance
+void** clo9124 = alloc_clo(lam8898_fptr, 3);
 
-    if (tag == HASH)
-    {
-        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
-        if (h_hamt->whatami() == hamt_ds_type::set_type)
-        {
-            if (get_tag(arg2) == CLO)
-            {
-                assert_type(false, "Error in set-remove -> contact violation: seecond argument should be: integer, floating-point number, string, hash or a list");
-            }
+//setting env list
+clo9124[1] = kont8857;
+clo9124[2] = op;
+clo9124[3] = lst;
+void* f_lam_8859 = encode_clo(clo9124);
 
-            const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
-            const hash_struct **keys_array = h_hamt->getKeys();
 
-            void *keys_cons_lst = encode_null();
 
-            for (long i = 0; i < (h_hamt->size() * 2); i += 2)
-            {
-                if (!decode_bool(prim_equal_u63(arg2, keys_array[i]->val)))
-                {
-                    keys_cons_lst = prim_cons(keys_array[i]->val, keys_cons_lst);
-                }
-            }
-            // std::cout << print_val(keys_cons_lst) << std::endl;
-            return apply_prim_set(keys_cons_lst);
-        }
+//clo-app
+arg_buffer[1] = op;
+arg_buffer[2] = f_lam_8859;
+arg_buffer[3] = apply_prim_car_1(lst);
+numArgs = int8952;
+reinterpret_cast<void (*)()>((decode_clo(op))[0])();
+}
 
-        // otherwise shoot error, because, a hash should not be passed as an argument
-        assert_type(false, "Error in the set-member? -> contact violation: first argument should be a set or a list");
-    }
-    else if (tag == CONS)
-    {
-        // void *result = nullptr;
-        void *lst = encode_null();
+}
 
-        while (is_cons(arg1))
-        {
-            void **cons_lst = decode_cons(arg1);
-            // int car_tag = get_tag(cons_lst[0]);
+inline void filter_spec(void* _8900, void* kont8857, void* op, void* lst) // filter 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-            if (!decode_bool(prim_equal_u63(cons_lst[0], arg2)))
-                lst = prim_cons(cons_lst[0], lst);
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
+{
 
-            arg1 = cons_lst[1];
-        }
+//clo-app
+arg_buffer[1] = kont8857;
+arg_buffer[2] = apply_prim_list_0();
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8857))[0])();
+}
+else
+{
 
-        return lst;
-    }
+//creating new closure instance
+void** clo9125 = alloc_clo(lam8898_fptr, 3);
 
-    assert_type(false, "Error in set-remove -> contact violation: argument should be a set or a list");
+//setting env list
+clo9125[1] = kont8857;
+clo9125[2] = op;
+clo9125[3] = lst;
+void* f_lam_8859 = encode_clo(clo9125);
 
-    return nullptr;
-}
 
-void *apply_prim_set_u45remove(void *lst)
-{
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in set-remove -> arity mismatch: number of arguments should be 2!");
 
-    return apply_prim_set_u45remove_2(prim_car(lst), prim_car(prim_cdr(lst)));
+//clo-app
+arg_buffer[1] = op;
+arg_buffer[2] = f_lam_8859;
+arg_buffer[3] = apply_prim_car_1(lst);
+numArgs = int8952;
+reinterpret_cast<void (*)()>((decode_clo(op))[0])();
 }
-
-void *apply_prim_set_u45count_1(void *arg1)
-{
-    int tag = get_tag(arg1);
-
-    if (tag != CONS && tag != HASH)
-    {
-        assert_type(false, "Error in the set-count -> contact violation: first argument should be a set or a list");
-    }
 
-    if (tag == HASH)
-    {
-        const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(arg1);
-        if (h_hamt->whatami() == hamt_ds_type::set_type)
-        {
-            mpz_t *count = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-            mpz_init_set_ui(*count, h_hamt->size());
-            return encode_mpz(count);
-        }
+}
 
-        // otherwise shoot error, because, a hash should not be passed as an argument
-        assert_type(false, "Error in the set-count -> contact violation: first argument should be a set or a list");
-    }
-    else if (tag == CONS)
-    {
-        mpz_t *count = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init_set_ui(*count, length_counter(arg1));
-        return encode_mpz(count);
-    }
+inline void drop_fptr() // drop -> generic version 
+{
+//reading env and args
+void* const kont8860 = arg_buffer[2];
+void* const lst = arg_buffer[3];
+void* const n = arg_buffer[4];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    assert_type(false, "Error in set-count -> contact violation: argument should be a set or a list");
+//if-clause
+if(is_true(apply_prim__u61_2(n, int8944)))
+{
 
-    return nullptr;
+//clo-app
+arg_buffer[1] = kont8860;
+arg_buffer[2] = lst;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8860))[0])();
 }
-
-void *apply_prim_set_u45count(void *lst)
+else
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in set-count -> arity mismatch: number of arguments should be 2!");
 
-    return apply_prim_set_u45count_1(prim_car(lst));
+//clo-app
+drop_spec(drop, kont8860, apply_prim_cdr_1(lst), apply_prim__u45_2(n, int8945));
 }
 
-#pragma end region
+}
 
-/*
-Takes a MPZ/MPF and returns MPF
-*/
-void *prim_exact_u45_u62inexact(void *val)
+inline void drop_spec(void* _8901, void* kont8860, void* lst, void* n) // drop 
 {
-    int val_tag = get_tag(val);
-    if (val_tag != MPF && val_tag != MPZ)
-    {
-        assert_type(false, "Error in int->float -> contract violation: expected integers or floating-point numbers as argument!");
-    }
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    if (val_tag == MPZ)
-    {
-        mpf_t *ret_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*ret_mpf);
-        mpf_set_z(*ret_mpf, *(decode_mpz(val)));
-        return encode_mpf(ret_mpf);
-    }
-    else if (val_tag == MPF)
-    {
-        return val;
-    }
+//if-clause
+if(is_true(apply_prim__u61_2(n, int8944)))
+{
 
-    return nullptr;
+//clo-app
+arg_buffer[1] = kont8860;
+arg_buffer[2] = lst;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8860))[0])();
 }
-
-void *apply_prim_int_u45_u62float_1(void *arg)
+else
 {
-    return prim_exact_u45_u62inexact(arg);
+
+//clo-app
+drop_spec(drop, kont8860, apply_prim_cdr_1(lst), apply_prim__u45_2(n, int8945));
 }
 
-void *apply_prim_int_u45_u62float(void *lst)
+}
+
+inline void lam8902_fptr() // lam8902 -> generic version 
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in int->float -> arity mismatch: number of arguments should be 1.");
+//reading env
+void* const env8903 = arg_buffer[1];
+//reading env and args
+void* const id_8772 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8903);
 
-    return prim_exact_u45_u62inexact(prim_car(lst));
+//clo-app
+foldl_spec(foldl, decode_clo_array[3], decode_clo_array[1], id_8772, apply_prim_cdr_1(decode_clo_array[2]));
 }
 
-/*
-Takes a MPF/MPZ and returns MPZ
-*/
-void *prim_inexact_u45_u62exact(void *val)
+inline void lam8902_spec(void* env8903, void* id_8772) // lam8902 
 {
-    int val_tag = get_tag(val);
-    if (val_tag != MPF && val_tag != MPZ)
-    {
-        assert_type(false, "Error in float->int -> contract violation: expected integers or floating-point numbers as argument!");
-    }
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8903);
 
-    if (val_tag == MPF)
-    {
-        mpz_t *ret_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init(*ret_mpz);
-        mpz_set_f(*ret_mpz, *(decode_mpf(val)));
-        return encode_mpz(ret_mpz);
-    }
-    else if (val_tag == MPZ)
-    {
-        return val;
-    }
-
-    return nullptr;
+//clo-app
+foldl_spec(foldl, decode_clo_array[3], decode_clo_array[1], id_8772, apply_prim_cdr_1(decode_clo_array[2]));
 }
 
-void *apply_prim_float_u45_u62int_1(void *arg)
+inline void foldl_fptr() // foldl -> generic version 
 {
-    return prim_inexact_u45_u62exact(arg);
-}
+//reading env and args
+void* const kont8861 = arg_buffer[2];
+void* const fun = arg_buffer[3];
+void* const acc = arg_buffer[4];
+void* const lst = arg_buffer[5];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-void *apply_prim_float_u45_u62int(void *lst)
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in float->int -> arity mismatch: number of arguments should be 1.");
 
-    return prim_inexact_u45_u62exact(prim_car(lst));
+//clo-app
+arg_buffer[1] = kont8861;
+arg_buffer[2] = acc;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8861))[0])();
 }
-
-void *prim_exact_u45floor(void *val) // exact-floor
+else
 {
-    int val_tag = get_tag(val);
-    if (val_tag != MPF && val_tag != MPZ)
-    {
-        assert_type(false, "Error in exact-floor -> contract violation: expected integers or floating-point numbers as argument!");
-    }
 
-    void *result = nullptr;
+//creating new closure instance
+void** clo9126 = alloc_clo(lam8902_fptr, 3);
 
-    if (val_tag == MPF)
-    {
-        mpz_t *result_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init(*result_mpz);
+//setting env list
+clo9126[1] = fun;
+clo9126[2] = lst;
+clo9126[3] = kont8861;
+void* f_lam_8862 = encode_clo(clo9126);
 
-        mpf_t *flr_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*flr_val);
-        mpf_floor(*flr_val, *(decode_mpf(val)));
-        mpz_set_f(*result_mpz, *flr_val);
 
-        return encode_mpz(result_mpz);
-    }
-    else if (val_tag == MPZ)
-    {
-        return val;
-    }
 
-    return result;
+//clo-app
+arg_buffer[1] = fun;
+arg_buffer[2] = f_lam_8862;
+arg_buffer[3] = apply_prim_car_1(lst);
+arg_buffer[4] = acc;
+numArgs = int8953;
+reinterpret_cast<void (*)()>((decode_clo(fun))[0])();
 }
 
-void *apply_prim_exact_u45floor_1(void *val)
-{
-    return prim_exact_u45floor(val);
 }
 
-void *apply_prim_exact_u45floor(void *lst)
+inline void foldl_spec(void* _8904, void* kont8861, void* fun, void* acc, void* lst) // foldl 
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in exact-floor -> arity mismatch: number of argument should be 1.");
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    void **cons_lst = decode_cons(lst);
-    int car_tag = get_tag(cons_lst[0]);
-    bool type_check = (car_tag == MPZ) || (car_tag == MPF);
-
-    if (!type_check)
-        assert_type(false, "Error in exact-floor -> contact violation: expected integers or floating-point numbers as argument!");
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
+{
 
-    return prim_exact_u45floor(prim_car(lst));
+//clo-app
+arg_buffer[1] = kont8861;
+arg_buffer[2] = acc;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8861))[0])();
 }
-
-void *prim_exact_u45ceiling(void *val) // exact-ceiling
+else
 {
-    int val_tag = get_tag(val);
-    if (val_tag != MPF && val_tag != MPZ)
-    {
-        assert_type(false, "Error in exact-ceiling -> contract violation: expected integers or floating-point numbers as argument!");
-    }
 
-    void *result = nullptr;
+//creating new closure instance
+void** clo9127 = alloc_clo(lam8902_fptr, 3);
 
-    if (val_tag == MPF)
-    {
-        mpz_t *result_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init(*result_mpz);
+//setting env list
+clo9127[1] = fun;
+clo9127[2] = lst;
+clo9127[3] = kont8861;
+void* f_lam_8862 = encode_clo(clo9127);
 
-        mpf_t *ceil_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*ceil_val);
-        mpf_ceil(*ceil_val, *(decode_mpf(val)));
-        mpz_set_f(*result_mpz, *ceil_val);
 
-        return encode_mpz(result_mpz);
-    }
-    else if (val_tag == MPZ)
-    {
-        return val;
-    }
 
-    return result;
+//clo-app
+arg_buffer[1] = fun;
+arg_buffer[2] = f_lam_8862;
+arg_buffer[3] = apply_prim_car_1(lst);
+arg_buffer[4] = acc;
+numArgs = int8953;
+reinterpret_cast<void (*)()>((decode_clo(fun))[0])();
 }
 
-void *apply_prim_exact_u45ceiling_1(void *val)
-{
-    return prim_exact_u45ceiling(val);
 }
 
-void *apply_prim_exact_u45ceiling(void *lst)
+inline void lam8905_fptr() // lam8905 -> generic version 
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in exact-ceiling -> arity mismatch: number of argument should be 1.");
+//reading env
+void* const env8906 = arg_buffer[1];
+//reading env and args
+void* const id_8777 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8906);
 
-    void **cons_lst = decode_cons(lst);
-    int car_tag = get_tag(cons_lst[0]);
-    bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+//clo-app
+arg_buffer[1] = decode_clo_array[2];
+arg_buffer[2] = decode_clo_array[3];
+arg_buffer[3] = decode_clo_array[1];
+arg_buffer[4] = id_8777;
+numArgs = int8953;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[2]))[0])();
+}
 
-    if (!type_check)
-        assert_type(false, "Error in exact-ceiling -> contact violation: expected integers or floating-point numbers as argument!");
+inline void lam8905_spec(void* env8906, void* id_8777) // lam8905 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8906);
 
-    return prim_exact_u45ceiling(prim_car(lst));
+//clo-app
+arg_buffer[1] = decode_clo_array[2];
+arg_buffer[2] = decode_clo_array[3];
+arg_buffer[3] = decode_clo_array[1];
+arg_buffer[4] = id_8777;
+numArgs = int8953;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[2]))[0])();
 }
 
-void *prim_exact_u45round(void *val) // exact-round
+inline void foldr_fptr() // foldr -> generic version 
 {
-    int val_tag = get_tag(val);
-    if (val_tag != MPF && val_tag != MPZ)
-    {
-        // std::cout << val_tag << std::endl;
-        assert_type(false, "Error in exact-round -> contract violation: expected integers or floating-point numbers as argument!");
-    }
+//reading env and args
+void* const kont8863 = arg_buffer[2];
+void* const fun = arg_buffer[3];
+void* const acc = arg_buffer[4];
+void* const lst = arg_buffer[5];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    // passed value is mpz, return exactly that!
-    if (val_tag == MPZ)
-        return val;
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
+{
+
+//clo-app
+arg_buffer[1] = kont8863;
+arg_buffer[2] = acc;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8863))[0])();
+}
+else
+{
 
-    mpf_t *val_mpf = decode_mpf(val);
+//creating new closure instance
+void** clo9128 = alloc_clo(lam8905_fptr, 3);
 
-    mpf_t *round_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*round_val);
+//setting env list
+clo9128[1] = apply_prim_car_1(lst);
+clo9128[2] = fun;
+clo9128[3] = kont8863;
+void* f_lam_8864 = encode_clo(clo9128);
 
-    mpf_t *half = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*half);
-    mpf_set_d(*half, 0.5);
 
-    // Check if the fractional part is exactly 0.5
-    mpf_t *float_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*float_val);
-    mpf_floor(*float_val, *val_mpf);
-    mpf_sub(*float_val, *val_mpf, *float_val);
 
-    // print_mpf(float_val);
+//clo-app
+foldr_spec(foldr, f_lam_8864, fun, acc, apply_prim_cdr_1(lst));
+}
+
+}
 
-    // If fractional part = 0.5, rounding it to the nearest even integer
-    if (mpf_cmp(*float_val, *half) == 0)
-    {
-        mpz_t int_val;
-        mpz_init(int_val);
+inline void foldr_spec(void* _8907, void* kont8863, void* fun, void* acc, void* lst) // foldr 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-        // Converting to to mpz_t, to floor the value
-        mpz_set_f(int_val, *val_mpf);
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
+{
 
-        // if negative numbers
-        if (mpf_sgn(*val_mpf) < 0)
-        {
-            // takeing abs value of the floored integer
-            mpz_abs(int_val, int_val);
-            // Incrementing to get the original integer part
-            mpz_add_ui(int_val, int_val, 1);
-        }
+//clo-app
+arg_buffer[1] = kont8863;
+arg_buffer[2] = acc;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8863))[0])();
+}
+else
+{
 
-        if (mpz_even_p(int_val) != 0)
-            mpf_floor(*round_val, *val_mpf);
-        else
-            mpf_ceil(*round_val, *val_mpf);
+//creating new closure instance
+void** clo9129 = alloc_clo(lam8905_fptr, 3);
 
-        mpz_clear(int_val);
-    }
-    else
-    {
-        mpf_t *temp = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*temp);
-        mpf_add(*temp, *val_mpf, *half);
-        mpf_floor(*round_val, *temp);
-    }
+//setting env list
+clo9129[1] = apply_prim_car_1(lst);
+clo9129[2] = fun;
+clo9129[3] = kont8863;
+void* f_lam_8864 = encode_clo(clo9129);
 
-    // print_mpf(round_val);
 
-    mpz_t *result_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*result_mpz);
-    mpz_set_f(*result_mpz, *round_val); // Convert the rounded mpf to mpz
 
-    return encode_mpz(result_mpz);
+//clo-app
+foldr_spec(foldr, f_lam_8864, fun, acc, apply_prim_cdr_1(lst));
 }
 
-void *apply_prim_exact_u45round_1(void *val)
-{
-    return prim_exact_u45round(val);
 }
 
-void *apply_prim_exact_u45round(void *lst)
+inline void reverse_u45helper_fptr() // reverse-helper -> generic version 
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in exact-round -> arity mismatch: number of argument should be 1.");
+//reading env and args
+void* const kont8865 = arg_buffer[2];
+void* const lst = arg_buffer[3];
+void* const lst2 = arg_buffer[4];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    void **cons_lst = decode_cons(lst);
-    int car_tag = get_tag(cons_lst[0]);
-    bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
+{
 
-    if (!type_check)
-        assert_type(false, "Error in exact-round -> contact violation: expected integers or floating-point numbers as argument!");
+//clo-app
+arg_buffer[1] = kont8865;
+arg_buffer[2] = lst2;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8865))[0])();
+}
+else
+{
 
-    return prim_exact_u45round(prim_car(lst));
+//clo-app
+reverse_u45helper_spec(reverse_u45helper, kont8865, apply_prim_cdr_1(lst), apply_prim_cons_2(apply_prim_car_1(lst), lst2));
 }
 
-#pragma region SYMBOL
-bool isNum(const std::string &str)
-{
-    try
-    {
-        size_t position;
-        std::stod(str, &position);
-        return position == str.size();
-    }
-    catch (const std::invalid_argument &exp)
-    {
-        return false;
-    }
-    catch (const std::out_of_range &exp)
-    {
-        return false;
-    }
 }
 
-void *prim_symbol_u63(void *val)
+inline void reverse_u45helper_spec(void* _8908, void* kont8865, void* lst, void* lst2) // reverse-helper 
 {
-    if (get_tag(val) == STRING)
-    {
-        if (!isNum(*(decode_str(val))))
-            return encode_bool(true);
-        else
-            return encode_bool(false);
-    }
-    return encode_bool(false);
-}
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-void *apply_prim_symbol_u63_1(void *arg)
+//if-clause
+if(is_true(apply_prim_null_u63_1(lst)))
 {
-    return prim_symbol_u63(arg);
-}
 
-void *apply_prim_symbol_u63(void *lst)
+//clo-app
+arg_buffer[1] = kont8865;
+arg_buffer[2] = lst2;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8865))[0])();
+}
+else
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in symbol? -> arity mismatch: number of arguments should be 1!");
 
-    return prim_symbol_u63(prim_car(lst));
+//clo-app
+reverse_u45helper_spec(reverse_u45helper, kont8865, apply_prim_cdr_1(lst), apply_prim_cons_2(apply_prim_car_1(lst), lst2));
 }
 
-#pragma endregion
+}
 
-#pragma region STRINGS
-// takes in a void* and checks if the passed value is a string or not
-void *prim_string_u63(void *val)
+inline void reverse_fptr() // reverse -> generic version 
 {
-    int tag = get_tag(val);
-    if (tag == STRING)
-    {
-        return encode_bool(true);
-    }
-    return encode_bool(false);
+//reading env and args
+void* const kont8866 = arg_buffer[2];
+void* const lst = arg_buffer[3];
+//decoding closure array
+void** decode_clo_array = nullptr;
+
+//clo-app
+reverse_u45helper_spec(reverse_u45helper, kont8866, lst, apply_prim_list_0());
 }
 
-void *apply_prim_string_u63_1(void *arg)
+inline void reverse_spec(void* _8909, void* kont8866, void* lst) // reverse 
 {
-    return prim_string_u63(arg);
+//decoding closure array
+void** decode_clo_array = nullptr;
+
+//clo-app
+reverse_u45helper_spec(reverse_u45helper, kont8866, lst, apply_prim_list_0());
 }
 
-void *apply_prim_string_u63(void *lst)
+inline void lam8910_fptr() // lam8910 -> generic version 
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in string? -> arity mismatch: number of arguments should be 1!");
+//reading env
+void* const env8911 = arg_buffer[1];
+//reading env and args
+void* const id_8786 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8911);
 
-    return prim_string_u63(prim_car(lst));
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = apply_prim_cons_2(decode_clo_array[2], id_8786);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
 }
 
-// takes a void* and checks if it is a string and then returns the length of it
-void *prim_string_u45length(void *val)
+inline void lam8910_spec(void* env8911, void* id_8786) // lam8910 
 {
-    int tag = get_tag(val);
-    if (tag != STRING)
-    {
-        assert_type(false, "Error in string-length -> contact violation: argument is not a string");
-    }
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8911);
 
-    std::string *str = decode_str(val);
-    mpz_t *str_len = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init_set_ui(*str_len, str->length());
-    return encode_mpz(str_len);
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = apply_prim_cons_2(decode_clo_array[2], id_8786);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
 }
 
-void *apply_prim_string_u45length_1(void *arg)
+inline void append1_fptr() // append1 -> generic version 
 {
-    return prim_string_u45length(arg);
-}
+//reading env and args
+void* const kont8867 = arg_buffer[2];
+void* const lhs = arg_buffer[3];
+void* const rhs = arg_buffer[4];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-void *apply_prim_string_u45length(void *lst)
+//if-clause
+if(is_true(apply_prim_null_u63_1(lhs)))
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in string-length -> arity mismatch: number of arguments should be 1!");
 
-    return prim_string_u45length(prim_car(lst));
+//clo-app
+arg_buffer[1] = kont8867;
+arg_buffer[2] = rhs;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8867))[0])();
 }
-
-// takes in str and the position and returns the character at that position
-void *prim_string_u45ref(void *str_void, void *pos_void)
+else
 {
-    if (get_tag(str_void) != STRING)
-        assert_type(false, "Error in string-ref -> contact violation: frist argument should be a string");
 
-    if (get_tag(pos_void) != MPZ)
-        assert_type(false, "Error in string-ref -> contact violation: second argument should be an integer");
+//creating new closure instance
+void** clo9130 = alloc_clo(lam8910_fptr, 2);
 
-    std::string *str = decode_str(str_void);
-    mpz_t *pos = decode_mpz(pos_void);
+//setting env list
+clo9130[1] = kont8867;
+clo9130[2] = apply_prim_car_1(lhs);
+void* f_lam_8868 = encode_clo(clo9130);
 
-    if (!(mpz_cmp_ui(*pos, str->length()) < 0))
-    { // pos < str.length()
-        assert_type(false, "Error in string-ref -> exception: index is out of range");
-    }
-    const char ch = str->at(mpz_get_ui(*pos));
-    return encode_str(new (GC) std::string(&ch));
-}
 
-void *apply_prim_string_u45ref_2(void *arg1, void *arg2)
-{
-    return prim_string_u45ref(arg1, arg2);
-}
 
-void *apply_prim_string_u45ref(void *lst)
-{
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in string-ref -> arity mismatch: number of arguments should be 2!");
+//clo-app
+append1_spec(append1, f_lam_8868, apply_prim_cdr_1(lhs), rhs);
+}
 
-    return prim_string_u45ref(prim_car(lst), prim_car(prim_cdr(lst)));
 }
 
-// takes in the str, start[inclusive] and end[exclusive]
-// and returns the substring starting from start till end
-void *prim_substring(void *str_void, void *start_void, void *end_void)
+inline void append1_spec(void* _8912, void* kont8867, void* lhs, void* rhs) // append1 
 {
-    if (get_tag(str_void) != STRING)
-        assert_type(false, "Error in substring -> contact violation: first argument should be a string");
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    if (get_tag(start_void) != MPZ)
-        assert_type(false, "Error in substring -> contact violation: second argument should be an integer");
+//if-clause
+if(is_true(apply_prim_null_u63_1(lhs)))
+{
 
-    if (get_tag(end_void) != MPZ)
-        assert_type(false, "Error in substring -> contact violation: third argument should be an integer");
+//clo-app
+arg_buffer[1] = kont8867;
+arg_buffer[2] = rhs;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8867))[0])();
+}
+else
+{
 
-    std::string *str = decode_str(str_void);
-    long str_len = str->length();
-    mpz_t *start = decode_mpz(start_void);
-    mpz_t *end = decode_mpz(end_void);
+//creating new closure instance
+void** clo9131 = alloc_clo(lam8910_fptr, 2);
 
-    if (!((mpz_cmp_ui(*start, str_len) < 0) && (mpz_cmp_ui(*end, str_len) <= 0)))
-    {
-        assert_type(false, "Error in substring -> exception: ending index is out of range!");
-    }
+//setting env list
+clo9131[1] = kont8867;
+clo9131[2] = apply_prim_car_1(lhs);
+void* f_lam_8868 = encode_clo(clo9131);
 
-    mpz_sub(*end, *start, *end);
-    long substr_len = mpz_get_ui(*end);
 
-    std::string *ret_str = new (GC) std::string(str->substr(mpz_get_ui(*start), substr_len));
 
-    return encode_str(ret_str);
+//clo-app
+append1_spec(append1, f_lam_8868, apply_prim_cdr_1(lhs), rhs);
 }
 
-void *apply_prim_substring_3(void *arg1, void *arg2, void *arg3)
-{
-    return prim_substring(arg1, arg2, arg3);
 }
 
-void *apply_prim_substring(void *lst)
+inline void lam8913_fptr() // lam8913 -> generic version 
 {
-    if (length_counter(lst) < 3 || length_counter(lst) > 3)
-        assert_type(false, "Error in substring -> arity mismatch: number of arguments should be 3!");
+//reading env
+void* const env8914 = arg_buffer[1];
+//reading env and args
+void* const id_8793 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8914);
 
-    return prim_substring(prim_car(lst), prim_car(prim_cdr(lst)), prim_car(prim_cdr(prim_cdr(lst))));
+//clo-app
+foldr_spec(foldr, decode_clo_array[2], append1, decode_clo_array[1], id_8793);
 }
 
-// takes two strings and returns the appended string
-void *prim_string_u45append(void *s1_void, void *s2_void)
+inline void lam8913_spec(void* env8914, void* id_8793) // lam8913 
 {
-    if (get_tag(s1_void) != STRING)
-        assert_type(false, "Error in string-append -> contact violation: frist argument should be a string");
-
-    if (get_tag(s2_void) != STRING)
-        assert_type(false, "Error in string-append -> contact violation: second argument should be a string");
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8914);
 
-    std::string *s1 = new (GC) std::string(*(decode_str(s1_void)));
-    std::string *s2 = decode_str(s2_void);
-    s1->append(*s2);
-    return encode_str(s1);
+//clo-app
+foldr_spec(foldr, decode_clo_array[2], append1, decode_clo_array[1], id_8793);
 }
 
-void *apply_prim_string_u45append_2(void *arg1, void *arg2)
+inline void lam8915_fptr() // lam8915 -> generic version 
 {
-    return prim_string_u45append(arg1, arg2);
-}
+//reading env
+void* const env8916 = arg_buffer[1];
+//reading env and args
+void* const id_8788 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8916);
+
+//if-clause
+if(is_true(apply_prim__u61_2(decode_clo_array[4], id_8788)))
+{
 
-void *apply_prim_string_u45append(void *lst)
+//clo-app
+append1_spec(append1, decode_clo_array[3], decode_clo_array[1], apply_prim_car_1(decode_clo_array[2]));
+}
+else
 {
-    void *result = nullptr;
 
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int car_tag = get_tag(cons_lst[0]);
-        bool type_check = (car_tag == STRING);
+//creating new closure instance
+void** clo9132 = alloc_clo(lam8913_fptr, 2);
 
-        if (!type_check)
-            assert_type(false, "Error in string-append -> contact violation: arguement should be a string!");
+//setting env list
+clo9132[1] = apply_prim_list_0();
+clo9132[2] = decode_clo_array[3];
+void* f_lam_8870 = encode_clo(clo9132);
 
-        if (!result)
-        {
-            result = cons_lst[0];
-        }
-        else
-        {
-            result = prim_string_u45append(result, cons_lst[0]);
-        }
 
-        lst = cons_lst[1];
-    }
 
-    if (result == nullptr)
-    {
-        std::string *s1 = new (GC) std::string("");
-        return encode_str(s1);
-    }
-    return result;
+//clo-app
+append1_spec(append1, f_lam_8870, apply_prim_list_1(decode_clo_array[1]), decode_clo_array[2]);
 }
-
-void *prim_string_u45_u62list(void *str_void)
-{
-    if (get_tag(str_void) != STRING)
-        assert_type(false, "Error in string->list -> contact violation: argument should be a string");
 
-    std::string *str = decode_str(str_void);
-    std::string *ret_str = new (GC) std::string(*str);
-    std::reverse(ret_str->begin(), ret_str->end());
-    void *lst = encode_null();
-    for (char c : *ret_str)
-    {
-        lst = prim_cons(encode_str(new (GC) std::string(&c)), lst);
-    }
-    return lst;
 }
 
-void *apply_prim_string_u45_u62list_1(void *arg1)
+inline void lam8915_spec(void* env8916, void* id_8788) // lam8915 
 {
-    return prim_string_u45_u62list(arg1);
-}
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8916);
 
-void *apply_prim_string_u45_u62list(void *lst)
+//if-clause
+if(is_true(apply_prim__u61_2(decode_clo_array[4], id_8788)))
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in string->list -> arity mismatch: number of arguments should be at least 1!");
 
-    return prim_string_u45_u62list(prim_car(lst));
+//clo-app
+append1_spec(append1, decode_clo_array[3], decode_clo_array[1], apply_prim_car_1(decode_clo_array[2]));
 }
-
-#pragma endregion
-
-#pragma region newprims
-void *apply_prim_abs_1(void *val)
+else
 {
-    int val_tag = get_tag(val);
-    if (val_tag != MPF && val_tag != MPZ)
-    {
-        assert_type(false, "Error in abs -> contract violation: expected integers or floating-point numbers as argument!");
-    }
-
-    if (val_tag == MPZ)
-    {
-        mpz_t *val_mpz = decode_mpz(val);
 
-        if (mpz_sgn(*val_mpz) < 0)
-        {
-            mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-            mpz_init(*result);
-            mpz_abs(*result, *val_mpz);
+//creating new closure instance
+void** clo9133 = alloc_clo(lam8913_fptr, 2);
 
-            return encode_mpz(result);
-        }
-        else
-        {
-            return val;
-        }
-    }
-    else
-    {
-        mpf_t *val_mpf = decode_mpf(val);
+//setting env list
+clo9133[1] = apply_prim_list_0();
+clo9133[2] = decode_clo_array[3];
+void* f_lam_8870 = encode_clo(clo9133);
 
-        if (mpf_sgn(*val_mpf) < 0.0)
-        {
-            mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-            mpf_init(*result);
-            mpf_abs(*result, *val_mpf);
 
-            return encode_mpf(result);
-        }
-        else
-        {
-            return val;
-        }
-    }
 
-    return nullptr;
+//clo-app
+append1_spec(append1, f_lam_8870, apply_prim_list_1(decode_clo_array[1]), decode_clo_array[2]);
 }
-void *apply_prim_abs(void *lst)
-{
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in abs -> arity mismatch: number of arguments should be 1!");
 
-    return apply_prim_abs_1(prim_car(lst));
 }
 
-void *apply_prim_max_1(void *arg)
+inline void lam8917_fptr() // lam8917 -> generic version 
 {
-    return arg;
-}
+//reading env
+void* const env8918 = arg_buffer[1];
+//reading env and args
+void* const x = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8918);
 
-void *apply_prim_max(void *lst)
-{
-    if (length_counter(lst) < 1)
-        assert_type(false, "Error in max -> arity mismatch: number of arguments should be at least 1!");
+//creating new closure instance
+void** clo9134 = alloc_clo(lam8915_fptr, 4);
 
-    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*result);
-    mpf_t *mpf_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*mpf_car);
+//setting env list
+clo9134[1] = decode_clo_array[1];
+clo9134[2] = x;
+clo9134[3] = decode_clo_array[2];
+clo9134[4] = int8945;
+void* f_lam_8871 = encode_clo(clo9134);
 
-    bool is_result = false;
 
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int car_tag = get_tag(cons_lst[0]);
-        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
 
-        if (!type_check)
-            assert_type(false, "Error in max -> contact violation: argument type should be either integers or floating-point numbers!");
+//clo-app
+length_spec(length, f_lam_8871, x);
+}
 
-        if (!is_result)
-        {
-            is_result = true;
-            if (car_tag == MPZ)
-            {
-                // result = mpz_2_mpf(decode_mpz(cons_lst[0]));
-                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
-                mpf_t *temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+inline void lam8917_spec(void* env8918, void* x) // lam8917 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8918);
 
-                mpf_set(*result, *temp_mpf);
-                mpf_clear(*temp_mpf);
-            }
-            else
-            {
-                // result = decode_mpf(cons_lst[0]);
-                mpf_set(*result, *decode_mpf(cons_lst[0]));
-            }
-        }
-        else
-        {
-            if (car_tag == MPZ)
-            {
-                // mpf_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
-                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
-                mpf_t *temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+//creating new closure instance
+void** clo9135 = alloc_clo(lam8915_fptr, 4);
 
-                mpf_set(*mpf_car, *temp_mpf);
-                mpf_clear(*temp_mpf);
-            }
-            else
-            {
-                // mpf_car = decode_mpf(cons_lst[0]);
-                mpf_set(*mpf_car, *decode_mpf(cons_lst[0]));
-            }
+//setting env list
+clo9135[1] = decode_clo_array[1];
+clo9135[2] = x;
+clo9135[3] = decode_clo_array[2];
+clo9135[4] = int8945;
+void* f_lam_8871 = encode_clo(clo9135);
 
-            if (mpf_cmp(*mpf_car, *result) > 0.0)
-            {
-                mpf_set(*result, *mpf_car);
-            }
-        }
 
-        lst = cons_lst[1];
-    }
 
-    return encode_mpf(result);
+//clo-app
+length_spec(length, f_lam_8871, x);
 }
 
-void *apply_prim_min_1(void *arg)
+void append_fptr() // append 
+{
+//reading env
+void* const _8919 = arg_buffer[1];
+//decoding closure array
+void** decode_clo_array = nullptr;
+void* vargs = nullptr;
+if(is_cons(arg_buffer[2]))
 {
-    return arg;
+//(apply e0 e0) case
+vargs = arg_buffer[2];
 }
-
-void *apply_prim_min(void *lst)
+else
 {
-    if (length_counter(lst) < 1)
-        assert_type(false, "Error in min -> arity mismatch: number of arguments should be at least 1!");
-
-    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*result);
-    mpf_t *mpf_car = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-    mpf_init(*mpf_car);
-
-    bool is_result = false;
+//building cons cell
+vargs = encode_null();
+for(int i = numArgs; i >= 2; i--)
+{
+vargs = prim_cons(arg_buffer[i], vargs);
 
-    while (is_cons(lst))
-    {
-        void **cons_lst = decode_cons(lst);
-        int car_tag = get_tag(cons_lst[0]);
-        bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+}
 
-        if (!type_check)
-            assert_type(false, "Error in min -> contact violation: argument type should be either integers or floating-point numbers!");
+}
 
-        if (!is_result)
-        {
-            is_result = true;
-            if (car_tag == MPZ)
-            {
-                // result = mpz_2_mpf(decode_mpz(cons_lst[0]));
-                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
-                mpf_t *temp_mpf = mpz_2_mpf(temp_mpz_ptr);
 
-                mpf_set(*result, *temp_mpf);
-                mpf_clear(*temp_mpf);
-            }
-            else
-            {
-                // result = decode_mpf(cons_lst[0]);
-                mpf_set(*result, *decode_mpf(cons_lst[0]));
-            }
-        }
-        else
-        {
-            if (car_tag == MPZ)
-            {
-                // mpf_car = mpz_2_mpf(decode_mpz(cons_lst[0]));
-                mpz_t *temp_mpz_ptr = decode_mpz(cons_lst[0]);
-                mpf_t *temp_mpf = mpz_2_mpf(temp_mpz_ptr);
+//creating new closure instance
+void** clo9136 = alloc_clo(lam8917_fptr, 2);
 
-                mpf_set(*mpf_car, *temp_mpf);
-                mpf_clear(*temp_mpf);
-            }
-            else
-            {
-                // mpf_car = decode_mpf(cons_lst[0]);
-                mpf_set(*mpf_car, *decode_mpf(cons_lst[0]));
-            }
+//setting env list
+clo9136[1] = apply_prim_car_1(apply_prim_cdr_1(vargs));
+clo9136[2] = apply_prim_car_1(vargs);
+void* f_lam_8872 = encode_clo(clo9136);
 
-            if (mpf_cmp(*mpf_car, *result) < 0.0)
-            {
-                mpf_set(*result, *mpf_car);
-            }
-        }
 
-        lst = cons_lst[1];
-    }
 
-    return encode_mpf(result);
+//clo-app
+lam8917_spec(f_lam_8872, apply_prim_cdr_1(apply_prim_cdr_1(vargs)));
 }
 
-void *apply_prim_expt_2(void *arg1, void *arg2)
+inline void lam8920_fptr() // lam8920 -> generic version 
 {
-    int val_tag = get_tag(arg1);
-    int val_tag2 = get_tag(arg2);
+//reading env
+void* const env8921 = arg_buffer[1];
+//reading env and args
+void* const xy8796 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8921);
 
-    if (val_tag != MPF && val_tag != MPZ)
-    {
-        assert_type(false, "Error in expt -> contract violation: first argument should be integers or floating-point numbers!");
-    }
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = xy8796;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
+}
 
-    if (val_tag2 != MPF && val_tag2 != MPZ)
-    {
-        assert_type(false, "Error in expt -> contract violation: second argument should be integers or floating-point numbers!");
-    }
+inline void lam8920_spec(void* env8921, void* xy8796) // lam8920 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8921);
 
-    if (val_tag == MPZ && val_tag2 == MPZ)
-    {
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init(*result);
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = xy8796;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
+}
 
-        mpz_pow_ui(*result, *(decode_mpz(arg1)), (unsigned long int)mpz_get_ui(*(decode_mpz(arg2))));
+inline void take_u45helper_fptr() // take-helper -> generic version 
+{
+//reading env and args
+void* const kont8873 = arg_buffer[2];
+void* const lst = arg_buffer[3];
+void* const n = arg_buffer[4];
+void* const lst2 = arg_buffer[5];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-        return encode_mpz(result);
-    }
-    else
-    {
-        // either one of them is mpf, so convert both of them to mpf
-        mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*result);
-        mpf_t *arg1_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_t *arg2_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+//if-clause
+if(is_true(apply_prim__u61_2(n, int8944)))
+{
 
-        mpf_init(*arg1_mpf);
-        mpf_init(*arg2_mpf);
+//creating new closure instance
+void** clo9137 = alloc_clo(lam8920_fptr, 1);
 
-        if (val_tag == MPZ)
-            arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
-        else
-            arg1_mpf = decode_mpf(arg1);
+//setting env list
+clo9137[1] = kont8873;
+void* f_lam_8874 = encode_clo(clo9137);
 
-        if (val_tag2 == MPZ)
-            arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
-        else
-            arg2_mpf = decode_mpf(arg2);
 
-        // converting mpf value to double
-        double arg1_double = mpf_get_d(*arg1_mpf);
-        double arg2_double = mpf_get_d(*arg2_mpf);
 
-        mpf_set_d(*result, pow(arg1_double, arg2_double));
+//clo-app
+reverse_spec(reverse, f_lam_8874, lst2);
+}
+else
+{
 
-        return encode_mpf(result);
-    }
+//clo-app
+take_u45helper_spec(take_u45helper, kont8873, apply_prim_cdr_1(lst), apply_prim__u45_2(n, int8945), apply_prim_cons_2(apply_prim_car_1(lst), lst2));
+}
 
-    return nullptr;
 }
 
-void *apply_prim_expt(void *lst)
+inline void take_u45helper_spec(void* _8922, void* kont8873, void* lst, void* n, void* lst2) // take-helper 
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in expt -> arity mismatch: number of arguments should be 2!");
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    return apply_prim_expt_2(prim_car(lst), prim_car(prim_cdr(lst)));
-}
-
-void *apply_prim_sqrt_1(void *arg1)
+//if-clause
+if(is_true(apply_prim__u61_2(n, int8944)))
 {
-    int val_tag = get_tag(arg1);
 
-    if (val_tag != MPF && val_tag != MPZ)
-    {
-        assert_type(false, "Error in sqrt -> contract violation: first argument should be integers or floating-point numbers!");
-    }
+//creating new closure instance
+void** clo9138 = alloc_clo(lam8920_fptr, 1);
 
-    if (val_tag == MPZ)
-    {
-        mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*result);
-        mpf_sqrt(*result, *(mpz_2_mpf(decode_mpz(arg1))));
+//setting env list
+clo9138[1] = kont8873;
+void* f_lam_8874 = encode_clo(clo9138);
 
-        return encode_mpf(result);
-    }
-    else if (val_tag == MPF)
-    {
-        mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*result);
-        mpf_sqrt(*result, *(decode_mpf(arg1)));
 
-        return encode_mpf(result);
-    }
 
-    return nullptr;
+//clo-app
+reverse_spec(reverse, f_lam_8874, lst2);
 }
-
-void *apply_prim_sqrt(void *lst)
+else
 {
-    if (length_counter(lst) < 1 || length_counter(lst) > 1)
-        assert_type(false, "Error in sqrt -> arity mismatch: number of arguments should be 1!");
 
-    return apply_prim_sqrt_1(prim_car(lst));
+//clo-app
+take_u45helper_spec(take_u45helper, kont8873, apply_prim_cdr_1(lst), apply_prim__u45_2(n, int8945), apply_prim_cons_2(apply_prim_car_1(lst), lst2));
 }
 
-void *apply_prim_remainder_2(void *first, void *second)
-{
-    void *result = nullptr;
+}
 
-    if (!is_integer_val(first) || !is_integer_val(second))
-    { // to see either of the numbers has fraction in it!
-        assert_type(false, "Error in remainder -> contact violation: expected integer argument!");
-    }
-    else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
-    { // both numbers are mpz
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init(*result);
-        mpz_tdiv_r(*result, *(decode_mpz(first)), *(decode_mpz(second)));
-        return encode_mpz(result);
-    }
-    else
-    {
-        // either one of them is mpf, so convert both of them to mpf
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init(*result);
-        mpz_t *arg1_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_t *arg2_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+inline void take_fptr() // take -> generic version 
+{
+//reading env and args
+void* const kont8875 = arg_buffer[2];
+void* const lst = arg_buffer[3];
+void* const n = arg_buffer[4];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-        mpz_init(*arg1_mpz);
-        mpz_init(*arg2_mpz);
+//clo-app
+take_u45helper_spec(take_u45helper, kont8875, lst, n, apply_prim_list_0());
+}
 
-        if (get_tag(first) == MPZ)
-            arg1_mpz = decode_mpz(first);
-        else
-            arg1_mpz = mpf_2_mpz(decode_mpf(first));
+inline void take_spec(void* _8923, void* kont8875, void* lst, void* n) // take 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-        if (get_tag(second) == MPZ)
-            arg2_mpz = decode_mpz(second);
-        else
-            arg2_mpz = mpf_2_mpz(decode_mpf(second));
+//clo-app
+take_u45helper_spec(take_u45helper, kont8875, lst, n, apply_prim_list_0());
+}
 
-        mpz_tdiv_r(*result, *arg1_mpz, *arg2_mpz);
-        return encode_mpf(mpz_2_mpf(result));
-    }
+inline void lam8924_fptr() // lam8924 -> generic version 
+{
+//reading env
+void* const env8925 = arg_buffer[1];
+//reading env and args
+void* const id_8810 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8925);
 
-    return result;
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = apply_prim__u43_2(decode_clo_array[2], id_8810);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
 }
 
-void *apply_prim_remainder(void *lst)
+inline void lam8924_spec(void* env8925, void* id_8810) // lam8924 
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in remaind -> arity mismatch: number of arguments should be 2!");
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8925);
 
-    return apply_prim_remainder_2(prim_car(lst), prim_car(prim_cdr(lst)));
+//clo-app
+arg_buffer[1] = decode_clo_array[1];
+arg_buffer[2] = apply_prim__u43_2(decode_clo_array[2], id_8810);
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(decode_clo_array[1]))[0])();
 }
 
-void *apply_prim_quotient_2(void *first, void *second)
+inline void lam8926_fptr() // lam8926 -> generic version 
 {
-    void *result = nullptr;
+//reading env
+void* const env8927 = arg_buffer[1];
+//reading env and args
+void* const id_8807 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8927);
 
-    if (!is_integer_val(first) || !is_integer_val(second))
-    { // to see either of the numbers has fraction in it!
-        assert_type(false, "Error in quotient -> contact violation: expected integer argument!");
-    }
-    else if (get_tag(first) == MPZ && get_tag(second) == MPZ)
-    { // both numbers are mpz
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init(*result);
-        mpz_tdiv_q(*result, *(decode_mpz(first)), *(decode_mpz(second)));
-        return encode_mpz(result);
-    }
-    else
-    {
-        // either one of them is mpf, so convert both of them to mpf
-        mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init(*result);
-        mpz_t *arg1_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_t *arg2_mpz = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-        mpz_init(*arg1_mpz);
-        mpz_init(*arg2_mpz);
+//creating new closure instance
+void** clo9139 = alloc_clo(lam8924_fptr, 2);
 
-        if (get_tag(first) == MPZ)
-            arg1_mpz = decode_mpz(first);
-        else
-            arg1_mpz = mpf_2_mpz(decode_mpf(first));
+//setting env list
+clo9139[1] = decode_clo_array[1];
+clo9139[2] = id_8807;
+void* f_lam_8877 = encode_clo(clo9139);
 
-        if (get_tag(second) == MPZ)
-            arg2_mpz = decode_mpz(second);
-        else
-            arg2_mpz = mpf_2_mpz(decode_mpf(second));
 
-        mpz_tdiv_q(*result, *arg1_mpz, *arg2_mpz);
-        return encode_mpf(mpz_2_mpf(result));
-    }
 
-    return result;
+//clo-app
+fibfp_spec(fibfp, f_lam_8877, apply_prim__u45_2(decode_clo_array[2], float8948));
 }
 
-void *apply_prim_quotient(void *lst)
+inline void lam8926_spec(void* env8927, void* id_8807) // lam8926 
 {
-    if (length_counter(lst) < 2 || length_counter(lst) > 2)
-        assert_type(false, "Error in quotient -> arity mismatch: number of arguments should be 2!");
+//decoding closure array
+void** decode_clo_array = nullptr;
+decode_clo_array = decode_clo(env8927);
+
+//creating new closure instance
+void** clo9140 = alloc_clo(lam8924_fptr, 2);
+
+//setting env list
+clo9140[1] = decode_clo_array[1];
+clo9140[2] = id_8807;
+void* f_lam_8877 = encode_clo(clo9140);
 
-    return apply_prim_quotient_2(prim_car(lst), prim_car(prim_cdr(lst)));
+
+
+//clo-app
+fibfp_spec(fibfp, f_lam_8877, apply_prim__u45_2(decode_clo_array[2], float8948));
 }
+
+inline void fibfp_fptr() // fibfp -> generic version 
+{
+//reading env and args
+void* const kont8876 = arg_buffer[2];
+void* const n = arg_buffer[3];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-void *apply_prim_random_1(void *arg1) // random
+//if-clause
+if(is_true(apply_prim__u60_2(n, float8948)))
 {
-    mpz_t *arg1_mpz = decode_mpz(arg1);
 
-    if (mpz_sgn(*arg1_mpz) < 0)
-        assert_type(false, "Error in random -> arity mismatch: arguments should not be less than zero!");
+//clo-app
+arg_buffer[1] = kont8876;
+arg_buffer[2] = n;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8876))[0])();
+}
+else
+{
 
-    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*result);
+//creating new closure instance
+void** clo9141 = alloc_clo(lam8926_fptr, 2);
 
-    gmp_randstate_t curstate;
-    gmp_randinit_default(curstate);
-    gmp_randseed_ui(curstate, time(NULL));
+//setting env list
+clo9141[1] = kont8876;
+clo9141[2] = n;
+void* f_lam_8878 = encode_clo(clo9141);
 
-    mpz_t *rangeMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    // converting arg1_mpz to unsigned long
-    mpz_init_set_ui(*rangeMpzVal, mpz_get_ui(*arg1_mpz));
 
-    mpz_urandomm(*result, curstate, *rangeMpzVal);
 
-    gmp_randclear(curstate);
+//clo-app
+fibfp_spec(fibfp, f_lam_8878, apply_prim__u45_2(n, float8947));
+}
 
-    return encode_mpz(result);
 }
-void *apply_prim_random_2(void *arg1, void *arg2) // random
+
+inline void fibfp_spec(void* _8928, void* kont8876, void* n) // fibfp 
 {
-    mpz_t *arg1_mpz = decode_mpz(arg1);
-    mpz_t *arg2_mpz = decode_mpz(arg2);
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    if (mpz_sgn(*arg1_mpz) < 0 || mpz_sgn(*arg2_mpz) < 0)
-        assert_type(false, "Error in random -> contact violation: arguments should not be less than zero!");
+//if-clause
+if(is_true(apply_prim__u60_2(n, float8948)))
+{
 
-    int cmp_res = mpz_cmp(*arg1_mpz, *arg2_mpz);
+//clo-app
+arg_buffer[1] = kont8876;
+arg_buffer[2] = n;
+numArgs = int8951;
+reinterpret_cast<void (*)()>((decode_clo(kont8876))[0])();
+}
+else
+{
 
-    if (cmp_res > 0 || cmp_res == 0)
-        assert_type(false, "Error in random -> contact violation: first argument should be less than the second argument!");
+//creating new closure instance
+void** clo9142 = alloc_clo(lam8926_fptr, 2);
 
-    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    mpz_init(*result);
+//setting env list
+clo9142[1] = kont8876;
+clo9142[2] = n;
+void* f_lam_8878 = encode_clo(clo9142);
 
-    gmp_randstate_t curstate;
-    gmp_randinit_default(curstate);
-    gmp_randseed_ui(curstate, time(NULL));
 
-    mpz_t *rangeMpzVal = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-    // converting mpz to unsigned long
-    mpz_init_set_ui(*rangeMpzVal, mpz_get_ui(*arg2_mpz) - mpz_get_ui(*arg1_mpz));
-    mpz_urandomm(*result, curstate, *rangeMpzVal);
-    mpz_add_ui(*result, *result, mpz_get_ui(*arg1_mpz));
 
-    gmp_randclear(curstate);
+//clo-app
+fibfp_spec(fibfp, f_lam_8878, apply_prim__u45_2(n, float8947));
+}
 
-    return encode_mpz(result);
 }
 
-void *apply_prim_random(void *lst) // random
+inline void brouhaha_main_fptr() // brouhaha_main -> generic version 
 {
-    if (length_counter(lst) < 0 || length_counter(lst) > 2)
-        assert_type(false, "Error in random -> arity mismatch: more than 2 argument is not supported!");
+//reading env and args
+void* const kont8879 = arg_buffer[2];
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    if (length_counter(lst) == 0)
-    {
-        std::random_device random;
-        std::mt19937 gen(random());
-        std::uniform_real_distribution<> distr(0.0, 1.0);
-
-        mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-        mpf_init(*result);
-        mpf_set_d(*result, distr(gen));
+//clo-app
+fibfp_spec(fibfp, kont8879, float8949);
+}
 
-        return encode_mpf(result);
-    }
-    else if (length_counter(lst) == 1)
-    {
-        return apply_prim_random_1(prim_car(lst));
-    }
-    else if (length_counter(lst) == 2)
-    {
-        return apply_prim_random_2(prim_car(lst), prim_car(prim_cdr(lst)));
-    }
+inline void brouhaha_main_spec(void* _8929, void* kont8879) // brouhaha_main 
+{
+//decoding closure array
+void** decode_clo_array = nullptr;
 
-    return nullptr;
+//clo-app
+fibfp_spec(fibfp, kont8879, float8949);
 }
-
-#pragma endregion
 
-#pragma region PRINTING
-std::string print_val(void *val)
+int main(int argc, char **argv)
 {
-    std::cout << "In print_val" << std::endl;
-    switch (get_tag(val))
-    {
-    case SPL:
-        if (is_null_val(val))
-        {
-            // kludgy of doing this!
-            // null and booleans should have had their own cases
-            // but unfortunately we took that path, when we didn't consider this issue might arise
-            // that we won't be able differentiate between booleans and nulls
-            // an SPL could be anything right? not just boolean!
-            return "(list)";
-        }
-        // now we are certain that it has to be a boolean value, well at least for now!
-        else if (decode_bool(val))
-        {
-            return "#t";
-        }
-        else
-        {
-            return "#f";
-        }
-        break;
-    case HASH:
-    {
-        return print_hash(val);
-        break;
-    }
-    case MPZ:
-    {
+mp_set_memory_functions(&allocate_function,
+                            &reallocate_function,
+                            &deallocate_function);
 
-        mpz_t *final_mpz = decode_mpz(val);
-        std::string str(mpz_get_str(nullptr, 10, *final_mpz));
-        return str;
-        break;
-    }
-    case STRING:
-    {
-        std::string str = "\"" + *(decode_str(val)) + "\"";
-        return str;
-        break;
-    }
-    case MPF:
-    {
-        mpf_t *final_mpf = decode_mpf(val);
-        char buffer[1000];
-        gmp_sprintf(buffer, "%.5Ff", *final_mpf);
-        mpf_clear(*final_mpf);
+// initializing global constants in the main
+int8944 = reinterpret_cast<void *>(encode_int(0));
+float8948 = reinterpret_cast<void *>(encode_float(2.0));
+float8947 = reinterpret_cast<void *>(encode_float(1.0));
+float8949 = reinterpret_cast<void *>(encode_float(35.0));
+bool_t8937 = encode_bool(true);
+int8945 = reinterpret_cast<void *>(encode_int(1));
+bool_f8938 = encode_bool(false);
+int8933 = reinterpret_cast<void *>(encode_int(2));
 
-        return std::string(buffer);
-        break;
-    }
-    case CONS:
-    {
-        return print_cons(val);
-        break;
-    }
-    case CLO:
-    {
-        return "#<procedure>";
-        break;
-    }
-    }
-    return "unknown_data_type_print_val";
-}
 
-#pragma endregion
-void *halt;
-void *arg_buffer[999]; // This is where the arg buffer is called
-long numArgs;
-unsigned long long call_counter = 0;
-// void **decode_clo_array = nullptr;
 
-void fhalt()
-{
-    std::cout << "In fhalt" << std::endl;
-    // std::cout << "call_counter: " << call_counter << std::endl;
-    std::cout << print_val(arg_buffer[2]) << std::endl;
-    // print_val(arg_buffer[2]);
-    exit(0);
+// initializing global integer vars
+int8950 = 1;
+int8951 = 2;
+int8952 = 3;
+int8953 = 4;
+int8954 = 5;
+
+//making a call to the brouhaha main function to kick off our C++ emission.
+void *fhalt_clo = encode_clo(alloc_clo(fhalt,0));
+arg_buffer[2] = fhalt_clo;
+
+// calling next procedure using a function pointer
+brouhaha_main_spec(nullptr, fhalt_clo);
 }
+

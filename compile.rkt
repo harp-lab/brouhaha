@@ -362,8 +362,16 @@
       [`(apply ,ae0 ,ae1)
        `(apply ,ae0 ,ae1)]
 
-      [`(,fae ,args ...) `(,fae ,@(map tag-body args))]
-      ))
+      [`(,fae ,args ...)
+       (match-define `(,is_define_prim ,is_callable ,arg_count)
+         (callable-define-prim? proc-name-shadowed? fae (length args)))
+
+       (define x (gensym 'x))
+
+       (if (and is_define_prim is_callable)
+           `(let ([,x (prim ,fae ,@args)]) ,x)
+           `(,fae ,@(map tag-body args)))
+      ]))
 
 
   (define (init def)

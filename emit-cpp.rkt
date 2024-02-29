@@ -216,8 +216,8 @@
 
          (if (hash-has-key? arg_hash item)
              (if (not (string-prefix? (hash-ref arg_hash item) "lam"))
-                (append-line filepath (format "~a[~a] = ~a;" cloName i (hash-ref arg_hash item)))
-                (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item))))
+                 (append-line filepath (format "~a[~a] = ~a;" cloName i (hash-ref arg_hash item)))
+                 (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item))))
              (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item)))))
 
        (append-line filepath (format "void* ~a = encode_clo(~a);" (get-c-string lhs) cloName))
@@ -523,7 +523,7 @@
 
                       (cddr args)))
 
-            ;  (pretty-print args-str)
+             ;  (pretty-print args-str)
 
              (append-line filepath (format "arg_buffer[2] = apply_prim_~a_~a(~a);"
                                            (if (hash-has-key? arg_hash func)
@@ -603,7 +603,9 @@
              (for ([i (in-range 1 (+ (length args) 1))] [item args])
                (append-line filepath (format "arg_buffer[~a] = ~a;" (+ i 1)
                                              (if (hash-has-key? arg_hash item)
-                                                 (hash-ref arg_hash item)
+                                                 (if (not (string-prefix? (hash-ref arg_hash item) "lam"))
+                                                     (hash-ref arg_hash item)
+                                                     (get-c-string item))
                                                  (get-c-string item)))))
 
              ;  (append-line filepath (format "arg_buffer[0] = reinterpret_cast<void*>(~a);" (+ (length args) 1)))
@@ -759,10 +761,11 @@
 
                          (append-line filepath
                                       (if (hash-has-key? arg_hash func)
-                                          (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (hash-ref arg_hash func))
-                                          (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string func))))
-                         )
-                       ))
+                                          (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();"
+                                                  (if (not (string-prefix? (hash-ref arg_hash func) "lam"))
+                                                      (hash-ref arg_hash func)
+                                                      (get-c-string func)))
+                                          (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string func)))))))
                  )])
 
           ])]))
@@ -776,7 +779,7 @@
        (append-line filepath (format "inline void ~a_fptr() // ~a -> generic version ~a" (get-c-string ptr) ptr "\n{"))
 
        ;  uncomment these two lines for debugging!
-      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: generic version\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: generic version\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -811,7 +814,7 @@
 
 
        ;  uncomment these two lines for debugging!
-      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -859,7 +862,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 
@@ -912,7 +915,7 @@
        (append-line filepath func_name)
 
        ; uncomment these two lines for debugging!
-      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
        ;  (append-line filepath (format "print_arg_buffer();\n"))
        ;  (append-line filepath "call_counter++;")
 

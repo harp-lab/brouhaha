@@ -57,6 +57,7 @@
 
 
 (define (find-global-constants-helper exp env)
+  ; (displayln exp)
   (match exp
     ['() env]
     [(? symbol?) env]
@@ -78,7 +79,7 @@
                                         [else
                                          (hash-set env val `(bool-false ,(gensym 'bool_f)))]
                                         )]
-                                     [_ env]))]
+                                     [_ (find-global-constants-helper val env)]))]
     [`(if ,ec ,et ,ef)
      (find-global-constants-helper et (find-global-constants-helper ef env))]
     [`(apply ,e0 ,e1)
