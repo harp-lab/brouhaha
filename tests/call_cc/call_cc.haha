@@ -1,0 +1,8 @@
+(define (call arg)
+;   (((call/cc (lambda (x) ((x x) x))) (lambda (y) y)) arg)
+  ; (((call/cc (lambda (x) x)) (lambda (y) y)) arg)
+  ; (call/cc (lambda (k) (+ 2 (k 3))))
+  (call/cc (lambda (k) (k 3)))
+  )
+
+(define (brouhaha_main) (call #t))

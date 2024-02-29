@@ -1,12 +1,14 @@
 #include <bitset>
 #include <cstdint>
 #include <functional>
+#include <iomanip>
 #include <iostream>
 #include <math.h>
 #include <random>
 #include <sstream>
 #include <string>
 #include <vector>
+
 
 // #include <alloca.h>
 
@@ -170,41 +172,6 @@ inline s32 decode_int(void *val) {
   return ((s32)((u32)(((v) & ~(7ULL)) >> 32)));
 }
 
-// inline float decode_float(void *val) {
-// //   u64 v = *static_cast<u64 *>(val);
-//   u64 v = *reinterpret_cast<u64*>(val);
-
-//   if ((v & 0x18) != FLOAT_VAL)
-//     assert_type(false, "Error in decode_float -> Type error: Not a Float
-//     number!");
-
-//   u32 asU32 = static_cast<u32>(v >> 32);
-//   float decodedFloat = *reinterpret_cast<float *>(&asU32);
-
-//   // return *reinterpret_cast<float*>(&dude);
-//   return decodedFloat;
-// }
-
-// inline float decode_float(void *val) {
-//     uint64_t v = *static_cast<uint64_t*>(val);
-//
-//     // Correct the condition to check for a FLOAT_VAL type
-//     if ((v & 0x18) != FLOAT_VAL) // Ensure the mask and comparison is correct
-//     for a float.
-//         assert_type(false, "Error in decode_float -> Type error: Not a
-//         Float!"); // Corrected error message.
-//
-//     // Assuming the float is stored in the higher 32-bits of the 64-bit
-//     integer. uint32_t asU32 = (uint32_t)(v >> 32); // Cast to uint32_t to
-//     ensure correct bits are taken.
-//
-//     // Correctly interpret the bits as a float.
-//     float decodedFloat = *reinterpret_cast<float*>(&asU32); // Correct the
-//     variable used for reinterpretation.
-//
-//     return decodedFloat;
-// }
-
 inline float decode_float(void *val) {
   if (get_tag(val) != FLOAT_VAL)
     assert_type(false, "Error in decode_float -> Type error: Not a float!");
@@ -212,7 +179,11 @@ inline float decode_float(void *val) {
   u64 v = reinterpret_cast<u64>(val);
 
   u32 temp = (v >> 32) & ~0x18;
-  return *reinterpret_cast<float *>(&temp);
+  // return *reinterpret_cast<float *>(&temp); // works as well!
+  
+  float result;
+  std::memcpy(&result, &temp, sizeof(result));
+  return result;
 }
 
 mpz_t *decode_mpz(void *val) {
@@ -276,20 +247,18 @@ inline void **alloc_clo(void (*fptr)(), int num) {
   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
 
   obj[0] = reinterpret_cast<void *>(fptr);
-  
+
   return obj;
 }
 
-inline void **alloc_kont(void (*fptr)(), void *f_spec, int num) {
-  void **obj = (void **)(GC_MALLOC((num + 2) * sizeof(void *)));
+inline void **alloc_kont(void *f_spec, int num) {
+  void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
 
-  obj[0] = reinterpret_cast<void *>(fptr);
-  obj[1] = f_spec;
-  
+  // obj[0] = reinterpret_cast<void *>(fptr);
+  obj[0] = f_spec;
+
   return obj;
 }
-
-
 
 // template <typename Func> void **alloc_clo(Func fptr, int num) {
 //   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
@@ -1247,6 +1216,37 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
       // No overflow
       return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
     }
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
+    float a1 = decode_float(arg1);
+    float a2 = decode_float(arg2);
+
+    float res = a1 + a2;
+
+    // Check for overflow
+    if (isinf(res)) {
+      // Promote to (MPF)
+      mpf_t a1_mpf, a2_mpf, result_mpf;
+      mpf_init(a1_mpf);
+      mpf_init(a2_mpf);
+      mpf_init(result_mpf);
+      mpf_set_d(a1_mpf, a1); // Set a1_mpf to a1
+      mpf_set_d(a2_mpf, a2); // Set a2_mpf to a2
+
+      mpf_add(result_mpf, a1_mpf, a2_mpf); // Perform addition with MPF
+
+      // Now, result_mpf holds the result of the addition in MPF
+
+      mpf_clear(a1_mpf);
+      mpf_clear(a2_mpf);
+      mpf_clear(result_mpf);
+
+      // return encode_mpf(result_mpf);
+    } else if (isnan(res)) {
+      // Handle invalid operation result
+    } else {
+      // Normal case, encode the float result
+      return reinterpret_cast<void *>(encode_float(res));
+    }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
   }
 
@@ -1493,9 +1493,6 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
 
-  // std::cout << "no overflow: " << arg1_tag << std::endl;
-  // std::cout << "no overflow: " << arg2_tag << std::endl;
-
   // Handling INT + INT case directly
   if (arg1_tag == INT && arg2_tag == INT) {
     const s64 a1 = decode_int(arg1);
@@ -1512,6 +1509,18 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
     } else {
       // No overflow
       return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
+    }
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
+    float a1 = decode_float(arg1);
+    float a2 = decode_float(arg2);
+
+    float res = a1 - a2;
+
+    if (isinf(res) || isnan(res)) {
+      // Handle the case where the result is infinity or NaN (Not a Number)
+    } else {
+      // No overflow or underflow, return the result
+      return reinterpret_cast<void *>(encode_float(res));
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
   }
@@ -2550,7 +2559,28 @@ void *apply_prim__u60_1(void *arg1) // <
 
 void *apply_prim__u60_2(void *arg1, void *arg2) // <
 {
-  return compare_op(arg1, arg2, *less_zero);
+  // return compare_op(arg1, arg2, *less_zero);
+
+  int arg1_tag = get_tag(arg1);
+  int arg2_tag = get_tag(arg2);
+
+  // Both arguments are integers
+  if (arg1_tag == INT && arg2_tag == INT) {
+    s64 a1 = decode_int(arg1);
+    s64 a2 = decode_int(arg2);
+    // Perform direct comparison
+    return a1 < a2 ? encode_bool(true) : encode_bool(false);
+  }
+
+  if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
+    float a1 = decode_float(arg1); // Assuming decode_float function exists
+    float a2 = decode_float(arg2);
+
+    // Perform direct comparison for floats
+    return a1 < a2 ? encode_bool(true) : encode_bool(false);
+  }
+
+  return nullptr;
 }
 
 void *apply_prim__u60_3(void *arg1, void *arg2, void *arg3) // <
@@ -4221,6 +4251,8 @@ inline void *apply_prim_random(void *lst) // random
   return nullptr;
 }
 
+void *apply_prim_kont_u45to_u45lam_1(void *kont) { return kont; }
+
 #pragma endregion
 
 #pragma region PRINTING
@@ -4267,6 +4299,10 @@ std::string print_val(void *val) {
     std::string str = std::to_string(decode_float(val));
     return str;
 
+    // std::ostringstream oss;
+    // oss << std::fixed << std::setprecision(8) << decode_float(val);
+    // return oss.str();
+
     break;
   }
   case STRING: {
@@ -4305,7 +4341,7 @@ void *halt;
 // unsigned long long minus_counter = 0;
 
 void fhalt() {
-  // std::cout << "In fhalt" << std::endl;
+  std::cout << "In fhalt" << std::endl;
   std::cout << print_val(arg_buffer[2]) << std::endl;
   // std::cout << "Total # calls made (excluding prelude): " << call_counter
   // <<std::endl; std::cout << "Total # calls made (car): " << car_counter <<
@@ -4318,8 +4354,8 @@ void fhalt() {
   exit(0);
 }
 
-void fhalt_spec(void* _dummy_arg, void* result) {
-  // std::cout << "In fhalt_spec" << std::endl;
+void fhalt_spec(void *_dummy_arg, void *result) {
+  std::cout << "In fhalt_spec" << std::endl;
   std::cout << print_val(result) << std::endl;
   exit(0);
 }

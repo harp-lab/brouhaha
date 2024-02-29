@@ -295,7 +295,7 @@
     [`(apply-prim ,op ,e0) (coverage (normalize-ae e0 (lambda (x) (k `(apply-prim ,op ,x)))))]
 
     [`(call/cc ,e0)
-     (normalize e0
+     (normalize (normalize-anf e0)
                 (lambda (ae)
                   (k `(call/cc ,ae))))]
 
@@ -323,6 +323,7 @@
         [`() env+])))
 
   (define (tag-body e)
+    ; (pretty-print proc-name-shadowed?)
     (match e
       [(? symbol? x)  x]
       [`',dat `',dat]
@@ -340,30 +341,25 @@
        (match-define `(,is_define_prim ,is_callable ,arg_count)
          (callable-define-prim? proc-name-shadowed? (car rhs) (length (cdr rhs))))
 
-
-       ;  (pretty-print `(let ([,x ,rhs]) e0))
-       ;  ;(when (and is_define_prim is_callable)
-       ;  (displayln (car rhs))
-       ;  (displayln (cdr rhs))
-       ;  (displayln (length (cdr rhs)))
-       ;  (displayln is_define_prim)
-       ;  (displayln is_callable)
-       ;  (displayln arg_count)
-       ;  ;)
-       ;  (displayln "---------")
-
        (if (and is_define_prim is_callable)
            `(let ([,x (prim ,@rhs)]) ,(tag-body e0))
-           `(let ([,x ,(tag-body rhs)]) ,(tag-body e0))) ]
+           `(let ([,x ,(tag-body rhs)]) ,(tag-body e0)))]
 
       [`(if ,ae ,e0 ,e1)  `(if ,ae ,(tag-body e0) ,(tag-body e1))]
 
       [`(call/cc ,e0) `(call/cc ,e0)]
-      [`(apply ,ae0 ,ae1)
-       `(apply ,ae0 ,ae1)]
 
-      [`(,fae ,args ...) `(,fae ,@(map tag-body args))]
-      ))
+      [`(apply ,ae0 ,ae1) `(apply ,ae0 ,ae1)]
+
+      [`(,fae ,args ...)
+       (match-define `(,is_define_prim ,is_callable ,arg_count)
+         (callable-define-prim? proc-name-shadowed? fae (length args)))
+
+       (define x (gensym 'x))
+
+       (if (and is_define_prim is_callable)
+           `(let ([,x (prim ,fae ,@args)]) ,x)
+           `(,fae ,@(map tag-body args)))]))
 
 
   (define (init def)
@@ -376,8 +372,7 @@
        `(define-prim ,fname ,@param-counts)]
       ))
 
-  (map init program)
-  )
+  (map init program))
 
 
 (define (cps-convert program)
@@ -387,7 +382,7 @@
        (define cx (gensym 'cont))
        (coverage `(lambda (,cx ,@xs) ,(T e0 cx)))]
       [`(lambda ,x ,e0)
-       (define cx (gensym 'cont))
+       (define cx (gensym 'con_t_))
        (define x+ (gensym x))
        (coverage `(lambda ,x+ (let ([,cx (prim car ,x+)]) (let ([,x (prim cdr ,x+)]) ,(T e0 cx)))))]
       [(? symbol? x) (coverage x)]
@@ -461,16 +456,16 @@
        (match-define `(,freevars ,e0+ ,procs+) (loop e0))
        (list (set-remove freevars x) (coverage `(let ([,x ,str]) ,e0+)) procs+)]
 
-      [`(let ([,x (prim ,op ,xs ...)]) ,e0)
-       (match-define `(,freevars ,e0+ ,procs+) (loop e0))
-       (list (set-remove (set-union (list->set xs) freevars) x)
-             (coverage `(let ([,x (prim ,op ,@xs)]) ,e0+))
-             procs+)]
-
       [`(let ([,x (prim kont-to-lam ,xs ...)]) ,e0)
        (match-define `(,freevars ,e0+ ,procs+) (loop e0))
        (list (set-remove (set-union (list->set xs) freevars) x)
              (coverage `(let ([,x (prim kont-to-lam ,@xs)]) ,e0+))
+             procs+)]
+      
+      [`(let ([,x (prim ,op ,xs ...)]) ,e0)
+       (match-define `(,freevars ,e0+ ,procs+) (loop e0))
+       (list (set-remove (set-union (list->set xs) freevars) x)
+             (coverage `(let ([,x (prim ,op ,@xs)]) ,e0+))
              procs+)]
 
       [`(let ([,x (lambda (,xs ...) ,body)]) ,e0)
@@ -523,7 +518,7 @@
          (cdr (foldl (lambda (x count+bdy)
                        (cons (+ 1 (car count+bdy))
                              `(let ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
-                     (cons 2 body+)
+                     (cons 1 body+)
                      envlist)))
        (coverage (list (set-remove (set-union envvars freevars) x)
                        `(let ([,x (make-kont ,fx ,@envlist)]) ,e0+)
@@ -610,134 +605,134 @@
 
 ; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
 
-; (define prog
-;   '((define-prim + 1 2 3)
-;     (define-prim - 1 2 3)
-;     (define-prim = 1 2 3)
-;     (define-prim null? 1)
-;     (define-prim cons 2)
-;     (define-prim car 1)
-;     (define-prim cdr 1)
-;     (define (list . x) x)
-;     (define (foldr fun acc lst)
-;       (let ((id_8699 (null? lst)))
-;         (if id_8699
-;             acc
-;             (let ((id_8700 (car lst)))
-;               (let ((id_8701 (cdr lst)))
-;                 (let ((id_8702 (foldr fun acc id_8701)))
-;                   (fun id_8700 id_8702)))))))
-;     (define (append1 lhs rhs)
-;       (let ((id_8703 (null? lhs)))
-;         (if id_8703
-;             rhs
-;             (let ((id_8704 (car lhs)))
-;               (let ((id_8705 (cdr lhs)))
-;                 (let ((id_8706 (append1 id_8705 rhs))) (cons id_8704 id_8706)))))))
-;     (define (append . vargs)
-;       (let ((xs (car vargs)))
-;         (let ((vargs8698 (cdr vargs)))
-;           (let ((x vargs8698))
-;             (let ((id_8707 (list)))
-;               (let ((id_8708 (list xs)))
-;                 (let ((id_8709 (append1 id_8708 x)))
-;                   (foldr append1 id_8707 id_8709))))))))
-;     (define (ok? row dist placed)
-;       (let ((id_8710 (null? placed)))
-;         (if id_8710
-;             (let ((xy8711 '#t)) xy8711)
-;             (let ((id_8712 (car placed)))
-;               (let ((id_8713 (+ row dist)))
-;                 (let ((id_8714 (= id_8712 id_8713)))
-;                   (let ((id_8717
-;                          (if id_8714
-;                              (let ((xy8715 '#f)) xy8715)
-;                              (let ((xy8716 '#t)) xy8716))))
-;                     (if id_8717
-;                         (let ((id_8718 (car placed)))
-;                           (let ((id_8719 (- row dist)))
-;                             (let ((id_8720 (= id_8718 id_8719)))
-;                               (let ((id_8723
-;                                      (if id_8720
-;                                          (let ((xy8721 '#f)) xy8721)
-;                                          (let ((xy8722 '#t)) xy8722))))
-;                                 (if id_8723
-;                                     (let ((id_8724 '1))
-;                                       (let ((id_8725 (+ dist id_8724)))
-;                                         (let ((id_8726 (cdr placed)))
-;                                           (ok? row id_8725 id_8726))))
-;                                     (let ((xy8727 '#f)) xy8727))))))
-;                         (let ((xy8728 '#f)) xy8728)))))))))
-;     (define (q-helper stack count)
-;       (let ((id_8729 (null? stack)))
-;         (if id_8729
-;             count
-;             (let ((state (car stack)))
-;               (let ((x (car state)))
-;                 (let ((y (let ((id_8730 (cdr state))) (car id_8730))))
-;                   (let ((z
-;                          (let ((id_8731 (cdr state)))
-;                            (let ((id_8732 (cdr id_8731))) (car id_8732)))))
-;                     (let ((id_8733 (null? x)))
-;                       (if id_8733
-;                           (let ((id_8734 (null? y)))
-;                             (if id_8734
-;                                 (let ((id_8735 (cdr stack)))
-;                                   (let ((id_8736 '1))
-;                                     (let ((id_8737 (+ count id_8736)))
-;                                       (q-helper id_8735 id_8737))))
-;                                 (let ((id_8738 (cdr stack)))
-;                                   (q-helper id_8738 count))))
-;                           (let ((id_8739 (cdr x)))
-;                             (let ((id_8740 (car x)))
-;                               (let ((id_8741 (cons id_8740 y)))
-;                                 (let ((id_8742 (list id_8739 id_8741 z)))
-;                                   (let ((id_8743 (car x)))
-;                                     (let ((id_8744 '1))
-;                                       (let ((id_8745 (ok? id_8743 id_8744 z)))
-;                                         (let ((id_8754
-;                                                (if id_8745
-;                                                    (let ((id_8746 (cdr x)))
-;                                                      (let ((id_8747
-;                                                             (append id_8746 y)))
-;                                                        (let ((id_8748 (list)))
-;                                                          (let ((id_8749 (car x)))
-;                                                            (let ((id_8750
-;                                                                   (cons id_8749 z)))
-;                                                              (let ((id_8751
-;                                                                     (list
-;                                                                      id_8747
-;                                                                      id_8748
-;                                                                      id_8750)))
-;                                                                (let ((id_8752
-;                                                                       (cdr stack)))
-;                                                                  (cons
-;                                                                   id_8751
-;                                                                   id_8752))))))))
-;                                                    (let ((xy8753 (cdr stack)))
-;                                                      xy8753))))
-;                                           (let ((id_8755 (cons id_8742 id_8754)))
-;                                             (q-helper
-;                                              id_8755
-;                                              count)))))))))))))))))))
-;     (define (iota1 n l)
-;       (let ((id_8756 '0))
-;         (let ((id_8757 (= n id_8756)))
-;           (if id_8757
-;               l
-;               (let ((id_8758 '1))
-;                 (let ((id_8759 (- n id_8758)))
-;                   (let ((id_8760 (cons n l))) (iota1 id_8759 id_8760))))))))
-;     (define (nqueens n)
-;       (let ((id_8761 (list)))
-;         (let ((id_8762 (iota1 n id_8761)))
-;           (let ((id_8763 (list)))
-;             (let ((id_8764 (list)))
-;               (let ((id_8765 (list id_8762 id_8763 id_8764)))
-;                 (let ((id_8766 (list id_8765)))
-;                   (let ((id_8767 '0)) (q-helper id_8766 id_8767)))))))))
-;     (define (brouhaha_main) (let ((id_8768 '14)) (nqueens id_8768))))
-;   )
+(define prog
+  '((define-prim + 1 2 3)
+    (define-prim - 1 2 3)
+    (define-prim = 1 2 3)
+    (define-prim null? 1)
+    (define-prim cons 2)
+    (define-prim car 1)
+    (define-prim cdr 1)
+    (define (list . x) x)
+    (define (foldr fun acc lst)
+      (let ((id_8699 (null? lst)))
+        (if id_8699
+            acc
+            (let ((id_8700 (car lst)))
+              (let ((id_8701 (cdr lst)))
+                (let ((id_8702 (foldr fun acc id_8701)))
+                  (fun id_8700 id_8702)))))))
+    (define (append1 lhs rhs)
+      (let ((id_8703 (null? lhs)))
+        (if id_8703
+            rhs
+            (let ((id_8704 (car lhs)))
+              (let ((id_8705 (cdr lhs)))
+                (let ((id_8706 (append1 id_8705 rhs))) (cons id_8704 id_8706)))))))
+    (define (append . vargs)
+      (let ((xs (car vargs)))
+        (let ((vargs8698 (cdr vargs)))
+          (let ((x vargs8698))
+            (let ((id_8707 (list)))
+              (let ((id_8708 (list xs)))
+                (let ((id_8709 (append1 id_8708 x)))
+                  (foldr append1 id_8707 id_8709))))))))
+    (define (ok? row dist placed)
+      (let ((id_8710 (null? placed)))
+        (if id_8710
+            (let ((xy8711 '#t)) xy8711)
+            (let ((id_8712 (car placed)))
+              (let ((id_8713 (+ row dist)))
+                (let ((id_8714 (= id_8712 id_8713)))
+                  (let ((id_8717
+                         (if id_8714
+                             (let ((xy8715 '#f)) xy8715)
+                             (let ((xy8716 '#t)) xy8716))))
+                    (if id_8717
+                        (let ((id_8718 (car placed)))
+                          (let ((id_8719 (- row dist)))
+                            (let ((id_8720 (= id_8718 id_8719)))
+                              (let ((id_8723
+                                     (if id_8720
+                                         (let ((xy8721 '#f)) xy8721)
+                                         (let ((xy8722 '#t)) xy8722))))
+                                (if id_8723
+                                    (let ((id_8724 '1))
+                                      (let ((id_8725 (+ dist id_8724)))
+                                        (let ((id_8726 (cdr placed)))
+                                          (ok? row id_8725 id_8726))))
+                                    (let ((xy8727 '#f)) xy8727))))))
+                        (let ((xy8728 '#f)) xy8728)))))))))
+    (define (q-helper stack count)
+      (let ((id_8729 (null? stack)))
+        (if id_8729
+            count
+            (let ((state (car stack)))
+              (let ((x (car state)))
+                (let ((y (let ((id_8730 (cdr state))) (car id_8730))))
+                  (let ((z
+                         (let ((id_8731 (cdr state)))
+                           (let ((id_8732 (cdr id_8731))) (car id_8732)))))
+                    (let ((id_8733 (null? x)))
+                      (if id_8733
+                          (let ((id_8734 (null? y)))
+                            (if id_8734
+                                (let ((id_8735 (cdr stack)))
+                                  (let ((id_8736 '1))
+                                    (let ((id_8737 (+ count id_8736)))
+                                      (q-helper id_8735 id_8737))))
+                                (let ((id_8738 (cdr stack)))
+                                  (q-helper id_8738 count))))
+                          (let ((id_8739 (cdr x)))
+                            (let ((id_8740 (car x)))
+                              (let ((id_8741 (cons id_8740 y)))
+                                (let ((id_8742 (list id_8739 id_8741 z)))
+                                  (let ((id_8743 (car x)))
+                                    (let ((id_8744 '1))
+                                      (let ((id_8745 (ok? id_8743 id_8744 z)))
+                                        (let ((id_8754
+                                               (if id_8745
+                                                   (let ((id_8746 (cdr x)))
+                                                     (let ((id_8747
+                                                            (append id_8746 y)))
+                                                       (let ((id_8748 (list)))
+                                                         (let ((id_8749 (car x)))
+                                                           (let ((id_8750
+                                                                  (cons id_8749 z)))
+                                                             (let ((id_8751
+                                                                    (list
+                                                                     id_8747
+                                                                     id_8748
+                                                                     id_8750)))
+                                                               (let ((id_8752
+                                                                      (cdr stack)))
+                                                                 (cons
+                                                                  id_8751
+                                                                  id_8752))))))))
+                                                   (let ((xy8753 (cdr stack)))
+                                                     xy8753))))
+                                          (let ((id_8755 (cons id_8742 id_8754)))
+                                            (q-helper
+                                             id_8755
+                                             count)))))))))))))))))))
+    (define (iota1 n l)
+      (let ((id_8756 '0))
+        (let ((id_8757 (= n id_8756)))
+          (if id_8757
+              l
+              (let ((id_8758 '1))
+                (let ((id_8759 (- n id_8758)))
+                  (let ((id_8760 (cons n l))) (iota1 id_8759 id_8760))))))))
+    (define (nqueens n)
+      (let ((id_8761 (list)))
+        (let ((id_8762 (iota1 n id_8761)))
+          (let ((id_8763 (list)))
+            (let ((id_8764 (list)))
+              (let ((id_8765 (list id_8762 id_8763 id_8764)))
+                (let ((id_8766 (list id_8765)))
+                  (let ((id_8767 '0)) (q-helper id_8766 id_8767)))))))))
+    (define (brouhaha_main) (let ((id_8768 '14)) (nqueens id_8768))))
+  )
 
 ; (pretty-print (optimize-prog prog))
 ; (pretty-print (cps-convert (optimize-prog prog))
@@ -746,4 +741,4 @@
 
 
 ; (pretty-print (cps-convert (anf-convert (optimize-prog (alphatize (desugar our-call))))))
-; (pretty-print (cps-convert (anf-convert (optimize-prog (alphatize (desugar our-call))))))
+; (pretty-print (cps-convert (anf-convert (optimize-prog (alphatize (desugar prog))))))
