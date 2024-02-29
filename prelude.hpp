@@ -1,14 +1,12 @@
 #include <bitset>
 #include <cstdint>
 #include <functional>
-#include <iomanip>
 #include <iostream>
 #include <math.h>
 #include <random>
 #include <sstream>
 #include <string>
 #include <vector>
-
 
 // #include <alloca.h>
 
@@ -172,6 +170,41 @@ inline s32 decode_int(void *val) {
   return ((s32)((u32)(((v) & ~(7ULL)) >> 32)));
 }
 
+// inline float decode_float(void *val) {
+// //   u64 v = *static_cast<u64 *>(val);
+//   u64 v = *reinterpret_cast<u64*>(val);
+
+//   if ((v & 0x18) != FLOAT_VAL)
+//     assert_type(false, "Error in decode_float -> Type error: Not a Float
+//     number!");
+
+//   u32 asU32 = static_cast<u32>(v >> 32);
+//   float decodedFloat = *reinterpret_cast<float *>(&asU32);
+
+//   // return *reinterpret_cast<float*>(&dude);
+//   return decodedFloat;
+// }
+
+// inline float decode_float(void *val) {
+//     uint64_t v = *static_cast<uint64_t*>(val);
+//
+//     // Correct the condition to check for a FLOAT_VAL type
+//     if ((v & 0x18) != FLOAT_VAL) // Ensure the mask and comparison is correct
+//     for a float.
+//         assert_type(false, "Error in decode_float -> Type error: Not a
+//         Float!"); // Corrected error message.
+//
+//     // Assuming the float is stored in the higher 32-bits of the 64-bit
+//     integer. uint32_t asU32 = (uint32_t)(v >> 32); // Cast to uint32_t to
+//     ensure correct bits are taken.
+//
+//     // Correctly interpret the bits as a float.
+//     float decodedFloat = *reinterpret_cast<float*>(&asU32); // Correct the
+//     variable used for reinterpretation.
+//
+//     return decodedFloat;
+// }
+
 inline float decode_float(void *val) {
   if (get_tag(val) != FLOAT_VAL)
     assert_type(false, "Error in decode_float -> Type error: Not a float!");
@@ -179,11 +212,7 @@ inline float decode_float(void *val) {
   u64 v = reinterpret_cast<u64>(val);
 
   u32 temp = (v >> 32) & ~0x18;
-  // return *reinterpret_cast<float *>(&temp); // works as well!
-  
-  float result;
-  std::memcpy(&result, &temp, sizeof(result));
-  return result;
+  return *reinterpret_cast<float *>(&temp);
 }
 
 mpz_t *decode_mpz(void *val) {
@@ -251,11 +280,11 @@ inline void **alloc_clo(void (*fptr)(), int num) {
   return obj;
 }
 
-inline void **alloc_kont(void *f_spec, int num) {
-  void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
+inline void **alloc_kont(void (*fptr)(), void *f_spec, int num) {
+  void **obj = (void **)(GC_MALLOC((num + 2) * sizeof(void *)));
 
-  // obj[0] = reinterpret_cast<void *>(fptr);
-  obj[0] = f_spec;
+  obj[0] = reinterpret_cast<void *>(fptr);
+  obj[1] = f_spec;
 
   return obj;
 }
@@ -1225,6 +1254,7 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
     // Check for overflow
     if (isinf(res)) {
       // Promote to (MPF)
+      PRINT("apply prim -: IN MFF");
       mpf_t a1_mpf, a2_mpf, result_mpf;
       mpf_init(a1_mpf);
       mpf_init(a2_mpf);
@@ -1241,9 +1271,12 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
       mpf_clear(result_mpf);
 
       // return encode_mpf(result_mpf);
-    } else if (isnan(res)) {
-      // Handle invalid operation result
-    } else {
+    } 
+    // else if (isnan(res)) {
+    //   // Perhaps we won't ever need this
+    //   // Handle invalid operation result
+    // } 
+    else {
       // Normal case, encode the float result
       return reinterpret_cast<void *>(encode_float(res));
     }
@@ -1520,6 +1553,7 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
       // Handle the case where the result is infinity or NaN (Not a Number)
     } else {
       // No overflow or underflow, return the result
+      // PRINT(print_val(reinterpret_cast<void *>(encode_float(res))));
       return reinterpret_cast<void *>(encode_float(res));
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
@@ -4299,10 +4333,6 @@ std::string print_val(void *val) {
     std::string str = std::to_string(decode_float(val));
     return str;
 
-    // std::ostringstream oss;
-    // oss << std::fixed << std::setprecision(8) << decode_float(val);
-    // return oss.str();
-
     break;
   }
   case STRING: {
@@ -4331,31 +4361,17 @@ std::string print_val(void *val) {
 
 #pragma endregion
 void *halt;
-// void *arg_buffer[999]; // This is where the arg buffer is called
-// long numArgs;
 // unsigned long long call_counter = 0;
-// unsigned long long car_counter = 0;
-// unsigned long long cdr_counter = 0;
-// unsigned long long cons_counter = 0;
-// unsigned long long plus_counter = 0;
-// unsigned long long minus_counter = 0;
 
 void fhalt() {
-  std::cout << "In fhalt" << std::endl;
+  // std::cout << "In fhalt" << std::endl;
   std::cout << print_val(arg_buffer[2]) << std::endl;
-  // std::cout << "Total # calls made (excluding prelude): " << call_counter
-  // <<std::endl; std::cout << "Total # calls made (car): " << car_counter <<
-  // std::endl;
-  //  std::cout << "Total # calls made (cdr): " << cdr_counter <<std::endl;
-  // std::endl; std::cout << "Total # calls made (cons): " << cons_counter <<
-  // std::endl; std::cout << "Total # calls made (plus): " << plus_counter <<
-  // std::endl; std::cout << "Total # calls made (minus): " << minus_counter
-  // << std::endl; print_val(arg_buffer[2]);
+  // std::cout << "Total # calls made (excluding prelude): " << call_counter << std::endl;
   exit(0);
 }
 
 void fhalt_spec(void *_dummy_arg, void *result) {
-  std::cout << "In fhalt_spec" << std::endl;
+  // std::cout << "In fhalt_spec" << std::endl;
   std::cout << print_val(result) << std::endl;
   exit(0);
 }

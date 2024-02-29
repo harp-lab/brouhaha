@@ -468,6 +468,8 @@
              (coverage `(let ([,x (prim ,op ,@xs)]) ,e0+))
              procs+)]
 
+      
+
       [`(let ([,x (lambda (,xs ...) ,body)]) ,e0)
        (match-define `(,freevars ,e0+ ,procs0+) (loop e0))
        (match-define `(,freelambda ,body+ ,procs1+) (loop body))
@@ -518,7 +520,7 @@
          (cdr (foldl (lambda (x count+bdy)
                        (cons (+ 1 (car count+bdy))
                              `(let ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
-                     (cons 1 body+)
+                     (cons 2 body+)
                      envlist)))
        (coverage (list (set-remove (set-union envvars freevars) x)
                        `(let ([,x (make-kont ,fx ,@envlist)]) ,e0+)
