@@ -15,8 +15,13 @@
 
 ;LAMBDAS
 [(free x eb)
+ (=/= y x)
  -->
-(do-free-lam ?(lambda ys eb) ys x)]
+ (free x ?(lambda (varparam y) eb))]
+
+[(free x eb)
+ -->
+ (do-free-lam ?(lambda (fixedparam ys) eb) ys x)]
 
 [(do-free-lam lam [y ys ...] x)
  (=/= y x)
@@ -40,7 +45,7 @@
 ;APP
 [(free x ef)
  -->
- (free x ?(app ef eas))]
+(free x ?(app ef eas))]
 
 (do-free-app ?(app ef eas) eas)
 
@@ -230,45 +235,77 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;APPLY CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;---------------------------------------------------------------------;
 ;DEFINE --> CLOSURE
-[(apply call (define fname params body) args kont)
+[(apply call env (define fname params body) args kont)
  --> 
- (apply call (clo (lambda params body) {top-level-env}) args kont)]
+ (apply call env (clo (lambda params body) []) args kont)]
 
-;DEFINE-PRIM HANDLING
- [(= e (apply _ (define-prim fname params) args kont))
+;DEFINE-PRIM HANDLING (NOT SPECIALIZED)
+[(= e (apply _ (define-prim fname _) args kont))
+ ~(specialized-prim fname)
  -->
  (store (saddr e) (state e))
  (ret (saddr e) kont)]
 
+;SPECIALIZED PRIMS
+(specialized-prim "cons")
+[(= e (apply _ (define-prim "cons" _) (fixedarg [a0 a1]) kont))
+ (store a1 (list-of as))
+ -->
+ (store (addr e) (list-of [a0 as ...]))
+ (ret (addr e) kont)]
+
+;GO THROUGH ALL OF AS AND UNINION ALL UNDERLYING ADDRESSES BEING POINTED TO (1 level)
+[(= e (apply _ (define-prim "cons" _) (vararg a) kont))
+ (store a (list-of as))
+ -->
+ (store (addr e) (list-of [a0 as ...]))
+ (ret (addr e) kont)]
+
 
 ;FIXED ARG
-[(apply call env (clo (lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) kont)
+[(apply call envcall (clo (lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) kont)
  --> 
  (store (kaddr eb) kont)
- (do-fixed-prop-all xs as)
- (eval eb {ext-all !(do-ext-all envlam xs)} (kaddr eb))]
+ (= envtick {tick !(do-tick envcall call)})
+ (do-fixed-prop-all envtick xs as)
+ (eval eb envlam (kaddr eb))
+ [(free y eb)
+  -->
+  (store-flow (addr envlam y) (addr envtick y))]]
 
- [(apply call env (clo (lambda (varparam x) eb) envlam) (fixedarg [as ...]) kont)
+[(apply call envcall (clo (lambda (varparam x) eb) envlam) (fixedarg [as ...]) kont)
  --> 
  (store (kaddr eb) kont)
- (store (addr x) (list-of as))
- (= envtick {tick !(do-tick env e)})
- (eval eb envtick (kaddr eb))]
-;store-flow (envlam x) to (envtick x)
+ (= envtick {tick !(do-tick envcall call)})
+ (store (addr envtick x) (list-of as))
+ (eval eb envlam (kaddr eb))
+ [(free y eb) 
+  -->
+  (store-flow (addr envlam y) (addr envtick y))]]
 
- ;VARIADIC ARG
-[(apply call (clo (lambda (varparam x) eb) envlam) (vararg a) kont)
+;VARIADIC ARG
+[(apply call envcall (clo (lambda (varparam x) eb) envlam) (vararg a) kont)
  --> 
  (store (kaddr eb) kont)
- (store-flow a (addr x))
- (eval eb {ext-all !(do-ext-all envlam [x])} (kaddr eb))]
+ (= envtick {tick !(do-tick envcall call)})
+ (store-flow a (addr envtick x))
+ (eval eb envlam (kaddr eb))
+ [(free y eb)
+  -->
+  (store-flow (addr envlam y) (addr envtick y))]]
 
-[(apply call (clo (lambda (fixedparam [xs ...]) eb) envlam) (vararg a) kont)
+[(apply call envcall (clo (lambda (fixedparam [xs ...]) eb) envlam) (vararg a) kont)
  (store a (list-of as))
- --> 
+ -->
  (store (kaddr eb) kont)
- (do-var-prop-all xs as)
- (eval eb {ext-all !(do-ext-all envlam xs)} (kaddr eb))]
+ (= envtick {tick !(do-tick envcall call)})
+ (do-var-prop-all envtick xs as)
+ (eval eb envlam (kaddr eb))
+ [(free y eb)
+  -->
+  (store-flow (addr envlam y) (addr envtick y))]]
+
+
 
 
 
@@ -276,34 +313,34 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
 ;DO-EXT-ALL/EXT-ALL
-[-->
- (ext-all ?(do-ext-all env [x x-rest ...])
-          {ext-all !(do-ext-all (env-set env x (addr x)) x-rest)})]
+; [-->
+;  (ext-all ?(do-ext-all env [x x-rest ...])
+;           {ext-all !(do-ext-all (env-set env x (addr x)) x-rest)})]
 
-(ext-all ?(do-ext-all env []) env)
+; (ext-all ?(do-ext-all env []) env)
 
 
 ;DO-VIXED-PROP-ALL
-[(do-fixed-prop-all [x x-rest ...] [a a-rest ...])
+[(do-fixed-prop-all env [x x-rest ...] [a a-rest ...])
  -->
- (do-fixed-prop-all x-rest a-rest)
- (store-flow a (addr x))]
+ (do-fixed-prop-all env x-rest a-rest)
+ (store-flow a (addr env x))]
 
 
 ;DO-VAR-PROP-ALL
-[(do-var-prop-all [x x-rest ...] [a a-rest ...])
+[(do-var-prop-all envtick [x x-rest ...] [a a-rest ...])
  -->
- (do-var-prop-all-h [x x-rest ...] [a a-rest ...] [a a-rest ...])]
+ (do-var-prop-all-h envtick [x x-rest ...] [a a-rest ...] [a a-rest ...])]
 
-[(do-var-prop-all-h [x x-rest ...] [a a-rest ...] a-old)
+[(do-var-prop-all-h envtick [x x-rest ...] [a a-rest ...] a-old)
  -->
- (do-var-prop-all-h [x x-rest ...] a-rest a-old)
- (store-flow a (addr x))]
+ (do-var-prop-all-h envtick [x x-rest ...] a-rest a-old)
+ (store-flow a (addr envtick x))]
 
 
-[(do-var-prop-all-h [x x-rest ...] [] a-old)
+[(do-var-prop-all-h envtick [x x-rest ...] [] a-old)
  -->
- (do-var-prop-all-h x-rest a-old a-old)]
+ (do-var-prop-all-h envtick x-rest a-old a-old)]
 
 ;STORE-FLOW
 [(store a v)
@@ -324,5 +361,6 @@
  (answer ?(ret (addr a) (halt)) {store (addr a)})
  (answer ?(ret (saddr a) (halt)) {store (saddr a)})
  
+
 
 

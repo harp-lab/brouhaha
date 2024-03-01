@@ -17,21 +17,21 @@
     (match def
       [`(define (,fname ,(? symbol? xs) ...)
           ,body)
-       (format "(store (addr \"~a\") (define \"~a\" (fixedparam [~a]) ~a))\n"
+       (format "(store (addr [] \"~a\") (define \"~a\" (fixedparam [~a]) ~a))\n"
                fname
                fname
                (foldr string-append "" (map (lambda (x) (string-append x " ")) (map sym->qstr xs)))
                (write-exp body))]
       [`(define (,fname . ,(? symbol? params))
           ,body)
-       (format "(store (addr \"~a\") (define \"~a\" (varparam ~a) ~a))\n"
+       (format "(store (addr [] \"~a\") (define \"~a\" (varparam ~a) ~a))\n"
                fname
                fname
                (sym->qstr params)
                (write-exp body))]
       [`(define-prim ,fname ,param-counts ...)
         (string-append 
-              (format "(store (addr \"~a\") (define-prim \"~a\" (varparam \"lst\")))\n"
+              (format "(store (addr [] \"~a\") (define-prim \"~a\" (varparam \"lst\")))\n"
                     fname
                     fname)
               (string-append 
