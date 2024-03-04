@@ -520,7 +520,7 @@
          (cdr (foldl (lambda (x count+bdy)
                        (cons (+ 1 (car count+bdy))
                              `(let ([,x (env-ref ,envx ,(car count+bdy))]) ,(cdr count+bdy))))
-                     (cons 2 body+)
+                     (cons 1 body+)
                      envlist)))
        (coverage (list (set-remove (set-union envvars freevars) x)
                        `(let ([,x (make-kont ,fx ,@envlist)]) ,e0+)

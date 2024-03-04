@@ -215,12 +215,13 @@
        (append-line filepath "\n//creating new make-kont closure")
        (define cloName (gensym 'clo))
 
-       (append-line filepath (format "void** ~a = alloc_kont(~a_fptr, ~a_spec, ~a);" cloName ptr ptr arglength))
+      ;  (append-line filepath (format "void** ~a = alloc_kont(~a_fptr, ~a_spec, ~a);" cloName ptr ptr arglength))
+       (append-line filepath (format "void** ~a = alloc_kont(~a_spec, ~a);" cloName ptr arglength))
 
        (when (> arglength 0)
          (append-line filepath "\n//setting env list"))
 
-       (for ([i (in-range 2 (+ arglength 2))] [item args])
+       (for ([i (in-range 1 (+ arglength 1))] [item args])
          (if (hash-has-key? arg_hash item)
              (if (not (string-prefix? (hash-ref arg_hash item) "lam"))
                  (append-line filepath (format "~a[~a] = ~a;" cloName i (hash-ref arg_hash item)))
@@ -542,13 +543,13 @@
            (begin
              (cond
                [(string-prefix? (hash-ref arg_hash func) "decode_clo")
-                (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[1])(~a, ~a);"
+                (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[0])(~a, ~a);"
                                               (hash-ref arg_hash func)
                                               (hash-ref arg_hash func)
                                               (hash-ref arg_hash arg (lambda () arg))
                                               ))]
                [(or (string-prefix? (hash-ref arg_hash func) "f_lam") (string-prefix? (hash-ref arg_hash func) "lam"))
-                ; (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[1])(~a, ~a);"
+                ; (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[0])(~a, ~a);"
                 ;                               (get-c-string func)
                 ;                               (get-c-string func)
                 ;                               (hash-ref arg_hash arg (lambda () arg))
@@ -558,11 +559,11 @@
                                               (get-c-string func)
                                               (hash-ref arg_hash arg (lambda () arg))))]
                [else
-                (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[1])(~a, ~a);"
+                (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[0])(~a, ~a);"
                                               (hash-ref arg_hash func (lambda () get-c-string func))
                                               (hash-ref arg_hash func (lambda () get-c-string func))
                                               (hash-ref arg_hash arg (lambda () arg))))]))
-           (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[1])(~a, ~a);"
+           (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[0])(~a, ~a);"
                                          (get-c-string func)
                                          (get-c-string func)
                                          (hash-ref arg_hash arg (lambda () arg)))))]))
@@ -573,7 +574,7 @@
        (append-line filepath (format "inline void ~a_fptr() // ~a -> generic version ~a" (get-c-string ptr) ptr "\n{"))
 
        ; uncomment the line below for debugging!
-       ; (append-line filepath (format "std::cout<<\"In ~a_fptr: generic version\"<<std::endl;" (get-c-string ptr)))
+      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: generic version\"<<std::endl;" (get-c-string ptr)))
 
        (when (not (string-prefix? (symbol->string env) "_"))
          (append-line filepath "//reading env")
@@ -601,7 +602,7 @@
        (append-line filepath (format "inline void ~a_spec(~a) // ~a ~a" (get-c-string ptr) args-str ptr "\n{"))
 
        ; uncomment the line below for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: spec\"<<std::endl;" (get-c-string ptr)))
+        ; (append-line filepath (format "std::cout<<\"In ~a_fptr: spec\"<<std::endl;" (get-c-string ptr)))
 
        (if (hash-has-key? declare-top-level-funcs ptr)
            (begin
@@ -636,7 +637,7 @@
        (append-line filepath func_name)
 
        ; uncomment the line below for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+        ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
 
        (append-line filepath "//reading env")
        (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
@@ -677,7 +678,7 @@
        (append-line filepath func_name)
 
        ; uncomment the line below for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+        ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
 
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
@@ -747,7 +748,7 @@
   ; (append-line filepath "void *fhalt_clo = encode_clo(alloc_clo(fhalt,0));")
 
   ; (append-line filepath (format "void** f_halt_clo = alloc_kont(fhalt, reinterpret_cast<void*>(fhalt_spec), 0);"))
-  (append-line filepath (format "void** f_halt_clo = alloc_kont(fhalt, fhalt_spec, 0);"))
+  (append-line filepath (format "void** f_halt_clo = alloc_kont(fhalt_spec, 0);"))
   (append-line filepath (format "void* fhalt_clo = encode_clo(f_halt_clo);"))
 
   ; (append-line filepath "arg_buffer[0] = 0;")
