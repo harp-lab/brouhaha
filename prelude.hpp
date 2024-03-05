@@ -1,12 +1,15 @@
 #include <bitset>
+#include <cmath>
 #include <cstdint>
 #include <functional>
+#include <iomanip> // For setprecision and fixed
 #include <iostream>
 #include <math.h>
 #include <random>
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cmath>
 
 // #include <alloca.h>
 
@@ -75,27 +78,27 @@ inline void assert_type(bool cond, const char *msg) {
     exit(1);
   }
 }
+
+// Checks if a floating-point value can be represented precisely as a float
+inline bool is_within_float_precision(float val) {
+  return std::abs(val) <= 16777216.0f;
+}
+
+inline bool withinInt32BitRange(s64 val) {
+  return (val >= -2147483648LL) && (val <= 2147483647LL);
+}
+
 // ??why encode and decode functions for every type, just have one and make it
 // take a void* and the type we want the tag variable to returns a void* that is
 // tagged
 
-u64 encode_int(s32 val) { return ((((u64)((u32)(val))) << 32) | INT); }
+inline u64 encode_int(s32 val) { return ((((u64)((u32)(val))) << 32) | INT); }
 
-// u64 encode_float(float val) {
-//   u32 asU32 = *reinterpret_cast<u32 *>(&val);
-//   u64 asUint64 = static_cast<uint64_t>(asU32);
-//   return (asUint64 << 32) | FLOAT_VAL;
-// }
-
-// u64 encode_float(float val) {
-//   return ((((u64)(*(u32 *)&val)) << 32) | FLOAT_VAL);
-// }
-
-u64 encode_float(float val) {
+inline u64 encode_float(float val) {
   u32 temp;
-  std::memcpy(&temp, &val, sizeof(float));  
-  u64 encoded = ((u64)temp) << 32; 
-  encoded |= FLOAT_VAL;      
+  std::memcpy(&temp, &val, sizeof(float));
+  u64 encoded = ((u64)temp) << 32;
+  encoded |= FLOAT_VAL;
   return encoded;
 }
 
@@ -178,59 +181,14 @@ inline s32 decode_int(void *val) {
   return ((s32)((u32)(((v) & ~(7ULL)) >> 32)));
 }
 
-// inline float decode_float(void *val) {
-// //   u64 v = *static_cast<u64 *>(val);
-//   u64 v = *reinterpret_cast<u64*>(val);
-
-//   if ((v & 0x18) != FLOAT_VAL)
-//     assert_type(false, "Error in decode_float -> Type error: Not a Float
-//     number!");
-
-//   u32 asU32 = static_cast<u32>(v >> 32);
-//   float decodedFloat = *reinterpret_cast<float *>(&asU32);
-
-//   // return *reinterpret_cast<float*>(&dude);
-//   return decodedFloat;
-// }
-
-// inline float decode_float(void *val) {
-//     uint64_t v = *static_cast<uint64_t*>(val);
-//
-//     // Correct the condition to check for a FLOAT_VAL type
-//     if ((v & 0x18) != FLOAT_VAL) // Ensure the mask and comparison is correct
-//     for a float.
-//         assert_type(false, "Error in decode_float -> Type error: Not a
-//         Float!"); // Corrected error message.
-//
-//     // Assuming the float is stored in the higher 32-bits of the 64-bit
-//     integer. uint32_t asU32 = (uint32_t)(v >> 32); // Cast to uint32_t to
-//     ensure correct bits are taken.
-//
-//     // Correctly interpret the bits as a float.
-//     float decodedFloat = *reinterpret_cast<float*>(&asU32); // Correct the
-//     variable used for reinterpretation.
-//
-//     return decodedFloat;
-// }
-
-// inline float decode_float(void *val) {
-//   if (get_tag(val) != FLOAT_VAL)
-//     assert_type(false, "Error in decode_float -> Type error: Not a float!");
-
-//   u64 v = reinterpret_cast<u64>(val);
-
-//   u32 temp = (v >> 32) & ~0x18;
-//   return *reinterpret_cast<float *>(&temp);
-// }
-
 inline float decode_float(void *val) {
   if (get_tag(val) != FLOAT_VAL)
-      assert_type(false, "Error in decode_float -> Type error: Not a float!");
+    assert_type(false, "Error in decode_float -> Type error: Not a float!");
 
   u64 v = reinterpret_cast<u64>(val);
   u32 temp = (v >> 32);
   float result;
-  std::memcpy(&result, &temp, sizeof(float)); 
+  std::memcpy(&result, &temp, sizeof(float));
   return result;
 }
 
@@ -786,17 +744,23 @@ u64 hash_(void *val) {
 
 // Function to check if val is an integer
 inline int is_integer_val(void *val) {
-  if (get_tag(val) == MPZ)
+  int tag = get_tag(val);
+
+  if (tag == INT || tag == MPZ)
     return true;
-  else if (get_tag(val) == MPF) {
-    mpf_t *fval = decode_mpf(val);
-    mpf_t flr;
-    mpf_init(flr);
-    mpf_floor(flr, *fval);
-    int result = mpf_cmp(*fval, flr) == 0;
-    mpf_clear(flr);
-    return result;
-  }
+  else if (tag == FLOAT_VAL){
+    float temp_val = decode_float(val);
+    float flr = std::floor(temp_val);
+    return flr == temp_val; 
+  }else if (tag == MPF) {
+      mpf_t *fval = decode_mpf(val);
+      mpf_t flr;
+      mpf_init(flr);
+      mpf_floor(flr, *fval);
+      int result = mpf_cmp(*fval, flr) == 0;
+      mpf_clear(flr);
+      return result;
+    }
   return false;
 }
 
@@ -1274,9 +1238,12 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
     float res = a1 + a2;
 
     // Check for overflow
-    if (isinf(res)) {
+    if (is_within_float_precision(res)) {
+      // Normal case, encode the float result
+      return reinterpret_cast<void *>(encode_float(res));
+    } else {
       // Promote to (MPF)
-      PRINT("apply prim -: IN MFF");
+      PRINT("Promote to MFF");
       mpf_t a1_mpf, a2_mpf, result_mpf;
       mpf_init(a1_mpf);
       mpf_init(a2_mpf);
@@ -1294,15 +1261,8 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
 
       // return encode_mpf(result_mpf);
     }
-    // else if (isnan(res)) {
-    //   // Perhaps we won't ever need this
-    //   // Handle invalid operation result
-    // }
-    else {
-      // Normal case, encode the float result
-      return reinterpret_cast<void *>(encode_float(res));
-    }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
+    // will implement later
   }
 
   // if (arg1_tag == INT) {
@@ -1571,14 +1531,14 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
 
     float res = a1 - a2;
 
-    if (isinf(res) || isnan(res)) {
-      // Handle the case where the result is infinity or NaN (Not a Number)
-    } else {
-      // No overflow or underflow, return the result
-      // PRINT(print_val(reinterpret_cast<void *>(encode_float(res))));
+    if (is_within_float_precision(res)) {
+      // No overflow, return the result
       return reinterpret_cast<void *>(encode_float(res));
+    } else {
+      PRINT("promte to MPF");
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
+    // will implement later
   }
 
   // if (arg1_tag == INT) {
@@ -2481,9 +2441,8 @@ void *apply_prim__u61_1(void *arg1) // =
 inline void *apply_prim__u61_2(void *arg1, void *arg2) // =
 {
   // return compare_op(arg1, arg2, *equal_zero);
-  int cmp_res = 0;
+  // int cmp_res = 0;
 
-  // std::cout << (reinterpret_cast<u64>(arg1) & 0x7) << std::endl;
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
 
@@ -2493,9 +2452,21 @@ inline void *apply_prim__u61_2(void *arg1, void *arg2) // =
   switch (arg1_tag) {
   case INT:
     return encode_bool(decode_int(arg1) == decode_int(arg2));
-  case FLOAT_VAL:
-    return encode_bool(decode_float(arg1) == decode_float(arg2));
+  case FLOAT_VAL: {
+    // return encode_bool(decode_float(arg1) == decode_float(arg2));
+    float a1 = decode_float(arg1);
+    float a2 = decode_float(arg2);
 
+    if (a1 == a2) {
+      return encode_bool(true);
+    } else {
+      if (!is_within_float_precision(a1) || !is_within_float_precision(a2)) {
+        PRINT("promote to MPF: remember both or one can be MPF");
+      }
+      return encode_bool(false);
+    }
+    break;
+  }
   default:
     break;
   }
@@ -2591,7 +2562,29 @@ void *apply_prim__u62_1(void *arg1) // >
 
 void *apply_prim__u62_2(void *arg1, void *arg2) // >
 {
-  return compare_op(arg1, arg2, *great_zero);
+  // return compare_op(arg1, arg2, *great_zero);
+
+  int arg1_tag = get_tag(arg1);
+  int arg2_tag = get_tag(arg2);
+
+  // Both arguments are integers
+  if (arg1_tag == INT && arg2_tag == INT) {
+    s64 a1 = decode_int(arg1);
+    s64 a2 = decode_int(arg2);
+    // Perform direct comparison
+    return a1 > a2 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
+    float a1 = decode_float(arg1);
+    float a2 = decode_float(arg2);
+
+    if (is_within_float_precision(a1) && is_within_float_precision(a2)) {
+      return a1 > a2 ? encode_bool(true) : encode_bool(false);
+    } else {
+      PRINT("promote to MPF: remember both or one can be MPF");
+    }
+  }
+
+  return nullptr;
 }
 
 void *apply_prim__u62_3(void *arg1, void *arg2, void *arg3) // >
@@ -2626,14 +2619,16 @@ void *apply_prim__u60_2(void *arg1, void *arg2) // <
     s64 a2 = decode_int(arg2);
     // Perform direct comparison
     return a1 < a2 ? encode_bool(true) : encode_bool(false);
-  }
-
-  if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
-    float a1 = decode_float(arg1); // Assuming decode_float function exists
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
+    float a1 = decode_float(arg1);
     float a2 = decode_float(arg2);
 
-    // Perform direct comparison for floats
-    return a1 < a2 ? encode_bool(true) : encode_bool(false);
+    if (is_within_float_precision(a1) && is_within_float_precision(a2)) {
+      // Perform direct comparison for floats
+      return a1 < a2 ? encode_bool(true) : encode_bool(false);
+    } else {
+      PRINT("promote to MPF: remember both or one can be MPF");
+    }
   }
 
   return nullptr;
@@ -4119,7 +4114,32 @@ inline void *apply_prim_sqrt(void *lst) {
   return apply_prim_sqrt_1(prim_car(lst));
 }
 
-inline void *apply_prim_remainder_2(void *first, void *second) {
+inline void *apply_prim_remainder_2(void *arg1, void *arg2) {
+  if (!is_integer_val(arg1) || !is_integer_val(arg2)) {
+    // to see either of the numbers has fraction in it!
+    assert_type(false, "Error in remainder -> contact violation: expected integer argument!");
+  }
+
+  int arg1_tag = get_tag(arg1);
+  int arg2_tag = get_tag(arg2);
+
+  // Both arguments are integers
+  if (arg1_tag == INT && arg2_tag == INT) {
+    s64 res = decode_int(arg1) % decode_int(arg2);
+    return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
+    // wil implementt later!
+    // we will allow float values. like 5.0 , 103.0, 
+    // and at this point we must have values like that
+    // is_integer_val ensures that
+  } else {
+    // wil implementt later!
+  }
+
+  return nullptr;
+}
+
+inline void *apply_prim_remainder_2_b4(void *first, void *second) {
   void *result = nullptr;
 
   if (!is_integer_val(first) ||
@@ -4352,8 +4372,15 @@ std::string print_val(void *val) {
     break;
   }
   case FLOAT_VAL: {
-    std::string str = std::to_string(decode_float(val));
-    return str;
+    // std::cout << std::fixed << std::setprecision(1) << decode_float(val) <<
+    // std::endl;
+
+    // std::string str = std::to_string(decode_float(val));
+    // return str;
+
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(1) << decode_float(val);
+    return stream.str();
 
     break;
   }

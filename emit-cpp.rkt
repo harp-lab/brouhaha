@@ -514,7 +514,7 @@
                                            (get-arg-string arg_hash (cons func args))))]))
                  (begin
                    (if (and (hash-has-key? arg_hash func)
-                            (string-prefix? (symbol->string func) "f_lam_")
+                            (string-prefix? (symbol->string func) "f_lam_") 
                             (not (string-prefix? (hash-ref arg_hash func) "decode_clo")))
                        (begin
                          ;  (displayln (~a "func: " func " " (hash-has-key? arg_hash func)))
