@@ -87,8 +87,16 @@ u64 encode_int(s32 val) { return ((((u64)((u32)(val))) << 32) | INT); }
 //   return (asUint64 << 32) | FLOAT_VAL;
 // }
 
+// u64 encode_float(float val) {
+//   return ((((u64)(*(u32 *)&val)) << 32) | FLOAT_VAL);
+// }
+
 u64 encode_float(float val) {
-  return ((((u64)(*(u32 *)&val)) << 32) | FLOAT_VAL);
+  u32 temp;
+  std::memcpy(&temp, &val, sizeof(float));  
+  u64 encoded = ((u64)temp) << 32; 
+  encoded |= FLOAT_VAL;      
+  return encoded;
 }
 
 inline void *encode_mpz(mpz_t *val) {
@@ -205,14 +213,25 @@ inline s32 decode_int(void *val) {
 //     return decodedFloat;
 // }
 
+// inline float decode_float(void *val) {
+//   if (get_tag(val) != FLOAT_VAL)
+//     assert_type(false, "Error in decode_float -> Type error: Not a float!");
+
+//   u64 v = reinterpret_cast<u64>(val);
+
+//   u32 temp = (v >> 32) & ~0x18;
+//   return *reinterpret_cast<float *>(&temp);
+// }
+
 inline float decode_float(void *val) {
   if (get_tag(val) != FLOAT_VAL)
-    assert_type(false, "Error in decode_float -> Type error: Not a float!");
+      assert_type(false, "Error in decode_float -> Type error: Not a float!");
 
   u64 v = reinterpret_cast<u64>(val);
-
-  u32 temp = (v >> 32) & ~0x18;
-  return *reinterpret_cast<float *>(&temp);
+  u32 temp = (v >> 32);
+  float result;
+  std::memcpy(&result, &temp, sizeof(float)); 
+  return result;
 }
 
 mpz_t *decode_mpz(void *val) {
@@ -281,12 +300,13 @@ inline void **alloc_clo(void (*fptr)(), int num) {
 }
 
 // inline void **alloc_kont(void (*fptr)(), void *f_spec, int num) {
-// inline void **alloc_kont(void (*fptr)(), void (*f_spec)(void*, void*), int num) {
-inline void **alloc_kont(void (*f_spec)(void*, void*), int num) {
+// inline void **alloc_kont(void (*fptr)(), void (*f_spec)(void*, void*), int
+// num) {
+inline void **alloc_kont(void (*f_spec)(void *, void *), int num) {
   void **obj = (void **)(GC_MALLOC((num + 1) * sizeof(void *)));
 
   // obj[0] = reinterpret_cast<void *>(fptr);
-  obj[0] = reinterpret_cast<void *>(f_spec); 
+  obj[0] = reinterpret_cast<void *>(f_spec);
 
   return obj;
 }
@@ -1273,11 +1293,11 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
       mpf_clear(result_mpf);
 
       // return encode_mpf(result_mpf);
-    } 
+    }
     // else if (isnan(res)) {
     //   // Perhaps we won't ever need this
     //   // Handle invalid operation result
-    // } 
+    // }
     else {
       // Normal case, encode the float result
       return reinterpret_cast<void *>(encode_float(res));
@@ -4368,7 +4388,8 @@ void *halt;
 void fhalt() {
   // std::cout << "In fhalt" << std::endl;
   std::cout << print_val(arg_buffer[2]) << std::endl;
-  // std::cout << "Total # calls made (excluding prelude): " << call_counter << std::endl;
+  // std::cout << "Total # calls made (excluding prelude): " << call_counter <<
+  // std::endl;
   exit(0);
 }
 

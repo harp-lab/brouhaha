@@ -53,7 +53,7 @@
   (and (<= -2147483648 val) (<= val 2147483647)))
 
 (define (within-float-32bit-range? val)
-  (and (<= -3.40282347e+38 val) (<= val 3.40282347e+38)))
+  (and (<= -16777216 val) (<= val 16777216)))
 
 
 (define (find-global-constants-helper exp env)
