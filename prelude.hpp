@@ -9,7 +9,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <cmath>
 
 // #include <alloca.h>
 
@@ -66,6 +65,8 @@ long numArgs;
 template <typename T> T print_val(T val) {
   return val; // Just return the value for demonstration
 }
+
+template <typename T> bool isPositive(T number) { return number > 0; }
 
 #define PRINT(val) (std::cout << (val) << std::endl)
 
@@ -748,19 +749,19 @@ inline int is_integer_val(void *val) {
 
   if (tag == INT || tag == MPZ)
     return true;
-  else if (tag == FLOAT_VAL){
+  else if (tag == FLOAT_VAL) {
     float temp_val = decode_float(val);
     float flr = std::floor(temp_val);
-    return flr == temp_val; 
-  }else if (tag == MPF) {
-      mpf_t *fval = decode_mpf(val);
-      mpf_t flr;
-      mpf_init(flr);
-      mpf_floor(flr, *fval);
-      int result = mpf_cmp(*fval, flr) == 0;
-      mpf_clear(flr);
-      return result;
-    }
+    return flr == temp_val;
+  } else if (tag == MPF) {
+    mpf_t *fval = decode_mpf(val);
+    mpf_t flr;
+    mpf_init(flr);
+    mpf_floor(flr, *fval);
+    int result = mpf_cmp(*fval, flr) == 0;
+    mpf_clear(flr);
+    return result;
+  }
   return false;
 }
 
@@ -1880,6 +1881,59 @@ void *apply_prim__u42_1(void *arg1) //*
 
 void *apply_prim__u42_2(void *arg1, void *arg2) //*
 {
+  int arg1_tag = get_tag(arg1);
+  int arg2_tag = get_tag(arg2);
+
+  // Handling INT * INT case directly
+  if (arg1_tag == INT && arg2_tag == INT) {
+    const s64 a1 = decode_int(arg1);
+    const s64 a2 = decode_int(arg2);
+
+    s64 res;
+    if (__builtin_mul_overflow(a1, a2, &res)) {
+      // Overflow handling, promote to mpz
+      mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+      mpz_init(*result);
+      // Handle conversion from s64 to mpz_t correctly
+      mpz_set_si(*result, a1);
+      mpz_mul_si(*result, *result, a2);
+
+      return encode_mpz(result);
+    } else {
+      // No overflow
+      return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
+    }
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
+    float a1 = decode_float(arg1);
+    float a2 = decode_float(arg2);
+
+    float res = a1 * a2;
+
+    if (is_within_float_precision(res)) {
+      return reinterpret_cast<void *>(encode_float(res));
+    }else{
+      // handle overflow!
+    }
+  } else if (arg1_tag == INT && arg2_tag == MPZ) {
+    // Handling INT * MPZ case
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+
+    // Convert INT to mpz_t and perform multiplication
+    mpz_set_si(*result, decode_int(arg1));
+    mpz_mul(*result, *result, *(decode_mpz(arg2)));
+
+    return encode_mpz(result);
+  }else{
+    // will have to handle other mixed cases!
+  }
+  
+
+  return nullptr;
+}
+
+void *apply_prim__u42_2_b4(void *arg1, void *arg2) //*
+{
   return mul(arg1, arg2);
 }
 
@@ -1938,6 +1992,67 @@ void *div(void *arg1, void *arg2) {
 }
 
 void *apply_prim__u47_2(void *arg1, void *arg2) // / division
+{
+  int arg1_tag = get_tag(arg1);
+  int arg2_tag = get_tag(arg2);
+
+  // Handling INT + INT case directly
+  if (arg1_tag == INT && arg2_tag == INT) {
+    const s64 a1 = decode_int(arg1);
+    const s64 a2 = decode_int(arg2);
+
+    // Division by zero check
+    if (a2 == 0) {
+      // error
+    }
+
+    s64 res = a1 / a2;
+
+    // Check for overflow
+    if (res >= INT_MIN && res <= INT_MAX) {
+      return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
+    } else {
+      PRINT("apply_prim__u47_2: MPZ promotion required!");
+      mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+      mpz_init(*result);
+      mpz_set_si(*result, res);
+      return encode_mpz(result);
+    }
+
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
+    float a1 = decode_float(arg1);
+    float a2 = decode_float(arg2);
+
+    // Division by zero check
+    if (a2 == 0.0f) {
+      // error
+    }
+
+    float res = a1 / a2;
+
+    return reinterpret_cast<void *>(encode_float(res));
+  } else if (arg1_tag == INT && arg2_tag == MPZ) {
+    PRINT("apply_prim__u47_2: MPZ promotion required!");
+    // note: not written carefully!
+    // will handle these mpf/mpz promotoions later!
+    // Handling INT / MPZ case
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+
+    mpz_t a1_mpz;
+    mpz_init_set_si(a1_mpz, decode_int(arg1));
+
+    mpz_tdiv_q(*result, a1_mpz, *(decode_mpz(arg2)));
+
+    mpz_clear(a1_mpz);
+
+    return encode_mpz(result);
+  }
+
+  return nullptr;
+}
+
+void *apply_prim__u47_2_b4(void *arg1, void *arg2) // / division
 {
   bool is_mpf = false;
   int arg1_tag = get_tag(arg1);
@@ -2571,7 +2686,6 @@ void *apply_prim__u62_2(void *arg1, void *arg2) // >
   if (arg1_tag == INT && arg2_tag == INT) {
     s64 a1 = decode_int(arg1);
     s64 a2 = decode_int(arg2);
-    // Perform direct comparison
     return a1 > a2 ? encode_bool(true) : encode_bool(false);
   } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
     float a1 = decode_float(arg1);
@@ -2653,6 +2767,33 @@ void *apply_prim__u62_u61_1(void *arg1) // >=
 }
 
 void *apply_prim__u62_u61_2(void *arg1, void *arg2) // >=
+{
+  // return compare_op(arg1, arg2, *great_equal_zero);
+
+  int arg1_tag = get_tag(arg1);
+  int arg2_tag = get_tag(arg2);
+
+  // Both arguments are integers
+  if (arg1_tag == INT && arg2_tag == INT) {
+    s64 a1 = decode_int(arg1);
+    s64 a2 = decode_int(arg2);
+    return a1 >= a2 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
+    float a1 = decode_float(arg1);
+    float a2 = decode_float(arg2);
+
+    if (is_within_float_precision(a1) && is_within_float_precision(a2)) {
+      return a1 >= a2 ? encode_bool(true) : encode_bool(false);
+    } else {
+      PRINT("apply_prim__u62_u61_2 -> promote to MPF: remember both or one can "
+            "be MPF");
+    }
+  }
+
+  return nullptr;
+}
+
+void *apply_prim__u62_u61_2_b4(void *arg1, void *arg2) // >=
 {
   return compare_op(arg1, arg2, *great_equal_zero);
 }
@@ -4015,15 +4156,107 @@ inline void *apply_prim_min(void *lst) {
 }
 
 void *apply_prim_expt_2(void *arg1, void *arg2) {
-  int val_tag = get_tag(arg1);
-  int val_tag2 = get_tag(arg2);
+  int arg1_tag = get_tag(arg1);
+  int arg2_tag = get_tag(arg2);
 
-  if (val_tag != MPF && val_tag != MPZ) {
+  if (arg1_tag != INT && arg1_tag != FLOAT_VAL && arg1_tag != MPF &&
+      arg1_tag != MPZ) {
     assert_type(false, "Error in expt -> contract violation: first argument "
                        "should be integers or floating-point numbers!");
   }
 
-  if (val_tag2 != MPF && val_tag2 != MPZ) {
+  if (arg2_tag != INT && arg2_tag != FLOAT_VAL && arg2_tag != MPF &&
+      arg2_tag != MPZ) {
+    assert_type(false, "Error in expt -> contract violation: second argument "
+                       "should be integers or floating-point numbers!");
+  }
+
+  if (arg1_tag == INT && arg2_tag == INT) {
+    bool overflow_chk = false;
+    const s64 base = decode_int(arg1);
+    const s64 exponent = decode_int(arg2);
+
+    if (base == 0 && !isPositive(exponent)) {
+      // Handle error for (0 ^ negative exponent)
+      // Return an appropriate error representation
+      assert_type(false, "Error in expt -> contract violation: exponent cannot "
+                         "be negative value when base is 0");
+    }
+
+    // to avoid unnecessary calculations
+    if (!isPositive(exponent)) {
+      // what to do about negative exponent?");
+      // should we support them?
+      // for now returning 0
+      return reinterpret_cast<void *>(encode_int(static_cast<s32>(0)));
+    }
+    // else if (exponent < 0) {
+    //   return reinterpret_cast<void *>(encode_int(static_cast<s32>(0)));
+    // }
+    else if (exponent == 0) {
+      return reinterpret_cast<void *>(encode_int(static_cast<s32>(1)));
+    } else if (base == 0) {
+      return reinterpret_cast<void *>(encode_int(static_cast<s32>(0)));
+    } else if (base == 1) {
+      return reinterpret_cast<void *>(encode_int(static_cast<s32>(1)));
+    } else if (base == -1) {
+      int res = exponent % 2 == 0 ? 1 : -1;
+      return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
+    } else {
+      // calculating expt within s64 limits
+      s64 result = 1;
+      for (s64 i = 0; i < exponent; ++i) {
+        if (result > INT_MAX / base || result < INT_MIN / base) {
+          // Overflow detected, we should promote to mpz
+          overflow_chk = true;
+          break;
+        }
+        result *= base;
+      }
+      PRINT("here!");
+      std::cout << result << std::endl;
+
+      // if the loop didn't exit with a break,
+      // it's should be safe to return the result
+      if (!overflow_chk) {
+        PRINT("here2!");
+        return reinterpret_cast<void *>(encode_int(static_cast<s32>(result)));
+      } else {
+        // Otherwise, promote to mpz
+        PRINT("apply_prim_expt_2:  promoting to mpz");
+        mpz_t result_mpz;
+        mpz_init(result_mpz);
+
+        // Convert 'base' from s64 to mpz_t
+        mpz_set_si(result_mpz, base);
+
+        mpz_pow_ui(result_mpz, result_mpz,
+                   static_cast<unsigned long>(exponent));
+
+        void *encoded_result = encode_mpz(&result_mpz);
+
+        mpz_clear(result_mpz);
+
+        return encoded_result;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
+void *apply_prim_expt_2_b4(void *arg1, void *arg2) {
+  int val_tag = get_tag(arg1);
+  int val_tag2 = get_tag(arg2);
+
+  if (val_tag != INT && val_tag != FLOAT_VAL && val_tag != MPF &&
+      val_tag != MPZ) {
+    assert_type(false, "Error in expt -> contract violation: first argument "
+                       "should be integers or floating-point numbers!");
+  }
+
+  if (val_tag2 != INT && val_tag2 != FLOAT_VAL && val_tag2 != MPF &&
+      val_tag2 != MPZ) {
     assert_type(false, "Error in expt -> contract violation: second argument "
                        "should be integers or floating-point numbers!");
   }
@@ -4117,7 +4350,8 @@ inline void *apply_prim_sqrt(void *lst) {
 inline void *apply_prim_remainder_2(void *arg1, void *arg2) {
   if (!is_integer_val(arg1) || !is_integer_val(arg2)) {
     // to see either of the numbers has fraction in it!
-    assert_type(false, "Error in remainder -> contact violation: expected integer argument!");
+    assert_type(false, "Error in remainder -> contact violation: expected "
+                       "integer argument!");
   }
 
   int arg1_tag = get_tag(arg1);
@@ -4129,7 +4363,7 @@ inline void *apply_prim_remainder_2(void *arg1, void *arg2) {
     return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
   } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
     // wil implementt later!
-    // we will allow float values. like 5.0 , 103.0, 
+    // we will allow float values. like 5.0 , 103.0,
     // and at this point we must have values like that
     // is_integer_val ensures that
   } else {
@@ -4415,8 +4649,8 @@ void *halt;
 void fhalt() {
   // std::cout << "In fhalt" << std::endl;
   std::cout << print_val(arg_buffer[2]) << std::endl;
-  // std::cout << "Total # calls made (excluding prelude): " << call_counter <<
-  // std::endl;
+  // std::cout << "Total # calls made (excluding prelude): " << call_counter
+  // << std::endl;
   exit(0);
 }
 

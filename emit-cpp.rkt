@@ -83,7 +83,7 @@
 
         [`((proc (,ptr ,env ,args ...) ,_) ,_ ...)
          (define args-str
-           (foldl (lambda (arg acc) (string-append acc ", void* " (symbol->string arg)))
+           (foldl (lambda (arg acc) (string-append acc ", void* " (symbol->string (get-c-string arg))))
                   (string-append "void* " (symbol->string env))
                   args))
 
@@ -316,7 +316,7 @@
       [`(if ,grd ,texp ,fexp)
        (append-line filepath "\n//if-clause")
 
-       (append-line filepath (format "if(is_true(~a))\n{" (hash-ref arg_hash grd (lambda () grd))))
+       (append-line filepath (format "if(is_true(~a))\n{" (hash-ref arg_hash grd (lambda () (get-c-string grd)))))
        (convert-proc-body proc_name proc_env proc_arg texp arg_hash)
        (append-line filepath "}\nelse\n{")
        (convert-proc-body proc_name proc_env proc_arg fexp arg_hash)
@@ -546,7 +546,7 @@
                 (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[0])(~a, ~a);"
                                               (hash-ref arg_hash func)
                                               (hash-ref arg_hash func)
-                                              (hash-ref arg_hash arg (lambda () arg))
+                                              (hash-ref arg_hash arg (lambda () (get-c-string arg)))
                                               ))]
                [(or (string-prefix? (hash-ref arg_hash func) "f_lam") (string-prefix? (hash-ref arg_hash func) "lam"))
                 ; (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[0])(~a, ~a);"
@@ -557,16 +557,16 @@
                 (append-line filepath (format "~a_spec(~a, ~a);"
                                               (hash-ref arg_hash func)
                                               (get-c-string func)
-                                              (hash-ref arg_hash arg (lambda () arg))))]
+                                              (hash-ref arg_hash arg (lambda () (get-c-string arg)))))]
                [else
                 (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[0])(~a, ~a);"
-                                              (hash-ref arg_hash func (lambda () get-c-string func))
-                                              (hash-ref arg_hash func (lambda () get-c-string func))
-                                              (hash-ref arg_hash arg (lambda () arg))))]))
+                                              (hash-ref arg_hash func (lambda () (get-c-string func)))
+                                              (hash-ref arg_hash func (lambda () (get-c-string func)))
+                                              (hash-ref arg_hash arg (lambda () (get-c-string arg)))))]))
            (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>(decode_clo(~a)[0])(~a, ~a);"
                                          (get-c-string func)
                                          (get-c-string func)
-                                         (hash-ref arg_hash arg (lambda () arg)))))]))
+                                         (hash-ref arg_hash arg (lambda () (get-c-string arg))))))]))
 
   (define (convert-procs proc)
     (match proc
@@ -595,7 +595,7 @@
 
 
        (define args-str
-         (foldl (lambda (arg acc) (string-append acc ", void* " (symbol->string arg)))
+         (foldl (lambda (arg acc) (string-append acc ", void* " (symbol->string (get-c-string arg))))
                 (string-append "void* " (symbol->string env))
                 args))
 
@@ -702,12 +702,12 @@
        (append-line filepath (format "void* const ~a = arg_buffer[2];" k))
        (append-line filepath (format "void* const ~a = apply_prim_~a(arg_buffer);" x (get-c-string ptr)))
 
-       (append-line filepath (format "arg_buffer[1] = ~a;" k))
-       (append-line filepath (format "arg_buffer[2] = ~a;" x))
+      ;  (append-line filepath (format "arg_buffer[1] = ~a;" k))
+      ;  (append-line filepath (format "arg_buffer[2] = ~a;" x))
 
-       (append-line filepath  "numArgs = 2;")
+      ;  (append-line filepath  "numArgs = 2;")
 
-       (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" k))
+       (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>((decode_clo(~a))[0])(~a, ~a);" k k x))
        (append-line filepath "}\n")
        (append-line filepath "}\n")]
       ) ;end of match

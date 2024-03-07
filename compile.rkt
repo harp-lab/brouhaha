@@ -329,7 +329,7 @@
       [`',dat `',dat]
 
       [`(let ([,x (lambda ,xs ,elam)]) ,e0)
-       `(let ([,x ,`(lambda ,xs ,elam)]) ,(tag-body e0))]
+       `(let ([,x ,`(lambda ,xs ,(tag-body elam))]) ,(tag-body e0))]
 
       [`(let ([,x ',dat]) ,e0)  `(let ([,x ',dat]) ,(tag-body e0))]
 
@@ -578,19 +578,19 @@
           10.0
           )
       )
-    (define (call n)
-      ; (+ (do-minus 2 1.0) (do-minus 2 2.0))
-      ;  (+ (do-minus (- 4.0 1.0)) (do-minus (- 2.0 1.0)))
-      ; (+ (do-minus 3.0) (do-minus 1.0))
-      ; (let loop ([i 10] [sum 11]) (+ i sum))
-      ; (call/cc
-      ;  (lambda (top)
-      ;    (let ((cc (call/cc (lambda (cc) (cc cc)))))
-      ;      (if (call/cc (lambda (k) (if (cc (lambda (x) (top #f))) (k #f) (k #f))))
-      ;          #t
-      ;          #t))))
-      (((call/cc (lambda (x) ((x x) x))) (lambda (y) y)) #t)
-      )
+    ; (define (call n)
+    ;   ; (+ (do-minus 2 1.0) (do-minus 2 2.0))
+    ;   ;  (+ (do-minus (- 4.0 1.0)) (do-minus (- 2.0 1.0)))
+    ;   ; (+ (do-minus 3.0) (do-minus 1.0))
+    ;   ; (let loop ([i 10] [sum 11]) (+ i sum))
+    ;   ; (call/cc
+    ;   ;  (lambda (top)
+    ;   ;    (let ((cc (call/cc (lambda (cc) (cc cc)))))
+    ;   ;      (if (call/cc (lambda (k) (if (cc (lambda (x) (top #f))) (k #f) (k #f))))
+    ;   ;          #t
+    ;   ;          #t))))
+    ;   (((call/cc (lambda (x) ((x x) x))) (lambda (y) y)) #t)
+    ;   )
 
     (define (brouhaha_main) (call 10.0))
     ))
@@ -608,139 +608,199 @@
 ; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
 
 (define prog
-  '((define-prim + 1 2 3)
-    (define-prim - 1 2 3)
-    (define-prim = 1 2 3)
-    (define-prim null? 1)
-    (define-prim cons 2)
-    (define-prim car 1)
-    (define-prim cdr 1)
-    (define (list . x) x)
-    (define (foldr fun acc lst)
-      (let ((id_8699 (null? lst)))
-        (if id_8699
-            acc
-            (let ((id_8700 (car lst)))
-              (let ((id_8701 (cdr lst)))
-                (let ((id_8702 (foldr fun acc id_8701)))
-                  (fun id_8700 id_8702)))))))
-    (define (append1 lhs rhs)
-      (let ((id_8703 (null? lhs)))
-        (if id_8703
-            rhs
-            (let ((id_8704 (car lhs)))
-              (let ((id_8705 (cdr lhs)))
-                (let ((id_8706 (append1 id_8705 rhs))) (cons id_8704 id_8706)))))))
-    (define (append . vargs)
-      (let ((xs (car vargs)))
-        (let ((vargs8698 (cdr vargs)))
-          (let ((x vargs8698))
-            (let ((id_8707 (list)))
-              (let ((id_8708 (list xs)))
-                (let ((id_8709 (append1 id_8708 x)))
-                  (foldr append1 id_8707 id_8709))))))))
-    (define (ok? row dist placed)
-      (let ((id_8710 (null? placed)))
-        (if id_8710
-            (let ((xy8711 '#t)) xy8711)
-            (let ((id_8712 (car placed)))
-              (let ((id_8713 (+ row dist)))
-                (let ((id_8714 (= id_8712 id_8713)))
-                  (let ((id_8717
-                         (if id_8714
-                             (let ((xy8715 '#f)) xy8715)
-                             (let ((xy8716 '#t)) xy8716))))
-                    (if id_8717
-                        (let ((id_8718 (car placed)))
-                          (let ((id_8719 (- row dist)))
-                            (let ((id_8720 (= id_8718 id_8719)))
-                              (let ((id_8723
-                                     (if id_8720
-                                         (let ((xy8721 '#f)) xy8721)
-                                         (let ((xy8722 '#t)) xy8722))))
-                                (if id_8723
-                                    (let ((id_8724 '1))
-                                      (let ((id_8725 (+ dist id_8724)))
-                                        (let ((id_8726 (cdr placed)))
-                                          (ok? row id_8725 id_8726))))
-                                    (let ((xy8727 '#f)) xy8727))))))
-                        (let ((xy8728 '#f)) xy8728)))))))))
-    (define (q-helper stack count)
-      (let ((id_8729 (null? stack)))
-        (if id_8729
-            count
-            (let ((state (car stack)))
-              (let ((x (car state)))
-                (let ((y (let ((id_8730 (cdr state))) (car id_8730))))
-                  (let ((z
-                         (let ((id_8731 (cdr state)))
-                           (let ((id_8732 (cdr id_8731))) (car id_8732)))))
-                    (let ((id_8733 (null? x)))
-                      (if id_8733
-                          (let ((id_8734 (null? y)))
-                            (if id_8734
-                                (let ((id_8735 (cdr stack)))
-                                  (let ((id_8736 '1))
-                                    (let ((id_8737 (+ count id_8736)))
-                                      (q-helper id_8735 id_8737))))
-                                (let ((id_8738 (cdr stack)))
-                                  (q-helper id_8738 count))))
-                          (let ((id_8739 (cdr x)))
-                            (let ((id_8740 (car x)))
-                              (let ((id_8741 (cons id_8740 y)))
-                                (let ((id_8742 (list id_8739 id_8741 z)))
-                                  (let ((id_8743 (car x)))
-                                    (let ((id_8744 '1))
-                                      (let ((id_8745 (ok? id_8743 id_8744 z)))
-                                        (let ((id_8754
-                                               (if id_8745
-                                                   (let ((id_8746 (cdr x)))
-                                                     (let ((id_8747
-                                                            (append id_8746 y)))
-                                                       (let ((id_8748 (list)))
-                                                         (let ((id_8749 (car x)))
-                                                           (let ((id_8750
-                                                                  (cons id_8749 z)))
-                                                             (let ((id_8751
-                                                                    (list
-                                                                     id_8747
-                                                                     id_8748
-                                                                     id_8750)))
-                                                               (let ((id_8752
-                                                                      (cdr stack)))
-                                                                 (cons
-                                                                  id_8751
-                                                                  id_8752))))))))
-                                                   (let ((xy8753 (cdr stack)))
-                                                     xy8753))))
-                                          (let ((id_8755 (cons id_8742 id_8754)))
-                                            (q-helper
-                                             id_8755
-                                             count)))))))))))))))))))
-    (define (iota1 n l)
-      (let ((id_8756 '0))
-        (let ((id_8757 (= n id_8756)))
-          (if id_8757
-              l
-              (let ((id_8758 '1))
-                (let ((id_8759 (- n id_8758)))
-                  (let ((id_8760 (cons n l))) (iota1 id_8759 id_8760))))))))
-    (define (nqueens n)
-      (let ((id_8761 (list)))
-        (let ((id_8762 (iota1 n id_8761)))
-          (let ((id_8763 (list)))
-            (let ((id_8764 (list)))
-              (let ((id_8765 (list id_8762 id_8763 id_8764)))
-                (let ((id_8766 (list id_8765)))
-                  (let ((id_8767 '0)) (q-helper id_8766 id_8767)))))))))
-    (define (brouhaha_main) (let ((id_8768 '14)) (nqueens id_8768))))
-  )
-
+'((define-prim + 1 2 3)
+  (define-prim - 1 2 3)
+  (define-prim * 1 2 3)
+  (define-prim / 1 2 3)
+  (define-prim = 1 2 3)
+  (define-prim > 1 2 3)
+  (define-prim < 1 2 3)
+  (define-prim <= 1 2 3)
+  (define-prim >= 1 2 3)
+  (define-prim modulo 2)
+  (define-prim null? 1)
+  (define-prim equal? 2)
+  (define-prim eq? 2)
+  (define-prim cons 2)
+  (define-prim car 1)
+  (define-prim cdr 1)
+  (define-prim float->int 1)
+  (define-prim int->float 1)
+  (define-prim hash)
+  (define-prim hash-ref 2)
+  (define-prim hash-set 3)
+  (define-prim hash-keys 1)
+  (define-prim hash-has-key? 2)
+  (define-prim hash-count 1)
+  (define-prim set)
+  (define-prim set->list 1)
+  (define-prim list->set 1)
+  (define-prim set-add 2)
+  (define-prim set-member? 2)
+  (define-prim set-remove 2)
+  (define-prim set-count 1)
+  (define-prim string? 1)
+  (define-prim string-length 1)
+  (define-prim string-ref 2)
+  (define-prim substring 3)
+  (define-prim string-append 2)
+  (define-prim string->list 1)
+  (define-prim exact-floor 1)
+  (define-prim exact-ceiling 1)
+  (define-prim exact-round 1)
+  (define-prim abs 1)
+  (define-prim max 1)
+  (define-prim min 1)
+  (define-prim expt 2)
+  (define-prim sqrt 1)
+  (define-prim remainder 2)
+  (define-prim quotient 2)
+  (define-prim random 1 2)
+  (define-prim symbol? 1)
+  (define-prim pair? 1)
+  (define-prim positive? 1)
+  (define-prim negative? 1)
+  (define-prim list 1 2 3 4)
+  (define (even? x) (equal? '0 (modulo x '2)))
+  (define (odd? x) (equal? '1 (modulo x '2)))
+  (define (list-ref lst n)
+    (if (= '0 n) (car lst) (list-ref (cdr lst) (- n '1))))
+  ; (define (member item lst)
+  ;   (if (if (null? item) (null? item) (null? lst))
+  ;     '#f
+  ;     (if (equal? item (car lst)) lst (member item (cdr lst)))))
+  ; (define (member? x lst)
+  ;   (if (null? lst) '#f (if (equal? (car lst) x) '#t (member? x (cdr lst)))))
+  ; (define (length lst) (if (null? lst) '0 (+ '1 (length (cdr lst)))))
+  ; (define (map proc lst)
+  ;   (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
+  ; (define (filter op lst)
+  ;   (if (null? lst)
+  ;     (list)
+  ;     (if (op (car lst))
+  ;       (cons (car lst) (filter op (cdr lst)))
+  ;       (filter op (cdr lst)))))
+  ; (define (drop lst n) (if (= n '0) lst (drop (cdr lst) (- n '1))))
+  ; (define (foldl fun acc lst)
+  ;   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
+  ; (define (foldr fun acc lst)
+  ;   (if (null? lst) acc (fun (car lst) (foldr fun acc (cdr lst)))))
+  ; (define (reverse-helper lst lst2)
+  ;   (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
+  ; (define (reverse lst) (reverse-helper lst (list)))
+  ; (define (append1 lhs rhs)
+  ;   (if (null? lhs) rhs (cons (car lhs) (append1 (cdr lhs) rhs))))
+  ; (define (append . vargs)
+  ;   (let ((xs (car vargs)) (vargs8729 (cdr vargs)))
+  ;     (let ((x vargs8729))
+  ;       (if (= '1 (length x))
+  ;         (append1 xs (car x))
+  ;         (foldr append1 (list) (append1 (list xs) x))))))
+  ; (define (take-helper lst n lst2)
+  ;   (if (= n '0)
+  ;     (reverse lst2)
+  ;     (take-helper (cdr lst) (- n '1) (cons (car lst) lst2))))
+  ; (define (take lst n) (take-helper lst n (list)))
+  ; (define (pt-in-poly2-helper xp yp x y c i j)
+  ;   (if (< i '0)
+  ;     c
+  ;     (if (if (if (if (> (list-ref yp i) y)
+  ;                   (> (list-ref yp i) y)
+  ;                   (>= y (list-ref yp j)))
+  ;               (if (> (list-ref yp j) y)
+  ;                 (> (list-ref yp j) y)
+  ;                 (>= y (list-ref yp i)))
+  ;               '#f)
+  ;           (if (if (> (list-ref yp i) y)
+  ;                 (> (list-ref yp i) y)
+  ;                 (>= y (list-ref yp j)))
+  ;             (if (> (list-ref yp j) y)
+  ;               (> (list-ref yp j) y)
+  ;               (>= y (list-ref yp i)))
+  ;             '#f)
+  ;           (>=
+  ;            x
+  ;            (+
+  ;             (list-ref xp i)
+  ;             (/
+  ;              (* (- (list-ref xp j) (list-ref xp i)) (- y (list-ref yp i)))
+  ;              (- (list-ref yp j) (list-ref yp i))))))
+  ;       (pt-in-poly2-helper xp yp x y c (- i '1) i)
+  ;       (pt-in-poly2-helper xp yp x y (if c '#f '#t) (- i '1) i))))
+  ; (define (pt-in-poly2 xp yp x y)
+  ;   (pt-in-poly2-helper xp yp x y '#f (- (length xp) '1) '0))
+  (define (run input1 input2)
+    (foldl
+     (lambda (lst count)
+       (if (pt-in-poly2 input1 input2 (car lst) (car (cdr lst)))
+         (+ count '1)
+         count))
+     '0
+     (list
+      (list '0.5 '0.5)
+      (list '0.5 '1.5)
+      (list '-0.5 '1.5)
+      (list '0.75 '2.25)
+      (list '0.0 '2.01)
+      (list '-0.5 '2.5)
+      (list '-1.0 '-0.5)
+      (list '-1.5 '0.5)
+      (list '-2.25 '-1.0)
+      (list '0.5 '-0.25)
+      (list '0.5 '-1.25)
+      (list '-0.5 '-2.5))))
+  (define (brouhaha_main)
+    (run
+     (list
+      '0.0
+      '1.0
+      '1.0
+      '0.0
+      '0.0
+      '1.0
+      '-0.5
+      '-1.0
+      '-1.0
+      '-2.0
+      '-2.5
+      '-2.0
+      '-1.5
+      '-0.5
+      '1.0
+      '1.0
+      '0.0
+      '-0.5
+      '-1.0
+      '-0.5)
+     (list
+      '0.0
+      '0.0
+      '1.0
+      '1.0
+      '2.0
+      '3.0
+      '2.0
+      '3.0
+      '0.0
+      '-0.5
+      '-1.0
+      '-1.5
+      '-2.0
+      '-2.0
+      '-1.5
+      '-1.0
+      '-0.5
+      '-1.0
+      '-1.0
+      '-0.5))))
+)
 ; (pretty-print (optimize-prog prog))
 ; (pretty-print (cps-convert (optimize-prog prog))
 ; (pretty-print (closure-convert (alphatize (cps-convert ( optimize-prog prog)))))
 ; (pretty-print (closure-convert (alphatize (cps-convert prog))))
 
 
-; (pretty-print (cps-convert (anf-convert (optimize-prog (alphatize (desugar our-call))))))
+; (pretty-print (cps-convert (optimize-prog (anf-convert (alphatize (desugar our-call))))))
+; (pretty-print (anf-convert prog))
+; (pretty-print (optimize-prog (anf-convert prog)))
 ; (pretty-print (cps-convert (anf-convert (optimize-prog (alphatize (desugar prog))))))
