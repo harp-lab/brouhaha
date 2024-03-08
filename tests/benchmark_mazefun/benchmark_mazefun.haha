@@ -117,8 +117,6 @@
   (let ((i (car pos)) (j (cdr pos)))
     (change-cavity-aux cave pos new-cavity-id (matrix-read cave i j))))
 
-
-
 (define (pierce pos cave)
   (let ((i (car pos)) (j (cdr pos)))
     (matrix-write cave i j pos)))
@@ -161,4 +159,4 @@
 
 
 (define (brouhaha_main)
-  (make-maze 7 7))
+   (make-maze 11 11))

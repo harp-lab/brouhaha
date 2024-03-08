@@ -1,4 +1,5 @@
 #include <bitset>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <functional>
@@ -570,6 +571,11 @@ inline void *hash_equal(void *arg1, void *arg2) {
 }
 
 inline void *equal_(void *arg1, void *arg2) {
+  // PRINT(get_tag(arg1));
+  // PRINT(get_tag(arg2));
+  // if(get_tag(arg2) == INT)
+  //   PRINT(decode_int(arg2) > INT_MAX);
+
   // takes in two voids,
   // checks if they have the same tag, if not return false else
   // switches based on the tag to the appropriate function for the type
@@ -579,6 +585,31 @@ inline void *equal_(void *arg1, void *arg2) {
     return encode_bool(false);
   }
   switch (type_arg1) {
+  case TRUE_VALUE:
+  case FALSE_VALUE:
+  case NULL_VALUE: {
+    u64 arg1_u64 = (u64)arg1;
+    u64 arg2_u64 = (u64)arg2;
+    return encode_bool(arg1_u64 == arg2_u64);
+
+    break;
+  }
+  case INT: {
+    if (decode_int(arg1) == decode_int(arg2))
+      return encode_bool(true);
+    else
+      return encode_bool(false);
+
+    break;
+  }
+  case FLOAT_VAL: {
+    if (decode_float(arg1) == decode_float(arg2))
+      return encode_bool(true);
+    else
+      return encode_bool(false);
+
+    break;
+  }
   case MPZ: {
     return mpz_equal(arg1, arg2);
     break;
@@ -795,8 +826,40 @@ mpz_t *calc_modulo(mpz_t *first, mpz_t *second) {
 
 inline void *prim_modulo(void *first, void *second) {
   void *result = nullptr;
+  int first_tag = get_tag(first);
+  int second_tag = get_tag(second);
 
-  if (get_tag(first) == MPZ && get_tag(second) == MPZ) { // both numbers are mpz
+  // Handling INT + INT case directly
+  if (first_tag == INT && second_tag == INT) {
+    const int a1 = decode_int(first);
+    const int a2 = decode_int(second);
+
+    if (a2 == 0)
+      assert_type(false, "Error in modulo -> division by zero !");
+
+    int res = a1 % a2;
+
+    return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
+  } else if (first_tag == FLOAT_VAL && second_tag == FLOAT_VAL) {
+    float f1 = decode_float(first);
+    float f2 = decode_float(second);
+
+    if (f2 == 0.0f)
+      assert_type(false, "Error in modulo -> division by zero !");
+
+    float f_res = std::fmod(f1, f2);
+
+    // Check if result is within float's precision and range
+    if (is_within_float_precision(f_res)) {
+      return reinterpret_cast<void *>(encode_float(f_res));
+    } else {
+      // Promote to MPF if the result exceeds float's precision or range
+      PRINT("prim modulo: promote to MPF");
+      // mpf_t *mpf_res = float_to_mpf(f_res);
+      // return encode_mpf(mpf_res);
+    }
+  } else if (get_tag(first) == MPZ &&
+             get_tag(second) == MPZ) { // both numbers are mpz
     mpz_t *mpz_arg1 = decode_mpz(first);
     mpz_t *mpz_arg2 = decode_mpz(second);
 
@@ -1911,7 +1974,7 @@ void *apply_prim__u42_2(void *arg1, void *arg2) //*
 
     if (is_within_float_precision(res)) {
       return reinterpret_cast<void *>(encode_float(res));
-    }else{
+    } else {
       // handle overflow!
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
@@ -1924,10 +1987,9 @@ void *apply_prim__u42_2(void *arg1, void *arg2) //*
     mpz_mul(*result, *result, *(decode_mpz(arg2)));
 
     return encode_mpz(result);
-  }else{
+  } else {
     // will have to handle other mixed cases!
   }
-  
 
   return nullptr;
 }
