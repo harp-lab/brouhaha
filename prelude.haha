@@ -140,6 +140,18 @@
 (define (take lst n)
   (take-helper lst n (list)))
 
+(define (list-set lst index value)
+  (if (= index 0)
+      (cons value (cdr lst))
+      (cons (car lst)
+            (list-set (cdr lst) (- index 1) value))))
+
+(define (flatten lst)
+  (cond [(null? lst) (list)]
+        [(pair? lst)
+         (append (flatten (car lst)) (flatten (cdr lst)))]
+        [else (list lst)]))
+
 ;;; ormap, andmap, both requires length to work properly. once done will impelement them.
 
 
