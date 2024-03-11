@@ -1,3 +1,5 @@
+;; won't work, untill we implement the mpz/mpf promotion thing!
+
 (define (run n)
   (let loop ((i n) (sum 0.))
     (if (< i 0.)

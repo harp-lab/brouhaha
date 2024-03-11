@@ -1,5 +1,5 @@
 ;;; Source: https://www.larcenists.org/benchmarksAboutR7.html
-;;; Doubly recursive computation of the 40th fibonacci number (102334155), using (< n 2) to terminate the recursion; 1 iteration.
+;;; FIB -- Doubly recursive computation of the 40th fibonacci number (102334155), using (< n 2) to terminate the recursion; 1 iteration.
 
 
 (define (fib n)

@@ -61,6 +61,12 @@
   (match exp
     ['() env]
     [(? symbol?) env]
+    [(? string?) env]
+    [(? number?) env]
+    [(? integer?) env]
+    [(? flonum?) env]
+    [(? number?) env]
+    [(? boolean?) env]
     [`(let ([,lhs ,val]) ,letbody)
      (find-global-constants-helper letbody
                                    (match val

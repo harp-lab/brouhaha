@@ -1,6 +1,7 @@
+;; won't work, untill we implement the mpz/mpf promotion thing!
+
 ;;; Source: https://www.larcenists.org/benchmarksAboutR7.html
-;;; PI -- Compute PI using bignums.
-;; See http://mathworld.wolfram.com/Pi.html for the various algorithms.
+;;; PI -- A bignum-intensive benchmark that calculates digits of pi.
 
 (define (mydiv x y)
   (cond ((and (positive? x)
@@ -146,3 +147,6 @@
         15
         1
         ))
+
+;(pies 50 500 50)
+

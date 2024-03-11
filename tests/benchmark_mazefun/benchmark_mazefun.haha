@@ -1,6 +1,5 @@
 ;;; Source: https://www.larcenists.org/benchmarksAboutR7.html
-;;; MAZEFUN -- Constructs a maze in a purely functional way,
-;;; written by Marc Feeley.
+;;; MAZEFUN -- Constructs a maze on a rectangular grid using purely functional style, 5000 iterations on a problem of size 11. Written by Marc Feeley.
 
 (define (my-foldr-aux lst f base)
   (if (null? lst)

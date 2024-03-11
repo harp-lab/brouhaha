@@ -1,5 +1,5 @@
 ;;; Source: https://www.larcenists.org/benchmarksAboutR7.html
-;;; PNPOLY - Test if a point is contained in a 2D polygon.
+;;; PNPOLY -- Testing to see whether a point is contained within a 2-dimensional polygon, 500000 iterations (with 12 tests per iteration). A test of floating point arithmetic
 
 (define (pt-in-poly2-helper xp yp x y c i j)
   (if (< i 0)
