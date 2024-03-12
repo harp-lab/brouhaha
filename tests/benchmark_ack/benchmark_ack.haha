@@ -1,0 +1,12 @@
+;;; Source: https://www.larcenists.org/benchmarksAboutR6.html
+;;; ACK -- A version of the Ackermann function, with arguments 3,12. One iteration..
+
+(define (ack m n)
+  (cond ((= m 0) (+ n 1))
+        ((= n 0) (ack (- m 1) 1))
+        (else (ack (- m 1) (ack m (- n 1))))))
+
+(define (brouhaha_main)
+  (ack 3
+       12
+       ))
