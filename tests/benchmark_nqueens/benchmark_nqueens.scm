@@ -1,5 +1,5 @@
 ;;; Source: https://www.larcenists.org/benchmarksAboutR7.html
-;;; NQUEENS -- Computes the number of solutions to the 13-queens problem, 10 times.
+;;; NQUEENS -- Compute number of solutions to 8-queens problem.
 
 
 (define (ok? row dist placed)
@@ -40,3 +40,6 @@
 
 (define (brouhaha_main)
   (nqueens 13))
+
+(write (brouhaha_main))
+(newline)

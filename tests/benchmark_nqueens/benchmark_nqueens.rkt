@@ -1,3 +1,5 @@
+#lang racket
+
 ;;; Source: https://www.larcenists.org/benchmarksAboutR7.html
 ;;; NQUEENS -- Computes the number of solutions to the 13-queens problem, 10 times.
 
@@ -40,3 +42,5 @@
 
 (define (brouhaha_main)
   (nqueens 13))
+  
+(brouhaha_main)
