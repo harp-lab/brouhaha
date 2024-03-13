@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-// #include <alloca.h>
-
 // GMP and gc headers
 #include "gc.h"
 #include "gc_cpp.h"
@@ -136,7 +134,6 @@ inline void *encode_hash(const hamt<hash_struct, hash_struct> *val) {
 }
 
 inline void *encode_null() { return reinterpret_cast<void *>(NULL_VALUE); }
-// inline void *encode_null() { return NULL_VALUE;}
 
 // takes in a void * type and gets the tag, return it as an integer
 inline int get_tag(void *val) {
@@ -571,11 +568,6 @@ inline void *hash_equal(void *arg1, void *arg2) {
 }
 
 inline void *equal_(void *arg1, void *arg2) {
-  // PRINT(get_tag(arg1));
-  // PRINT(get_tag(arg2));
-  // if(get_tag(arg2) == INT)
-  //   PRINT(decode_int(arg2) > INT_MAX);
-
   // takes in two voids,
   // checks if they have the same tag, if not return false else
   // switches based on the tag to the appropriate function for the type
@@ -993,24 +985,36 @@ inline void *apply_prim_null_u63_1(void *item) { return prim_null_u63(item); }
 
 inline void *apply_prim_positive_u63_1(void *val) {
   int val_tag = get_tag(val);
-  if (val_tag != MPF && val_tag != MPZ) {
-    assert_type(false, "Error in positive? -> contract violation: expected "
-                       "integers or floating-point numbers as argument!");
+
+  assert_type(val_tag == INT || val_tag == FLOAT_VAL || val_tag == MPF ||
+                  val_tag == MPZ,
+              "Error in positive? -> contract violation: expected "
+              "integers or floating-point numbers as argument!");
+
+  bool isPositive = false;
+
+  switch (val_tag) {
+  case INT:
+    isPositive = decode_int(val) > 0;
+    break;
+  case FLOAT_VAL:
+    isPositive = decode_float(val) > 0;
+    break;
+  case MPZ:
+    isPositive = mpz_sgn(*(decode_mpz(val))) > 0;
+    break;
+  case MPF:
+    isPositive = mpf_sgn(*(decode_mpf(val))) > 0;
+    break;
+  default:
+    // This default case might never be reached due to the initial assertion
+    assert_type(false,
+                "Unexpected type encountered in apply_prim_positive_u63_1.");
+
+    return nullptr;
   }
 
-  if (val_tag == MPZ) {
-    if (mpz_sgn(*(decode_mpz(val))) > 0)
-      return encode_bool(true);
-    else
-      return encode_bool(false);
-  } else if (val_tag == MPF) {
-    if (mpf_sgn(*(decode_mpf(val))) > 0)
-      return encode_bool(true);
-    else
-      return encode_bool(false);
-  }
-
-  return nullptr;
+  return encode_bool(isPositive);
 }
 
 inline void *apply_prim_positive_u63(void *lst) {
@@ -1024,24 +1028,35 @@ inline void *apply_prim_positive_u63(void *lst) {
 
 inline void *apply_prim_negative_u63_1(void *val) {
   int val_tag = get_tag(val);
-  if (val_tag != MPF && val_tag != MPZ) {
-    assert_type(false, "Error in negative? -> contract violation: expected "
-                       "integers or floating-point numbers as argument!");
+
+  assert_type(val_tag == INT || val_tag == FLOAT_VAL || val_tag == MPF ||
+                  val_tag == MPZ,
+              "Error in negative? -> contract violation: expected "
+              "integers or floating-point numbers as argument!");
+
+  bool isNegative = false;
+
+  switch (val_tag) {
+  case INT:
+    isNegative = decode_int(val) < 0;
+    break;
+  case FLOAT_VAL:
+    isNegative = decode_float(val) < 0;
+    break;
+  case MPZ:
+    isNegative = mpz_sgn(*(decode_mpz(val))) < 0;
+    break;
+  case MPF:
+    isNegative = mpf_sgn(*(decode_mpf(val))) < 0;
+    break;
+  default:
+    // This default case might never be reached due to the initial assertion,
+    assert_type(false,
+                "Unexpected type encountered in apply_prim_negative_u63_1.");
+    return nullptr;
   }
 
-  if (val_tag == MPZ) {
-    if (mpz_sgn(*(decode_mpz(val))) < 0)
-      return encode_bool(true);
-    else
-      return encode_bool(false);
-  } else if (val_tag == MPF) {
-    if (mpf_sgn(*(decode_mpf(val))) < 0)
-      return encode_bool(true);
-    else
-      return encode_bool(false);
-  }
-
-  return nullptr;
+  return encode_bool(isNegative);
 }
 
 inline void *apply_prim_negative_u63(void *lst) {
@@ -1286,6 +1301,7 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
     s64 res;
     if (__builtin_add_overflow(a1, a2, &res)) {
       // Overflow handling, promote to mpz
+      PRINT("apply_prim__u43_2: Promote to MPZ");
       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
       mpz_init(*result);
       mpz_set_ui(*result, res); // Note: mpz_set_ui may cause problems for s64
@@ -1307,7 +1323,7 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
       return reinterpret_cast<void *>(encode_float(res));
     } else {
       // Promote to (MPF)
-      PRINT("Promote to MFF");
+      PRINT("apply_prim__u43_2: Promote to MFF");
       mpf_t a1_mpf, a2_mpf, result_mpf;
       mpf_init(a1_mpf);
       mpf_init(a2_mpf);
@@ -1327,6 +1343,10 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
     // will implement later
+    PRINT("apply_prim__u43_2: INT+MPZ");
+  } else {
+    assert_type(false, "Error in plus -> contact violation: The values in the "
+                       "list must be integers or floating-point numbers!");
   }
 
   // if (arg1_tag == INT) {
@@ -1580,6 +1600,7 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
     s64 res;
     if (__builtin_sub_overflow(a1, a2, &res)) {
       // Overflow handling, promote to mpz
+      PRINT("apply_prim__u45_2: promte to MPZ");
       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
       mpz_init(*result);
       mpz_set_ui(*result, res); // Note: mpz_set_ui may cause problems for s64
@@ -1599,10 +1620,14 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
       // No overflow, return the result
       return reinterpret_cast<void *>(encode_float(res));
     } else {
-      PRINT("promte to MPF");
+      PRINT("apply_prim__u45_2: promte to MPF");
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
     // will implement later
+    PRINT("apply_prim__u45_2: INT+MPZ");
+  } else {
+    assert_type(false, "Error in minus -> contact violation: The values in the "
+                       "list must be integers or floating-point numbers!");
   }
 
   // if (arg1_tag == INT) {
@@ -1897,7 +1922,7 @@ void *mul(void *arg1, void *arg2) {
   return 0;
 }
 
-void *apply_prim__u42(void *lst) //*
+void *apply_prim__u42(void *lst) // *
 {
   void *result = nullptr;
 
@@ -1929,7 +1954,7 @@ void *apply_prim__u42(void *lst) //*
   return result;
 }
 
-void *apply_prim__u42_1(void *arg1) //*
+void *apply_prim__u42_1(void *arg1) // *
 {
   int arg1_tag = get_tag(arg1);
 
@@ -1942,7 +1967,7 @@ void *apply_prim__u42_1(void *arg1) //*
   return nullptr;
 }
 
-void *apply_prim__u42_2(void *arg1, void *arg2) //*
+void *apply_prim__u42_2(void *arg1, void *arg2) // *
 {
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
@@ -1955,6 +1980,7 @@ void *apply_prim__u42_2(void *arg1, void *arg2) //*
     s64 res;
     if (__builtin_mul_overflow(a1, a2, &res)) {
       // Overflow handling, promote to mpz
+      PRINT("apply_prim__u42_2: Promote to MPZ");
       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
       mpz_init(*result);
       // Handle conversion from s64 to mpz_t correctly
@@ -1975,9 +2001,11 @@ void *apply_prim__u42_2(void *arg1, void *arg2) //*
     if (is_within_float_precision(res)) {
       return reinterpret_cast<void *>(encode_float(res));
     } else {
+      PRINT("apply_prim__u42_2: Promote to MPF");
       // handle overflow!
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
+    PRINT("apply_prim__u43_2: INT+MPZ");
     // Handling INT * MPZ case
     mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
     mpz_init(*result);
@@ -1989,6 +2017,10 @@ void *apply_prim__u42_2(void *arg1, void *arg2) //*
     return encode_mpz(result);
   } else {
     // will have to handle other mixed cases!
+    assert_type(
+        false,
+        "Error in multiplication -> contact violation: The values in the "
+        "list must be integers or floating-point numbers!");
   }
 
   return nullptr;
@@ -2065,20 +2097,24 @@ void *apply_prim__u47_2(void *arg1, void *arg2) // / division
 
     // Division by zero check
     if (a2 == 0) {
-      // error
+      assert_type(false,
+                  "Error in division -> division by zero is not allowed!");
     }
 
     s64 res = a1 / a2;
 
-    // Check for overflow
-    if (res >= INT_MIN && res <= INT_MAX) {
-      return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
-    } else {
+    // The only overflow concern is dividing INT_MIN by -1
+    // -2,147,483,648 / -1, results in 2,147,483,648
+    if (a1 == INT_MIN && a2 == -1) {
       PRINT("apply_prim__u47_2: MPZ promotion required!");
       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
       mpz_init(*result);
-      mpz_set_si(*result, res);
+      mpz_set_si(*result, INT_MIN);
+      mpz_neg(*result, *result); // Equivalent to dividing by -1
       return encode_mpz(result);
+    } else {
+      // No overflow concern for other cases
+      return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
     }
 
   } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
@@ -2087,14 +2123,17 @@ void *apply_prim__u47_2(void *arg1, void *arg2) // / division
 
     // Division by zero check
     if (a2 == 0.0f) {
-      // error
+      assert_type(false,
+                  "Error in division -> division by zero is not allowed!");
     }
 
     float res = a1 / a2;
 
+    // overflow check isn't required, because the number gets smaller with
+    // division
     return reinterpret_cast<void *>(encode_float(res));
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
-    PRINT("apply_prim__u47_2: MPZ promotion required!");
+    PRINT("apply_prim__u47_2: INT+MPZ");
     // note: not written carefully!
     // will handle these mpf/mpz promotoions later!
     // Handling INT / MPZ case
@@ -2109,6 +2148,10 @@ void *apply_prim__u47_2(void *arg1, void *arg2) // / division
     mpz_clear(a1_mpz);
 
     return encode_mpz(result);
+  } else {
+    assert_type(false,
+                "Error in division -> contact violation: The values in the "
+                "list must be integers or floating-point numbers!");
   }
 
   return nullptr;
@@ -2618,34 +2661,57 @@ void *apply_prim__u61_1(void *arg1) // =
 inline void *apply_prim__u61_2(void *arg1, void *arg2) // =
 {
   // return compare_op(arg1, arg2, *equal_zero);
-  // int cmp_res = 0;
+  int cmp_res = 0;
 
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
 
+  bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT_VAL) ||
+                    (arg1_tag == MPZ) || (arg1_tag == MPF);
+
+  if (!type_check)
+    assert_type(false, "Error in = -> contact violation: argument type should "
+                       "be either integers or floating-point numbers!");
+
+  bool type_check2 = (arg2_tag == INT) || (arg2_tag == FLOAT_VAL) ||
+                     (arg2_tag == MPZ) || (arg2_tag == MPF);
+
+  if (!type_check2)
+    assert_type(false, "Error in = -> contact violation: argument type should "
+                       "be either integers or floating-point numbers!");
+
+  // (= 2 2.0) => #t, what about this?
+  // so the condition below is wrong,
+  // will have to handle this later
   if (arg1_tag != arg2_tag)
     return encode_bool(false);
 
   switch (arg1_tag) {
   case INT:
     return encode_bool(decode_int(arg1) == decode_int(arg2));
-  case FLOAT_VAL: {
-    // return encode_bool(decode_float(arg1) == decode_float(arg2));
-    float a1 = decode_float(arg1);
-    float a2 = decode_float(arg2);
-
-    if (a1 == a2) {
+  case FLOAT_VAL:
+    return encode_bool(decode_float(arg1) == decode_float(arg2));
+  case MPZ: {
+    cmp_res = mpz_cmp(*(decode_mpz(arg1)), *(decode_mpz(arg2)));
+    if (equal_zero(cmp_res))
       return encode_bool(true);
-    } else {
-      if (!is_within_float_precision(a1) || !is_within_float_precision(a2)) {
-        PRINT("promote to MPF: remember both or one can be MPF");
-      }
+    else
       return encode_bool(false);
-    }
-    break;
   }
-  default:
-    break;
+  case MPF: {
+    cmp_res = mpf_cmp(*(decode_mpf(arg1)), *(decode_mpf(arg2)));
+    if (equal_zero(cmp_res))
+      return encode_bool(true);
+    else
+      return encode_bool(false);
+  }
+  default: {
+    return encode_bool(false);
+    // This default case might never be reached due to the initial assertion,
+    //  assert_type(false, "Unexpected type encountered in apply_prim__u61_2.");
+    //  return nullptr;
+    //  break;
+  }
   }
 
   // bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT_VAL) ||
@@ -2740,9 +2806,24 @@ void *apply_prim__u62_1(void *arg1) // >
 void *apply_prim__u62_2(void *arg1, void *arg2) // >
 {
   // return compare_op(arg1, arg2, *great_zero);
+  int cmp_res = 0;
 
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
+
+  bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT_VAL) ||
+                    (arg1_tag == MPZ) || (arg1_tag == MPF);
+
+  if (!type_check)
+    assert_type(false, "Error in >, -> contact violation: argument type should "
+                       "be either integers or floating-point numbers!");
+
+  bool type_check2 = (arg2_tag == INT) || (arg2_tag == FLOAT_VAL) ||
+                     (arg2_tag == MPZ) || (arg2_tag == MPF);
+
+  if (!type_check2)
+    assert_type(false, "Error in >, -> contact violation: argument type should "
+                       "be either integers or floating-point numbers!");
 
   // Both arguments are integers
   if (arg1_tag == INT && arg2_tag == INT) {
@@ -2753,11 +2834,22 @@ void *apply_prim__u62_2(void *arg1, void *arg2) // >
     float a1 = decode_float(arg1);
     float a2 = decode_float(arg2);
 
-    if (is_within_float_precision(a1) && is_within_float_precision(a2)) {
-      return a1 > a2 ? encode_bool(true) : encode_bool(false);
-    } else {
-      PRINT("promote to MPF: remember both or one can be MPF");
-    }
+    return a1 > a2 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == MPZ) {
+    cmp_res = mpz_cmp(*(decode_mpz(arg1)), *(decode_mpz(arg2)));
+    if (great_zero(cmp_res))
+      return encode_bool(true);
+    else
+      return encode_bool(false);
+  } else if (arg1_tag == MPF) {
+    cmp_res = mpf_cmp(*(decode_mpf(arg1)), *(decode_mpf(arg2)));
+    if (great_zero(cmp_res))
+      return encode_bool(true);
+    else
+      return encode_bool(false);
+  } else {
+    assert_type(false, "Error in >, -> contact violation: The values in the "
+                       "list must be integers or floating-point numbers!");
   }
 
   return nullptr;
@@ -2785,26 +2877,51 @@ void *apply_prim__u60_1(void *arg1) // <
 void *apply_prim__u60_2(void *arg1, void *arg2) // <
 {
   // return compare_op(arg1, arg2, *less_zero);
+  int cmp_res = 0;
 
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
+
+  bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT_VAL) ||
+                    (arg1_tag == MPZ) || (arg1_tag == MPF);
+
+  if (!type_check)
+    assert_type(false, "Error in <, -> contact violation: argument type should "
+                       "be either integers or floating-point numbers!");
+
+  bool type_check2 = (arg2_tag == INT) || (arg2_tag == FLOAT_VAL) ||
+                     (arg2_tag == MPZ) || (arg2_tag == MPF);
+
+  if (!type_check2)
+    assert_type(false, "Error in <, -> contact violation: argument type should "
+                       "be either integers or floating-point numbers!");
 
   // Both arguments are integers
   if (arg1_tag == INT && arg2_tag == INT) {
     s64 a1 = decode_int(arg1);
     s64 a2 = decode_int(arg2);
-    // Perform direct comparison
+
     return a1 < a2 ? encode_bool(true) : encode_bool(false);
   } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
     float a1 = decode_float(arg1);
     float a2 = decode_float(arg2);
 
-    if (is_within_float_precision(a1) && is_within_float_precision(a2)) {
-      // Perform direct comparison for floats
-      return a1 < a2 ? encode_bool(true) : encode_bool(false);
-    } else {
-      PRINT("promote to MPF: remember both or one can be MPF");
-    }
+    return a1 < a2 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == MPZ) {
+    cmp_res = mpz_cmp(*(decode_mpz(arg1)), *(decode_mpz(arg2)));
+    if (less_zero(cmp_res))
+      return encode_bool(true);
+    else
+      return encode_bool(false);
+  } else if (arg1_tag == MPF) {
+    cmp_res = mpf_cmp(*(decode_mpf(arg1)), *(decode_mpf(arg2)));
+    if (less_zero(cmp_res))
+      return encode_bool(true);
+    else
+      return encode_bool(false);
+  } else {
+    assert_type(false, "Error in <, -> contact violation: The values in the "
+                       "list must be integers or floating-point numbers!");
   }
 
   return nullptr;
@@ -2831,25 +2948,54 @@ void *apply_prim__u62_u61_1(void *arg1) // >=
 void *apply_prim__u62_u61_2(void *arg1, void *arg2) // >=
 {
   // return compare_op(arg1, arg2, *great_equal_zero);
+  int cmp_res = 0;
 
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
+
+  bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT_VAL) ||
+                    (arg1_tag == MPZ) || (arg1_tag == MPF);
+
+  if (!type_check)
+    assert_type(false,
+                "Error in >=, -> contact violation: argument type should "
+                "be either integers or floating-point numbers!");
+
+  bool type_check2 = (arg2_tag == INT) || (arg2_tag == FLOAT_VAL) ||
+                     (arg2_tag == MPZ) || (arg2_tag == MPF);
+
+  if (!type_check2)
+    assert_type(false,
+                "Error in >=, -> contact violation: argument type should "
+                "be either integers or floating-point numbers!");
 
   // Both arguments are integers
   if (arg1_tag == INT && arg2_tag == INT) {
     s64 a1 = decode_int(arg1);
     s64 a2 = decode_int(arg2);
+
     return a1 >= a2 ? encode_bool(true) : encode_bool(false);
   } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
     float a1 = decode_float(arg1);
     float a2 = decode_float(arg2);
 
-    if (is_within_float_precision(a1) && is_within_float_precision(a2)) {
-      return a1 >= a2 ? encode_bool(true) : encode_bool(false);
-    } else {
-      PRINT("apply_prim__u62_u61_2 -> promote to MPF: remember both or one can "
-            "be MPF");
-    }
+    return a1 >= a2 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == MPZ) {
+    cmp_res = mpz_cmp(*(decode_mpz(arg1)), *(decode_mpz(arg2)));
+    if (great_equal_zero(cmp_res))
+      return encode_bool(true);
+    else
+      return encode_bool(false);
+  } else if (arg1_tag == MPF) {
+    cmp_res = mpf_cmp(*(decode_mpf(arg1)), *(decode_mpf(arg2)));
+    if (great_equal_zero(cmp_res))
+      return encode_bool(true);
+    else
+      return encode_bool(false);
+  }  
+  else {
+    assert_type(false, "Error in >=, -> contact violation: The values in the "
+                       "list must be integers or floating-point numbers!");
   }
 
   return nullptr;
@@ -2879,6 +3025,62 @@ void *apply_prim__u60_u61_1(void *arg1) // <=
 }
 
 void *apply_prim__u60_u61_2(void *arg1, void *arg2) // <=
+{
+  // return compare_op(arg1, arg2, *less_equal_zero);
+  int cmp_res = 0;
+
+  int arg1_tag = get_tag(arg1);
+  int arg2_tag = get_tag(arg2);
+
+  bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT_VAL) ||
+                    (arg1_tag == MPZ) || (arg1_tag == MPF);
+
+  if (!type_check)
+    assert_type(false,
+                "Error in <=, -> contact violation: argument type should "
+                "be either integers or floating-point numbers!");
+
+  bool type_check2 = (arg2_tag == INT) || (arg2_tag == FLOAT_VAL) ||
+                     (arg2_tag == MPZ) || (arg2_tag == MPF);
+
+  if (!type_check2)
+    assert_type(false,
+                "Error in <=, -> contact violation: argument type should "
+                "be either integers or floating-point numbers!");
+
+  // Both arguments are integers
+  if (arg1_tag == INT && arg2_tag == INT) {
+    s64 a1 = decode_int(arg1);
+    s64 a2 = decode_int(arg2);
+
+    return a1 <= a2 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
+    float a1 = decode_float(arg1);
+    float a2 = decode_float(arg2);
+
+    return a1 <= a2 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == MPZ) {
+    cmp_res = mpz_cmp(*(decode_mpz(arg1)), *(decode_mpz(arg2)));
+    if (less_equal_zero(cmp_res))
+      return encode_bool(true);
+    else
+      return encode_bool(false);
+  } else if (arg1_tag == MPF) {
+    cmp_res = mpf_cmp(*(decode_mpf(arg1)), *(decode_mpf(arg2)));
+    if (less_equal_zero(cmp_res))
+      return encode_bool(true);
+    else
+      return encode_bool(false);
+  }  
+  else {
+    assert_type(false, "Error in <=, -> contact violation: The values in the "
+                       "list must be integers or floating-point numbers!");
+  }
+
+  return nullptr;
+}
+
+void *apply_prim__u60_u61_2_b4(void *arg1, void *arg2) // <=
 {
   return compare_op(arg1, arg2, *less_equal_zero);
 }
@@ -4275,13 +4477,12 @@ void *apply_prim_expt_2(void *arg1, void *arg2) {
         }
         result *= base;
       }
-      PRINT("here!");
-      std::cout << result << std::endl;
+      // PRINT("here!");
+      // std::cout << result << std::endl;
 
       // if the loop didn't exit with a break,
       // it's should be safe to return the result
       if (!overflow_chk) {
-        PRINT("here2!");
         return reinterpret_cast<void *>(encode_int(static_cast<s32>(result)));
       } else {
         // Otherwise, promote to mpz
@@ -4302,6 +4503,9 @@ void *apply_prim_expt_2(void *arg1, void *arg2) {
         return encoded_result;
       }
     }
+  }else {
+   assert_type(false, "Error in expt, -> contact violation: The values in the "
+                       "list must be integers");
   }
 
   return nullptr;
