@@ -192,6 +192,67 @@
  (do-var-prop-all xs as)
  (eval eb {ext-all !(do-ext-all envlam xs)} (kaddr eb))]
 
+ ; DEFINE PRIMS: 
+ ;CONS
+[(apply (define-prim cons 2) (fixedarg [a1 a2]) kont)
+ -->
+ (store a1 v1)
+ ; i believe a2 can be either a list or a val
+ (or
+  ; a2 list check
+  (and (store a2 (list-of as)) (store (kaddr cons-result) (list-of [v1 as ...])))
+  ; a2 val check
+  (and (store a2 v2) (store (kaddr cons-result) (list-of [v1 v2])))
+ )
+ ; not quite sure exactly what to do here, maybe ret the cons result?
+ (ret (kaddr cons-result) kont)
+]
+
+; CAR
+[(apply (define-prim car 1) (fixedarg [a]) kont)
+ -->
+ (store a (list-of [first-element rest-elements ...]))
+ (ret (addr first-element) kont)]
+
+
+; CDR
+[(apply (define-prim cdr 1) (fixedarg [a]) kont)
+ -->
+ (store a (list-of [first-element rest-elements ...]))
+ (store (kaddr cdr-result) (list-of [rest-elements ...]))
+ (ret (kaddr cdr-result) kont)]
+
+ ; NULL?
+[(apply (define-prim null? 1) (fixedarg [a]) kont)
+ -->
+ (store a (list-of [elements ...])) 
+ (store (kaddr null?-result) (bool "f"))
+ (ret (kaddr null?-result) kont)
+
+ ; if empt (not quite sure if this is the right way to do it, maybe an or is needed?)
+ (store a (list-of []))
+ (store (kaddr null?-empty-result) (bool "t"))
+ (ret (kaddr null?-empty-result) kont)]
+
+; FOLDL
+; ps, this is quite rackety not sure if slogy
+[(apply (define-prim foldl 3) (fixedarg [fun acc lst]) kont)
+ -->
+ (store lst (list-of []))
+ (ret acc kont)
+ 
+ (store lst (list-of [first-element rest-elements ...]))
+ (eval fun {top-level-env} (foldl-fun-k fun acc first-element rest-elements kont))]
+
+; FOLDR
+[(apply (define-prim foldr 3) (fixedarg [fun acc lst]) kont)
+ -->
+ (store lst (list-of []))
+ (ret acc kont)
+
+ (store lst (list-of [first-element rest-elements ...]))
+ (apply (define-prim foldr 3) (fixedarg [fun acc (list-of [rest-elements ...])]) (foldr-recurse-k fun first-element kont))]
+
 
 
 ;----------------------------------------------------------------------;
