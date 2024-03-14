@@ -3182,9 +3182,9 @@ void *apply_prim_hash(void *lst) {
       new ((hamt<hash_struct, hash_struct> *)GC_MALLOC(sizeof(
           hamt<hash_struct, hash_struct>))) hamt<hash_struct, hash_struct>();
 
-  // for (int i = 3; i <= numArgs; i += 2) {
-  //   PRINT(print_val(arg_buffer[i]));
-  // }
+  for (int i = 3; i <= numArgs; i ++) {
+    PRINT(print_val(arg_buffer[i]));
+  }
 
   for (int i = 3; i <= numArgs; i += 2) {
     int elem_tag = get_tag(arg_buffer[i]);
