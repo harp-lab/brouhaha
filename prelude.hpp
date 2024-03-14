@@ -637,6 +637,30 @@ inline void *equal_(void *arg1, void *arg2) {
 
 #pragma region HASHING
 
+u64 int_hash(void* val) {
+    u64 h = 0xcbf29ce484222325;
+    int int_val = *(int*)val; 
+
+    h = h ^ (u64)int_val;
+    h = h * 0x100000001b3;
+
+    PRINT(h);
+
+    return h;
+}
+
+u64 float_hash(void* val) {
+    u64 h = 0xcbf29ce484222325;
+    float float_val = *(float*)val; 
+
+    u32 val_bits;
+    memcpy(&val_bits, &float_val, sizeof(float_val));
+
+    h = h ^ (u64)val_bits;
+    h = h * 0x100000001b3;
+    return h;
+}
+
 // these function assume the type passed is the expected one
 // all the three hash function have a very similar structure
 // get the the number of limbs/chars to process, and get the array pointer to
@@ -737,6 +761,15 @@ u64 cons_hash(void *lst) {
 
 u64 hash_(void *val) {
   switch (get_tag(val)) {
+  case INT: {
+    // PRINT(print_val(val));
+    return int_hash(val);
+    break;
+  }
+  case FLOAT_VAL: {
+    return float_hash(val);
+    break;
+  }
   case MPZ: {
     return mpz_hash(val);
     break;
@@ -1752,8 +1785,6 @@ inline void *apply_prim__u45_2_b4(void *arg1, void *arg2) //-
     if (arg1_tag == arg2_tag) {
       if (arg1_tag == INT) {
         s32 res = decode_int(arg1) - decode_int(arg2);
-        // std::cout << "In lam9114_fptr: i am here>> " <<res << std::endl;
-
         return reinterpret_cast<void *>(encode_int(res));
       }
     }
@@ -2992,8 +3023,7 @@ void *apply_prim__u62_u61_2(void *arg1, void *arg2) // >=
       return encode_bool(true);
     else
       return encode_bool(false);
-  }  
-  else {
+  } else {
     assert_type(false, "Error in >=, -> contact violation: The values in the "
                        "list must be integers or floating-point numbers!");
   }
@@ -3071,8 +3101,7 @@ void *apply_prim__u60_u61_2(void *arg1, void *arg2) // <=
       return encode_bool(true);
     else
       return encode_bool(false);
-  }  
-  else {
+  } else {
     assert_type(false, "Error in <=, -> contact violation: The values in the "
                        "list must be integers or floating-point numbers!");
   }
@@ -3147,42 +3176,82 @@ std::string print_hash(void *h) {
 // void *apply_prim_hash(void *lst) // generates a hash based on the k v pairs
 // in the list
 void *apply_prim_hash(void *lst) {
-  // For Keys : MPZ, MPF, STRING
+  // For Keys : int, float, MPZ, MPF, STRING
   // For Values: Everything(void*)
   const hamt<hash_struct, hash_struct> *h =
       new ((hamt<hash_struct, hash_struct> *)GC_MALLOC(sizeof(
           hamt<hash_struct, hash_struct>))) hamt<hash_struct, hash_struct>();
-  while (is_cons(lst)) {
-    void **cons_lst = decode_cons(lst);
-    int elem_tag = get_tag(cons_lst[0]);
-    bool type_check = (elem_tag == MPZ) || (elem_tag == MPF) ||
+
+  // for (int i = 3; i <= numArgs; i += 2) {
+  //   PRINT(print_val(arg_buffer[i]));
+  // }
+
+  for (int i = 3; i <= numArgs; i += 2) {
+    int elem_tag = get_tag(arg_buffer[i]);
+
+    bool type_check = (elem_tag == INT) || (elem_tag == FLOAT_VAL) ||
+                      (elem_tag == MPZ) || (elem_tag == MPF) ||
                       (elem_tag == STRING) || (elem_tag == HASH) ||
                       (elem_tag == CONS);
 
-    if (!is_cons(cons_lst[1])) {
+    if (numArgs <= 3) {
       assert_type(
           false,
           "Error in hash -> contact violation: key does not have a value!");
     }
-    void **cdr_cons_lst = decode_cons(cons_lst[1]);
 
     if (type_check) {
       const hash_struct *const k =
           new ((hash_struct *)GC_MALLOC(sizeof(hash_struct)))
-              hash_struct(cons_lst[0]);
+              hash_struct(arg_buffer[i]);
       //?? hash_struct for value is not required, have to ask and remove.
       const hash_struct *const v =
           new ((hash_struct *)GC_MALLOC(sizeof(hash_struct)))
-              hash_struct(cdr_cons_lst[0]);
+              hash_struct(arg_buffer[i + 1]);
       h = h->insert(k, v);
-      lst = cdr_cons_lst[1];
-      continue;
+
+    } else {
+      assert_type(
+          false,
+          "Error in hash -> contact violation: Key should be one of the "
+          "following types: integer,  floating-point number or a string");
     }
-    assert_type(false,
-                "Error in hash -> contact violation: Key should be one of the "
-                "following types: integer,  floating-point number or a string");
   }
-  // std::cout << h->size() << std::endl;
+
+  // while (is_cons(lst)) {
+  //   void **cons_lst = decode_cons(lst);
+  //   int elem_tag = get_tag(cons_lst[0]);
+  //   bool type_check = (elem_tag == INT) || (elem_tag == FLOAT_VAL) ||
+  //                     (elem_tag == MPZ) || (elem_tag == MPF) ||
+  //                     (elem_tag == STRING) || (elem_tag == HASH) ||
+  //                     (elem_tag == CONS);
+
+  //   if (!is_cons(cons_lst[1])) {
+  //     assert_type(
+  //         false,
+  //         "Error in hash -> contact violation: key does not have a value!");
+  //   }
+  //   void **cdr_cons_lst = decode_cons(cons_lst[1]);
+
+  //   if (type_check) {
+  //     const hash_struct *const k =
+  //         new ((hash_struct *)GC_MALLOC(sizeof(hash_struct)))
+  //             hash_struct(cons_lst[0]);
+  //     //?? hash_struct for value is not required, have to ask and remove.
+  //     const hash_struct *const v =
+  //         new ((hash_struct *)GC_MALLOC(sizeof(hash_struct)))
+  //             hash_struct(cdr_cons_lst[0]);
+  //     h = h->insert(k, v);
+  //     lst = cdr_cons_lst[1];
+  //     continue;
+  //   }
+  //   assert_type(false,
+  //               "Error in hash -> contact violation: Key should be one of the
+  //               " "following types: integer,  floating-point number or a
+  //               string");
+  // }
+
+  std::cout << h->size() << std::endl;
   return encode_hash(h);
 }
 
@@ -4503,8 +4572,8 @@ void *apply_prim_expt_2(void *arg1, void *arg2) {
         return encoded_result;
       }
     }
-  }else {
-   assert_type(false, "Error in expt, -> contact violation: The values in the "
+  } else {
+    assert_type(false, "Error in expt, -> contact violation: The values in the "
                        "list must be integers");
   }
 

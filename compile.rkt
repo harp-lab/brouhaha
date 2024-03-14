@@ -68,10 +68,6 @@
       [`(let* ([,lhs ,rhs] ,e-pairs ...) ,ebody)
        (coverage (desugar-exp (coverage `(let ([,lhs ,rhs]) (let* ,e-pairs ,ebody)))))]
 
-      ; [`(let ,var ([,xs ,rhss] ...) ,body)
-      ;  (define loop-var (gensym var))
-      ;  (desugar-define `(define (,loop-var ,@xs) ,body) (,loop-var ,@rhss))]
-
       [`(lambda (,xs ...) ,body) (coverage `(lambda ,xs ,(desugar-exp body)))]
       [`(lambda ,(? symbol? x) ,body) (coverage `(lambda ,x ,(desugar-exp body)))]
       [`(lambda ,args ,body) (coverage (desugar-exp (coverage `(lambda vargs ,(unroll-args args body)))))]
@@ -578,19 +574,20 @@
           10.0
           )
       )
-    ; (define (call n)
-    ;   ; (+ (do-minus 2 1.0) (do-minus 2 2.0))
-    ;   ;  (+ (do-minus (- 4.0 1.0)) (do-minus (- 2.0 1.0)))
-    ;   ; (+ (do-minus 3.0) (do-minus 1.0))
-    ;   ; (let loop ([i 10] [sum 11]) (+ i sum))
-    ;   ; (call/cc
-    ;   ;  (lambda (top)
-    ;   ;    (let ((cc (call/cc (lambda (cc) (cc cc)))))
-    ;   ;      (if (call/cc (lambda (k) (if (cc (lambda (x) (top #f))) (k #f) (k #f))))
-    ;   ;          #t
-    ;   ;          #t))))
-    ;   (((call/cc (lambda (x) ((x x) x))) (lambda (y) y)) #t)
-    ;   )
+    (define (call n)
+      ; (+ (do-minus 2 1.0) (do-minus 2 2.0))
+      ;  (+ (do-minus (- 4.0 1.0)) (do-minus (- 2.0 1.0)))
+      ; (+ (do-minus 3.0) (do-minus 1.0))
+      ; (let loop ([i 10] [sum 11]) (+ i sum))
+      ; (call/cc
+      ;  (lambda (top)
+      ;    (let ((cc (call/cc (lambda (cc) (cc cc)))))
+      ;      (if (call/cc (lambda (k) (if (cc (lambda (x) (top #f))) (k #f) (k #f))))
+      ;          #t
+      ;          #t))))
+      ; (((call/cc (lambda (x) ((x x) x))) (lambda (y) y)) #t)
+      (or #f #f (or #f 5))
+      )
 
     (define (brouhaha_main) (call 10.0))
     ))
@@ -795,6 +792,7 @@
       '-0.5))))
 )
 ; (pretty-print (optimize-prog prog))
+; (pretty-print (desugar our-call))
 ; (pretty-print (cps-convert (optimize-prog prog))
 ; (pretty-print (closure-convert (alphatize (cps-convert ( optimize-prog prog)))))
 ; (pretty-print (closure-convert (alphatize (cps-convert prog))))

@@ -1,0 +1,44 @@
+(define (eval exp env kont)
+  (match exp
+    [(? symbol? x)
+     (ret (hash-ref env x) kont)]
+
+    [`(lambda (,x) ,eb)
+     (ret `(clo (lambda (,x) ,eb) ,env) kont)]
+
+    [`(,ef ,ea)
+     (eval ef env `(ar ,ea ,env ,kont))]
+
+    [_ "Error occured in eval function!"]))
+
+(define (ret val kont)
+  (match kont
+    ['mt val]
+
+    [`(ar ,ea ,this_env ,this_kont)
+     (eval ea this_env `(fn ,val ,this_kont))]
+
+    [`(fn ,vf ,kont)
+     (apply vf val kont)]
+
+    [`(callcc-k ,this_kont)
+     (apply val `(kont ,this_kont) this_kont)]
+
+    [_ "Error occured in ret function"]))
+
+(define (apply vf va kont)
+  (match vf
+    [`(clo (lambda (,x) ,eb) ,env)
+     (eval eb (hash-set env x va) kont)]
+
+    [`(kont ,this_kont)
+     (ret va this_kont)]
+
+    [_ "Error occured in apply function"]))
+
+(define (cek-interp prog)
+  (eval prog (hash) 'mt))
+
+(define (brouhaha_main)
+  (cek-interp `((lambda (x) (x (lambda (c) c))) (lambda (z) z))))
+

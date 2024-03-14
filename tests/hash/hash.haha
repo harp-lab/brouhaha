@@ -1,7 +1,7 @@
 (define (call)
-    (hash (list 1 2 3) 80 (list 1 2 3 4) 2))
+    ; (hash (list 1 2 3) 80 (list 1 2 3 4) 2))
     
-    ; (hash 1 80 1 2))
+    (hash 1 80 3 2))
 
 (define (brouhaha_main)
     (call))

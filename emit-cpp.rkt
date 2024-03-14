@@ -215,7 +215,7 @@
        (append-line filepath "\n//creating new make-kont closure")
        (define cloName (gensym 'clo))
 
-      ;  (append-line filepath (format "void** ~a = alloc_kont(~a_fptr, ~a_spec, ~a);" cloName ptr ptr arglength))
+       ;  (append-line filepath (format "void** ~a = alloc_kont(~a_fptr, ~a_spec, ~a);" cloName ptr ptr arglength))
        (append-line filepath (format "void** ~a = alloc_kont(~a_spec, ~a);" cloName ptr arglength))
 
        (when (> arglength 0)
@@ -311,7 +311,12 @@
           (define line (format "encode_str(new string(\"~a\"))" val))
           (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))]
 
-         [_ (raise (format "Unknown datatype! ~a" val))])]
+         ; to handle some arbitrary expression
+         [`(quote ,val)
+          (define line (format "encode_str(new(GC) std::string(\"~a\"))" val))
+          (convert-proc-body proc_name proc_env proc_arg letbody (hash-set arg_hash lhs line))]
+
+         [_ (raise (format "Unknown datatype in emit-cpp: ~a" val))])]
 
       [`(if ,grd ,texp ,fexp)
        (append-line filepath "\n//if-clause")
@@ -477,7 +482,7 @@
                                         (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (hash-ref arg_hash (car args)))
                                         (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string (car args))))))
                    ))]
-                   
+
             ; not specific argument count, but still one of the builtin define-prim so calling that directly
             ; instead of unpacking the closure
             [is_define_prim
@@ -514,7 +519,7 @@
                                            (get-arg-string arg_hash (cons func args))))]))
                  (begin
                    (if (and (hash-has-key? arg_hash func)
-                            (string-prefix? (symbol->string func) "f_lam_") 
+                            (string-prefix? (symbol->string func) "f_lam_")
                             (not (string-prefix? (hash-ref arg_hash func) "decode_clo")))
                        (begin
                          ;  (displayln (~a "func: " func " " (hash-has-key? arg_hash func)))
@@ -574,7 +579,7 @@
        (append-line filepath (format "inline void ~a_fptr() // ~a -> generic version ~a" (get-c-string ptr) ptr "\n{"))
 
        ; uncomment the line below for debugging!
-      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: generic version\"<<std::endl;" (get-c-string ptr)))
+       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: generic version\"<<std::endl;" (get-c-string ptr)))
 
        (when (not (string-prefix? (symbol->string env) "_"))
          (append-line filepath "//reading env")
@@ -602,7 +607,7 @@
        (append-line filepath (format "inline void ~a_spec(~a) // ~a ~a" (get-c-string ptr) args-str ptr "\n{"))
 
        ; uncomment the line below for debugging!
-        ; (append-line filepath (format "std::cout<<\"In ~a_fptr: spec\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr: spec\"<<std::endl;" (get-c-string ptr)))
 
        (if (hash-has-key? declare-top-level-funcs ptr)
            (begin
@@ -637,7 +642,7 @@
        (append-line filepath func_name)
 
        ; uncomment the line below for debugging!
-        ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
 
        (append-line filepath "//reading env")
        (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
@@ -678,7 +683,7 @@
        (append-line filepath func_name)
 
        ; uncomment the line below for debugging!
-        ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
 
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
@@ -702,10 +707,10 @@
        (append-line filepath (format "void* const ~a = arg_buffer[2];" k))
        (append-line filepath (format "void* const ~a = apply_prim_~a(arg_buffer);" x (get-c-string ptr)))
 
-      ;  (append-line filepath (format "arg_buffer[1] = ~a;" k))
-      ;  (append-line filepath (format "arg_buffer[2] = ~a;" x))
+       ;  (append-line filepath (format "arg_buffer[1] = ~a;" k))
+       ;  (append-line filepath (format "arg_buffer[2] = ~a;" x))
 
-      ;  (append-line filepath  "numArgs = 2;")
+       ;  (append-line filepath  "numArgs = 2;")
 
        (append-line filepath (format "reinterpret_cast<void (*)(void*, void*)>((decode_clo(~a))[0])(~a, ~a);" k k x))
        (append-line filepath "}\n")

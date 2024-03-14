@@ -156,6 +156,5 @@
                                          (list (cons i j)))))))))))
         (cave-to-maze (pierce-randomly (shuffle possible-holes) cave)))))
 
-
 (define (brouhaha_main)
    (make-maze 11 11))

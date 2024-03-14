@@ -72,6 +72,10 @@
 (define (even? x)
   (equal? 0 (modulo x 2)))
 
+(define (boolean? x)
+  (if (or (eq? x '#t) (eq? x '#f)) #t #f))
+
+
 (define (odd? x)
   (equal? 1 (modulo x 2)))
 
