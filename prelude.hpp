@@ -637,6 +637,12 @@ inline void *equal_(void *arg1, void *arg2) {
 
 #pragma region HASHING
 
+bool is_hashable(void *arg) {
+  int tag = get_tag(arg);
+  return (tag == INT) || (tag == FLOAT_VAL) || (tag == MPZ) || (tag == MPF) ||
+         (tag == STRING) || (tag == HASH) || (tag == CONS);
+}
+
 u64 int_hash(void *val) {
   u64 h = 0xcbf29ce484222325;
   int int_val = decode_int(val);
@@ -748,7 +754,7 @@ u64 cons_hash(void *lst) {
   *h = 0xcbf29ce484222325;
   while (is_cons(lst)) {
     void **cons_lst = decode_cons(lst);
-    bool type_check = ishashable(cons_lst[0]);
+    bool type_check = is_hashable(cons_lst[0]);
     assert_type(type_check,
                 "Error in cons_hash -> values in the list are not hashable!");
 
@@ -3128,11 +3134,6 @@ void *apply_prim__u60_u61_3(void *arg1, void *arg2, void *arg3) // <=
 
 #pragma region hash - prims
 
-bool is_hashable(void *arg) {
-  int tag = get_tag(arg);
-  return (tag == INT) || (tag == FLOAT_VAL) || (tag == MPZ) || (tag == MPF) ||
-         (tag == STRING) || (tag == HASH) || (tag == CONS);
-}
 
 struct hash_struct {
   void *val;

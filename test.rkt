@@ -238,7 +238,7 @@
                (system (string-append "cmake" " -S" " ." " -B" " ./build"))
                (system (string-append "cmake" " --build" " ./build" " --target " (car test-names-list) "_exec"))))
       (when (c-exec-flag)
-        (system (string-append "./build/" "tests/" (car test-names-list) "/" (car test-names-list) "_exec")))
+        (system (string-append "time" " ./build/" "tests/" (car test-names-list) "/" (car test-names-list) "_exec")))
       (run-tests (cdr test-names-list)))))
 
 (define (main)
