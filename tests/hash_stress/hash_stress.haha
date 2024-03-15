@@ -1,0 +1,46 @@
+(define (create-big-hash hash-table count)
+  (if (= count 0)
+    hash-table
+  (create-big-hash (hash-set hash-table count count) (- count 1))))
+
+(define (big-hash count) (create-big-hash (hash 0 0) count))
+
+(define (test-hash-ref hash-table count)
+  (if (= count 0)
+    #t
+    (if (= (hash-ref hash-table count) count)
+      (test-hash-ref hash-table (- count 1))
+      #f)))
+
+(define (test-hash-set hash-table count)
+  (if (= count 0)
+    #t
+    (if (= (hash-ref (hash-set hash-table count (+ count 1)) count) (+ 1 count))
+      (test-hash-set hash-table (- count 1))
+      #f)))
+
+(define (test-hash-has-key? hash-table count)
+  (if (= count 0)
+    #t
+    (if (hash-has-key? hash-table count)
+      (test-hash-has-key? hash-table (- count 1))
+      #f)))
+
+(define (test-hash-keys hash-table count)
+  (= (length (hash-keys hash-table)) count))
+
+(define (test-hash-count hash-table count)
+  (= (hash-count hash-table) count))
+
+(define (call count)
+  (list
+   (test-hash-ref (big-hash count) count)
+   (test-hash-set (big-hash count) count)
+   (test-hash-set (hash 0 0) count)
+   (test-hash-has-key? (big-hash count) count)
+   (test-hash-keys (big-hash count) (+ 1 count))
+   (test-hash-count (big-hash count) (+ 1 count))
+))
+
+(define (brouhaha_main)
+  (call 1000))
