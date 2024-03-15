@@ -637,28 +637,32 @@ inline void *equal_(void *arg1, void *arg2) {
 
 #pragma region HASHING
 
-u64 int_hash(void* val) {
-    u64 h = 0xcbf29ce484222325;
-    int int_val = *(int*)val; 
+u64 int_hash(void *val) {
+  u64 h = 0xcbf29ce484222325;
+  int int_val = decode_int(val);
 
-    h = h ^ (u64)int_val;
+  // get the pointers to array of bytes and hash them
+  const uint8_t *p = reinterpret_cast<const uint8_t *>(&int_val);
+  for (int i = 0; i < sizeof(int); i++) {
+    h = h ^ static_cast<u64>(p[i]);
     h = h * 0x100000001b3;
-
-    PRINT(h);
-
-    return h;
+  }
+  return h;
 }
 
-u64 float_hash(void* val) {
-    u64 h = 0xcbf29ce484222325;
-    float float_val = *(float*)val; 
-
-    u32 val_bits;
-    memcpy(&val_bits, &float_val, sizeof(float_val));
-
-    h = h ^ (u64)val_bits;
+u64 float_hash(void *val) {
+  u64 h = 0xcbf29ce484222325;
+  float float_val = decode_float(val);
+  if (float_val == 0.0f) {
+    float_val = 0.0f; // -0.0f and +0.0f are equal
+  }
+  // get the pointers to array of bytes and hash them
+  const uint8_t *p = reinterpret_cast<const uint8_t *>(&float_val);
+  for (int i = 0; i < sizeof(float); i++) {
+    h = h ^ static_cast<u64>(p[i]);
     h = h * 0x100000001b3;
-    return h;
+  }
+  return h;
 }
 
 // these function assume the type passed is the expected one
@@ -744,11 +748,7 @@ u64 cons_hash(void *lst) {
   *h = 0xcbf29ce484222325;
   while (is_cons(lst)) {
     void **cons_lst = decode_cons(lst);
-    int car_tag = get_tag(cons_lst[0]);
-    bool type_check = (car_tag == MPZ) || (car_tag == MPF) ||
-                      (car_tag == STRING) || (car_tag == HASH) ||
-                      (car_tag == CONS);
-
+    bool type_check = ishashable(cons_lst[0]);
     assert_type(type_check,
                 "Error in cons_hash -> values in the list are not hashable!");
 
@@ -2696,7 +2696,9 @@ inline void *apply_prim__u61_2(void *arg1, void *arg2) // =
 
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
-
+  // std::cout << "arg1_tag: " << arg1_tag << " arg2_tag: " << arg2_tag <<
+  // std::endl; std::cout << "arg1: " << decode_int(arg1) << " arg2: " <<
+  // decode_int(arg2) << std::endl;
   bool type_check = (arg1_tag == INT) || (arg1_tag == FLOAT_VAL) ||
                     (arg1_tag == MPZ) || (arg1_tag == MPF);
 
@@ -3126,6 +3128,12 @@ void *apply_prim__u60_u61_3(void *arg1, void *arg2, void *arg3) // <=
 
 #pragma region hash - prims
 
+bool is_hashable(void *arg) {
+  int tag = get_tag(arg);
+  return (tag == INT) || (tag == FLOAT_VAL) || (tag == MPZ) || (tag == MPF) ||
+         (tag == STRING) || (tag == HASH) || (tag == CONS);
+}
+
 struct hash_struct {
   void *val;
 
@@ -3182,24 +3190,18 @@ void *apply_prim_hash(void *lst) {
       new ((hamt<hash_struct, hash_struct> *)GC_MALLOC(sizeof(
           hamt<hash_struct, hash_struct>))) hamt<hash_struct, hash_struct>();
 
-  for (int i = 3; i <= numArgs; i ++) {
-    PRINT(print_val(arg_buffer[i]));
-  }
+  // for (int i = 3; i <= numArgs; i++) {
+  //   PRINT(print_val(arg_buffer[i]));
+  // }
 
   for (int i = 3; i <= numArgs; i += 2) {
-    int elem_tag = get_tag(arg_buffer[i]);
-
-    bool type_check = (elem_tag == INT) || (elem_tag == FLOAT_VAL) ||
-                      (elem_tag == MPZ) || (elem_tag == MPF) ||
-                      (elem_tag == STRING) || (elem_tag == HASH) ||
-                      (elem_tag == CONS);
-
     if (numArgs <= 3) {
       assert_type(
           false,
           "Error in hash -> contact violation: key does not have a value!");
     }
 
+    bool type_check = is_hashable(arg_buffer[i]);
     if (type_check) {
       const hash_struct *const k =
           new ((hash_struct *)GC_MALLOC(sizeof(hash_struct)))
@@ -3251,7 +3253,7 @@ void *apply_prim_hash(void *lst) {
   //               string");
   // }
 
-  std::cout << h->size() << std::endl;
+  // std::cout << h->size() << std::endl;
   return encode_hash(h);
 }
 
@@ -3266,10 +3268,7 @@ void *prim_hash_u45ref(void *h, void *k) {
                        "argument should be a hash!");
   }
 
-  int elem_tag = get_tag(k);
-  bool type_check_key = (elem_tag == MPZ) || (elem_tag == MPF) ||
-                        (elem_tag == STRING) || (elem_tag == HASH);
-
+  bool type_check_key = is_hashable(k);
   if (!type_check_key) {
     assert_type(false, "Error in the hash-ref: contact violoation -> Second "
                        "argument should be one of the following type: integer, "
@@ -3315,9 +3314,7 @@ void *prim_hash_u45set(void *h, void *k, void *v) {
     assert_type(false, "Error in the hash-set: contact violation -> First "
                        "argument should be a hash!");
   }
-  int key_tag = get_tag(k);
-  bool type_check_key =
-      (key_tag == MPZ) || (key_tag == MPF) || (key_tag == STRING);
+  bool type_check_key = is_hashable(k);
   if (!type_check_key) {
     assert_type(false, "Error in the hash-set: contact violoation -> Second "
                        "argument should be one of the following type: integer, "
@@ -3476,10 +3473,7 @@ void *prim_hash_u45has_u45key_u63(void *h, void *k) {
                        "argument should be a hash");
   }
 
-  int elem_tag = get_tag(k);
-  bool type_check_key = (elem_tag == MPZ) || (elem_tag == MPF) ||
-                        (elem_tag == STRING) || (elem_tag == HASH);
-
+  bool type_check_key = is_hashable(k);
   if (!type_check_key) {
     assert_type(false, "Error in the hash-has-key? -> contact violoation: "
                        "Second argument should be one of the following type: "
@@ -3520,6 +3514,7 @@ void *prim_hash_u45count(void *h) {
   const hamt<hash_struct, hash_struct> *h_hamt = decode_hash(h);
   mpz_t *count = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
   mpz_init_set_ui(*count, h_hamt->size());
+  std::cout << "The size of the hash is: " << h_hamt->size() << std::endl;
   return encode_mpz(count);
 }
 
