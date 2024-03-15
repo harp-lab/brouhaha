@@ -8,13 +8,16 @@
          "emit-cpp.rkt"
          "emit-slog.rkt"
          "slog-utils.rkt")
-
-(define test-name (make-parameter #f))
+(require racket/system)
+(define test-flag (make-parameter #f))
 (define slog-flag (make-parameter #f))
 (define interps-flag (make-parameter #f))
 (define interp-anf-flag (make-parameter #f))
 (define interp-cps-flag (make-parameter #f))
 (define interp-closure-flag (make-parameter #f))
+(define cmake-flag (make-parameter #f))
+(define c-exec-flag (make-parameter #f))
+(define test-names (make-parameter '()))
 
 (define parser
   (command-line
@@ -22,9 +25,8 @@
    "Have the computer greet you!"
 
    #:once-each
-   [("-t" "--test") test
-                    "Specific test to run"
-                    (test-name test)
+   [("-t" "--test") "Specific test to run"
+                    (test-flag #t)
                     ]
    [("-s" "--slog") "run slog analysis"
                     (slog-flag #t)]
@@ -41,8 +43,12 @@
                      (interp-cps-flag #t)]
    [("--interp-closure") "runs interp-closure"
                          (interp-closure-flag #t)]
-
-   #:args () (void)))
+   [("--cmake") "runs cmake to create the executable"
+                (cmake-flag #t)]
+   [("--c-exec") "runs the c++ executable"
+                 (c-exec-flag #t)]
+   ;; #:args (args) (add-test-name args)))
+   #:args args (test-names args)))
 
 (define (write-to file content)
   (with-output-to-file file (lambda () (pretty-print content)) #:exists 'replace))
@@ -213,17 +219,33 @@
      (build-path (current-directory) "analyze.slog")
      )))
 
+(define (check-tests-exist [test-names-list (test-names)])
+  (if (not (null? test-names-list))
+      (if (file-exists? (string-append "./tests/" (car test-names-list) "/"
+                                       (car test-names-list)
+                                       ".haha"))
+          (check-tests-exist (cdr test-names-list))
+          #f)
+      #t))
+
+(define (run-tests test-names-list)
+  (when (not (null? test-names-list))
+    (begin
+      (when (test-flag)
+        (test-file (string-append "./tests/" (car test-names-list) "/" (car test-names-list) ".haha")))
+      (when (cmake-flag)
+        (begin (displayln "Running cmake")
+               (system (string-append "cmake" " -S" " ." " -B" " ./build"))
+               (system (string-append "cmake" " --build" " ./build" " --target " (car test-names-list) "_exec"))))
+      (when (c-exec-flag)
+        (system (string-append "./build/" "tests/" (car test-names-list) "/" (car test-names-list) "_exec")))
+      (run-tests (cdr test-names-list)))))
 
 (define (main)
   (cond
-    [(not (test-name)) (read-direc "tests/")]
-    [(and (test-name)
-          (file-exists? (string-append "./tests/"
-                                       (test-name)
-                                       "/"
-                                       (test-name)
-                                       ".haha")))
-     (test-file (string-append "./tests/" (test-name) "/" (test-name) ".haha"))]
+    [(and (null? (test-names)) (test-flag)) (read-direc "tests/")]
+    [(and (test-names) (check-tests-exist (test-names)))
+     (run-tests (test-names))]
     ))
 
 
