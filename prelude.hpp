@@ -808,10 +808,9 @@ u64 hash_(void *val) {
 // Function to check if val is an integer
 inline int is_integer_val(void *val) {
   int tag = get_tag(val);
-
-  if (tag == INT || tag == MPZ)
+  if (tag == INT || tag == MPZ) {
     return true;
-  else if (tag == FLOAT_VAL) {
+  } else if (tag == FLOAT_VAL) {
     float temp_val = decode_float(val);
     float flr = std::floor(temp_val);
     return flr == temp_val;
@@ -3134,7 +3133,6 @@ void *apply_prim__u60_u61_3(void *arg1, void *arg2, void *arg3) // <=
 
 #pragma region hash - prims
 
-
 struct hash_struct {
   void *val;
 
@@ -4757,14 +4755,17 @@ inline void *apply_prim_remainder(void *lst) {
 
 inline void *apply_prim_quotient_2(void *first, void *second) {
   void *result = nullptr;
-
   if (!is_integer_val(first) ||
       !is_integer_val(
           second)) { // to see either of the numbers has fraction in it!
     assert_type(
         false,
         "Error in quotient -> contact violation: expected integer argument!");
-  } else if (get_tag(first) == MPZ &&
+  } else if (get_tag(first) == INT && get_tag(second) == INT){
+      int temp_ret = decode_int(first) / decode_int(second);
+      result = reinterpret_cast<void *>(encode_int(static_cast<s32>(temp_ret)));
+  }
+  else if (get_tag(first) == MPZ &&
              get_tag(second) == MPZ) { // both numbers are mpz
     mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
     mpz_init(*result);
