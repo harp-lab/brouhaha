@@ -1252,6 +1252,30 @@ inline void *add(void *arg1, void *arg2) {
 
 inline void *apply_prim__u43(void *arg) //+
 {
+  // will work only for ints
+  void *result = nullptr;
+  s64 sum = 0;
+
+  for (int i = 3; i <= numArgs; i++) {
+    int tag = get_tag(arg_buffer[i]);
+    bool type_check =
+        (tag == INT) || (tag == FLOAT_VAL) || (tag == MPZ) || (tag == MPF);
+
+    if (!type_check)
+      assert_type(false,
+                  "Error in addition -> contact violation: The values in the "
+                  "list must be integers or floating-point numbers!");
+
+    sum += decode_int(arg_buffer[i]);
+
+    // std::cout << "Total # c2 apply_prim__u43: " << print_val(arg_buffer[i]) << std::endl;
+  }
+
+  return reinterpret_cast<void *>(encode_int(static_cast<s32>(sum)));
+}
+
+inline void *apply_prim__u43_b4(void *arg) //+
+{
   void *result = nullptr;
 
   for (int i = 3; i <= numArgs; i++) {

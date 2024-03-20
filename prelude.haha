@@ -131,10 +131,10 @@
       (cons (car lhs)
             (append1 (cdr lhs) rhs))))
 
-(define (append xs . x)
-  (if (= 1 (length x))
-      (append1 xs (car x))
-      (foldr append1 (list) (append1 (list xs) x))))
+(define (append l1 l2 . lsts)
+    (if (null? lsts)
+        (append1 l1 l2)
+        (foldr append1 (list) (append1 (list l1 l2) lsts))))
 
 (define (take-helper lst n lst2)
   (if (= n 0)
