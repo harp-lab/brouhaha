@@ -1436,8 +1436,7 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
     }
 
     return encode_mpz(result);
-  }
-  if (arg1_tag == MPZ && arg2_tag == MPZ) {
+  } else if (arg1_tag == MPZ && arg2_tag == MPZ) {
     mpz_t *a1_mpz = decode_mpz(arg1);
     mpz_t *a2_mpz = decode_mpz(arg2);
 
@@ -1489,6 +1488,8 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
 
    return encode_mpf(result);
   } else {
+    //  will handle mixed cases later
+    // [int, float] [float, int] [mpz, mpf] [mpf, mpz]
     assert_type(false, "Error in plus -> contact violation: The values in the "
                        "list must be integers or floating-point numbers!");
   }
