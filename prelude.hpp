@@ -1359,7 +1359,7 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
     if (__builtin_add_overflow(a1, a2, &res)) {
       s64 sum = (s64)a1 + (s64)a2;
 
-      // Overflow handling, promote to mpz
+      // Overflow handling, promoting to mpz
       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
       mpz_init(*result);
 
@@ -1410,15 +1410,13 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
     if (a1 >= 0) {
       mpz_add_ui(*result, *arg2_mpz, (unsigned long)a1);
     } else {
-      // a1 is negative, convert a1 to an mpz_t for the addition
       mpz_t a1_mpz;
       mpz_init_set_si(a1_mpz, a1);
       mpz_add(*result, *arg2_mpz, a1_mpz);
-      mpz_clear(a1_mpz); // Clean up the temporary mpz_t variable
+      mpz_clear(a1_mpz);
     }
 
     return encode_mpz(result);
-
   } else if (arg1_tag == MPZ && arg2_tag == INT) {
     const s32 a2 = decode_int(arg2);
     mpz_t *arg1_mpz = decode_mpz(arg1);
@@ -1427,8 +1425,7 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
     mpz_init(*result);
 
     if (a2 >= 0) {
-      mpz_add_ui(*result, *arg1_mpz,
-                 (unsigned long)a2); // If a2 is non-negative
+      mpz_add_ui(*result, *arg1_mpz, (unsigned long)a2);
     } else {
       mpz_t a2_mpz;
       mpz_init_set_si(a2_mpz, a2);
@@ -1449,21 +1446,11 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
   } else if ((arg1_tag == FLOAT_VAL && arg2_tag == MPF) ||
              (arg1_tag == MPF && arg2_tag == FLOAT_VAL)) {
 
-    float a1_float;
-    mpf_t a2_mpf;
-    mpf_init(a2_mpf);
+    float a1_float =
+        (arg1_tag == FLOAT_VAL) ? decode_float(arg1) : decode_float(arg2);
+    mpf_t *mpf_val = (arg1_tag == MPF) ? decode_mpf(arg1) : decode_mpf(arg2);
 
-    if (arg1_tag == FLOAT_VAL) {
-      a1_float = decode_float(arg1);
-      mpf_t *a2_mpf_ptr = decode_mpf(arg2);
-      mpf_set(a2_mpf, *a2_mpf_ptr);
-    } else {
-      // arg2 is FLOAT_VAL and arg1 is MPF
-      a1_float = decode_float(arg2);
-      mpf_t *a1_mpf_ptr = decode_mpf(arg1);
-      mpf_set(a2_mpf, *a1_mpf_ptr);
-    }
-
+    // Allocate and initialize the result
     mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
     mpf_init(*result);
 
@@ -1471,10 +1458,9 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
     mpf_init(a1_mpf_temp);
     mpf_set_d(a1_mpf_temp, a1_float);
 
-    mpf_add(*result, a2_mpf, a1_mpf_temp);
+    mpf_add(*result, *mpf_val, a1_mpf_temp);
 
     mpf_clear(a1_mpf_temp);
-    mpf_clear(a2_mpf);
 
     return encode_mpf(result);
   } else if (arg1_tag == MPF && arg2_tag == MPF) {
@@ -1486,120 +1472,13 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
 
     mpf_add(*result, *a1_mpf, *a2_mpf);
 
-   return encode_mpf(result);
+    return encode_mpf(result);
   } else {
     //  will handle mixed cases later
     // [int, float] [float, int] [mpz, mpf] [mpf, mpz]
     assert_type(false, "Error in plus -> contact violation: The values in the "
                        "list must be integers or floating-point numbers!");
   }
-
-  // if (arg1_tag == INT) {
-  //   if (arg2_tag == INT) {
-  //     const s64 a1 = decode_int(arg1);
-  //     const s64 a2 = decode_int(arg2);
-
-  //     const s64 res = a1 + a2;
-  //     const s32 res32 = static_cast<s32>(res);
-  //     if (res32 == res) {
-  //       // no overflow
-  //       return reinterpret_cast<void *>(encode_int(res32));
-  //     } else {
-  //       // overflow occurred, promoting to mpz
-
-  //       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-
-  //       mpz_init(*result);
-
-  //       mpz_set_ui(*result, res);
-
-  //       return encode_mpz(result);
-  //     }
-  //   } else if (arg2_tag == MPZ) {
-  //     /// ....
-  //   }
-  // }
-
-  // std::cout << "no overflow: " << arg1_tag << std::endl;
-  // std::cout << "no overflow: " << arg2_tag << std::endl;
-
-  // if (((arg1_tag == INT) || (arg1_tag == FLOAT_VAL) || (arg1_tag == MPZ) ||
-  //      (arg1_tag == MPF)) &&
-  //     ((arg2_tag == INT) || (arg2_tag == FLOAT_VAL) || (arg2_tag == MPZ) ||
-  //      (arg2_tag == MPF))) {
-  //   if (arg1_tag == arg2_tag) { // if both numbers have the same tag!
-  //     if (arg1_tag == INT) {
-  //       const u64 a1 = decode_int(arg1);
-  //       const u64 a2 = decode_int(arg2);
-
-  //       const u64 res = a1 + a2;
-  //       const s32 res32 = static_cast<s32>(res);
-  //       if (res32 == res) {
-  //         // no overflow
-  //         return reinterpret_cast<void *>(encode_int(res32));
-  //       } else {
-  //         // overflow occurred, promoting to mpz
-
-  //         mpz_t mpz_a1, mpz_a2;
-  //         mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-
-  //         mpz_init(mpz_a1);
-  //         mpz_init(mpz_a2);
-  //         mpz_init(*result);
-
-  //         mpz_set_ui(mpz_a1, a1);
-  //         mpz_set_ui(mpz_a2, a2);
-
-  //         mpz_add(*result, mpz_a1, mpz_a2);
-
-  //         mpz_clear(mpz_a1);
-  //         mpz_clear(mpz_a2);
-
-  //         return encode_mpz(result);
-  //       }
-  //     } else if (arg1_tag == FLOAT_VAL) {
-  //       const float a1 = decode_float(arg1);
-  //       const float a2 = decode_float(arg2);
-
-  //       const float res = a1 + a2;
-
-  //       if (res <= std::numeric_limits<float>::max() &&
-  //           res >= -std::numeric_limits<float>::max()) {
-  //         // no overflow
-  //         return reinterpret_cast<void *>(encode_float(res));
-  //       } else {
-  //         // overflow occurred, promoting to mpz
-  //         mpf_t mpf_a1, mpf_a2;
-  //         mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-
-  //         mpf_init(mpf_a1);
-  //         mpf_init(mpf_a2);
-  //         mpf_init(*result);
-
-  //         mpf_set_d(mpf_a1, a1);
-  //         mpf_set_d(mpf_a2, a2);
-
-  //         mpf_add(*result, mpf_a1, mpf_a2);
-
-  //         mpf_clear(mpf_a1);
-  //         mpf_clear(mpf_a2);
-
-  //         return encode_mpf(result);
-  //       }
-  //     } else if (arg1_tag == MPZ) {
-  //       return add_mpz(arg1, arg2);
-  //     } else {
-  //       return add_mpf(arg1, arg2);
-  //     }
-  //   } else {
-  //     // will write later
-  //     // [int, float] [float, int] [mpz, mpf] [mpf, mpz]
-  //   }
-  // } else {
-  //   assert_type(false, "Error in plus -> contact violation: The values in the
-  //   "
-  //                      "list must be integers or floating-point numbers!");
-  // }
 
   return nullptr;
 }
@@ -1734,8 +1613,6 @@ void *apply_prim__u45_1(void *arg1) //-
 
 inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
 {
-  // PRINT("i am here");
-
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
 
@@ -1746,17 +1623,21 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
 
     s32 res;
     if (__builtin_sub_overflow(a1, a2, &res)) {
-      // Overflow handling, promote to mpz
-      PRINT("apply_prim__u45_2: promte to MPZ");
+      // Overflow detected, promoting to mpz
       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
       mpz_init(*result);
-      mpz_set_ui(*result, res); // Note: mpz_set_ui may cause problems for s64
+
+      s64 sum = (s64)a1 - (s64)a2;
+
+      if (sum < 0) {
+        mpz_set_si(*result, sum);
+      } else {
+        mpz_set_ui(*result, (unsigned long)sum);
+      }
 
       return encode_mpz(result);
     } else {
       // No overflow
-      // PRINT("i am here!!!");
-
       return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
     }
   } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
@@ -1766,124 +1647,106 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
     float res = a1 - a2;
 
     if (is_within_float_precision(res)) {
-      // No overflow, return the result
+      // Normal case, encode the float result
       return reinterpret_cast<void *>(encode_float(res));
     } else {
-      PRINT("apply_prim__u45_2: promte to MPF");
+      mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+      mpf_init(*result);
+
+      mpf_set_d(*result, a1);
+
+      mpf_t temp_a2_mpf;
+      mpf_init(temp_a2_mpf);
+      mpf_set_d(temp_a2_mpf, a2);
+
+      mpf_sub(*result, *result, temp_a2_mpf);
+
+      mpf_clear(temp_a2_mpf);
+
+      return encode_mpf(result);
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
-    // will implement later
-    PRINT("apply_prim__u45_2: INT+MPZ");
+    const s32 a1 = decode_int(arg1);
+    mpz_t *arg2_mpz = decode_mpz(arg2);
+
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+
+    if (a1 >= 0) {
+      mpz_t a1_mpz;
+      mpz_init_set_ui(a1_mpz, (unsigned long)a1);
+      mpz_sub(*result, a1_mpz, *arg2_mpz);
+      mpz_clear(a1_mpz);
+    } else {
+      mpz_t a1_mpz;
+      mpz_init_set_si(a1_mpz, a1);
+      mpz_sub(*result, a1_mpz, *arg2_mpz);
+      mpz_clear(a1_mpz);
+    }
+
+    return encode_mpz(result);
+  } else if (arg1_tag == MPZ && arg2_tag == INT) {
+    const s32 a2 = decode_int(arg2);
+    mpz_t *arg1_mpz = decode_mpz(arg1);
+
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+
+    mpz_t a2_mpz;
+    mpz_init_set_si(a2_mpz, a2);
+    mpz_sub(*result, *arg1_mpz, a2_mpz);
+    mpz_clear(a2_mpz);
+
+    return encode_mpz(result);
+  } else if (arg1_tag == MPZ && arg2_tag == MPZ) {
+    mpz_t *a1_mpz = decode_mpz(arg1);
+    mpz_t *a2_mpz = decode_mpz(arg2);
+
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+
+    mpz_sub(*result, *a1_mpz, *a2_mpz);
+
+    return encode_mpz(result);
+  } else if ((arg1_tag == FLOAT_VAL && arg2_tag == MPF) ||
+             (arg1_tag == MPF && arg2_tag == FLOAT_VAL)) {
+
+    float a1_float =
+        (arg1_tag == FLOAT_VAL) ? decode_float(arg1) : decode_float(arg2);
+    mpf_t *mpf_val = (arg1_tag == MPF) ? decode_mpf(arg1) : decode_mpf(arg2);
+
+    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*result);
+
+    mpf_t a1_mpf_temp;
+    mpf_init(a1_mpf_temp);
+    mpf_set_d(a1_mpf_temp, a1_float);
+
+    if (arg1_tag == FLOAT_VAL) {
+      mpf_sub(*result, a1_mpf_temp, *mpf_val);
+    } else {
+      mpf_sub(*result, *mpf_val, a1_mpf_temp);
+    }
+
+    mpf_clear(a1_mpf_temp);
+
+    return encode_mpf(result);
+  } else if (arg1_tag == MPF && arg2_tag == MPF) {
+    mpf_t *a1_mpf = decode_mpf(arg1);
+    mpf_t *a2_mpf = decode_mpf(arg2);
+
+    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*result);
+
+    mpf_sub(*result, *a1_mpf, *a2_mpf);
+
+    return encode_mpf(result);
   } else {
+    //  will handle mixed cases later
+    // [int, float] [float, int] [mpz, mpf] [mpf, mpz]
     assert_type(false, "Error in minus -> contact violation: The values in the "
                        "list must be integers or floating-point numbers!");
   }
-
-  // if (arg1_tag == INT) {
-  //   if (arg2_tag == INT) {
-  //     const s64 a1 = decode_int(arg1);
-  //     const s64 a2 = decode_int(arg2);
-
-  //     const s64 res = a1 - a2;
-  //     const s32 res32 = static_cast<s32>(res);
-  //     if (res32 == res) {
-  //       // no overflow
-  //       return reinterpret_cast<void *>(encode_int(res32));
-  //     } else {
-  //       // overflow occurred, promoting to mpz
-
-  //       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-
-  //       mpz_init(*result);
-
-  //       mpz_set_ui(*result, res);
-
-  //       return encode_mpz(result);
-  //     }
-  //   } else if (arg2_tag == MPZ) {
-  //     /// ....
-  //   }
-  // }
-
-  // if (((arg1_tag == INT) || (arg1_tag == FLOAT_VAL) || (arg1_tag == MPZ) ||
-  //      (arg1_tag == MPF)) &&
-  //     ((arg2_tag == INT) || (arg2_tag == FLOAT_VAL) || (arg2_tag == MPZ) ||
-  //      (arg2_tag == MPF))) {
-  //   if (arg1_tag == arg2_tag) { // if both numbers have the same tag!
-  //     if (arg1_tag == INT) {
-  //       const u64 a1 = decode_int(arg1);
-  //       const u64 a2 = decode_int(arg2);
-
-  //       const u64 res = a1 - a2;
-  //       const s32 res32 = static_cast<s32>(res);
-  //       if (res32 == res) {
-  //         // no overflow
-  //         return reinterpret_cast<void *>(encode_int(res32));
-  //       } else {
-  //         // overflow occurred, promoting to mpz
-
-  //         mpz_t mpz_a1, mpz_a2;
-  //         mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
-
-  //         mpz_init(mpz_a1);
-  //         mpz_init(mpz_a2);
-  //         mpz_init(*result);
-
-  //         mpz_set_ui(mpz_a1, a1);
-  //         mpz_set_ui(mpz_a2, a2);
-
-  //         mpz_sub(*result, mpz_a1, mpz_a2);
-
-  //         mpz_clear(mpz_a1);
-  //         mpz_clear(mpz_a2);
-
-  //         return encode_mpz(result);
-  //       }
-  //     } else if (arg1_tag == FLOAT_VAL) {
-  //       const float a1 = decode_float(arg1);
-  //       const float a2 = decode_float(arg2);
-
-  //       const float res = a1 - a2;
-
-  //       if (res <= std::numeric_limits<float>::max() &&
-  //           res >= -std::numeric_limits<float>::max()) {
-  //         // no overflow
-  //         return reinterpret_cast<void *>(encode_float(res));
-  //       } else {
-  //         // overflow occurred, promoting to mpz
-  //         mpf_t mpf_a1, mpf_a2;
-  //         mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
-
-  //         mpf_init(mpf_a1);
-  //         mpf_init(mpf_a2);
-  //         mpf_init(*result);
-
-  //         mpf_set_d(mpf_a1, a1);
-  //         mpf_set_d(mpf_a2, a2);
-
-  //         mpf_sub(*result, mpf_a1, mpf_a2);
-
-  //         mpf_clear(mpf_a1);
-  //         mpf_clear(mpf_a2);
-
-  //         return encode_mpf(result);
-  //       }
-  //     } else if (arg1_tag == MPZ) {
-  //       return sub_mpz(arg1, arg2);
-  //     } else {
-  //       return sub_mpf(arg1, arg2);
-  //     }
-  //   } else {
-  //     // will write later
-  //     // [int, float] [float, int] [mpz, mpf] [mpf, mpz]
-  //   }
-  //   return add(arg1, arg2);
-
-  // } else {
-  //   assert_type(false, "Error in minus -> contact violation: The values in
-  //   the "
-  //                      "list must be integers or floating-point numbers!");
-  // }
 
   return nullptr;
 }
@@ -3056,18 +2919,94 @@ void *apply_prim__u60_2(void *arg1, void *arg2) // <
     float a2 = decode_float(arg2);
 
     return a1 < a2 ? encode_bool(true) : encode_bool(false);
-  } else if (arg1_tag == MPZ) {
-    cmp_res = mpz_cmp(*(decode_mpz(arg1)), *(decode_mpz(arg2)));
-    if (less_zero(cmp_res))
-      return encode_bool(true);
-    else
-      return encode_bool(false);
-  } else if (arg1_tag == MPF) {
-    cmp_res = mpf_cmp(*(decode_mpf(arg1)), *(decode_mpf(arg2)));
-    if (less_zero(cmp_res))
-      return encode_bool(true);
-    else
-      return encode_bool(false);
+  } else if (arg1_tag == INT && arg2_tag == FLOAT_VAL) {
+    float a1 = (float)decode_int(arg1);
+    float a2 = decode_float(arg2);
+    return a1 < a2 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == INT) {
+    float a1 = decode_float(arg1);
+    float a2 = (float)decode_int(arg2);
+    return a1 < a2 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == MPF && arg2_tag == FLOAT_VAL) {
+    mpf_t *a1_mpf = decode_mpf(arg1);
+    float a2_float = decode_float(arg2);
+    mpf_t a2_mpf;
+    mpf_init(a2_mpf);
+    mpf_set_d(a2_mpf, a2_float); 
+    int cmp_result = mpf_cmp(*a1_mpf, a2_mpf);
+    mpf_clear(a2_mpf);
+    return cmp_result < 0 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == MPZ && arg2_tag == MPZ) {
+    mpz_t *a1_mpz = decode_mpz(arg1);
+    mpz_t *a2_mpz = decode_mpz(arg2);
+    return mpz_cmp(*a1_mpz, *a2_mpz) < 0 ? encode_bool(true)
+                                         : encode_bool(false);
+  } else if (arg1_tag == MPF && arg2_tag == MPF) {
+    mpf_t *a1_mpf = decode_mpf(arg1);
+    mpf_t *a2_mpf = decode_mpf(arg2);
+    return mpf_cmp(*a1_mpf, *a2_mpf) < 0 ? encode_bool(true)
+                                         : encode_bool(false);
+  } else if (arg1_tag == INT && arg2_tag == MPZ) {
+    s32 a1 = decode_int(arg1);
+    mpz_t *a2_mpz = decode_mpz(arg2);
+    mpz_t a1_mpz;
+    mpz_init_set_si(a1_mpz, a1);
+    int cmp_result = mpz_cmp(a1_mpz, *a2_mpz);
+    mpz_clear(a1_mpz);
+    return cmp_result < 0 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == MPZ && arg2_tag == INT) {
+    mpz_t *a1_mpz = decode_mpz(arg1);
+    s32 a2 = decode_int(arg2);
+    mpz_t a2_mpz;
+    mpz_init_set_si(a2_mpz, a2);
+    int cmp_result = mpz_cmp(*a1_mpz, a2_mpz);
+    mpz_clear(a2_mpz);
+    return cmp_result < 0 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == MPZ) {
+    float a1_float = decode_float(arg1);
+    mpz_t *a2_mpz = decode_mpz(arg2);
+    mpf_t a1_mpf;
+    mpf_init(a1_mpf);
+    mpf_set_d(a1_mpf, a1_float);
+    int cmp_result = mpf_cmp_z(a1_mpf, *a2_mpz);
+    mpf_clear(a1_mpf);
+    return cmp_result < 0 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == MPZ && arg2_tag == FLOAT_VAL) {
+    mpz_t *a1_mpz = decode_mpz(arg1);
+    float a2_float = decode_float(arg2);
+    mpf_t a2_mpf;
+    mpf_init(a2_mpf);
+    mpf_set_d(a2_mpf, a2_float);
+    int cmp_result = mpf_cmp_z(a2_mpf, *a1_mpz);
+    mpf_clear(a2_mpf);
+    return cmp_result > 0 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == INT && arg2_tag == MPF) {
+    s32 a1 = decode_int(arg1);
+    mpf_t *a2_mpf = decode_mpf(arg2);
+    mpf_t a1_mpf;
+    mpf_init(a1_mpf);
+    mpf_set_si(a1_mpf, a1);
+    int cmp_result = mpf_cmp(a1_mpf, *a2_mpf);
+    mpf_clear(a1_mpf);
+    return cmp_result < 0 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == MPF && arg2_tag == INT) {
+    mpf_t *a1_mpf = decode_mpf(arg1);
+    s32 a2 = decode_int(arg2);
+    mpf_t a2_mpf;
+    mpf_init(a2_mpf);
+    mpf_set_si(a2_mpf, a2);
+    int cmp_result = mpf_cmp(*a1_mpf, a2_mpf);
+    mpf_clear(a2_mpf);
+    return cmp_result < 0 ? encode_bool(true) : encode_bool(false);
+  } else if (arg1_tag == FLOAT_VAL && arg2_tag == MPF) {
+    float a1_float = decode_float(arg1);
+    mpf_t *a2_mpf = decode_mpf(arg2);
+    mpf_t a1_mpf;
+    mpf_init(a1_mpf);
+    mpf_set_d(a1_mpf, a1_float);
+    int cmp_result = mpf_cmp(a1_mpf, *a2_mpf);
+    mpf_clear(a1_mpf);
+    return cmp_result < 0 ? encode_bool(true) : encode_bool(false);
   } else {
     assert_type(false, "Error in <, -> contact violation: The values in the "
                        "list must be integers or floating-point numbers!");

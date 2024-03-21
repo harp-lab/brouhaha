@@ -1,4 +1,6 @@
-;; won't work, untill we implement the mpz/mpf promotion thing!
+;;; Source: https://www.larcenists.org/benchmarksAboutR7.html
+;;; SUMFP -- Sums the integers from 0 to 1e6, 250 iterations. A test of floating point arithmetic. Uses essentially the same code as the sum benchmark.
+;;; iteration: 500
 
 (define (loop i sum)
   (if (< i 0.)
@@ -9,4 +11,4 @@
   (loop n 0.))
 
 (define (brouhaha_main)
-  (run 15000000.))
+  (run 35000000.))
