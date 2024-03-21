@@ -160,6 +160,6 @@
 
 
 (define (brouhaha_main)
-   (make-maze 11 11))
+   (make-maze 149 149))
    
 (brouhaha_main)

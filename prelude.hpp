@@ -2,6 +2,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <cstdlib> // for free()
 #include <functional>
 #include <iomanip> // For setprecision and fixed
 #include <iostream>
@@ -156,14 +157,7 @@ void print_mpf(mpf_t *arg) {
   // std::cout << "-----end of print_mpf-----" << std::endl;
 }
 
-void print_mpz(mpz_t *arg) {
-  // std::cout << "-----start of print_mpz-----" << std::endl;
-  std::string str(mpz_get_str(nullptr, 10, *arg));
-
-  int num = std::stoi(str);
-  std::cout << "print_mpz: val: " << num << std::endl;
-  // std::cout << "-----end of print_mpz-----" << std::endl;
-}
+void print_mpz(const mpz_t *arg) { gmp_printf("print_mpz: val: %Zd\n", *arg); }
 
 inline bool is_cons(void *lst) {
   if (get_tag(lst) == CONS) {
@@ -1268,7 +1262,8 @@ inline void *apply_prim__u43(void *arg) //+
 
     sum += decode_int(arg_buffer[i]);
 
-    // std::cout << "Total # c2 apply_prim__u43: " << print_val(arg_buffer[i]) << std::endl;
+    // std::cout << "Total # c2 apply_prim__u43: " << print_val(arg_buffer[i])
+    // << std::endl;
   }
 
   return reinterpret_cast<void *>(encode_int(static_cast<s32>(sum)));
@@ -1357,16 +1352,22 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
 
   // Handling INT + INT case directly
   if (arg1_tag == INT && arg2_tag == INT) {
-    const s64 a1 = decode_int(arg1);
-    const s64 a2 = decode_int(arg2);
+    const s32 a1 = decode_int(arg1);
+    const s32 a2 = decode_int(arg2);
 
-    s64 res;
+    s32 res;
     if (__builtin_add_overflow(a1, a2, &res)) {
+      s64 sum = (s64)a1 + (s64)a2;
+
       // Overflow handling, promote to mpz
-      PRINT("apply_prim__u43_2: Promote to MPZ");
       mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
       mpz_init(*result);
-      mpz_set_ui(*result, res); // Note: mpz_set_ui may cause problems for s64
+
+      if (sum < 0) {
+        mpz_set_si(*result, sum);
+      } else {
+        mpz_set_ui(*result, (unsigned long)sum);
+      }
 
       return encode_mpz(result);
     } else {
@@ -1384,28 +1385,109 @@ inline void *apply_prim__u43_2(void *arg1, void *arg2) //+
       // Normal case, encode the float result
       return reinterpret_cast<void *>(encode_float(res));
     } else {
-      // Promote to (MPF)
-      PRINT("apply_prim__u43_2: Promote to MFF");
-      mpf_t a1_mpf, a2_mpf, result_mpf;
-      mpf_init(a1_mpf);
-      mpf_init(a2_mpf);
-      mpf_init(result_mpf);
-      mpf_set_d(a1_mpf, a1); // Set a1_mpf to a1
-      mpf_set_d(a2_mpf, a2); // Set a2_mpf to a2
+      mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+      mpf_init(*result);
 
-      mpf_add(result_mpf, a1_mpf, a2_mpf); // Perform addition with MPF
+      mpf_set_d(*result, a1);
 
-      // Now, result_mpf holds the result of the addition in MPF
+      mpf_t temp_a2_mpf;
+      mpf_init(temp_a2_mpf);
+      mpf_set_d(temp_a2_mpf, a2);
 
-      mpf_clear(a1_mpf);
-      mpf_clear(a2_mpf);
-      mpf_clear(result_mpf);
+      mpf_add(*result, *result, temp_a2_mpf);
 
-      // return encode_mpf(result_mpf);
+      mpf_clear(temp_a2_mpf);
+
+      return encode_mpf(result);
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
-    // will implement later
-    PRINT("apply_prim__u43_2: INT+MPZ");
+    const s32 a1 = decode_int(arg1);
+    mpz_t *arg2_mpz = decode_mpz(arg2);
+
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+
+    if (a1 >= 0) {
+      mpz_add_ui(*result, *arg2_mpz, (unsigned long)a1);
+    } else {
+      // a1 is negative, convert a1 to an mpz_t for the addition
+      mpz_t a1_mpz;
+      mpz_init_set_si(a1_mpz, a1);
+      mpz_add(*result, *arg2_mpz, a1_mpz);
+      mpz_clear(a1_mpz); // Clean up the temporary mpz_t variable
+    }
+
+    return encode_mpz(result);
+
+  } else if (arg1_tag == MPZ && arg2_tag == INT) {
+    const s32 a2 = decode_int(arg2);
+    mpz_t *arg1_mpz = decode_mpz(arg1);
+
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+
+    if (a2 >= 0) {
+      mpz_add_ui(*result, *arg1_mpz,
+                 (unsigned long)a2); // If a2 is non-negative
+    } else {
+      mpz_t a2_mpz;
+      mpz_init_set_si(a2_mpz, a2);
+      mpz_add(*result, *arg1_mpz, a2_mpz);
+    }
+
+    return encode_mpz(result);
+  }
+  if (arg1_tag == MPZ && arg2_tag == MPZ) {
+    mpz_t *a1_mpz = decode_mpz(arg1);
+    mpz_t *a2_mpz = decode_mpz(arg2);
+
+    mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+    mpz_init(*result);
+
+    mpz_add(*result, *a1_mpz, *a2_mpz);
+
+    return encode_mpz(result);
+  } else if ((arg1_tag == FLOAT_VAL && arg2_tag == MPF) ||
+             (arg1_tag == MPF && arg2_tag == FLOAT_VAL)) {
+
+    float a1_float;
+    mpf_t a2_mpf;
+    mpf_init(a2_mpf);
+
+    if (arg1_tag == FLOAT_VAL) {
+      a1_float = decode_float(arg1);
+      mpf_t *a2_mpf_ptr = decode_mpf(arg2);
+      mpf_set(a2_mpf, *a2_mpf_ptr);
+    } else {
+      // arg2 is FLOAT_VAL and arg1 is MPF
+      a1_float = decode_float(arg2);
+      mpf_t *a1_mpf_ptr = decode_mpf(arg1);
+      mpf_set(a2_mpf, *a1_mpf_ptr);
+    }
+
+    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*result);
+
+    mpf_t a1_mpf_temp;
+    mpf_init(a1_mpf_temp);
+    mpf_set_d(a1_mpf_temp, a1_float);
+
+    mpf_add(*result, a2_mpf, a1_mpf_temp);
+
+    mpf_clear(a1_mpf_temp);
+    mpf_clear(a2_mpf);
+
+    return encode_mpf(result);
+  } else if (arg1_tag == MPF && arg2_tag == MPF) {
+    mpf_t *a1_mpf = decode_mpf(arg1);
+    mpf_t *a2_mpf = decode_mpf(arg2);
+
+    mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+    mpf_init(*result);
+
+    mpf_add(*result, *a1_mpf, *a2_mpf);
+
+   return encode_mpf(result);
   } else {
     assert_type(false, "Error in plus -> contact violation: The values in the "
                        "list must be integers or floating-point numbers!");
@@ -1651,15 +1733,17 @@ void *apply_prim__u45_1(void *arg1) //-
 
 inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
 {
+  // PRINT("i am here");
+
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
 
   // Handling INT + INT case directly
   if (arg1_tag == INT && arg2_tag == INT) {
-    const s64 a1 = decode_int(arg1);
-    const s64 a2 = decode_int(arg2);
+    const s32 a1 = decode_int(arg1);
+    const s32 a2 = decode_int(arg2);
 
-    s64 res;
+    s32 res;
     if (__builtin_sub_overflow(a1, a2, &res)) {
       // Overflow handling, promote to mpz
       PRINT("apply_prim__u45_2: promte to MPZ");
@@ -1670,6 +1754,8 @@ inline void *apply_prim__u45_2(void *arg1, void *arg2) //-
       return encode_mpz(result);
     } else {
       // No overflow
+      // PRINT("i am here!!!");
+
       return reinterpret_cast<void *>(encode_int(static_cast<s32>(res)));
     }
   } else if (arg1_tag == FLOAT_VAL && arg2_tag == FLOAT_VAL) {
@@ -2065,7 +2151,7 @@ void *apply_prim__u42_2(void *arg1, void *arg2) // *
       // handle overflow!
     }
   } else if (arg1_tag == INT && arg2_tag == MPZ) {
-    PRINT("apply_prim__u43_2: INT+MPZ");
+    PRINT("apply_prim__u42_2: INT+MPZ");
     // Handling INT * MPZ case
     mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
     mpz_init(*result);
@@ -4785,11 +4871,10 @@ inline void *apply_prim_quotient_2(void *first, void *second) {
     assert_type(
         false,
         "Error in quotient -> contact violation: expected integer argument!");
-  } else if (get_tag(first) == INT && get_tag(second) == INT){
-      int temp_ret = decode_int(first) / decode_int(second);
-      result = reinterpret_cast<void *>(encode_int(static_cast<s32>(temp_ret)));
-  }
-  else if (get_tag(first) == MPZ &&
+  } else if (get_tag(first) == INT && get_tag(second) == INT) {
+    int temp_ret = decode_int(first) / decode_int(second);
+    result = reinterpret_cast<void *>(encode_int(static_cast<s32>(temp_ret)));
+  } else if (get_tag(first) == MPZ &&
              get_tag(second) == MPZ) { // both numbers are mpz
     mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
     mpz_init(*result);

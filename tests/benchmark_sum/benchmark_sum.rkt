@@ -13,6 +13,6 @@
 
 
 (define (brouhaha_main)
-  (run 10000))
+  (run 65000))
  
  (brouhaha_main)

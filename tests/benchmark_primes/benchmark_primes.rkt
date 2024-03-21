@@ -27,6 +27,6 @@
 
 
 (define (brouhaha_main)
-  (primes<= 1000))
+  (primes<= 150000))
   
 (brouhaha_main)

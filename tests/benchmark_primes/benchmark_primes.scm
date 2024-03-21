@@ -22,7 +22,7 @@
 
 
 (define (brouhaha_main)
-  (primes<= 1000))
+  (primes<= 150000))
 
 (write (brouhaha_main))
 (newline)

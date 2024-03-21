@@ -1,9 +1,0 @@
-;; won't work, untill we implement the mpz/mpf promotion thing!
-
-(define (run n)
-  (let loop ((i n) (sum 0.))
-    (if (< i 0.)
-        sum
-        (loop (- i 1.) (+ i sum)))))
-
-(run 1000000)

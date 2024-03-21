@@ -11,6 +11,7 @@
 ;; (make-halves `(1 2 3 4 5 6 7) 7)
 ;; (make-halves `() 7)
 (define (merge lst1 lst2 acc)
+  (displayln (~a lst1 " lst2: " lst2 " acc: "acc))
   (if (null? lst1)
       (reverse (foldl (lambda (x acc) (cons x acc)) acc lst2))
       (if (null? lst2)
@@ -43,7 +44,7 @@
 
 
 (define (create-list-backwards-tail x)
-  (helper x 0 '())) 
+  (helper x 0 (list))) 
 
 (define (helper x count acc)
     (if (= count x)
@@ -51,5 +52,5 @@
         (helper x (+ count 1) (cons count acc))))
 
 (define (brouhaha_main)
-  (merge-sort (create-list-backwards-tail 1000000) 8))
+  (merge-sort (create-list-backwards-tail 150000) 150000))
 

@@ -28,7 +28,48 @@
 
 
 (define (brouhaha_main)
-  (deriv (list '+ (list '* 3 'x 'x) (list '* 'a 'x 'x) (list '* 'b 'x) 5)))
+  (deriv
+   (list '+
+         (list '* 'c 'x 'x 'x 'x 'x 'x 'x 'x 'x)
+         (list '* 'd 'x 'x 'x 'x 'x 'x 'x 'x)
+         (list '* 'e 'x 'x 'x 'x 'x 'x 'x)
+         (list '* 'f 'x 'x 'x 'x 'x 'x)
+         'g
+         (list '* 'h
+               (list '* 'i 'j 'k 'l 'm 'n 'o 'p 'q 'r 's 't 'u 'v 'w 'x 'y 'z
+                     (list '* 'a 'b 'c 'd 'e 'f 'g 'h 'i 'j 'k 'l 'm 'n 'o 'p 'q 'r 's 't 'u 'v 'w 'x 'y 'z)))
+         (list '*
+               (list '* 'a 'x 'x)
+               (list '+
+                     (list '* 'b 'x 'x 'x)
+                     (list '* 'c 'x 'x 'x 'x)
+                     (list '* 'd 'x 'x 'x 'x 'x)
+                     (list '* 'e 'x 'x 'x 'x 'x 'x)
+                     'f))
+         (list '+
+               (list '* 'm
+                     (list '* 'n 'o 'p 'q 'r 's 't 'u 'v 'w 'x 'y 'z 'a 'b 'c 'd 'e 'f 'g 'h 'i 'j 'k 'l 'm 'n 'o 'p 'q 'r 's 't 'u 'v 'w 'x 'y 'z 'aa 'bb 'cc))
+               (list '* 'o 'p 'q 'r 's 't 'u 'v 'w 'x 'y 'z 'a 'b 'c 'd 'e 'f 'g 'h 'i 'j 'k 'l 'm 'n 'o 'p 'q 'r 's 't 'u 'v 'w 'x 'y 'z 'aa 'bb 'cc 'dd))
+         (list '*
+               (list '* 'x 'y 'z 'a 'b 'c 'd 'e 'f 'g 'h 'i 'j 'k 'l 'm 'n 'o 'p 'q 'r 's 't 'u 'v 'w 'x 'y 'z 'aa 'bb 'cc 'dd 'ee)
+               (list '+
+                     (list '/ 1 'x)
+                     (list '/ 1 'y)
+                     (list '/ 2 'z)
+                     (list '/ 2 'a)
+                     (list '/ 3 'b)
+                     (list '/ 3 'c)))
+         (list '* 'x
+               (list '* 'y
+                     (list '* 'z
+                           (list '* 'a
+                                 (list '* 'b
+                                       (list '* 'c
+                                             (list '* 'd
+                                                   (list '* 'e
+                                                         (list '* 'f 'g 'h 'i 'j 'k 'l 'm 'n 'o 'p 'q 'r 's 't 'u 'v 'w 'x 'y 'z 'aa 'bb 'cc 'dd 'ee 'ff))))))))))
+
+   ))
 
 (write (brouhaha_main))
 (newline)
