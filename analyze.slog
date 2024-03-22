@@ -10,6 +10,8 @@
 ;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;FREE VARIABLES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
+(non-list-value (or ?(addr _) ?(quote _) ?(string _) ?(bool _) ?(state _)))
+
 ;REF VARIABLES
 (free x ?(ref x))
 
@@ -43,7 +45,7 @@
  (free x ?(if guard tExp fExp))]
 
 ;APP
-[(free x ef)
+[(free x ef                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 )
  -->
 (free x ?(app ef eas))]
 
@@ -145,31 +147,6 @@
  -->
  (eval rhs env (letk body [lhs] [] bind-rest env kont))]
 
-; ;APPLY-PRIM CASE
-; [(= e (eval (apply-prim op lst) env kont))
-;  -->
-;  (store (saddr e) (state e))
-;  (ret (saddr e) kont)]
-
-; ;PRIM CASE
-; [(= e (eval (prim op [lst ...]) env kont))
-;  -->
-;  (store (saddr e) (state e))
-;  (ret (saddr e) kont)]
-
-;  [(or
-;     (= e (eval (apply-prim op lst) env kont))
-;     (= e (eval (prim op [lst ...]) env kont)))
-;  -->
-;  (store (saddr e) (state e))
-;  (ret (saddr e) kont)]
-
-;  [(= e (eval (prim op [lst ...]) env kont))
-;   -->
-;   (store (saddr e) (state e))
-;   (ret (saddr e) kont)]
-
-
 ;---------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;RET CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;---------------------------------------------------------------------;
@@ -224,9 +201,9 @@
 
 [(ret a (letk body [xs ...] [as ...] [] envlet kont))
  -->
- (store (kaddr body) kont)
+ (store (kaddr body) kont).
  (do-fixed-prop-all xs [as ... a])
- (eval body {ext-all !(do-ext-all envlet xs)} (kaddr body))]
+ (eval body {ext-all !(do-ext-all envlet xs)} (kaddr body))] ;AJKSBDJKAHSDLKJASJKD EDIT HERE
 
 
 
@@ -248,18 +225,79 @@
 
 ;SPECIALIZED PRIMS
 (specialized-prim "cons")
-[(= e (apply _ (define-prim "cons" _) (fixedarg [a0 a1]) kont))
- (store a1 (list-of as))
- -->
- (store (addr e) (list-of [a0 as ...]))
- (ret (addr e) kont)]
+  [(= e (apply _ (define-prim "cons" _) (fixedarg [a0 a1]) kont))
+  (store a1 (list-of as))
+  -->
+  (store (addr e) (list-of [a0 as ...]))
+  (ret (addr e) kont)]
 
-;GO THROUGH ALL OF AS AND UNINION ALL UNDERLYING ADDRESSES BEING POINTED TO (1 level)
-[(= e (apply _ (define-prim "cons" _) (vararg a) kont))
- (store a (list-of as))
- -->
- (store (addr e) (list-of [a0 as ...]))
- (ret (addr e) kont)]
+  ;VARIADIC
+  [(= e (apply _ (define-prim "cons" _) (vararg a) kont))
+  (store a (list-of as))
+  -->
+  (do-store-addr-union (addr e) as [])
+  (ret (addr e) kont)]
+
+  ;When the next address points to a list-of
+  [(do-store-addr-union addr [a as ...] [union-as ...])
+  (store a (list-of under-as))
+  -->
+  (do-store-addr-union addr as [a under-as ... union-as ...])]
+
+  ;When the next address points to a single addr
+  [(do-store-addr-union addr [a as ...] [union-as ...])
+  (store a val)
+  (non-list-value val)
+  -->
+  (do-store-addr-union addr as [a union-as])]
+ 
+  [(do-store-addr-union addr [] [union-as ...])
+  -->
+  (store addr (list-of union-as))]
+
+
+(specialized-prim "null?")
+  [(= e (apply _ (define-prim "null?" _) (fixedarg [a]) kont))
+   (store a (list-of as))
+   (= as [])
+   -->
+   (store (addr e) (bool "t"))]
+
+  [(= e (apply _ (define-prim "null?" _) (fixedarg [a]) kont))
+   (store a (list-of [a0 as ...]))
+   -->
+   (store (addr e) (bool "t"))
+   (store (addr e) (bool "f"))]
+
+
+(specialized-prim "car")
+ [(= e (apply _ (define-prim "car" _) (fixedarg [a]) kont))
+  (store a (list-of [_ ... ai _ ...]))
+  -->
+  (store (addr e) ai)
+  (ret (addr e) kont)]
+
+(specialized-prim "cdr")
+ [(= e (apply _ (define-prim "cdr" _) (fixedarg [a]) kont))
+  (store a (list-of as))
+   -->
+  (store (addr e) (list-of as))
+  (ret (addr e) kont)]
+
+(specialized-prim "list")
+ [(= e (apply _ (define-prim "list" _) (fixedarg as) kont))
+  -->
+  (store (addr e) (list-of as))
+  (ret (addr e) kont)]
+
+ [(= e (apply _ (define-prim "list" _) (vararg a) kont))
+  (store a (list-of as))
+  -->
+  (store (addr e) (list-of as))
+  (ret (addr e) kont)]
+
+
+ 
 
 
 ;FIXED ARG
