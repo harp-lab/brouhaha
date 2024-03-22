@@ -8,7 +8,7 @@
 
 
 (define (brouhaha_main)
-  (run 10000))
+  (run 95000000))
 
 (write (brouhaha_main))
 (newline)
