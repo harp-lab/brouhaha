@@ -1,0 +1,414 @@
+(store (addr [] "cons") (define-prim "cons" (varparam "lst")))
+	(prim-count "cons" [2 ])
+(store (addr [] "call") (define "call" (fixedparam []) (app (ref "cons") [(quote (int "2"))(quote (int "3"))])))
+(store (addr [] "brouhaha_main") (define "brouhaha_main" (fixedparam []) (app (ref "call") [])))
+; (top-level-env (env-set (env-set (env-set (empty) "brouhaha_main" (addr "brouhaha_main")) "call" (addr "call")) "cons" (addr "cons")))
+
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;APPENDED PROGRAM ABOVE;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;ANALYSIS PROGRAM BELOW;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+
+
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;FREE VARIABLES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+(non-list-value ?(addr _))
+(non-list-value ?(quote _))
+(non-list-value ?(string _))
+(non-list-value ?(bool _))
+(non-list-value ?(state _))
+
+; (non-list-value (or (addr _) (quote _) (string _) (bool _) (state _)))
+
+;REF VARIABLES
+(free x ?(ref x))
+
+;LAMBDAS
+[(free x eb)
+ (=/= y x)
+ -->
+ (free x ?(lambda (varparam y) eb))]
+
+[(free x eb)
+ -->
+ (do-free-lam ?(lambda (fixedparam ys) eb) ys x)]
+
+[(do-free-lam lam [y ys ...] x)
+ (=/= y x)
+ -->
+ (do-free-lam lam ys x)]
+
+[(do-free-lam lam [] x)
+ -->
+ (free x lam)]
+
+;APPL
+[(or (free x ef) (free x ea))
+ -->
+ (free x ?(appl ef ea))]
+
+;IF EXPRESSIONS
+[(or (free x guard) (free x tExp) (free x fExp))
+ -->
+ (free x ?(if guard tExp fExp))]
+
+;APP
+[(free x ef                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 )
+ -->
+(free x ?(app ef eas))]
+
+(do-free-app ?(app ef eas) eas)
+
+[(do-free-app app [ea eas ...])
+ -->
+ (do-free-app app eas)]
+
+[(do-free-app app [ea eas ...])
+ (free x ea)
+ -->
+ (free x app)]
+
+;LET BINDINGS RIGHT HAND SIDES
+(do-free-let-rhs ?(let binds body) binds)
+
+[(do-free-let-rhs let [bind binds ...])
+ -->
+(do-free-let-rhs let binds)]    
+
+[(do-free-let-rhs let [(binding lhs rhs) binds ...])
+ (free x rhs)
+ -->
+ (free x let)]
+
+;LET BINDINGS LEFT HAND SIDES
+[(free x body)
+ -->
+(do-free-let-lhs ?(let binds body) binds x)]
+
+[(do-free-let-lhs let [(binding lhs rhs) binds ...] x)
+ (=/= lhs x)
+ -->
+ (do-free-let-lhs let binds x)]
+
+[(do-free-let-lhs let [] x)
+ -->
+ (free x let)]
+
+
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;START RULE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+[(define "brouhaha_main" (fixedparam []) body)
+ -->
+ (eval body [] (halt))]
+
+(tick ?(do-tick [] call) [call]) 
+; (tick ?(do-tick [x] call) [call x])
+; (tick ?(do-tick [x y] call) [call x y])
+; (tick ?(do-tick [x y z] call) [call x y])
+
+
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EVAL CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+;BASE PRIMITIVE TYPES
+[(eval (quote dat) env kont)
+ -->
+ (store (addr (quote dat)) dat)
+ (ret (addr (quote dat)) kont)]
+
+[(eval (string str) env kont)
+ -->
+ (store (addr (string str)) (string str))
+ (ret (addr (string str)) kont)]
+
+;FUNCTION AND VARIABLE REFERENCES
+[(eval (ref x) env kont)
+ -->
+ (ret {store (addr env x)} kont)]
+
+;LAMBDA AND FUNC
+[(eval e env kont)
+ (= e (lambda _ _))
+ -->
+ (store (addr e) (clo e env))
+ (ret (addr e) kont)]
+
+;APP AND APPLY
+[(eval call env kont)
+ (= call (app ef [eas ...]))
+ -->
+ (eval ef env (appk call [] eas env kont))]
+
+[(eval call env kont)
+ (= call (appl ef ea))
+ -->
+ (eval ef env (applak call ea env kont))]
+
+;IF CASE
+[(eval (if guard tExp fExp) env kont)
+ -->
+ (eval guard env (if-k tExp fExp env kont))]
+
+;LET CASE
+[(eval (let [(binding lhs rhs) bind-rest ...] body) env kont)
+ -->
+ (eval rhs env (letk body [lhs] [] bind-rest env kont))]
+
+;---------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;RET CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;---------------------------------------------------------------------;
+;LAMBDA AND FUNC
+[(ret a (appk call [as ...] [ea0 ea-rest ...] env kont))
+ -->
+ (eval ea0 env (appk call [as ... a] [ea-rest ...] env kont))]
+
+[(ret a (appk call [af as ...] [] env kont))
+ (store af vf)
+ -->
+ (apply call env vf (fixedarg [as ... a]) kont)]
+
+[(ret af (appk call [] [] env kont))
+ (store af vf)
+ -->
+ (apply call env vf (fixedarg []) kont)]
+
+[(ret af (applak call ea env kont))
+ -->
+ (eval ea env (applfk call af kont))]
+
+[(ret a (applfk call af kont))
+ (store af vf)
+ -->
+ (apply call vf (vararg a) kont)]
+
+[(ret a (kaddr eb))
+ -->
+ (ret a {store (kaddr eb)})]
+
+;IF CASES
+[(ret ga (if-k tExp fExp env kont))
+ (store ga (bool "t"))
+ --> 
+ (eval tExp env kont)]
+
+[(ret ga (if-k tExp fExp env kont))
+ (store ga (bool "f"))
+ --> 
+ (eval fExp env kont)]
+
+[(ret (saddr _) (if-k tExp fExp env kont))
+ --> 
+ (eval tExp env kont)
+ (eval fExp env kont)]
+
+;LET CASE
+[(ret a (letk body [xs ...] [as ...] [(binding lhs rhs) bind-rest ...] env kont))
+ -->
+ (eval rhs env (letk body [xs ... lhs] [as ... a] bind-rest env kont))]
+
+[(ret a (letk body [xs ...] [as ...] [] envlet kont))
+ -->
+ (store (kaddr body) kont)
+ (do-fixed-prop-all xs [as ... a])
+ (eval body {ext-all !(do-ext-all envlet xs)} (kaddr body))] ;AJKSBDJKAHSDLKJASJKD EDIT HERE
+
+
+
+
+;---------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;APPLY CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;---------------------------------------------------------------------;
+;DEFINE --> CLOSURE
+[(apply call env (define fname params body) args kont)
+ --> 
+ (apply call env (clo (lambda params body) []) args kont)]
+
+;DEFINE-PRIM HANDLING (NOT SPECIALIZED)
+[(= e (apply _ (define-prim fname _) args kont))
+ (~ specialized-prim fname)
+ -->
+ (store (saddr e) (state e))
+ (ret (saddr e) kont)]
+
+;SPECIALIZED PRIMS
+(specialized-prim "cons")
+  [(= e (apply _ (define-prim "cons" _) (fixedarg [a0 a1]) kont))
+  (store a1 (list-of as))
+  -->
+  (store (addr e) (list-of [a0 as ...]))
+  (ret (addr e) kont)]
+
+  ;VARIADIC
+  [(= e (apply _ (define-prim "cons" _) (vararg a) kont))
+  (store a (list-of as))
+  -->
+  (do-store-addr-union (addr e) as [])
+  (ret (addr e) kont)]
+
+  ;When the next address points to a list-of
+  [(do-store-addr-union addr [a as ...] [union-as ...])
+  (store a (list-of under-as))
+  -->
+  (do-store-addr-union addr as [a under-as ... union-as ...])]
+
+  ;When the next address points to a single addr
+  [(do-store-addr-union addr [a as ...] [union-as ...])
+  (store a val)
+  (non-list-value val)
+  -->
+  (do-store-addr-union addr as [a union-as])]
+
+   [(do-store-addr-union addr [] [union-as ...])
+  -->
+  (store addr (list-of union-as))]
+
+
+(specialized-prim "null?")
+  [(= e (apply _ (define-prim "null?" _) (fixedarg [a]) kont))
+   (store a (list-of as))
+   (= as [])
+   -->
+   (store (addr e) (bool "t"))]
+
+  [(= e (apply _ (define-prim "null?" _) (fixedarg [a]) kont))
+   (store a (list-of [a0 as ...]))
+   -->
+   (store (addr e) (bool "t"))
+   (store (addr e) (bool "f"))]
+
+
+(specialized-prim "car")
+ [(= e (apply _ (define-prim "car" _) (fixedarg [a]) kont))
+  (store a (list-of [_ ... ai _ ...]))
+  -->
+  (store (addr e) ai)
+  (ret (addr e) kont)]
+
+(specialized-prim "cdr")
+ [(= e (apply _ (define-prim "cdr" _) (fixedarg [a]) kont))
+  (store a (list-of as))
+   -->
+  (store (addr e) (list-of as))
+  (ret (addr e) kont)]
+
+(specialized-prim "list")
+ [(= e (apply _ (define-prim "list" _) (fixedarg as) kont))
+  -->
+  (store (addr e) (list-of as))
+  (ret (addr e) kont)]
+
+ [(= e (apply _ (define-prim "list" _) (vararg a) kont))
+  (store a (list-of as))
+  -->
+  (store (addr e) (list-of as))
+  (ret (addr e) kont)]
+
+
+
+ 
+
+;FIXED ARG
+[(apply call envcall (clo (lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) kont)
+ --> 
+ (store (kaddr eb) kont)
+ (= envtick {tick !(do-tick envcall call)})
+ (do-fixed-prop-all envtick xs as)
+ (eval eb envlam (kaddr eb))
+ [(free y eb)
+  -->
+  (store-flow (addr envlam y) (addr envtick y))]]
+
+[(apply call envcall (clo (lambda (varparam x) eb) envlam) (fixedarg [as ...]) kont)
+ --> 
+ (store (kaddr eb) kont)
+ (= envtick {tick !(do-tick envcall call)})
+ (store (addr envtick x) (list-of as))
+ (eval eb envlam (kaddr eb))
+ [(free y eb) 
+  -->
+  (store-flow (addr envlam y) (addr envtick y))]]
+
+;VARIADIC ARG
+[(apply call envcall (clo (lambda (varparam x) eb) envlam) (vararg a) kont)
+ --> 
+ (store (kaddr eb) kont)
+ (= envtick {tick !(do-tick envcall call)})
+ (store-flow a (addr envtick x))
+ (eval eb envlam (kaddr eb))
+ [(free y eb)
+  -->
+  (store-flow (addr envlam y) (addr envtick y))]]
+
+[(apply call envcall (clo (lambda (fixedparam [xs ...]) eb) envlam) (vararg a) kont)
+ (store a (list-of as))
+ -->
+ (store (kaddr eb) kont)
+ (= envtick {tick !(do-tick envcall call)})
+ (do-var-prop-all envtick xs as)
+ (eval eb envlam (kaddr eb))
+ [(free y eb)
+  -->
+  (store-flow (addr envlam y) (addr envtick y))]]
+
+
+
+
+
+;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+;DO-EXT-ALL/EXT-ALL
+; [-->
+;  (ext-all ?(do-ext-all env [x x-rest ...])
+;           {ext-all !(do-ext-all (env-set env x (addr x)) x-rest)})]
+
+; (ext-all ?(do-ext-all env []) env)
+
+
+;DO-VIXED-PROP-ALL
+[(do-fixed-prop-all env [x x-rest ...] [a a-rest ...])
+ -->
+ (do-fixed-prop-all env x-rest a-rest)
+ (store-flow a (addr env x))]
+
+
+;DO-VAR-PROP-ALL
+[(do-var-prop-all envtick [x x-rest ...] [a a-rest ...])
+ -->
+ (do-var-prop-all-h envtick [x x-rest ...] [a a-rest ...] [a a-rest ...])]
+
+[(do-var-prop-all-h envtick [x x-rest ...] [a a-rest ...] a-old)
+ -->
+ (do-var-prop-all-h envtick [x x-rest ...] a-rest a-old)
+ (store-flow a (addr envtick x))]
+
+
+[(do-var-prop-all-h envtick [x x-rest ...] [] a-old)
+ -->
+ (do-var-prop-all-h envtick x-rest a-old a-old)]
+
+;STORE-FLOW
+[(store a v)
+ (store-flow a a1)
+ -->
+ (store a1 v)]
+
+;ENV HANDLING
+(env-map ?(env-set env x addr) x addr)
+
+
+[(=/= x y)
+ (env-set _ y _)
+ -->
+ (env-map ?(env-set env x _) y {env-map env y})]
+
+
+ (answer ?(ret (addr a) (halt)) {store (addr a)})
+ (answer ?(ret (saddr a) (halt)) {store (saddr a)})
+
+ 
+
+

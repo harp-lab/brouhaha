@@ -10,7 +10,13 @@
 ;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;FREE VARIABLES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
-(non-list-value (or ?(addr _) ?(quote _) ?(string _) ?(bool _) ?(state _)))
+(non-list-value ?(addr _))
+(non-list-value ?(quote _))
+(non-list-value ?(string _))
+(non-list-value ?(bool _))
+(non-list-value ?(state _))
+
+; (non-list-value (or (addr _) (quote _) (string _) (bool _) (state _)))
 
 ;REF VARIABLES
 (free x ?(ref x))
@@ -201,7 +207,7 @@
 
 [(ret a (letk body [xs ...] [as ...] [] envlet kont))
  -->
- (store (kaddr body) kont).
+ (store (kaddr body) kont)
  (do-fixed-prop-all xs [as ... a])
  (eval body {ext-all !(do-ext-all envlet xs)} (kaddr body))] ;AJKSBDJKAHSDLKJASJKD EDIT HERE
 
@@ -218,7 +224,7 @@
 
 ;DEFINE-PRIM HANDLING (NOT SPECIALIZED)
 [(= e (apply _ (define-prim fname _) args kont))
- ~(specialized-prim fname)
+ (~ specialized-prim fname)
  -->
  (store (saddr e) (state e))
  (ret (saddr e) kont)]
