@@ -12,7 +12,7 @@
 ;----------------------------------------------------------------------;
 (non-list-value ?(addr _))
 (non-list-value ?(saddr _))
-(non-list-value ?(faddr _))
+(non-list-value ?(faddr _ _))
 (non-list-value ?(quote _))
 (non-list-value ?(string _))
 (non-list-value ?(bool _))
@@ -207,11 +207,11 @@
  -->
  (eval rhs env (letk body [xs ... lhs] [as ... a] bind-rest env kont))]
 
-[(ret a (letk body [xs ...] [as ...] [] envlet kont))
- -->
- (store (kaddr body) kont)
- (do-fixed-prop-all xs [as ... a])
- (eval body {ext-all !(do-ext-all envlet xs)} (kaddr body))] ;AJKSBDJKAHSDLKJASJKD EDIT HERE
+; [(ret a (letk body [xs ...] [as ...] [] envlet kont))
+;  -->
+;  (store (kaddr body) kont)
+;  (do-fixed-prop-all xs [as ... a])
+;  (eval body {ext-all !(do-ext-all envlet xs)} (kaddr body))] ;AJKSBDJKAHSDLKJASJKD EDIT HERE
 
 
 
