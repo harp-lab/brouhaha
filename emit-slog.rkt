@@ -17,21 +17,21 @@
     (match def
       [`(define (,fname ,(? symbol? xs) ...)
           ,body)
-       (format "(store (faddr [] \"~a\") (define \"~a\" (fixedparam [~a]) ~a))\n"
+       (format "(store (addr  \"~a\") (define \"~a\" (fixedparam [~a]) ~a))\n"
                fname
                fname
                (foldr string-append "" (map (lambda (x) (string-append x " ")) (map sym->qstr xs)))
                (write-exp body))]
       [`(define (,fname . ,(? symbol? params))
           ,body)
-       (format "(store (faddr [] \"~a\") (define \"~a\" (varparam ~a) ~a))\n"
+       (format "(store (addr \"~a\") (define \"~a\" (varparam ~a) ~a))\n"
                fname
                fname
                (sym->qstr params)
                (write-exp body))]
       [`(define-prim ,fname ,param-counts ...)
         (string-append 
-              (format "(store (faddr [] \"~a\") (define-prim \"~a\" (varparam \"lst\")))\n"
+              (format "(store (addr \"~a\") (define-prim \"~a\" (varparam \"lst\")))\n"
                     fname
                     fname)
               (string-append 
@@ -83,20 +83,8 @@
         ;;;   [else (foldr string-append "" `("(app " ,(write-exp ef) " [" ,@(map write-exp eas) "])"))])
         (foldr string-append "" `("(app " ,(write-exp ef) " [" ,@(map write-exp eas) "])"))
        ]))
-  (define (emit-top-level-env program)
-    (format "(top-level-env ~a)"
-            (foldr (lambda (def code)
-                     (match def
-                       [`(define (,fname . ,_)
-                           ,_)
-                        (format "(env-set ~a \"~a\" (addr \"~a\"))" code fname fname)]
-                       [`(define-prim ,fname ,param-counts ...)
-                        (format "(env-set ~a \"~a\" (addr \"~a\"))" code fname fname)]  
-                      ))
-                   "(empty)"
-                   program)))
 
-  (format "~a" (foldr string-append (emit-top-level-env program) (map write-def program))))
+  (format "~a" (foldr string-append "" (map write-def program))))
 
 ; (write-program-for-slog `((define (call) (+ '1 '2))
 ;   (define (brouhaha_main) (call))))
