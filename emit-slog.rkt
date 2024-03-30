@@ -17,21 +17,27 @@
     (match def
       [`(define (,fname ,(? symbol? xs) ...)
           ,body)
-       (format "(store (addr  \"~a\") (define \"~a\" (fixedparam [~a]) ~a))\n"
-               fname
-               fname
-               (foldr string-append "" (map (lambda (x) (string-append x " ")) (map sym->qstr xs)))
-               (write-exp body))]
+        (format "(store (addr \"~a\") (define \"~a\" (fixedparam [~a]) ~a))\n\t(store (faddr [] \"~a\") (addr \"~a\"))\n"
+              fname
+              fname
+              (foldr string-append "" (map (lambda (x) (string-append x " ")) (map sym->qstr xs)))
+              (write-exp body)
+              fname
+              fname)]
       [`(define (,fname . ,(? symbol? params))
           ,body)
-       (format "(store (addr \"~a\") (define \"~a\" (varparam ~a) ~a))\n"
+       (format "(store (addr \"~a\") (define \"~a\" (varparam ~a) ~a))\n\t(store (faddr [] \"~a\") (addr \"~a\"))\n"
                fname
                fname
                (sym->qstr params)
-               (write-exp body))]
+               (write-exp body)
+               fname
+               fname)]
       [`(define-prim ,fname ,param-counts ...)
         (string-append 
-              (format "(store (addr \"~a\") (define-prim \"~a\" (varparam \"lst\")))\n"
+              (format "(store (addr \"~a\") (define-prim \"~a\" (varparam \"lst\")))\n\t(store (faddr [] \"~a\") (addr \"~a\"))\n"
+                    fname
+                    fname
                     fname
                     fname)
               (string-append 
@@ -83,6 +89,18 @@
         ;;;   [else (foldr string-append "" `("(app " ,(write-exp ef) " [" ,@(map write-exp eas) "])"))])
         (foldr string-append "" `("(app " ,(write-exp ef) " [" ,@(map write-exp eas) "])"))
        ]))
+  (define (emit-top-level-env program)
+    (format "(top-level-env ~a)"
+            (foldr (lambda (def code)
+                     (match def
+                       [`(define (,fname . ,_)
+                           ,_)
+                        (format "(env-set ~a \"~a\" (addr \"~a\"))" code fname fname)]
+                       [`(define-prim ,fname ,param-counts ...)
+                        (format "(env-set ~a \"~a\" (addr \"~a\"))" code fname fname)]  
+                      ))
+                   "(empty)"
+                   program)))
 
   (format "~a" (foldr string-append "" (map write-def program))))
 

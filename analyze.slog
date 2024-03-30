@@ -15,6 +15,7 @@
 (non-list-value ?(faddr _ _))
 (non-list-value ?(quote _))
 (non-list-value ?(string _))
+(non-list-value ?(int _))
 (non-list-value ?(bool _))
 (non-list-value ?(state _))
 
@@ -239,10 +240,17 @@
   (store (addr e) (list-of [a0 as ...]))
   (ret (addr e) kont)]
 
+  [(= e (apply _ _ (define-prim "cons" _) (fixedarg [a0 a1]) kont))
+  (store a1 val)
+  (non-list-value val)
+  -->
+  (store (addr e) (list-of [a0 a1]))
+  (ret (addr e) kont)]
+
   ;VARIADIC
   [(= e (apply _ _ (define-prim "cons" _) (vararg a) kont))
   (store a (list-of as))
-  -->
+  --> 
   (do-store-addr-union (addr e) as [])
   (ret (addr e) kont)]
 
@@ -394,13 +402,13 @@
  (store a1 v)]
 
 ;ENV HANDLING
-(env-map ?(env-set env x addr) x addr)
+; (env-map ?(env-set env x addr) x addr)
 
 
-[(=/= x y)
- (env-set _ y _)
- -->
- (env-map ?(env-set env x _) y {env-map env y})]
+; [(=/= x y)
+;  (env-set _ y _)
+;  -->
+;  (env-map ?(env-set env x _) y {env-map env y})]
 
 
  (answer ?(ret (addr a) (halt)) {store (addr a)})

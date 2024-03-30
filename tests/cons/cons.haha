@@ -1,5 +1,5 @@
 (define (call)
-    (cons 2 3)
+    (cons 2 (list 3))
     ;;; (apply cons (list 12 2))
     ; (cons 1 (cons 20 (list)))
 
