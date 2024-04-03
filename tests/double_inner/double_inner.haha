@@ -1,5 +1,5 @@
 (define (call-f f x y z)
-    (f (f 10 x) (f x y z) (f 10 x y z))
+    (f (f 10 x) (f x y z) (f 10 x y y))
   ;;; (f 1 2 3)
 )
 

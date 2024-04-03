@@ -97,6 +97,7 @@
  (free x let)]
 
 
+
 ;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;START RULE;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
@@ -224,11 +225,11 @@
  -->
  (eval rhs env (letk body [xs ... lhs] [as ... a] bind-rest env kont))]
 
-; [(ret a (letk body [xs ...] [as ...] [] envlet kont))
-;  -->
-;  (store (kaddr body) kont)
-;  (do-fixed-prop-all xs [as ... a])
-;  (eval body {ext-all !(do-ext-all envlet xs)} (kaddr body))] ;AJKSBDJKAHSDLKJASJKD EDIT HERE
+[(ret a (letk body [xs ...] [as ...] [] envlet kont))
+ -->
+ (store (kaddr body) kont)
+ (do-fixed-prop-all xs [as ... a])
+ (eval body {ext-all !(do-ext-all envlet xs)} (kaddr body))]
 
 
 
@@ -239,7 +240,7 @@
 ;DEFINE --> CLOSURE
 [(apply call env (define fname params body) args kont)
  --> 
- (apply call env (clo (lambda params body) []) args kont)]
+ (apply call env (clo (def-lambda params body) []) args kont)]
 
 ;DEFINE-PRIM HANDLING (NOT SPECIALIZED)
 [(= e (apply _ _ (define-prim fname _) args kont))
@@ -332,7 +333,7 @@
 
 
 ;FIXED ARG
-[(apply call envcall (clo (lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) kont)
+[(apply call envcall (clo (def-lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) kont)
  --> 
  (store (kaddr eb) kont)
  (= envtick {tick !(do-tick envcall call)})
@@ -342,7 +343,7 @@
   -->
   (store-flow (f-addr envtick y) (f-addr envlam y))]]
 
-[(apply call envcall (clo (lambda (varparam x) eb) envlam) (fixedarg [as ...]) kont)
+[(apply call envcall (clo (def-lambda (varparam x) eb) envlam) (fixedarg [as ...]) kont)
  --> 
  (store (kaddr eb) kont)
  (= envtick {tick !(do-tick envcall call)})     
@@ -353,7 +354,7 @@
   (store-flow (f-addr envtick y) (f-addr envlam y))]]
 
 ;VARIADIC ARG
-[(apply call envcall (clo (lambda (varparam x) eb) envlam) (vararg a) kont)
+[(apply call envcall (clo (def-lambda (varparam x) eb) envlam) (vararg a) kont)
  --> 
  (store (kaddr eb) kont)
  (= envtick {tick !(do-tick envcall call)})
@@ -363,7 +364,7 @@
   -->
   (store-flow (f-addr envtick y) (f-addr envlam y))]]
 
-[(apply call envcall (clo (lambda (fixedparam [xs ...]) eb) envlam) (vararg a) kont)
+[(apply call envcall (clo (def-lambda (fixedparam [xs ...]) eb) envlam) (vararg a) kont)
  (store a (list-of-vals as))
  -->
  (store (kaddr eb) kont)
@@ -381,14 +382,6 @@
 ;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
-;DO-EXT-ALL/EXT-ALL
-; [-->
-;  (ext-all ?(do-ext-all env [x x-rest ...])
-;           {ext-all !(do-ext-all (env-set env x (addr x)) x-rest)})]
-
-; (ext-all ?(do-ext-all env []) env)
-
-
 ;DO-VIXED-PROP-ALL
 [(do-fixed-prop-all envtick [x x-rest ...] [a a-rest ...])
  -->
@@ -416,15 +409,6 @@
  (store-flow a a1)
  -->
  (store a1 v)]
-
-;ENV HANDLING
-; (env-map ?(env-set env x addr) x addr)
-
-
-; [(=/= x y)
-;  (env-set _ y _)
-;  -->
-;  (env-map ?(env-set env x _) y {env-map env y})]
 
 
  (answer ?(ret (addr a) (halt)) {store (addr a)})
