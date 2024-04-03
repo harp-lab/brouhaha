@@ -42,7 +42,7 @@
       ))
   (define (write-exp exp)
     (match exp
-      [`',(? symbol? e) (format "(symbol \"~a\")" x)]
+      [`',(? symbol? x) (format "(symbol \"~a\")" x)]
       [`',e (write-exp e)]
       [(? symbol? x) (format "(ref \"~a\")" x)]
       [(? boolean? x) (if x "(bool \"t\")" "(bool \"f\")")]
