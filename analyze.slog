@@ -169,9 +169,10 @@
  (eval guard env (if-k tExp fExp env kont))]
 
 ;LET CASE
-[(eval (let [(binding lhs rhs) bind-rest ...] body) env kont)
+[(eval call env kont)
+ (= call (let [(binding lhs rhs) bind-rest ...] body))
  -->
- (eval rhs env (letk body [lhs] [] bind-rest env kont))]
+ (eval rhs env (letk call body [lhs] [] bind-rest env kont))]
 
 ;---------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;RET CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -200,9 +201,9 @@
  -->
  (apply call env vf (vararg a) kont)]
 
-[(ret a (kaddr eb))
+[(ret a (k-addr eb))
  -->
- (ret a {store (kaddr eb)})]
+ (ret a {store (k-addr eb)})]
 
 ;IF CASES
 [(ret ga (if-k tExp fExp env kont))
@@ -221,15 +222,16 @@
  (eval fExp env kont)]
 
 ;LET CASE
-[(ret a (letk body [xs ...] [as ...] [(binding lhs rhs) bind-rest ...] env kont))
+[(ret a (letk call body [xs ...] [as ...] [(binding lhs rhs) bind-rest ...] env kont))
  -->
- (eval rhs env (letk body [xs ... lhs] [as ... a] bind-rest env kont))]
+ (eval rhs env (letk call body [xs ... lhs] [as ... a] bind-rest env kont))]
 
-[(ret a (letk body [xs ...] [as ...] [] envlet kont))
+[(ret a (letk call body [xs ...] [as ...] [] envlet kont))
  -->
- (store (kaddr body) kont)
- (do-fixed-prop-all xs [as ... a])
- (eval body {ext-all !(do-ext-all envlet xs)} (kaddr body))]
+ (= envtick {tick !(do-tick envlet call)})
+ (store (k-addr body) kont)
+ (do-fixed-prop-all envlet xs [as ... a])
+ (eval body envtick (k-addr body))]
 
 
 
@@ -240,7 +242,7 @@
 ;DEFINE --> CLOSURE
 [(apply call env (define fname params body) args kont)
  --> 
- (apply call env (clo (lambda params body) []) args kont)]
+ (apply call env (clo (lambda params body) []) args kont)]  
 
 ;DEFINE-PRIM HANDLING (NOT SPECIALIZED)
 [(= e (apply _ _ (define-prim fname _) args kont))
@@ -335,20 +337,20 @@
 ;FIXED ARG
 [(apply call envcall (clo (lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) kont)
  --> 
- (store (kaddr eb) kont)
+ (store (k-addr eb) kont)
  (= envtick {tick !(do-tick envcall call)})
  (do-fixed-prop-all envtick xs as)
- (eval eb envlam (kaddr eb))
+ (eval eb envlam (k-addr eb))
  [(free y eb)
   -->
   (store-flow (f-addr envtick y) (f-addr envlam y))]]
 
 [(apply call envcall (clo (lambda (varparam x) eb) envlam) (fixedarg [as ...]) kont)
  --> 
- (store (kaddr eb) kont)
+ (store (k-addr eb) kont)
  (= envtick {tick !(do-tick envcall call)})     
  (store (f-addr envtick x) (list-of-vals as))
- (eval eb envlam (kaddr eb))
+ (eval eb envlam (k-addr eb))
  [(free y eb) 
   -->
   (store-flow (f-addr envtick y) (f-addr envlam y))]]
@@ -356,10 +358,10 @@
 ;VARIADIC ARG
 [(apply call envcall (clo (lambda (varparam x) eb) envlam) (vararg a) kont)
  --> 
- (store (kaddr eb) kont)
+ (store (k-addr eb) kont)
  (= envtick {tick !(do-tick envcall call)})
  (store-flow a (f-addr envtick x))
- (eval eb envlam (kaddr eb))
+ (eval eb envlam (k-addr eb))
  [(free y eb)
   -->
   (store-flow (f-addr envtick y) (f-addr envlam y))]]
@@ -367,10 +369,10 @@
 [(apply call envcall (clo (lambda (fixedparam [xs ...]) eb) envlam) (vararg a) kont)
  (store a (list-of-vals as))
  -->
- (store (kaddr eb) kont)
+ (store (k-addr eb) kont)
  (= envtick {tick !(do-tick envcall call)})
  (do-var-prop-all envtick xs as)
- (eval eb envlam (kaddr eb))
+ (eval eb envlam (k-addr eb))
  [(free y eb)
   -->
   (store-flow (f-addr envtick y) (f-addr envlam y))]]
