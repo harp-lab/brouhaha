@@ -62,7 +62,7 @@
 ;;; (define-prim pair? 1)
 ;;; (define-prim positive? 1)
 ;;; (define-prim negative? 1)
-;;; (define-prim list 1 2 3 4)
+(define-prim list 1 2 3 4)
 
 ;; other predicates and HOFs
 ;;; (define (list . x) x)

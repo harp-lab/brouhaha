@@ -413,8 +413,8 @@
  (store a1 v)]
 
 
- (answer ?(ret (addr a) (halt)) {store (addr a)})
  (answer ?(ret (s-addr a) (halt)) {store (s-addr a)})
+ (answer ?(ret (f-addr _ a) (halt)) {store (f-addr _ a)})
  
 
 
