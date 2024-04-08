@@ -12,12 +12,12 @@
 
 ;;; ; prim-ops
 ;;; (define-prim modulo 2)
-;;; (define-prim null? 1)
+(define-prim null? 1)
 ;;; (define-prim equal? 2)
 ;;; (define-prim eq? 2)
 ;;; (define-prim cons 2)
 ;;; (define-prim car 1)
-;;; (define-prim cdr 1)
+(define-prim cdr 1)
 ;;; (define-prim float->int 1)
 ;;; (define-prim int->float 1)
 
@@ -87,10 +87,10 @@
 ;;; (define (member? x lst)
 ;;;   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
 
-;;; (define (length lst)
-;;;   (if (null? lst)
-;;;       0
-;;;       (+ 1 (length (cdr lst)))))
+(define (length lst)
+  (if (null? lst)
+      0
+      (+ 1 (length (cdr lst)))))
 
 ;;; (define (map proc lst)
 ;;;   (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))

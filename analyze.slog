@@ -149,8 +149,8 @@
 [(eval e env kont)
  (= e (lambda _ _))
  -->
- (store (addr e) (clo e env))
- (ret (addr e) kont)]
+ (store (f-addr env e) (clo e env))
+ (ret (f-addr env e) kont)]
         
 ;APP AND APPLY
 [(eval call env kont)
@@ -253,25 +253,25 @@
 
 ;SPECIALIZED PRIMS
 (specialized-prim "cons")
-  [(= e (apply _ _ (define-prim "cons" _) (fixedarg [a0 a1]) kont))
+  [(= e (apply _ env (define-prim "cons" _) (fixedarg [a0 a1]) kont))
   (store a1 (list-of-vals as))
   -->
-  (store (addr e) (list-of-vals [a0 as ...]))
-  (ret (addr e) kont)]
+  (store (f-addr env e) (list-of-vals [a0 as ...]))
+  (ret (f-addr env e) kont)]
 
-  [(= e (apply _ _ (define-prim "cons" _) (fixedarg [a0 a1]) kont))
+  [(= e (apply _ env (define-prim "cons" _) (fixedarg [a0 a1]) kont))
   (store a1 val)
   (non-list-value val)
   -->
-  (store (addr e) (list-of-vals [a0 a1]))
-  (ret (addr e) kont)]
+  (store (f-addr env e) (list-of-vals [a0 a1]))
+  (ret (f-addr env e) kont)]
 
   ;VARIADIC
-  [(= e (apply _ _ (define-prim "cons" _) (vararg a) kont))
+  [(= e (apply _ env (define-prim "cons" _) (vararg a) kont))
   (store a (list-of-vals as))
   --> 
-  (do-store-addr-union (addr e) as [])
-  (ret (addr e) kont)]
+  (do-store-addr-union (f-addr env e) as [])
+  (ret (f-addr env e) kont)]
 
   ;When the next address points to a list-of-vals
   [(do-store-addr-union addr [a as ...] [union-as ...])
@@ -292,44 +292,44 @@
 
 
 (specialized-prim "null?")
-  [(= e (apply _ _ (define-prim "null?" _) (fixedarg [a]) kont))
+  [(= e (apply _ env (define-prim "null?" _) (fixedarg [a]) kont))
    (store a (list-of-vals as))
    (= as [])
    -->
-   (store (addr e) (bool "t"))]
+   (store (f-addr env e) (bool "t"))]
 
-  [(= e (apply _ _ (define-prim "null?" _) (fixedarg [a]) kont))
+  [(= e (apply _ env (define-prim "null?" _) (fixedarg [a]) kont))
    (store a (list-of-vals [a0 as ...]))
    -->
-   (store (addr e) (bool "t"))
-   (store (addr e) (bool "f"))]
+   (store (f-addr env e) (bool "t"))
+   (store (f-addr env e) (bool "f"))]
 
 
 (specialized-prim "car")
- [(= e (apply _ _ (define-prim "car" _) (fixedarg [a]) kont))
+ [(= e (apply _ env (define-prim "car" _) (fixedarg [a]) kont))
   (store a (list-of-vals [_ ... ai _ ...]))
   -->
-  (store (addr e) ai)
-  (ret (addr e) kont)]
+  (store (f-addr env e) ai)
+  (ret (f-addr env e) kont)]
 
 (specialized-prim "cdr")
- [(= e (apply _ _ (define-prim "cdr" _) (fixedarg [a]) kont))
+ [(= e (apply _ env (define-prim "cdr" _) (fixedarg [a]) kont))
   (store a (list-of-vals as))
    -->
-  (store (addr e) (list-of-vals as))
-  (ret (addr e) kont)]
+  (store (f-addr env e) (list-of-vals as))
+  (ret (f-addr env e) kont)]
 
 (specialized-prim "list")
- [(= e (apply _ _ (define-prim "list" _) (fixedarg as) kont))
+ [(= e (apply _ env (define-prim "list" _) (fixedarg as) kont))
   -->
-  (store (addr e) (list-of-vals as))
-  (ret (addr e) kont)]
+  (store (f-addr env e) (list-of-vals as))
+  (ret (f-addr env e) kont)]
 
- [(= e (apply _ _ (define-prim "list" _) (vararg a) kont))
+ [(= e (apply _ env (define-prim "list" _) (vararg a) kont))
   (store a (list-of-vals as))
   -->
-  (store (addr e) (list-of-vals as))
-  (ret (addr e) kont)]
+  (store (f-addr env e) (list-of-vals as))
+  (ret (f-addr env e) kont)]
 
 
 
