@@ -185,12 +185,12 @@
 [(ret a (appk call [af as ...] [] env kont))
  (store af vf)
  -->
- (apply call env vf (fixedarg [as ... a]) kont)]
+ (apply vf (fixedarg [as ... a]) env kont call)]
 
 [(ret af (appk call [] [] env kont))
  (store af vf)
  -->
- (apply call env vf (fixedarg []) kont)]
+ (apply vf (fixedarg []) env kont call)]
 
 [(ret af (applak call ea env kont))
  -->
@@ -199,7 +199,7 @@
 [(ret a (applfk call af env kont))
  (store af vf)
  -->
- (apply call env vf (vararg a) kont)]
+ (apply vf (vararg a) env kont call)]
 
 [(ret a (k-addr eb))
  -->
@@ -240,12 +240,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;APPLY CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;---------------------------------------------------------------------;
 ;DEFINE --> CLOSURE
-[(apply call env (define fname params body) args kont)
+[(apply (define fname params body) args env kont call)
  --> 
- (apply call env (clo (lambda params body) []) args kont)]  
+ (apply (clo (lambda params body) []) args env kont call)]  
 
 ;DEFINE-PRIM HANDLING (NOT SPECIALIZED)
-[(= e (apply _ _ (define-prim fname _) args kont))
+[(= e (apply (define-prim fname _) args _ kont _))
  (~ specialized-prim fname)
  -->
  (store (s-addr e) (state e))
@@ -253,13 +253,13 @@
 
 ;SPECIALIZED PRIMS
 (specialized-prim "cons")
-  [(= e (apply _ env (define-prim "cons" _) (fixedarg [a0 a1]) kont))
+  [(= e (apply (define-prim "cons" _) (fixedarg [a0 a1]) env kont _))
   (store a1 (list-of-vals as))
   -->
   (store (f-addr env e) (list-of-vals [a0 as ...]))
   (ret (f-addr env e) kont)]
 
-  [(= e (apply _ env (define-prim "cons" _) (fixedarg [a0 a1]) kont))
+  [(= e (apply (define-prim "cons" _) (fixedarg [a0 a1]) env kont _))
   (store a1 val)
   (non-list-value val)
   -->
@@ -267,7 +267,7 @@
   (ret (f-addr env e) kont)]
 
   ;VARIADIC
-  [(= e (apply _ env (define-prim "cons" _) (vararg a) kont))
+  [(= e (apply (define-prim "cons" _) (vararg a) env kont call))
   (store a (list-of-vals as))
   --> 
   (do-store-addr-union (f-addr env e) as [])
@@ -292,13 +292,13 @@
 
 
 (specialized-prim "null?")
-  [(= e (apply _ env (define-prim "null?" _) (fixedarg [a]) kont))
+  [(= e (apply (define-prim "null?" _) (fixedarg [a]) env kont _))
    (store a (list-of-vals as))
    (= as [])
    -->
    (store (f-addr env e) (bool "t"))]
 
-  [(= e (apply _ env (define-prim "null?" _) (fixedarg [a]) kont))
+  [(= e (apply (define-prim "null?" _) (fixedarg [a]) env kont _))
    (store a (list-of-vals [a0 as ...]))
    -->
    (store (f-addr env e) (bool "t"))
@@ -306,26 +306,26 @@
 
 
 (specialized-prim "car")
- [(= e (apply _ env (define-prim "car" _) (fixedarg [a]) kont))
+ [(= e (apply (define-prim "car" _) (fixedarg [a]) env kont _))
   (store a (list-of-vals [_ ... ai _ ...]))
   -->
   (store (f-addr env e) ai)
   (ret (f-addr env e) kont)]
 
 (specialized-prim "cdr")
- [(= e (apply _ env (define-prim "cdr" _) (fixedarg [a]) kont))
+ [(= e (apply (define-prim "cdr" _) (fixedarg [a]) env kont _))
   (store a (list-of-vals as))
    -->
   (store (f-addr env e) (list-of-vals as))
   (ret (f-addr env e) kont)]
 
 (specialized-prim "list")
- [(= e (apply _ env (define-prim "list" _) (fixedarg as) kont))
+ [(= e (apply (define-prim "list" _) (fixedarg as) env kont _))
   -->
   (store (f-addr env e) (list-of-vals as))
   (ret (f-addr env e) kont)]
 
- [(= e (apply _ env (define-prim "list" _) (vararg a) kont))
+ [(= e (apply (define-prim "list" _) (vararg a) env kont _))
   (store a (list-of-vals as))
   -->
   (store (f-addr env e) (list-of-vals as))
@@ -335,7 +335,7 @@
 
 
 ;FIXED ARG
-[(apply call envcall (clo (lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) kont)
+[(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) envcall kont call)
  --> 
  (store (k-addr eb) kont)
  (= envtick {tick !(do-tick envcall call)})
@@ -345,7 +345,7 @@
   -->
   (store-flow (f-addr envtick y) (f-addr envlam y))]]
 
-[(apply call envcall (clo (lambda (varparam x) eb) envlam) (fixedarg [as ...]) kont)
+[(apply (clo (lambda (varparam x) eb) envlam) (fixedarg [as ...]) envcall kont call)
  --> 
  (store (k-addr eb) kont)
  (= envtick {tick !(do-tick envcall call)})     
@@ -356,7 +356,7 @@
   (store-flow (f-addr envtick y) (f-addr envlam y))]]
 
 ;VARIADIC ARG
-[(apply call envcall (clo (lambda (varparam x) eb) envlam) (vararg a) kont)
+[(apply (clo (lambda (varparam x) eb) envlam) (vararg a) envcall kont call)
  --> 
  (store (k-addr eb) kont)
  (= envtick {tick !(do-tick envcall call)})
@@ -366,7 +366,7 @@
   -->
   (store-flow (f-addr envtick y) (f-addr envlam y))]]
 
-[(apply call envcall (clo (lambda (fixedparam [xs ...]) eb) envlam) (vararg a) kont)
+[(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) (vararg a) envcall kont call)
  (store a (list-of-vals as))
  -->
  (store (k-addr eb) kont)
