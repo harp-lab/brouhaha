@@ -1,0 +1,538 @@
+(
+ slog-prog
+ ((relation-decl rel___dollorbir__sub1__1__1 $bir-sub1 1 #t 1 (1))
+  (relation-decl rel__list__2__0 list 1 #f 2 (0))
+  (relation-decl
+   rel___dollorrule4__inter__body__1__1
+   $rule4-inter-body
+   1
+   #t
+   1
+   (1))
+  (relation-decl rel___dollorinter__head__3__ $inter-head 0 #f 3 ())
+  (relation-decl rel__length__2__1__2 length 2 #t 2 (1 2))
+  (relation-decl
+   rel___dollorrule1__inter__body__1__1
+   $rule1-inter-body
+   1
+   #t
+   1
+   (1))
+  (relation-decl rel___dollorinter__head1__2__1__2 $inter-head1 2 #t 2 (1 2))
+  (relation-decl
+   rel___dollorhead__stratified__4__1__2__3__4
+   $head-stratified
+   4
+   #t
+   4
+   (1 2 3 4))
+  (relation-decl
+   rel___dollorhead__stratified1__3__2__3
+   $head-stratified1
+   2
+   #f
+   3
+   (2 3))
+  (relation-decl
+   rel___dollorhead__stratified__4__3__4
+   $head-stratified
+   2
+   #f
+   4
+   (3 4))
+  (relation-decl rel__length__2__2 length 1 #f 2 (2))
+  (relation-decl
+   rel___dollorrule2__inter__body__2__1__2
+   $rule2-inter-body
+   2
+   #t
+   2
+   (1 2))
+  (relation-decl
+   rel___dollorrule1__inter__body1__2__1__2
+   $rule1-inter-body1
+   2
+   #t
+   2
+   (1 2))
+  (relation-decl rel__nil__0__0 nil 1 #f 0 (0))
+  (relation-decl
+   rel___dollorrule2__inter__body__2__2
+   $rule2-inter-body
+   1
+   #f
+   2
+   (2))
+  (relation-decl rel__do__length__1__1 do-length 1 #t 1 (1))
+  (relation-decl rel__nil__0__ nil 0 #t 0 ())
+  (relation-decl rel__print__length__res__1__1 print-length-res 1 #t 1 (1))
+  (relation-decl rel___dollorbir__sub__2__1 $bir-sub 1 #f 2 (1))
+  (relation-decl rel__list__2__1__2 list 2 #t 2 (1 2))
+  (relation-decl
+   rel___dollorinter__head__3__1__2__3
+   $inter-head
+   3
+   #t
+   3
+   (1 2 3))
+  (relation-decl
+   rel___dollorrule1__inter__body__1__
+   $rule1-inter-body
+   0
+   #f
+   1
+   ())
+  (relation-decl rel___dollorbir__sub__2__1__2 $bir-sub 2 #t 2 (1 2))
+  (relation-decl rel___dollorunit__1__ $unit 0 #f 1 ())
+  (relation-decl rel__length__2__1 length 1 #f 2 (1))
+  (relation-decl
+   rel___dollorrule4__inter__body__1__
+   $rule4-inter-body
+   0
+   #f
+   1
+   ())
+  (relation-decl
+   rel___dollorhead__stratified1__3__1__2__3
+   $head-stratified1
+   3
+   #t
+   3
+   (1 2 3))
+  (relation-decl rel___dollorunit__1__1 $unit 1 #t 1 (1))
+  (relation-decl
+   rel___dollorrule1__inter__body1__2__
+   $rule1-inter-body1
+   0
+   #f
+   2
+   ())
+  (relation-decl rel___dollorinter__head1__2__1 $inter-head1 1 #f 2 (1))
+  (relation-decl rel__input__list__1__1 input-list 1 #t 1 (1))
+  (relation-decl
+   rel___dollorhead__stratified2__2__1__2
+   $head-stratified2
+   2
+   #t
+   2
+   (1 2)))
+ ((scc-decl
+   scc0
+   0
+   #f
+   ((scc-rel rel___dollorunit__1__1 #t #f))
+   ((fact rel___dollorunit__1__1 ((num 0)))))
+  (scc-decl
+   scc1
+   1
+   #f
+   ((scc-rel rel___dollorunit__1__ #t #f)
+    (scc-rel rel___dollorunit__1__1 #t #f))
+   ((acopy rel___dollorunit__1__ rel___dollorunit__1__1 DELTA (1 0))))
+  (scc-decl
+   scc2
+   2
+   #f
+   ((scc-rel rel___dollorrule1__inter__body__1__1 #t #f)
+    (scc-rel rel___dollorunit__1__ #f #t))
+   ((copy-generate
+     rel___dollorrule1__inter__body__1__1
+     rel___dollorunit__1__
+     FULL
+     (external-function builtin_eq_1 1 ((num 2)) 1 () ((0 (res 0)))))))
+  (scc-decl
+   scc3
+   3
+   #f
+   ((scc-rel rel___dollorrule1__inter__body__1__1 #t #f)
+    (scc-rel rel___dollorrule1__inter__body__1__ #t #f))
+   ((acopy
+     rel___dollorrule1__inter__body__1__
+     rel___dollorrule1__inter__body__1__1
+     DELTA
+     (1 0))))
+  (scc-decl
+   scc4
+   4
+   #f
+   ((scc-rel rel___dollorrule1__inter__body1__2__1__2 #t #f)
+    (scc-rel rel___dollorrule1__inter__body__1__ #f #t))
+   ((copy-generate
+     rel___dollorrule1__inter__body1__2__1__2
+     rel___dollorrule1__inter__body__1__
+     FULL
+     (external-function
+      builtin_eq_1
+      2
+      ((num 1))
+      1
+      ()
+      ((0 (res 0)) (1 (data 1)))))))
+  (scc-decl
+   scc5
+   5
+   #f
+   ((scc-rel rel___dollorrule1__inter__body1__2__1__2 #t #f)
+    (scc-rel rel___dollorrule1__inter__body1__2__ #t #f))
+   ((acopy
+     rel___dollorrule1__inter__body1__2__
+     rel___dollorrule1__inter__body1__2__1__2
+     DELTA
+     (2 0 1))))
+  (scc-decl
+   scc6
+   6
+   #f
+   ((scc-rel rel___dollorinter__head__3__1__2__3 #t #f)
+    (scc-rel rel___dollorrule1__inter__body1__2__ #f #t))
+   ((copy-generate
+     rel___dollorinter__head__3__1__2__3
+     rel___dollorrule1__inter__body1__2__
+     FULL
+     (external-function
+      builtin_eq_1
+      3
+      ((num 3))
+      1
+      ()
+      ((0 (data 1)) (1 (data 2)) (2 (res 0)))))))
+  (scc-decl
+   scc7
+   7
+   #f
+   ((scc-rel rel__nil__0__ #t #f)
+    (scc-rel rel___dollorinter__head__3__1__2__3 #f #f))
+   ((copy rel__nil__0__ rel___dollorinter__head__3__1__2__3 FULL ())))
+  (scc-decl
+   scc8
+   8
+   #f
+   ((scc-rel rel__nil__0__0 #t #f) (scc-rel rel__nil__0__ #t #f))
+   ((acopy rel__nil__0__0 rel__nil__0__ DELTA (0))))
+  (scc-decl
+   scc9
+   9
+   #f
+   ((scc-rel rel___dollorinter__head__3__ #t #f)
+    (scc-rel rel___dollorinter__head__3__1__2__3 #t #f))
+   ((acopy
+     rel___dollorinter__head__3__
+     rel___dollorinter__head__3__1__2__3
+     DELTA
+     (3 0 1 2))))
+  (scc-decl
+   scc10
+   10
+   #f
+   ((scc-rel rel___dollorinter__head__3__ #f #f)
+    (scc-rel rel___dollorhead__stratified__4__1__2__3__4 #t #f)
+    (scc-rel rel__nil__0__ #f #f))
+   ((join
+     rel___dollorhead__stratified__4__1__2__3__4
+     rel__nil__0__
+     FULL
+     rel___dollorinter__head__3__
+     FULL
+     (2 3 4 0))))
+  (scc-decl
+   scc11
+   11
+   #f
+   ((scc-rel rel___dollorhead__stratified__4__1__2__3__4 #f #f)
+    (scc-rel rel__list__2__1__2 #t #f))
+   ((copy
+     rel__list__2__1__2
+     rel___dollorhead__stratified__4__1__2__3__4
+     FULL
+     (2 3))))
+  (scc-decl
+   scc12
+   12
+   #f
+   ((scc-rel rel___dollorhead__stratified__4__1__2__3__4 #t #f)
+    (scc-rel rel___dollorhead__stratified__4__3__4 #t #f))
+   ((acopy
+     rel___dollorhead__stratified__4__3__4
+     rel___dollorhead__stratified__4__1__2__3__4
+     DELTA
+     (2 3 4 0 1))))
+  (scc-decl
+   scc13
+   13
+   #t
+   ((scc-rel rel__list__2__1__2 #t #f)
+    (scc-rel rel___dollorhead__stratified1__3__2__3 #t #t)
+    (scc-rel rel___dollorhead__stratified__4__3__4 #f #f)
+    (scc-rel rel___dollorhead__stratified1__3__1__2__3 #t #t)
+    (scc-rel rel___dollorhead__stratified2__2__1__2 #t #f))
+   ((copy
+     rel__list__2__1__2
+     rel___dollorhead__stratified1__3__1__2__3
+     DELTA
+     (1 2))
+    (join
+     rel___dollorhead__stratified1__3__1__2__3
+     rel__list__2__1__2
+     DELTA
+     rel___dollorhead__stratified__4__3__4
+     FULL
+     (4 5 2))
+    (join
+     rel___dollorhead__stratified2__2__1__2
+     rel__list__2__1__2
+     FULL
+     rel___dollorhead__stratified1__3__2__3
+     DELTA
+     (4 2))
+    (copy
+     rel__list__2__1__2
+     rel___dollorhead__stratified2__2__1__2
+     DELTA
+     (0 1))
+    (acopy
+     rel___dollorhead__stratified1__3__2__3
+     rel___dollorhead__stratified1__3__1__2__3
+     DELTA
+     (1 2 3 0))
+    (join
+     rel___dollorhead__stratified2__2__1__2
+     rel__list__2__1__2
+     DELTA
+     rel___dollorhead__stratified1__3__2__3
+     DELTA
+     (4 2))
+    (join
+     rel___dollorhead__stratified2__2__1__2
+     rel__list__2__1__2
+     DELTA
+     rel___dollorhead__stratified1__3__2__3
+     FULL
+     (4 2))))
+  (scc-decl
+   scc14
+   14
+   #f
+   ((scc-rel rel__list__2__1__2 #f #f)
+    (scc-rel rel__input__list__1__1 #t #f)
+    (scc-rel rel___dollorhead__stratified2__2__1__2 #f #t))
+   ((join
+     rel__input__list__1__1
+     rel___dollorhead__stratified2__2__1__2
+     FULL
+     rel__list__2__1__2
+     FULL
+     (3))))
+  (scc-decl
+   scc15
+   15
+   #f
+   ((scc-rel rel__do__length__1__1 #t #f)
+    (scc-rel rel__input__list__1__1 #f #f))
+   ((copy rel__do__length__1__1 rel__input__list__1__1 FULL (0))))
+  (scc-decl
+   scc16
+   16
+   #f
+   ((scc-rel rel__list__2__1__2 #t #f) (scc-rel rel__list__2__0 #t #f))
+   ((acopy rel__list__2__0 rel__list__2__1__2 DELTA (2 0 1))))
+  (scc-decl
+   scc17
+   17
+   #t
+   ((scc-rel rel___dollorinter__head1__2__1__2 #t #f)
+    (scc-rel rel__do__length__1__1 #t #f)
+    (scc-rel rel__list__2__0 #f #f))
+   ((join
+     rel___dollorinter__head1__2__1__2
+     rel__do__length__1__1
+     DELTA
+     rel__list__2__0
+     FULL
+     (3 1))
+    (copy rel__do__length__1__1 rel___dollorinter__head1__2__1__2 DELTA (0))))
+  (scc-decl
+   scc18
+   18
+   #f
+   ((scc-rel rel___dollorrule4__inter__body__1__1 #t #f)
+    (scc-rel rel__nil__0__0 #f #f)
+    (scc-rel rel__do__length__1__1 #f #f))
+   ((join
+     rel___dollorrule4__inter__body__1__1
+     rel__nil__0__0
+     FULL
+     rel__do__length__1__1
+     FULL
+     (1))))
+  (scc-decl
+   scc19
+   19
+   #f
+   ((scc-rel rel___dollorrule4__inter__body__1__1 #t #f)
+    (scc-rel rel___dollorrule4__inter__body__1__ #t #f))
+   ((acopy
+     rel___dollorrule4__inter__body__1__
+     rel___dollorrule4__inter__body__1__1
+     DELTA
+     (1 0))))
+  (scc-decl
+   scc20
+   20
+   #f
+   ((scc-rel rel__length__2__1__2 #t #f)
+    (scc-rel rel___dollorrule4__inter__body__1__ #f #t))
+   ((copy-generate
+     rel__length__2__1__2
+     rel___dollorrule4__inter__body__1__
+     FULL
+     (external-function
+      builtin_eq_1
+      2
+      ((num 10))
+      1
+      ()
+      ((0 (data 1)) (1 (res 0)))))))
+  (scc-decl
+   scc21
+   21
+   #f
+   ((scc-rel rel___dollorbir__sub1__1__1 #t #f)
+    (scc-rel rel__do__length__1__1 #f #f)
+    (scc-rel rel__input__list__1__1 #f #f))
+   ((join
+     rel___dollorbir__sub1__1__1
+     rel__input__list__1__1
+     FULL
+     rel__do__length__1__1
+     FULL
+     (2))))
+  (scc-decl
+   scc22
+   22
+   #f
+   ((scc-rel rel___dollorinter__head1__2__1__2 #t #f)
+    (scc-rel rel___dollorinter__head1__2__1 #t #f))
+   ((acopy
+     rel___dollorinter__head1__2__1
+     rel___dollorinter__head1__2__1__2
+     DELTA
+     (0 2 1))))
+  (scc-decl
+   scc23
+   23
+   #f
+   ((scc-rel rel__do__length__1__1 #f #f)
+    (scc-rel rel___dollorbir__sub__2__1__2 #t #f)
+    (scc-rel rel___dollorinter__head1__2__1 #f #t))
+   ((join
+     rel___dollorbir__sub__2__1__2
+     rel__do__length__1__1
+     FULL
+     rel___dollorinter__head1__2__1
+     FULL
+     (1 3))))
+  (scc-decl
+   scc24
+   24
+   #f
+   ((scc-rel rel___dollorbir__sub__2__1 #t #f)
+    (scc-rel rel___dollorbir__sub__2__1__2 #t #f))
+   ((acopy
+     rel___dollorbir__sub__2__1
+     rel___dollorbir__sub__2__1__2
+     DELTA
+     (0 2 1))))
+  (scc-decl
+   scc25
+   25
+   #t
+   ((scc-rel rel__length__2__1__2 #t #f)
+    (scc-rel rel__length__2__2 #t #f)
+    (scc-rel rel___dollorbir__sub__2__1 #f #t)
+    (scc-rel rel___dollorrule2__inter__body__2__1__2 #t #t)
+    (scc-rel rel___dollorrule2__inter__body__2__2 #t #t))
+   ((copy-generate
+     rel___dollorrule2__inter__body__2__1__2
+     rel__length__2__2
+     DELTA
+     (external-function
+      builtin_add
+      2
+      ((data 0) (num 1))
+      1
+      ()
+      ((0 (res 0)) (1 (data 2)))))
+    (join
+     rel__length__2__1__2
+     rel___dollorrule2__inter__body__2__2
+     DELTA
+     rel___dollorbir__sub__2__1
+     FULL
+     (4 2))
+    (acopy
+     rel___dollorrule2__inter__body__2__2
+     rel___dollorrule2__inter__body__2__1__2
+     DELTA
+     (1 2 0))
+    (acopy rel__length__2__2 rel__length__2__1__2 DELTA (1 2 0))))
+  (scc-decl
+   scc26
+   26
+   #f
+   ((scc-rel rel__length__2__1__2 #t #f) (scc-rel rel__length__2__1 #t #f))
+   ((acopy rel__length__2__1 rel__length__2__1__2 DELTA (0 2 1))))
+  (scc-decl
+   scc27
+   27
+   #f
+   ((scc-rel rel___dollorbir__sub1__1__1 #f #t)
+    (scc-rel rel__print__length__res__1__1 #t #f)
+    (scc-rel rel__length__2__1 #f #f))
+   ((join
+     rel__print__length__res__1__1
+     rel___dollorbir__sub1__1__1
+     FULL
+     rel__length__2__1
+     FULL
+     (3)))))
+ ((12 13)
+  (13 14)
+  (13 16)
+  (14 15)
+  (14 21)
+  (15 23)
+  (15 21)
+  (15 18)
+  (15 17)
+  (0 1)
+  (16 17)
+  (1 2)
+  (17 23)
+  (17 22)
+  (17 21)
+  (17 18)
+  (2 3)
+  (18 19)
+  (3 4)
+  (19 20)
+  (4 5)
+  (20 26)
+  (20 25)
+  (5 6)
+  (21 27)
+  (6 9)
+  (6 7)
+  (22 23)
+  (7 10)
+  (7 8)
+  (23 24)
+  (8 18)
+  (24 25)
+  (9 10)
+  (25 26)
+  (10 12)
+  (10 11)
+  (26 27)
+  (11 14)
+  (11 13)
+  (11 16)))
