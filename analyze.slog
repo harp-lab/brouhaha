@@ -412,35 +412,40 @@
  -->
  (store a1 v)]
 
+;DETECTING ANSWER
+(answer ?(ret (s-addr a) (halt)) {store (s-addr a)})
+(answer ?(ret (f-addr _ a) (halt)) {store (f-addr _ a)})
 
- ;----------------------------------------------------------------------;
+
+;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;Inlinable Callsite Detection;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
-[(eval exp _ _)
-(= exp (app (ref func) _))
-(store (f-addr _ func) (define-prim dp_func _))
-(count store (f-addr _ func) (define-prim dp_func _) cnt)
- -->
-(inlinable-call exp func dp_func cnt)]
 
-[(inlinable-call exp func dp_func cnt)
--->
-(is-inlinable-call exp func dp_func {maximum inlinable-call exp func dp_func} {prim-count dp_func})]
+; IS DEFINE-PRIM
+; [(eval exp _ _)
+; (= exp (app (ref func) _))
+; (store (f-addr _ func) (define-prim dp_func _))
+; (count store (f-addr _ func) (define-prim dp_func _) cnt)
+;  -->
+; (inlinable-call exp func dp_func cnt)]
 
-
-[(eval exp _ _)
-(= exp (app lam _))
-(= lam (lambda var body))
-(free x lam)
-;(store (k-addr _ func) (define-prim _ _))
-;(count store (f-addr _ func) (define-prim _ _) cnt)
- -->
-(is-combinator-call lam x)]
+; [(inlinable-call exp func dp_func cnt)
+; -->
+; (is-define-prim exp func dp_func {maximum inlinable-call exp func dp_func} {prim-count dp_func})]
 
 
- (answer ?(ret (s-addr a) (halt)) {store (s-addr a)})
- (answer ?(ret (f-addr _ a) (halt)) {store (f-addr _ a)})
+; ; Combinator
+; [(eval exp _ _)
+; (= exp (app lam _))
+; (= lam (lambda var body))
+; (~ store (f-addr _ x) (define-prim x _))
+; (free x lam)
+;  -->
+; (is-combinator exp lam x)]
+
  
-
-
-
+;GENERATING CALL-SETS FOR FUNCTIONS
+[(= e (app ef [eas ...]))
+ (apply vf _ _ _ e)
+ -->
+ (fun-at-call e vf)]

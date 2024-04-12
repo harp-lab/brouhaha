@@ -1,5 +1,13 @@
-(define (call y)
-    ((lambda (x) (* x y)) 100))
+; (define (call y)
+;     ((lambda (x) (* x y)) 100 ))
 
-(define (brouhaha_main) 
-    (call 2))
+(define (call y)
+      ((lambda (x z t) (+ x z t)) 100 200 300))
+
+; (define (brouhaha_main) 
+;     (call 2))
+
+; (define (call y)
+;       (let ((a8318 (lambda (x) x))) (let ((a8319 '100)) (a8318 a8319))))
+
+(define (brouhaha_main) (call 2))
