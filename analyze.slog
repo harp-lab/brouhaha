@@ -8,12 +8,35 @@
 
 
 ;----------------------------------------------------------------------;
+;;;;;;;;;;;;;;;;;;;;;;;;::;;;;PRIM TAGGING::;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;----------------------------------------------------------------------;
+
+;NUMERIC-PRIMS
+(numeric-prim "+")
+(numeric-prim "-")
+(numeric-prim "*")
+(numeric-prim "/")
+(numeric-prim "=")
+(numeric-prim "modulo")
+
+
+;BOOL-PRIMS
+(bool-prim "=")
+(bool-prim ">")
+(bool-prim "<")
+(bool-prim "<=")
+(bool-prim ">=")
+(bool-prim "null?")
+(bool-prim "equal?")
+(bool-prim "eq?")
+
+
+
+
+;----------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;FREE VARIABLES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
-; (non-list-value ?(addr _))
-; (non-list-value ?(s-addr _))
-; (non-list-value ?(f-addr _ _))
-; (non-list-value ?(quote _))
+;NON-LIST-VALUES
 (non-list-value ?(symbol _))
 (non-list-value ?(bool _))
 (non-list-value ?(int _))
@@ -105,7 +128,8 @@
  -->
  (eval body [] (halt))]
 
-(tick ?(do-tick [] call) [call]) 
+(tick ?(do-tick [] call) [call])
+(tick ?(do-tick [prev-call] call) [call])
 ; (tick ?(do-tick [x] call) [call x])
 ; (tick ?(do-tick [x y] call) [call x y])
 ; (tick ?(do-tick [x y z] call) [call x y])
@@ -115,123 +139,123 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EVAL CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
 ;BASE PRIMITIVE TYPES
-[(eval (symbol val) env kont)
+[(eval (symbol val) ctx kont)
  -->
- (store (f-addr env (symbol val)) (symbol-val val))
- (ret (f-addr env (symbol val)) kont)]
+ (store (f-addr ctx (symbol val)) (symbol-val val))
+ (ret (f-addr ctx (symbol val)) kont)]
 
-[(eval (bool val) env kont)
+[(eval (bool val) ctx kont)
  -->
- (store (f-addr env (bool val)) (bool-val val))
- (ret (f-addr env (bool val)) kont)]
+ (store (f-addr ctx (bool val)) (bool-val val))
+ (ret (f-addr ctx (bool val)) kont)]
 
-[(eval (int val) env kont)
+[(eval (int val) ctx kont)
  -->
- (store (f-addr env (int val)) (int-val val))
- (ret (f-addr env (int val)) kont)]
+ (store (f-addr ctx (int val)) (int-val val))
+ (ret (f-addr ctx (int val)) kont)]
 
-[(eval (string val) env kont)
+[(eval (string val) ctx kont)
  -->
- (store (f-addr env (string val)) (string-val val))
- (ret (f-addr env (string val)) kont)]
+ (store (f-addr ctx (string val)) (string-val val))
+ (ret (f-addr ctx (string val)) kont)]
 
-[(eval (state val) env kont)
+[(eval (state val) ctx kont)
  -->
- (store (f-addr env (state val)) (state-val val))
- (ret (f-addr env (state val)) kont)]
+ (store (f-addr ctx (state val)) (state-val val))
+ (ret (f-addr ctx (state val)) kont)]
 
 ;FUNCTION AND VARIABLE REFERENCES
-[(eval (ref x) env kont)
+[(eval (ref x) ctx kont)
  -->
- (ret (f-addr env x) kont)]
+ (ret (f-addr ctx x) kont)]
 
 ;LAMBDA AND FUNC
-[(eval e env kont)
+[(eval e ctx kont)
  (= e (lambda _ _))
  -->
- (store (f-addr env e) (clo e env))
- (ret (f-addr env e) kont)]
+ (store (f-addr ctx e) (clo e ctx))
+ (ret (f-addr ctx e) kont)]
         
 ;APP AND APPLY
-[(eval call env kont)
+[(eval call ctx kont)
  (= call (app ef [eas ...]))
  -->
- (eval ef env (appk call [] eas env kont))]
+ (eval ef ctx (appk call [] eas ctx kont))]
 
-[(eval call env kont)
+[(eval call ctx kont)
  (= call (appl ef ea))
  -->
- (eval ef env (applak call ea env kont))]
+ (eval ef ctx (applak call ea ctx kont))]
 
 ;IF CASE
-[(eval (if guard tExp fExp) env kont)
+[(eval (if guard tExp fExp) ctx kont)
  -->
- (eval guard env (if-k tExp fExp env kont))]
+ (eval guard ctx (if-k tExp fExp ctx kont))]
 
 ;LET CASE
-[(eval call env kont)
+[(eval call ctx kont)
  (= call (let [(binding lhs rhs) bind-rest ...] body))
  -->
- (eval rhs env (letk call body [lhs] [] bind-rest env kont))]
+ (eval rhs ctx (letk call body [lhs] [] bind-rest ctx kont))]
 
 ;---------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;RET CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;---------------------------------------------------------------------;
 ;LAMBDA AND FUNC
-[(ret a (appk call [as ...] [ea0 ea-rest ...] env kont))
+[(ret a (appk call [as ...] [ea0 ea-rest ...] ctx kont))
  -->
- (eval ea0 env (appk call [as ... a] [ea-rest ...] env kont))]
+ (eval ea0 ctx (appk call [as ... a] [ea-rest ...] ctx kont))]
 
-[(ret a (appk call [af as ...] [] env kont))
+[(ret a (appk call [af as ...] [] ctx kont))
  (store af vf)
  -->
- (apply vf (fixedarg [as ... a]) env kont call)]
+ (apply vf (fixedarg [as ... a]) ctx kont call)]
 
-[(ret af (appk call [] [] env kont))
+[(ret af (appk call [] [] ctx kont))
  (store af vf)
  -->
- (apply vf (fixedarg []) env kont call)]
+ (apply vf (fixedarg []) ctx kont call)]
 
-[(ret af (applak call ea env kont))
+[(ret af (applak call ea ctx kont))
  -->
- (eval ea env (applfk call af env kont))]
+ (eval ea ctx (applfk call af ctx kont))]
 
-[(ret a (applfk call af env kont))
+[(ret a (applfk call af ctx kont))
  (store af vf)
  -->
- (apply vf (vararg a) env kont call)]
+ (apply vf (vararg a) ctx kont call)]
 
 [(ret a (k-addr eb))
  -->
  (ret a {store (k-addr eb)})]
 
 ;IF CASES
-[(ret ga (if-k tExp fExp env kont))
+[(ret ga (if-k tExp fExp ctx kont))
  (store ga (bool "t"))
  --> 
- (eval tExp env kont)]
+ (eval tExp ctx kont)]
 
-[(ret ga (if-k tExp fExp env kont))
+[(ret ga (if-k tExp fExp ctx kont))
  (store ga (bool "f"))
  --> 
- (eval fExp env kont)]
+ (eval fExp ctx kont)]
 
-[(ret (s-addr _) (if-k tExp fExp env kont))
+[(ret (s-addr _) (if-k tExp fExp ctx kont))
  --> 
- (eval tExp env kont)
- (eval fExp env kont)]
+ (eval tExp ctx kont)
+ (eval fExp ctx kont)]
 
 ;LET CASE
-[(ret a (letk call body [xs ...] [as ...] [(binding lhs rhs) bind-rest ...] env kont))
+[(ret a (letk call body [xs ...] [as ...] [(binding lhs rhs) bind-rest ...] ctx kont))
  -->
- (eval rhs env (letk call body [xs ... lhs] [as ... a] bind-rest env kont))]
+ (eval rhs ctx (letk call body [xs ... lhs] [as ... a] bind-rest ctx kont))]
 
-[(ret a (letk call body [xs ...] [as ...] [] envlet kont))
+[(ret a (letk call body [xs ...] [as ...] [] ctxlet kont))
  -->
- (= envtick {tick !(do-tick envlet call)})
+ (= ctxtick {tick !(do-tick ctxlet call)})
  (store (k-addr body) kont)
- (do-fixed-prop-all envlet xs [as ... a])
- (eval body envtick (k-addr body))]
+ (do-fixed-prop-all ctxlet xs [as ... a])
+ (eval body ctxtick (k-addr body))]
 
 
 
@@ -240,38 +264,45 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;APPLY CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;---------------------------------------------------------------------;
 ;DEFINE --> CLOSURE
-[(apply (define fname params body) args env kont call)
+[(apply (define fname params body) args ctx kont call)
  --> 
- (apply (clo (lambda params body) []) args env kont call)]  
+ (apply (clo (lambda params body) []) args ctx kont call)]  
 
 ;DEFINE-PRIM HANDLING (NOT SPECIALIZED)
-[(= e (apply (define-prim fname _) args _ kont _))
+[(apply (define-prim fname _) _ _ kont _)
+ (~ specialized-prim fname)
+ -->
+ (store (s-addr fname) (state fname))
+ (ret (s-addr fname) kont)]
+
+ [(= e (apply (define-prim fname _) args _ kont _))
  (~ specialized-prim fname)
  -->
  (store (s-addr e) (state e))
  (ret (s-addr e) kont)]
 
+
 ;SPECIALIZED PRIMS
 (specialized-prim "cons")
-  [(= e (apply (define-prim "cons" _) (fixedarg [a0 a1]) env kont _))
+  [(= e (apply (define-prim "cons" _) (fixedarg [a0 a1]) ctx kont _))
   (store a1 (list-of-vals as))
   -->
-  (store (f-addr env e) (list-of-vals [a0 as ...]))
-  (ret (f-addr env e) kont)]
+  (store (f-addr ctx e) (list-of-vals [a0 as ...]))
+  (ret (f-addr ctx e) kont)]
 
-  [(= e (apply (define-prim "cons" _) (fixedarg [a0 a1]) env kont _))
+  [(= e (apply (define-prim "cons" _) (fixedarg [a0 a1]) ctx kont _))
   (store a1 val)
   (non-list-value val)
   -->
-  (store (f-addr env e) (list-of-vals [a0 a1]))
-  (ret (f-addr env e) kont)]
+  (store (f-addr ctx e) (list-of-vals [a0 a1]))
+  (ret (f-addr ctx e) kont)]
 
   ;VARIADIC
-  [(= e (apply (define-prim "cons" _) (vararg a) env kont call))
+  [(= e (apply (define-prim "cons" _) (vararg a) ctx kont call))
   (store a (list-of-vals as))
   --> 
-  (do-store-addr-union (f-addr env e) as [])
-  (ret (f-addr env e) kont)]
+  (do-store-addr-union (f-addr ctx e) as [])
+  (ret (f-addr ctx e) kont)]
 
   ;When the next address points to a list-of-vals
   [(do-store-addr-union addr [a as ...] [union-as ...])
@@ -292,90 +323,92 @@
 
 
 (specialized-prim "null?")
-  [(= e (apply (define-prim "null?" _) (fixedarg [a]) env kont _))
+  [(= e (apply (define-prim "null?" _) (fixedarg [a]) ctx kont _))
    (store a (list-of-vals as))
    (= as [])
    -->
-   (store (f-addr env e) (bool "t"))]
+   (store (f-addr ctx e) (bool "t"))
+   (ret (f-addr ctx e) kont)]
 
-  [(= e (apply (define-prim "null?" _) (fixedarg [a]) env kont _))
+  [(= e (apply (define-prim "null?" _) (fixedarg [a]) ctx kont _))
    (store a (list-of-vals [a0 as ...]))
    -->
-   (store (f-addr env e) (bool "t"))
-   (store (f-addr env e) (bool "f"))]
+   (store (f-addr ctx e) (bool "t"))
+   (store (f-addr ctx e) (bool "f"))
+   (ret (f-addr ctx e) kont)]
 
 
 (specialized-prim "car")
- [(= e (apply (define-prim "car" _) (fixedarg [a]) env kont _))
+ [(= e (apply (define-prim "car" _) (fixedarg [a]) ctx kont _))
   (store a (list-of-vals [_ ... ai _ ...]))
   -->
-  (store (f-addr env e) ai)
-  (ret (f-addr env e) kont)]
+  (store (f-addr ctx e) ai)
+  (ret (f-addr ctx e) kont)]
 
 (specialized-prim "cdr")
- [(= e (apply (define-prim "cdr" _) (fixedarg [a]) env kont _))
+ [(= e (apply (define-prim "cdr" _) (fixedarg [a]) ctx kont _))
   (store a (list-of-vals as))
    -->
-  (store (f-addr env e) (list-of-vals as))
-  (ret (f-addr env e) kont)]
+  (store (f-addr ctx e) (list-of-vals as))
+  (ret (f-addr ctx e) kont)]
 
 (specialized-prim "list")
- [(= e (apply (define-prim "list" _) (fixedarg as) env kont _))
+ [(= e (apply (define-prim "list" _) (fixedarg as) ctx kont _))
   -->
-  (store (f-addr env e) (list-of-vals as))
-  (ret (f-addr env e) kont)]
+  (store (f-addr ctx e) (list-of-vals as))
+  (ret (f-addr ctx e) kont)]
 
- [(= e (apply (define-prim "list" _) (vararg a) env kont _))
+ [(= e (apply (define-prim "list" _) (vararg a) ctx kont _))
   (store a (list-of-vals as))
   -->
-  (store (f-addr env e) (list-of-vals as))
-  (ret (f-addr env e) kont)]
+  (store (f-addr ctx e) (list-of-vals as))
+  (ret (f-addr ctx e) kont)]
 
-
+;; ASK ABOUT DO-TICK FOR PRIMS
 
 
 ;FIXED ARG
-[(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) (fixedarg [as ...]) envcall kont call)
+[(apply (clo (lambda (fixedparam [xs ...]) eb) ctxlam) (fixedarg [as ...]) ctxcall kont call)
  --> 
  (store (k-addr eb) kont)
- (= envtick {tick !(do-tick envcall call)})
- (do-fixed-prop-all envtick xs as)
- (eval eb envlam (k-addr eb))
+ (= ctxtick {tick !(do-tick ctxcall call)})
+ (do-fixed-prop-all ctxtick xs as)
+ (eval eb ctxlam (k-addr eb))
  [(free y eb)
   -->
-  (store-flow (f-addr envtick y) (f-addr envlam y))]]
+  (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
 
-[(apply (clo (lambda (varparam x) eb) envlam) (fixedarg [as ...]) envcall kont call)
+[(apply (clo (lambda (varparam x) eb) ctxlam) (fixedarg [as ...]) ctxcall kont call)
  --> 
  (store (k-addr eb) kont)
- (= envtick {tick !(do-tick envcall call)})     
- (store (f-addr envtick x) (list-of-vals as))
- (eval eb envlam (k-addr eb))
+ (= ctxtick {tick !(do-tick ctxcall call)})     
+ (store (f-addr ctxtick x) (list-of-vals as))
+ (eval eb ctxlam (k-addr eb))
  [(free y eb) 
   -->
-  (store-flow (f-addr envtick y) (f-addr envlam y))]]
+  (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
 
 ;VARIADIC ARG
-[(apply (clo (lambda (varparam x) eb) envlam) (vararg a) envcall kont call)
+[(apply (clo (lambda (varparam x) eb) ctxlam) (vararg a) ctxcall kont call)
  --> 
  (store (k-addr eb) kont)
- (= envtick {tick !(do-tick envcall call)})
- (store-flow a (f-addr envtick x))
- (eval eb envlam (k-addr eb))
+ (= ctxtick {tick !(do-tick ctxcall call)})
+ (store-flow a (f-addr ctxtick x))
+ (eval eb ctxlam (k-addr eb))
  [(free y eb)
   -->
-  (store-flow (f-addr envtick y) (f-addr envlam y))]]
+  (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
 
-[(apply (clo (lambda (fixedparam [xs ...]) eb) envlam) (vararg a) envcall kont call)
+[(apply (clo (lambda (fixedparam [xs ...]) eb) ctxlam) (vararg a) ctxcall kont call)
  (store a (list-of-vals as))
  -->
  (store (k-addr eb) kont)
- (= envtick {tick !(do-tick envcall call)})
- (do-var-prop-all envtick xs as)
- (eval eb envlam (k-addr eb))
+ (= ctxtick {tick !(do-tick ctxcall call)})
+ (do-var-prop-all ctxtick xs as)
+ (eval eb ctxlam (k-addr eb))
  [(free y eb)
   -->
-  (store-flow (f-addr envtick y) (f-addr envlam y))]]
+  (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
 
 
 
@@ -385,26 +418,26 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
 ;DO-VIXED-PROP-ALL
-[(do-fixed-prop-all envtick [x x-rest ...] [a a-rest ...])
+[(do-fixed-prop-all ctxtick [x x-rest ...] [a a-rest ...])
  -->
- (do-fixed-prop-all envtick x-rest a-rest)
- (store-flow a (f-addr envtick x))]
+ (do-fixed-prop-all ctxtick x-rest a-rest)
+ (store-flow a (f-addr ctxtick x))]
 
 
 ;DO-VAR-PROP-ALL
-[(do-var-prop-all envtick [x x-rest ...] [a a-rest ...])
+[(do-var-prop-all ctxtick [x x-rest ...] [a a-rest ...])
  -->
- (do-var-prop-all-h envtick [x x-rest ...] [a a-rest ...] [a a-rest ...])]
+ (do-var-prop-all-h ctxtick [x x-rest ...] [a a-rest ...] [a a-rest ...])]
 
-[(do-var-prop-all-h envtick [x x-rest ...] [a a-rest ...] a-old)
+[(do-var-prop-all-h ctxtick [x x-rest ...] [a a-rest ...] a-old)
  -->
- (do-var-prop-all-h envtick [x x-rest ...] a-rest a-old)
- (store-flow a (f-addr envtick x))]
+ (do-var-prop-all-h ctxtick [x x-rest ...] a-rest a-old)
+ (store-flow a (f-addr ctxtick x))]
 
 
-[(do-var-prop-all-h envtick [x x-rest ...] [] a-old)
+[(do-var-prop-all-h ctxtick [x x-rest ...] [] a-old)
  -->
- (do-var-prop-all-h envtick x-rest a-old a-old)]
+ (do-var-prop-all-h ctxtick x-rest a-old a-old)]
 
 ;STORE-FLOW
 [(store a v)
