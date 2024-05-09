@@ -112,6 +112,7 @@
 
     ; (cond
     ;   [(slog-flag) (define ast-root (read-facts fact-file)) 'ast-root-created])
+    (define ast-root (if (slog-flag) (read-facts fact-file) '() ))
     (print-yellow "fact-file: ")
     (display (~a fact-file " out-path " out-path " \n"))
     (print-yellow "slog-path: ")
@@ -120,7 +121,7 @@
     (display (~a cpp-file))
     (display "\n")
 
-    (define compiled-program (compile-to-finish program fact-file alphatize_prg (slog-flag)))
+    (define compiled-program (compile-to-finish program fact-file alphatize_prg (slog-flag) ast-root))
     ; (define compiled-program (compile-to-finish compiled fact-file alphatize_prg (slog-flag)))
 
     ; Here we compile rest

@@ -269,6 +269,72 @@ void *fhalt()
                 `(#t #f 0))
             `(#f #f 0)))))
 
+;;; if slog is enabled this version will be called
+(define (callable-define-prim-with-slog? proc-name-shadowed_hash prc count ast-root)
+  ;; read from fun-at-call and fun-at-call-count
+  ;;     fun-at-call (exp, vf)         : (fun-at-call (app (ref "f") args ...) (define-prim "+" (varparam "lst")))
+  ;;     fun-at-call-count(exp, count) : (fun-at-call-count (app (ref "f") args ...) 1)
+  ;;
+  ;; if the count in fun-at-call-count is exactly one and the vf is either a define-prim/combinator, it's inlinable!
+
+  ; (displayln (format "callable-define-prim-with-slog?: ~a" prc))
+  (define get-all-fun-at-call-facts
+    (index-to-facts (search-facts ast-root `(fun-at-call app)) ast-root))
+  ; (displayln get-all-fun-at-call-facts)
+
+  (define get-all-fun-at-call-count-facts
+    (index-to-facts (search-facts ast-root `(fun-at-call-count app)) ast-root))
+  ; (pretty-print get-all-fun-at-call-count-facts)
+
+  (define fun-at-call-count
+    (let loop ([func-fact get-all-fun-at-call-count-facts]
+               [call-stat (hash)])
+      (cond
+        [(null? func-fact)  call-stat]
+        [else
+         (match (car func-fact)
+           [`(fun-at-call-count ,func ,cnt)
+            (loop (cdr func-fact)
+                  (if (hash-has-key? call-stat func)
+                      (if (= (hash-ref call-stat func) cnt 1)
+                          call-stat
+                          (hash-set call-stat func 0))
+                      (if (= cnt 1)
+                          (hash-set call-stat func cnt)
+                          (hash-set call-stat func 0))))]
+           [_ (loop (cdr func-fact) call-stat)])
+         ])))
+
+  ; (pretty-print fun-at-call-count)
+  ; (pretty-print get-all-fun-at-call-facts)
+
+  (let loop ([func-fact get-all-fun-at-call-facts])
+    (cond
+      [(null? func-fact) `(,prc #f #f 0)]
+      [else
+       (match (car func-fact)
+         [`(fun-at-call (app (ref ,func) ,bd) (define-prim ,dp ,_))
+          (if (equal? (string->symbol func) prc)
+              (if (= (hash-ref fun-at-call-count `(app (ref ,func) ,bd)) 1)
+                  (let ([res (hash-ref proc-name-shadowed_hash (string->symbol dp))])
+                    (if (equal? (car res) 'not-shadowed-dp)
+                        (if (member count (cadr res))
+                            `(,(string->symbol dp) #t #t ,(car (member count (cadr res))))
+                            `(,(string->symbol dp) #t #f 0))
+                        `(,(string->symbol dp) #f #f 0)))
+                  `(,(string->symbol dp) #f #f 0))
+
+              (loop (cdr func-fact)))]
+         [`(fun-at-call (app (ref ,func) ,_) (define ,temp_func ,_))
+          (if (equal? (string->symbol func) prc)
+              `(,prc #f #f 0)
+              (loop (cdr func-fact)))]
+         [`(fun-at-call (app (lambda ,var ,lambody) ,app_body) ,vf)
+          ; have to handle this case after alphatization
+          (loop (cdr func-fact))]
+         [_ (loop (cdr func-fact))])
+       ])))
+
 
 
 ; looks at the call-sites and returns a list of distinct number of args at call-site

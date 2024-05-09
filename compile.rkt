@@ -21,11 +21,11 @@
 (define (compile-to-alphatize program)
   (let* ([pr0 (desugar program)] [pr1 (alphatize pr0)]) (list pr0 pr1)))
 
-(define (compile-to-finish program fact-file pr1 slog-flag)
+(define (compile-to-finish program fact-file pr1 slog-flag ast-root)
   ; (define (compile-to-finish program)
   (let* (
          ;  [pr6 (add-tags pr1)]
-         [pr2 (optimize-prog (anf-convert pr1))]
+         [pr2 (optimize-prog (anf-convert pr1 slog-flag ast-root) slog-flag ast-root)]
          [pr3 (cps-convert pr2)]
          [pr4 (alphatize pr3)]
          [pr5 (closure-convert pr4)]
@@ -112,10 +112,11 @@
   (map desugar-define program))
 
 (define (alphatize program)
+  ; (pretty-print program)
   (define ((alpha-rename env) e)
     (define (rename x)
       (if (hash-has-key? env x) (gensym x) x))
-    ; (pretty-print (list "This is e: " e))
+
     (match e
       [`(let ([,xs ,es] ...) ,e0)
        (define xs+ (map rename xs))
@@ -152,6 +153,7 @@
       [`',dat (coverage `',dat)]
       [`(kont-app ,es ...) (coverage `(kont-app ,@(map (alpha-rename env) es)))]
       [`(,es ...) (coverage (map (alpha-rename env) es))]))
+
   (define ((rename-define env) def)
     (match def
       [`(define (,fname ,params ...) ,body)
@@ -164,8 +166,9 @@
 
       [`(define-prim ,fname ,param-counts ...)
        (coverage `(define-prim ,fname ,@param-counts))]
-
       ))
+
+  ;;; a hash to store function names mapped to themselves like '#hash((+ . +) (- . -))
   (define top-env
     (foldl (lambda (def env)
              (match def
@@ -180,10 +183,10 @@
                 (when (hash-has-key? env fname)
                   (error "Function name is already defined"))
                 (hash-set env fname fname)]
-
                ))
            (hash)
            program))
+
   (map (rename-define top-env) program))
 
 ; Add tags within the program to keep track
@@ -237,7 +240,90 @@
   (map add-prov-define program))
 
 ; Converts to ANF; adapted from Flanagan et al.
-(define (anf-convert program)
+(define (anf-convert program slog-flag ast-root)
+  (define proc-name-shadowed?
+    (let loop ([env+ (hash)] [prog+ program])
+      (match prog+
+        [`((define (,name . ,_) ,_) ,_ ...)
+         (loop
+          (if (hash-has-key? env+ name)
+              (hash-set env+ name `(shadowed ,@(cdr (hash-ref env+ name))))
+              (hash-set env+ name `(not-shadowed dummyinfo)))
+          (cdr prog+))]
+        [`((define-prim ,name ,params ...) ,_ ...)
+         (loop
+          (if (hash-has-key? env+ name)
+              (hash-set env+ name `(shadowed ,params))
+              (hash-set env+ name `(not-shadowed-dp ,params)))
+          (cdr prog+))]
+        [`() env+])))
+
+  (define (normalize-anf e)
+    (define e+ (normalize e (lambda (x) x)))
+    (match e+
+      [(? symbol? x) (coverage x)]
+      [`(let ([,x ,rhs]) ,e0) (coverage e+)]
+      [_
+       (define x+ (gensym 'xy))
+       (coverage `(let ([,x+ ,e+]) ,x+))]))
+
+  (define (normalize e k)
+    (define (normalize-ae e k)
+      (normalize e
+                 (lambda (anf)
+                   (match anf
+                     [(? symbol? x) (coverage (k x))]
+                     [_ (let ([x (gensym 'id_)]) (coverage `(let ([,x ,anf]) ,(k x))))]))))
+
+    (define (normalize-aes es k)
+      (if (null? es)
+          (k '())
+          (normalize-ae (car es) (lambda (x) (normalize-aes (cdr es) (lambda (xs) (k `(,x . ,xs))))))))
+
+    (match e
+      [`',dat (coverage (k `',dat))]
+      [(? symbol? x) (coverage (k x))]
+      [`(lambda ,xs ,e0)
+       (coverage (k `(lambda
+                         ,xs
+                       ,(normalize e0 (lambda (x) x)))))]
+      [`(let () ,e0)
+       (coverage (normalize e0 k))]
+      [`(let ([,x ,rhs] . ,rest) ,e0)
+       (coverage `(let
+                      ([,x ,(normalize rhs (lambda (x) x))])
+                    ,(normalize `(let ,rest ,e0) k)))]
+
+      [`(if ,ec ,et ,ef)
+       (coverage (normalize-ae ec (lambda (xc) (k `(if ,xc ,(normalize-anf et) ,(normalize-anf ef))))))]
+      [`(prim ,op ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(prim ,op . ,xs)))))]
+      [`(apply-prim ,op ,e0) (coverage (normalize-ae e0 (lambda (x) (k `(apply-prim ,op ,x)))))]
+
+      [`(call/cc ,e0)
+       (normalize (normalize-anf e0)
+                  (lambda (ae)
+                    (k `(call/cc ,ae))))]
+
+      [`(apply ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(apply . ,xs)))))]
+      [`(,f ,es ...)
+       (displayln `(,f ,@es))
+       (displayln (callable-define-prim-with-slog? proc-name-shadowed? f (length es) ast-root))
+
+       (displayln "-------")
+
+       (match-define `(,fnc ,is_define_prim ,is_callable ,arg_count)
+         (callable-define-prim-with-slog? proc-name-shadowed? f (length es) ast-root))
+
+       (if (and is_define_prim is_callable)
+           (normalize-aes `(,fnc ,@es) k)
+           (normalize-aes `(,fnc ,@es) k))
+
+
+
+       ; (normalize-aes `(,f ,@es) k)
+       ]
+      ))
+
   (define (anf-convert-define def)
     (match def
       [`(define ,sig ,body)
@@ -249,58 +335,8 @@
       ))
   (map anf-convert-define program))
 
-(define (normalize-anf e)
-  (define e+ (normalize e (lambda (x) x)))
-  (match e+
-    [(? symbol? x) (coverage x)]
-    [`(let ([,x ,rhs]) ,e0) (coverage e+)]
-    [_
-     (define x+ (gensym 'xy))
-     (coverage `(let ([,x+ ,e+]) ,x+))]))
 
-(define (normalize e k)
-  (define (normalize-ae e k)
-    (normalize e
-               (lambda (anf)
-                 (match anf
-                   [(? symbol? x) (coverage (k x))]
-                   [_ (let ([x (gensym 'id_)]) (coverage `(let ([,x ,anf]) ,(k x))))]))))
-
-  (define (normalize-aes es k)
-    (if (null? es)
-        (k '())
-        (normalize-ae (car es) (lambda (x) (normalize-aes (cdr es) (lambda (xs) (k `(,x . ,xs))))))))
-
-  (match e
-    [`',dat (coverage (k `',dat))]
-    [(? symbol? x) (coverage (k x))]
-    [`(lambda ,xs ,e0)
-     (coverage (k `(lambda
-                       ,xs
-                     ,(normalize e0 (lambda (x) x)))))]
-    [`(let () ,e0)
-     (coverage (normalize e0 k))]
-    [`(let ([,x ,rhs] . ,rest) ,e0)
-     (coverage `(let
-                    ([,x ,(normalize rhs (lambda (x) x))])
-                  ,(normalize `(let ,rest ,e0) k)))]
-
-    [`(if ,ec ,et ,ef)
-     (coverage (normalize-ae ec (lambda (xc) (k `(if ,xc ,(normalize-anf et) ,(normalize-anf ef))))))]
-    [`(prim ,op ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(prim ,op . ,xs)))))]
-    [`(apply-prim ,op ,e0) (coverage (normalize-ae e0 (lambda (x) (k `(apply-prim ,op ,x)))))]
-
-    [`(call/cc ,e0)
-     (normalize (normalize-anf e0)
-                (lambda (ae)
-                  (k `(call/cc ,ae))))]
-
-    [`(apply ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(apply . ,xs)))))]
-    [`(,es ...) (normalize-aes es k)]
-    ))
-
-
-(define (optimize-prog program)
+(define (optimize-prog program slog-flag ast-root)
   (define proc-name-shadowed?
     (let loop ([env+ (hash)] [prog+ program])
       (match prog+
@@ -348,8 +384,32 @@
       [`(apply ,ae0 ,ae1) `(apply ,ae0 ,ae1)]
 
       [`(,fae ,args ...)
+       ; (displayln "lol")
+       ;;; if slog-flag
+       ;;;   callable-define-prim-with-slog?
+       ;;;   callable-define-prim?
+       ;;;   (displayln slog-flag)
+
+
+
+       ;  (match-define `(,is_define_prim ,is_callable ,arg_count)
+       ;    (callable-define-prim-with-slog? proc-name-shadowed? fae (length args) ast-root))
+
+       ;  (displayln (callable-define-prim-with-slog? proc-name-shadowed? fae (length args) ast-root))
+
+
        (match-define `(,is_define_prim ,is_callable ,arg_count)
          (callable-define-prim? proc-name-shadowed? fae (length args)))
+
+       ;  (set! is_define_prim #f)
+       ;  (set! is_callable #f)
+       ;  (set! arg_count 0)
+       ;  (displayln fae)
+       ;  (displayln (- (length args) 1))
+       ;  (displayln is_define_prim)
+       ;  (displayln is_callable)
+       ;  (displayln arg_count)
+       ;  (displayln "---------")
 
        (define x (gensym 'x))
 
@@ -372,6 +432,8 @@
 
 
 (define (cps-convert program)
+  ; (displayln "cps")
+  ; (pretty-print program)
   (define (T-ae ae)
     (match ae
       [`(lambda (,xs ...) ,e0)
@@ -382,6 +444,7 @@
        (define x+ (gensym x))
        (coverage `(lambda ,x+ (let ([,cx (prim car ,x+)]) (let ([,x (prim cdr ,x+)]) ,(T e0 cx)))))]
       [(? symbol? x) (coverage x)]
+      [(? number? x) (coverage x)]
       [`',dat (coverage `',dat)]))
 
   (define (T e cae)
@@ -457,14 +520,14 @@
        (list (set-remove (set-union (list->set xs) freevars) x)
              (coverage `(let ([,x (prim kont-to-lam ,@xs)]) ,e0+))
              procs+)]
-      
+
       [`(let ([,x (prim ,op ,xs ...)]) ,e0)
        (match-define `(,freevars ,e0+ ,procs+) (loop e0))
        (list (set-remove (set-union (list->set xs) freevars) x)
              (coverage `(let ([,x (prim ,op ,@xs)]) ,e0+))
              procs+)]
 
-      
+
 
       [`(let ([,x (lambda (,xs ...) ,body)]) ,e0)
        (match-define `(,freevars ,e0+ ,procs0+) (loop e0))
@@ -605,194 +668,134 @@
 ; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
 
 (define prog
-'((define-prim + 1 2 3)
-  (define-prim - 1 2 3)
-  (define-prim * 1 2 3)
-  (define-prim / 1 2 3)
-  (define-prim = 1 2 3)
-  (define-prim > 1 2 3)
-  (define-prim < 1 2 3)
-  (define-prim <= 1 2 3)
-  (define-prim >= 1 2 3)
-  (define-prim modulo 2)
-  (define-prim null? 1)
-  (define-prim equal? 2)
-  (define-prim eq? 2)
-  (define-prim cons 2)
-  (define-prim car 1)
-  (define-prim cdr 1)
-  (define-prim float->int 1)
-  (define-prim int->float 1)
-  (define-prim hash)
-  (define-prim hash-ref 2)
-  (define-prim hash-set 3)
-  (define-prim hash-keys 1)
-  (define-prim hash-has-key? 2)
-  (define-prim hash-count 1)
-  (define-prim set)
-  (define-prim set->list 1)
-  (define-prim list->set 1)
-  (define-prim set-add 2)
-  (define-prim set-member? 2)
-  (define-prim set-remove 2)
-  (define-prim set-count 1)
-  (define-prim string? 1)
-  (define-prim string-length 1)
-  (define-prim string-ref 2)
-  (define-prim substring 3)
-  (define-prim string-append 2)
-  (define-prim string->list 1)
-  (define-prim exact-floor 1)
-  (define-prim exact-ceiling 1)
-  (define-prim exact-round 1)
-  (define-prim abs 1)
-  (define-prim max 1)
-  (define-prim min 1)
-  (define-prim expt 2)
-  (define-prim sqrt 1)
-  (define-prim remainder 2)
-  (define-prim quotient 2)
-  (define-prim random 1 2)
-  (define-prim symbol? 1)
-  (define-prim pair? 1)
-  (define-prim positive? 1)
-  (define-prim negative? 1)
-  (define-prim list 1 2 3 4)
-  (define (even? x) (equal? '0 (modulo x '2)))
-  (define (odd? x) (equal? '1 (modulo x '2)))
-  (define (list-ref lst n)
-    (if (= '0 n) (car lst) (list-ref (cdr lst) (- n '1))))
-  ; (define (member item lst)
-  ;   (if (if (null? item) (null? item) (null? lst))
-  ;     '#f
-  ;     (if (equal? item (car lst)) lst (member item (cdr lst)))))
-  ; (define (member? x lst)
-  ;   (if (null? lst) '#f (if (equal? (car lst) x) '#t (member? x (cdr lst)))))
-  ; (define (length lst) (if (null? lst) '0 (+ '1 (length (cdr lst)))))
-  ; (define (map proc lst)
-  ;   (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
-  ; (define (filter op lst)
-  ;   (if (null? lst)
-  ;     (list)
-  ;     (if (op (car lst))
-  ;       (cons (car lst) (filter op (cdr lst)))
-  ;       (filter op (cdr lst)))))
-  ; (define (drop lst n) (if (= n '0) lst (drop (cdr lst) (- n '1))))
-  ; (define (foldl fun acc lst)
-  ;   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
-  ; (define (foldr fun acc lst)
-  ;   (if (null? lst) acc (fun (car lst) (foldr fun acc (cdr lst)))))
-  ; (define (reverse-helper lst lst2)
-  ;   (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
-  ; (define (reverse lst) (reverse-helper lst (list)))
-  ; (define (append1 lhs rhs)
-  ;   (if (null? lhs) rhs (cons (car lhs) (append1 (cdr lhs) rhs))))
-  ; (define (append . vargs)
-  ;   (let ((xs (car vargs)) (vargs8729 (cdr vargs)))
-  ;     (let ((x vargs8729))
-  ;       (if (= '1 (length x))
-  ;         (append1 xs (car x))
-  ;         (foldr append1 (list) (append1 (list xs) x))))))
-  ; (define (take-helper lst n lst2)
-  ;   (if (= n '0)
-  ;     (reverse lst2)
-  ;     (take-helper (cdr lst) (- n '1) (cons (car lst) lst2))))
-  ; (define (take lst n) (take-helper lst n (list)))
-  ; (define (pt-in-poly2-helper xp yp x y c i j)
-  ;   (if (< i '0)
-  ;     c
-  ;     (if (if (if (if (> (list-ref yp i) y)
-  ;                   (> (list-ref yp i) y)
-  ;                   (>= y (list-ref yp j)))
-  ;               (if (> (list-ref yp j) y)
-  ;                 (> (list-ref yp j) y)
-  ;                 (>= y (list-ref yp i)))
-  ;               '#f)
-  ;           (if (if (> (list-ref yp i) y)
-  ;                 (> (list-ref yp i) y)
-  ;                 (>= y (list-ref yp j)))
-  ;             (if (> (list-ref yp j) y)
-  ;               (> (list-ref yp j) y)
-  ;               (>= y (list-ref yp i)))
-  ;             '#f)
-  ;           (>=
-  ;            x
-  ;            (+
-  ;             (list-ref xp i)
-  ;             (/
-  ;              (* (- (list-ref xp j) (list-ref xp i)) (- y (list-ref yp i)))
-  ;              (- (list-ref yp j) (list-ref yp i))))))
-  ;       (pt-in-poly2-helper xp yp x y c (- i '1) i)
-  ;       (pt-in-poly2-helper xp yp x y (if c '#f '#t) (- i '1) i))))
-  ; (define (pt-in-poly2 xp yp x y)
-  ;   (pt-in-poly2-helper xp yp x y '#f (- (length xp) '1) '0))
-  (define (run input1 input2)
-    (foldl
-     (lambda (lst count)
-       (if (pt-in-poly2 input1 input2 (car lst) (car (cdr lst)))
-         (+ count '1)
-         count))
-     '0
-     (list
-      (list '0.5 '0.5)
-      (list '0.5 '1.5)
-      (list '-0.5 '1.5)
-      (list '0.75 '2.25)
-      (list '0.0 '2.01)
-      (list '-0.5 '2.5)
-      (list '-1.0 '-0.5)
-      (list '-1.5 '0.5)
-      (list '-2.25 '-1.0)
-      (list '0.5 '-0.25)
-      (list '0.5 '-1.25)
-      (list '-0.5 '-2.5))))
-  (define (brouhaha_main)
-    (run
-     (list
-      '0.0
-      '1.0
-      '1.0
-      '0.0
-      '0.0
-      '1.0
-      '-0.5
-      '-1.0
-      '-1.0
-      '-2.0
-      '-2.5
-      '-2.0
-      '-1.5
-      '-0.5
-      '1.0
-      '1.0
-      '0.0
-      '-0.5
-      '-1.0
-      '-0.5)
-     (list
-      '0.0
-      '0.0
-      '1.0
-      '1.0
-      '2.0
-      '3.0
-      '2.0
-      '3.0
-      '0.0
-      '-0.5
-      '-1.0
-      '-1.5
-      '-2.0
-      '-2.0
-      '-1.5
-      '-1.0
-      '-0.5
-      '-1.0
-      '-1.0
-      '-0.5))))
-)
-; (pretty-print (optimize-prog prog))
-; (pretty-print (desugar our-call))
+  '((define-prim + 1 2 3)
+    (define-prim - 1 2 3)
+    ; (define-prim * 1 2 3)
+    ; (define-prim / 1 2 3)
+    ; (define-prim = 1 2 3)
+    ; (define-prim > 1 2 3)
+    ; (define-prim < 1 2 3)
+    ; (define-prim <= 1 2 3)
+    ; (define-prim >= 1 2 3)
+    ; (define-prim modulo 2)
+    ; (define-prim null? 1)
+    ; (define-prim equal? 2)
+    ; (define-prim eq? 2)
+    ; (define-prim cons 2)
+    ; (define-prim car 1)
+    ; (define-prim cdr 1)
+    ; (define-prim float->int 1)
+    ; (define-prim int->float 1)
+    ; (define-prim hash)
+    ; (define-prim hash-ref 2)
+    ; (define-prim hash-set 3)
+    ; (define-prim hash-keys 1)
+    ; (define-prim hash-has-key? 2)
+    ; (define-prim hash-count 1)
+    ; (define-prim set)
+    ; (define-prim set->list 1)
+    ; (define-prim list->set 1)
+    ; (define-prim set-add 2)
+    ; (define-prim set-member? 2)
+    ; (define-prim set-remove 2)
+    ; (define-prim set-count 1)
+    ; (define-prim string? 1)
+    ; (define-prim string-length 1)
+    ; (define-prim string-ref 2)
+    ; (define-prim substring 3)
+    ; (define-prim string-append 2)
+    ; (define-prim string->list 1)
+    ; (define-prim exact-floor 1)
+    ; (define-prim exact-ceiling 1)
+    ; (define-prim exact-round 1)
+    ; (define-prim abs 1)
+    ; (define-prim max 1)
+    ; (define-prim min 1)
+    ; (define-prim expt 2)
+    ; (define-prim sqrt 1)
+    ; (define-prim remainder 2)
+    ; (define-prim quotient 2)
+    ; (define-prim random 1 2)
+    ; (define-prim symbol? 1)
+    ; (define-prim pair? 1)
+    ; (define-prim positive? 1)
+    ; (define-prim negative? 1)
+    ; (define-prim list 1 2 3 4)
+    ; (define (even? x) (equal? '0 (modulo x '2)))
+    ; (define (odd? x) (equal? '1 (modulo x '2)))
+    ; (define (list-ref lst n)
+    ;   (if (= '0 n) (car lst) (list-ref (cdr lst) (- n '1))))
+    ; (define (member item lst)
+    ;   (if (if (null? item) (null? item) (null? lst))
+    ;     '#f
+    ;     (if (equal? item (car lst)) lst (member item (cdr lst)))))
+    ; (define (member? x lst)
+    ;   (if (null? lst) '#f (if (equal? (car lst) x) '#t (member? x (cdr lst)))))
+    ; (define (length lst) (if (null? lst) '0 (+ '1 (length (cdr lst)))))
+    ; (define (map proc lst)
+    ;   (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
+    ; (define (filter op lst)
+    ;   (if (null? lst)
+    ;     (list)
+    ;     (if (op (car lst))
+    ;       (cons (car lst) (filter op (cdr lst)))
+    ;       (filter op (cdr lst)))))
+    ; (define (drop lst n) (if (= n '0) lst (drop (cdr lst) (- n '1))))
+    ; (define (foldl fun acc lst)
+    ;   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
+    ; (define (foldr fun acc lst)
+    ;   (if (null? lst) acc (fun (car lst) (foldr fun acc (cdr lst)))))
+    ; (define (reverse-helper lst lst2)
+    ;   (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
+    ; (define (reverse lst) (reverse-helper lst (list)))
+    ; (define (append1 lhs rhs)
+    ;   (if (null? lhs) rhs (cons (car lhs) (append1 (cdr lhs) rhs))))
+    ; (define (append . vargs)
+    ;   (let ((xs (car vargs)) (vargs8729 (cdr vargs)))
+    ;     (let ((x vargs8729))
+    ;       (if (= '1 (length x))
+    ;         (append1 xs (car x))
+    ;         (foldr append1 (list) (append1 (list xs) x))))))
+    ; (define (take-helper lst n lst2)
+    ;   (if (= n '0)
+    ;     (reverse lst2)
+    ;     (take-helper (cdr lst) (- n '1) (cons (car lst) lst2))))
+    ; (define (take lst n) (take-helper lst n (list)))
+    ; (define (pt-in-poly2-helper xp yp x y c i j)
+    ;   (if (< i '0)
+    ;     c
+    ;     (if (if (if (if (> (list-ref yp i) y)
+    ;                   (> (list-ref yp i) y)
+    ;                   (>= y (list-ref yp j)))
+    ;               (if (> (list-ref yp j) y)
+    ;                 (> (list-ref yp j) y)
+    ;                 (>= y (list-ref yp i)))
+    ;               '#f)
+    ;           (if (if (> (list-ref yp i) y)
+    ;                 (> (list-ref yp i) y)
+    ;                 (>= y (list-ref yp j)))
+    ;             (if (> (list-ref yp j) y)
+    ;               (> (list-ref yp j) y)
+    ;               (>= y (list-ref yp i)))
+    ;             '#f)
+    ;           (>=
+    ;            x
+    ;            (+
+    ;             (list-ref xp i)
+    ;             (/
+    ;              (* (- (list-ref xp j) (list-ref xp i)) (- y (list-ref yp i)))
+    ;              (- (list-ref yp j) (list-ref yp i))))))
+    ;       (pt-in-poly2-helper xp yp x y c (- i '1) i)
+    ;       (pt-in-poly2-helper xp yp x y (if c '#f '#t) (- i '1) i))))
+    ; (define (pt-in-poly2 xp yp x y)
+    ;   (pt-in-poly2-helper xp yp x y '#f (- (length xp) '1) '0))
+    (define (call n)
+      (let ([f (lambda (x y . z) z)]) (f 1 2 3 4 5)))
+
+    (define (brouhaha_main) (call 2))
+    ))
+; (pretty-print (desugar prog))
+; (pretty-print (alphatize (desugar prog)))
 ; (pretty-print (cps-convert (optimize-prog prog))
 ; (pretty-print (closure-convert (alphatize (cps-convert ( optimize-prog prog)))))
 ; (pretty-print (closure-convert (alphatize (cps-convert prog))))
@@ -801,4 +804,4 @@
 ; (pretty-print (cps-convert (optimize-prog (anf-convert (alphatize (desugar our-call))))))
 ; (pretty-print (anf-convert prog))
 ; (pretty-print (optimize-prog (anf-convert prog)))
-; (pretty-print (cps-convert (anf-convert (optimize-prog (alphatize (desugar prog))))))
+; (pretty-print (cps-convert (anf-convert (optimize-prog (alphatize (desugar prog)) #f (list)) #f (list))))

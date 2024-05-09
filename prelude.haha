@@ -67,7 +67,7 @@
 
 
 ;;; other predicates and HOFs
-; (define (list . x) x)
+;; (define (list . x) x)
 
 (define (even? x)
   (equal? 0 (modulo x 2)))
