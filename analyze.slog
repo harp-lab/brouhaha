@@ -130,8 +130,8 @@
 
 (tick ?(do-tick [] call) [call])
 (tick ?(do-tick [x] call) [call x])
-; (tick ?(do-tick [x y] call) [call x y])
-; (tick ?(do-tick [x y _] call) [call x y])
+(tick ?(do-tick [x y] call) [call x y])
+(tick ?(do-tick [x y _] call) [call x y])
 
 
 ;----------------------------------------------------------------------;
