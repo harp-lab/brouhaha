@@ -94,6 +94,46 @@
      (find-global-constants-helper ef (find-global-constants-helper eas env))]
     ))
 
+;;; takes a lambda and rewrites it in terms of lets
+(define (lambda-to-let e)
+  
+  (define (desugar-exp exp)
+    (match exp
+      [(? symbol?) exp]
+      [(? number?) exp]
+      [(? boolean?) exp]
+      [`((lambda (,xs ...) ,body) ,args ...)
+       `(let ,(map list xs args) ,(desugar-exp body))]
+    
+      [`((lambda ,(? symbol? x) ,body) ,args ...)
+       `(let ([,x ,(if (null? (cdr args))
+                       (car args)
+                       `(list ,@args))]) ,x)]
+    
+      [`(,ef ,ea-list ...)
+       (cons (desugar-exp ef) (map desugar-exp ea-list))]
+
+      [else (raise `(error ,(format "lambda-to-let: unknown s-expression!: ~a" exp)))]))
+
+  
+  (define ((alpha-rename env) e)
+    (define rename gensym)
+    
+    (match (desugar-exp e)
+      [`(let ([,xs ,es] ...) ,e0)
+       (define xs+ (map rename xs))
+       (define env+ (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
+     
+       `(let ,(map list xs+ (map (alpha-rename env) es)) ,((alpha-rename env+) e0))]
+      
+      [(? symbol? x) (hash-ref env x (lambda () x))]
+      [`',dat `',dat]
+      [(? number?) e]
+      [`(,es ...) (map (alpha-rename env) es)]))
+
+  ;((alpha-rename (hash)) e)
+  (desugar-exp e))
+
 
 (define (print-color text color)
   (display "\x1b[")

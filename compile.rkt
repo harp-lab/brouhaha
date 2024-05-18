@@ -12,6 +12,7 @@
          compile-to-finish)
 
 (require "slog-utils.rkt"
+         "utils.rkt"
          "interp-closure.rkt"
          "interp-cps.rkt"
          "interp-anf.rkt")
@@ -306,19 +307,21 @@
 
       [`(apply ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(apply . ,xs)))))]
       [`(,f ,es ...)
+       ;; inlinable or not
        (displayln `(,f ,@es))
        (displayln (callable-define-prim-with-slog? proc-name-shadowed? f (length es) ast-root))
 
-       (displayln "-------")
+       (when (is-combinator? f es)
+         (pretty-print (lambda-to-let `(,f ,@es))))
+
+       (displayln "--anf-----")
 
        (match-define `(,fnc ,is_define_prim ,is_callable ,arg_count)
          (callable-define-prim-with-slog? proc-name-shadowed? f (length es) ast-root))
 
        (if (and is_define_prim is_callable)
            (normalize-aes `(,fnc ,@es) k)
-           (normalize-aes `(,fnc ,@es) k))
-
-
+           (normalize-aes `(,f ,@es) k))
 
        ; (normalize-aes `(,f ,@es) k)
        ]
@@ -370,8 +373,9 @@
       [`(let ([,x (list)]) ,e0) `(let ([,x (prim list)]) ,(tag-body e0))]
 
       [`(let ([,x ,rhs]) ,e0)
-       (match-define `(,is_define_prim ,is_callable ,arg_count)
-         (callable-define-prim? proc-name-shadowed? (car rhs) (length (cdr rhs))))
+       ;; inlinable or not
+       (match-define `(,fnc ,is_define_prim ,is_callable ,arg_count)
+         (callable-define-prim-with-slog? proc-name-shadowed? (car rhs) (length (cdr rhs)) ast-root))
 
        (if (and is_define_prim is_callable)
            `(let ([,x (prim ,@rhs)]) ,(tag-body e0))
@@ -384,22 +388,19 @@
       [`(apply ,ae0 ,ae1) `(apply ,ae0 ,ae1)]
 
       [`(,fae ,args ...)
-       ; (displayln "lol")
+       ;; inlinable or not
+
        ;;; if slog-flag
        ;;;   callable-define-prim-with-slog?
        ;;;   callable-define-prim?
        ;;;   (displayln slog-flag)
 
 
+       (match-define `(,fnc ,is_define_prim ,is_callable ,arg_count)
+         (callable-define-prim-with-slog? proc-name-shadowed? fae (length args) ast-root))
 
        ;  (match-define `(,is_define_prim ,is_callable ,arg_count)
-       ;    (callable-define-prim-with-slog? proc-name-shadowed? fae (length args) ast-root))
-
-       ;  (displayln (callable-define-prim-with-slog? proc-name-shadowed? fae (length args) ast-root))
-
-
-       (match-define `(,is_define_prim ,is_callable ,arg_count)
-         (callable-define-prim? proc-name-shadowed? fae (length args)))
+       ;    (callable-define-prim? proc-name-shadowed? fae (length args)))
 
        ;  (set! is_define_prim #f)
        ;  (set! is_callable #f)
@@ -789,8 +790,13 @@
     ;       (pt-in-poly2-helper xp yp x y (if c '#f '#t) (- i '1) i))))
     ; (define (pt-in-poly2 xp yp x y)
     ;   (pt-in-poly2-helper xp yp x y '#f (- (length xp) '1) '0))
+
+    ; (define (call n)
+    ;   (let ([f (lambda (x y . z) z)]) (f 1 2 3 4 5)))
+
     (define (call n)
-      (let ([f (lambda (x y . z) z)]) (f 1 2 3 4 5)))
+      (let ([x 1] [y 2] [z 3])
+        ((lambda (x1 y1 z1) (+ x1 y1 z)) 1 2 3)))
 
     (define (brouhaha_main) (call 2))
     ))
@@ -804,4 +810,4 @@
 ; (pretty-print (cps-convert (optimize-prog (anf-convert (alphatize (desugar our-call))))))
 ; (pretty-print (anf-convert prog))
 ; (pretty-print (optimize-prog (anf-convert prog)))
-; (pretty-print (cps-convert (anf-convert (optimize-prog (alphatize (desugar prog)) #f (list)) #f (list))))
+; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (optimize-prog (alphatize (desugar prog)) #f (list)) #f (list))))))

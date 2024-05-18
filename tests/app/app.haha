@@ -16,8 +16,30 @@
 ;    100 200 300 1 2 3 4 500))
 
 
-(define (call n)
-  (let ([f (lambda (x y z) (+ x y z))]) (f 1 2 3)))
+; (define (call n)
+;   (let ([f (lambda (x y z) (+ x y z))]) (f 1 2 3)))
+
+ 
+
+; (define (call y)
+;   ((lambda (x z t) (call2 x z t)) 100 200 300) )
+
+(define (call y)
+  ; ((lambda (x) (x (lambda (c) c))) (lambda (z) (z z)))
+  ((lambda (x) ((lambda (x) (x (lambda (d) d))) x)) (lambda (z) (z z)))
+  ; ((lambda (a b c d) (+ a b c d)) 100 200 300 400) 
+  ; (if (+ 1 2) #t #f)
+  )
+
+
+; (define (call y)
+;   ((lambda (a b c d e x z t)
+;      (let ([a 110]
+;            [b 210])
+;        (if (< a b)
+;            a
+;            (+ x z t a b c d e))))
+;    100 200 300 1 2 3 4 500))
 
 ; (define (brouhaha_main)
 ;     (call 2))

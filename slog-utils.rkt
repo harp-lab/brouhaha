@@ -260,6 +260,7 @@ void *fhalt()
 ;     - count, should return 0
 
 (define (callable-define-prim? proc-name-shadowed_hash prc count)
+  ; (displayln (~a "here: " prc))
   (if (not (hash-has-key? proc-name-shadowed_hash prc))
       `(#f #f 0)
       (let ([res (hash-ref proc-name-shadowed_hash prc)])
@@ -271,6 +272,7 @@ void *fhalt()
 
 ;;; if slog is enabled this version will be called
 (define (callable-define-prim-with-slog? proc-name-shadowed_hash prc count ast-root)
+  ; (displayln (~a "here: " prc))
   ;; read from fun-at-call and fun-at-call-count
   ;;     fun-at-call (exp, vf)         : (fun-at-call (app (ref "f") args ...) (define-prim "+" (varparam "lst")))
   ;;     fun-at-call-count(exp, count) : (fun-at-call-count (app (ref "f") args ...) 1)
@@ -310,18 +312,14 @@ void *fhalt()
 
   (let loop ([func-fact get-all-fun-at-call-facts])
     (cond
-      [(null? func-fact) `(,prc #f #f 0)]
+      [(null? func-fact)
+       `(,prc ,@(callable-define-prim? proc-name-shadowed_hash prc count))]
       [else
        (match (car func-fact)
          [`(fun-at-call (app (ref ,func) ,bd) (define-prim ,dp ,_))
           (if (equal? (string->symbol func) prc)
               (if (= (hash-ref fun-at-call-count `(app (ref ,func) ,bd)) 1)
-                  (let ([res (hash-ref proc-name-shadowed_hash (string->symbol dp))])
-                    (if (equal? (car res) 'not-shadowed-dp)
-                        (if (member count (cadr res))
-                            `(,(string->symbol dp) #t #t ,(car (member count (cadr res))))
-                            `(,(string->symbol dp) #t #f 0))
-                        `(,(string->symbol dp) #f #f 0)))
+                  `(,(string->symbol dp) ,@(callable-define-prim? proc-name-shadowed_hash (string->symbol dp) count))
                   `(,(string->symbol dp) #f #f 0))
 
               (loop (cdr func-fact)))]
@@ -379,6 +377,66 @@ void *fhalt()
       [_ 0]))
 
   (apply + (map unbundle program)))
+
+
+(define (is-combinator? func args)
+  (define exp `(,func ,@args))
+  (define get-slog-fact (write-slog-fact exp))
+
+  (match exp
+    [`((lambda (,xs ...) ,body) ,args ...)
+      #t]
+    [_ #f]
+  ))
+
+
+
+;;; takes racket-code and turns into slog-code
+(define (write-slog-fact exp)
+  (match exp
+    [`',(? symbol? x) `(symbol ,(symbol->string x))]
+    [`',e (write-slog-fact e)]
+    [(? symbol? x) `(ref ,(symbol->string x))]
+    [(? boolean? x) (if x `(bool "t") `(bool "f"))]
+    [(? number? x) `(int ,(number->string x))]
+    [(? string? x) `(string ,x)]
+
+    [`(lambda (,(? symbol? xs) ...) ,body)
+     `(lambda (fixedparam
+               ,(foldr (lambda (x acc)
+                         `($lst ,(symbol->string x) ,acc))
+                       '($nil 0)
+                       xs))
+        ,(write-slog-fact body))]
+
+    [`(lambda ,(? symbol? x) ,body)
+     `(lambda (varparam ,(symbol->string x)) ,(write-slog-fact body))]
+
+    [`(let ([,xs ,es] ...) ,body)
+     `(let ,(foldr (lambda (x e acc)
+                     `($lst (binding ,(symbol->string x) ,(write-slog-fact e)) ,acc))
+                   `($nil 0)
+                   xs
+                   es)
+        ,(write-slog-fact body))]
+
+    [`(if ,grd ,tExp ,fExp)
+     `(if ,(write-slog-fact grd) ,(write-slog-fact tExp) ,(write-slog-fact fExp))]
+
+    [`(prim ,op ,es ...)
+     ; we shouldn't need this case, just keeping it for reference!
+     (foldr string-append "" `("(prim \"" ,(~a op) "\" [" ,@(map write-slog-fact es) "])"))]
+
+    [`(apply ,e0 ,e1)
+     `(appl ,(write-slog-fact e0) ,(write-slog-fact e1))]
+
+    [`(,ef ,eas ...)
+     `(app
+       ,(write-slog-fact ef)
+       ,(foldr (lambda (x acc)
+                 `($lst ,(write-slog-fact x) ,acc))
+               '($nil 0)
+               eas))]))
 
 ; (define sybo '+)
 ; (define ast-root (read-facts "tests/apply/output/578515199c3a2906e454b88940173865172a56f9d945ed2e8b1a3836/facts.txt"))

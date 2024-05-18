@@ -2,6 +2,7 @@
     (f (f 10 x) (f x y z) (f 10 x y z))
     ; (+ (+ 10 x) (+ x y z) (+ 10 x y z))
   ; (f x y z) 
+   
 )
 
 (define (intermediate x y z)

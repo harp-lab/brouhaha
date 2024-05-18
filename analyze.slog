@@ -129,10 +129,9 @@
  (eval body [] (halt))]
 
 (tick ?(do-tick [] call) [call])
-(tick ?(do-tick [prev-call] call) [call])
-; (tick ?(do-tick [x] call) [call x])
+(tick ?(do-tick [x] call) [call x])
 ; (tick ?(do-tick [x y] call) [call x y])
-; (tick ?(do-tick [x y z] call) [call x y])
+; (tick ?(do-tick [x y _] call) [call x y])
 
 
 ;----------------------------------------------------------------------;
@@ -377,16 +376,18 @@
  [(free y eb)
   -->
   (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
-  (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
+  (store-flow (f-addr ctxtick y) (f-addr ctxlam y))
+  ]]
 
 [(apply (clo (lambda (varparam x) eb) ctxlam) (fixedarg [as ...]) ctxcall kont call)
  --> 
  (store (k-addr eb) kont)
  (= ctxtick {tick !(do-tick ctxcall call)})     
  (store (f-addr ctxtick x) (list-of-vals as))
- (eval eb ctxlam (k-addr eb))
+ (eval eb ctxtick (k-addr eb))
  [(free y eb) 
   -->
+  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
   (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
 
 ;VARIADIC ARG
@@ -395,9 +396,11 @@
  (store (k-addr eb) kont)
  (= ctxtick {tick !(do-tick ctxcall call)})
  (store-flow a (f-addr ctxtick x))
- (eval eb ctxlam (k-addr eb))
+ (store (f-addr ctxtick x) {store a})
+ (eval eb ctxtick (k-addr eb))
  [(free y eb)
   -->
+  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
   (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
 
 [(apply (clo (lambda (fixedparam [xs ...]) eb) ctxlam) (vararg a) ctxcall kont call)
@@ -406,7 +409,7 @@
  (store (k-addr eb) kont)
  (= ctxtick {tick !(do-tick ctxcall call)})
  (do-var-prop-all ctxtick xs as)
- (eval eb ctxlam (k-addr eb))
+ (eval eb ctxtick (k-addr eb))
  [(free y eb)
   -->
   (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
@@ -422,7 +425,7 @@
 [(do-fixed-prop-all ctxtick [x x-rest ...] [a a-rest ...])
  -->
  (do-fixed-prop-all ctxtick x-rest a-rest)
- (store (f-addr ctxtick x) a)
+ (store (f-addr ctxtick x) {store a})
  (store-flow a (f-addr ctxtick x))]
 
 
