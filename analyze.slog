@@ -275,11 +275,11 @@
  (store (s-addr fname) (state fname))
  (ret (s-addr fname) kont)]
 
- [(= e (apply (define-prim fname _) args _ kont _))
- (~ specialized-prim fname)
- -->
- (store (s-addr e) (state e))
- (ret (s-addr e) kont)]
+;  [(= e (apply (define-prim fname _) args _ kont _))
+;  (~ specialized-prim fname)
+;  -->
+;  (store (s-addr e) (state e))
+;  (ret (s-addr e) kont)]
 
 
 ;SPECIALIZED PRIMS
@@ -373,9 +373,10 @@
  (store (k-addr eb) kont)
  (= ctxtick {tick !(do-tick ctxcall call)})
  (do-fixed-prop-all ctxtick xs as)
- (eval eb ctxlam (k-addr eb))
+ (eval eb ctxtick (k-addr eb))
  [(free y eb)
   -->
+  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
   (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
 
 [(apply (clo (lambda (varparam x) eb) ctxlam) (fixedarg [as ...]) ctxcall kont call)
@@ -421,6 +422,7 @@
 [(do-fixed-prop-all ctxtick [x x-rest ...] [a a-rest ...])
  -->
  (do-fixed-prop-all ctxtick x-rest a-rest)
+ (store (f-addr ctxtick x) a)
  (store-flow a (f-addr ctxtick x))]
 
 
@@ -476,9 +478,18 @@
 ;  -->
 ; (is-combinator exp lam x)]
 
- 
 ;GENERATING CALL-SETS FOR FUNCTIONS
 [(= e (app ef [eas ...]))
- (apply vf _ _ _ e)
- -->
- (fun-at-call e vf)]
+(apply vf _ _ _ e)
+-->
+(fun-at-call e vf)]
+
+[(fun-at-call e vf)
+(count fun-at-call e _ cnt)
+-->
+(fun-at-call-count e cnt)]
+
+
+[(free var exp)
+-->
+(freevars exp var)]

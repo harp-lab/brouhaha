@@ -19,52 +19,10 @@
 (define (call n)
   (let ([f (lambda (x y z) (+ x y z))]) (f 1 2 3)))
 
-
-; (define (call y)
-;   ((lambda (x z t) (call2 x z t)) 100 200 300) )
-
-; (define (call y)
-;   ((lambda (a b c d e x z t) (call2 500))
-;    100 200 300 1 2 3 4 50))
-
-; (define (call y)
-;   ((lambda (a b c d e x z t)
-;      (let ([a 110]
-;            [b 210])
-;        (if (< a b)
-;            a
-;            (+ x z t a b c d e))))
-;    100 200 300 1 2 3 4 500))
-
 ; (define (brouhaha_main)
 ;     (call 2))
 
 ; (define (call y)
 ;       (let ((a8318 (lambda (x) x))) (let ((a8319 '100)) (a8318 a8319))))
 
-;;; example from Practical and effective higher-order optimizations, paper
-; (define (call n)
-;   (let* ([y 2]
-;          [f (lambda x y)]
-;          [confounding (lambda x y)]
-;          [g (lambda (h) (h))]
-;          [callsG (lambda (b k) (if b (g k) 0))]
-;          [bad (callsG #f confounding)])
-;     (callsG #t f)))
-
 (define (brouhaha_main) (call 2))
-
-((λ (us)
-   (letrec
-       ([tri (λ (xs)
-               (match xs
-                 [(list) (list)]
-                 [(cons y ys)
-                  (letrec
-                      ([map (λ (f zs)
-                              (match zs
-                                [(list) (list)]
-                                [(cons w ws)
-                                 (cons (f w) (map f ws))]))])
-                    (cons y (map (λ (u) (+ y u)) (tri ys))))]))])
-     (tri us))) 100)
