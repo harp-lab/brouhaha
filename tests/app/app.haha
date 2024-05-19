@@ -17,21 +17,25 @@
 
 
 
-; (define (call n)
-;   (let ([f (lambda (x y z) (+ x y z))]) (f 1 2 3)))
+(define (call n)
+  (let ([f (lambda (x y z) (+ x y z))]) (f 1 2 3))
+  ;((lambda (f) (f 1 2 3)) (lambda (x y z) (+ x y z)))
+  
+  )
 
  
 
 ; (define (call y)
 ;   ((lambda (x z t) (call2 x z t)) 100 200 300) )
 
-(define (call y)
-  ((lambda (x) x) (lambda (z) (z z))) 
-  ; ((lambda (x) (x (lambda (c) c))) (lambda (z) (z z)))
-  ; ((lambda (x) ((lambda (x) (x (lambda (d) d))) x)) (lambda (z) (z z)))
-  ; ((lambda (a b c d) (+ a b c d)) 100 200 300 400) 
-  ; (if (+ 1 2) #t #f)  
-  ) 
+; (define (call y)
+;   ; ((lambda (x) x) (lambda (z) (z z))) 
+;   ; ((lambda (x) (x (lambda (c) c))) (lambda (z) (z z)))
+;   ; ((lambda (x) ((lambda (x) (x (lambda (d) d))) x)) (lambda (z) (z z)))
+;   ; ((lambda (a b c d) (+ a b c d)) 100 200 300 400) 
+;   ((lambda (f) (f 100 200 300 400)) +) 
+;   ; (if (+ 1 2) #t #f)    
+;   ) 
 
 
 ; (define (call y)
