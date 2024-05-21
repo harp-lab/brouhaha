@@ -197,6 +197,8 @@
  -->
  (eval rhs ctx (letk call body [lhs] [] bind-rest ctx kont))]
 
+
+
 ;---------------------------------------------------------------------;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;RET CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;---------------------------------------------------------------------;
@@ -253,7 +255,7 @@
  -->
  (= ctxtick {tick !(do-tick ctxlet call)})
  (store (k-addr body) kont)
- (do-fixed-prop-all ctxlet xs [as ... a])
+ (do-fixed-prop-all ctxtick xs [as ... a])
  (eval body ctxtick (k-addr body))
  
  [(free y body)
@@ -382,7 +384,7 @@
  [(free y eb)
   -->
   (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
-  (store-flow (f-addr ctxtick y) (f-addr ctxlam y))
+  ;(store-flow (f-addr ctxtick y) (f-addr ctxlam y))
   ]]
 
 [(apply (clo (lambda (varparam x) eb) ctxlam) (fixedarg [as ...]) ctxcall kont call)
@@ -394,7 +396,8 @@
  [(free y eb) 
   -->
   (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
-  (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
+  ;(store-flow (f-addr ctxtick y) (f-addr ctxlam y))
+  ]]
 
 ;VARIADIC ARG
 [(apply (clo (lambda (varparam x) eb) ctxlam) (vararg a) ctxcall kont call)
@@ -407,7 +410,8 @@
  [(free y eb)
   -->
   (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
-  (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
+  ;(store-flow (f-addr ctxtick y) (f-addr ctxlam y))
+  ]]
 
 [(apply (clo (lambda (fixedparam [xs ...]) eb) ctxlam) (vararg a) ctxcall kont call)
  (store a (list-of-vals as))
@@ -418,7 +422,9 @@
  (eval eb ctxtick (k-addr eb))
  [(free y eb)
   -->
-  (store-flow (f-addr ctxtick y) (f-addr ctxlam y))]]
+  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
+  ;(store-flow (f-addr ctxtick y) (f-addr ctxlam y))
+  ]]
 
 
 
@@ -431,8 +437,9 @@
 [(do-fixed-prop-all ctxtick [x x-rest ...] [a a-rest ...])
  -->
  (do-fixed-prop-all ctxtick x-rest a-rest)
-;  (store (f-addr ctxtick x) {store a})
- (store-flow a (f-addr ctxtick x))]
+ (store (f-addr ctxtick x) {store a})
+ ;(store-flow a (f-addr ctxtick x))
+ ]
 
 
 ;DO-VAR-PROP-ALL
@@ -458,7 +465,7 @@
 
 ;DETECTING ANSWER
 (answer ?(ret (s-addr a) (halt)) {store (s-addr a)})
-(answer ?(ret (f-addr _ a) (halt)) {store (f-addr _ a)})
+(answer ?(ret (f-addr c a) (halt)) {store (f-addr c a)})
 
 
 ;----------------------------------------------------------------------;

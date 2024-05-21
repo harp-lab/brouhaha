@@ -2,10 +2,20 @@
 ;     ((lambda (x) (* x y)) 100 ))
 
 
-; (define (call4)
-;   (let ([a 5])
-;     (let ([a 10])
-;       a)))
+(define (call y)
+  (let* ([id (lambda (x) x)]
+         [y (id #t)]
+         [z (id #f)])
+    (id 5))
+
+  ; where, #t = (lambda (t) t), #f = (lambda (f) f) and 5 = (lambda (c) c) (edited)
+
+
+  ;   ((lambda (id)
+  ;      ((lambda (y8778)
+  ;         ((lambda (z) (id (lambda (c) c)))
+  ;          (id (lambda (f) f)))) (id (lambda (t) t)))) (lambda (x) x))
+  )
 
 
 ; (define (call5 x)
@@ -17,26 +27,26 @@
 
 
 
-(define (call n)
-  (let ([f (lambda (x y z) (+ x y z))]) (f 1 2 3))
-  ;((lambda (f) (f 1 2 3)) (lambda (x y z) (+ x y z)))
-  
-  )
+; (define (call n)
+;   (let ([f (lambda (x y z) (+ x y z))]) (f 1 2 3))
+;   ;((lambda (f) (f 1 2 3)) (lambda (x y z) (+ x y z)))
 
- 
+;   )
+
+
+
 
 ; (define (call y)
 ;   ((lambda (x z t) (call2 x z t)) 100 200 300) )
 
 ; (define (call y)
-;   ; ((lambda (x) x) (lambda (z) (z z))) 
+;   ; ((lambda (x) x) (lambda (z) (z z)))
 ;   ; ((lambda (x) (x (lambda (c) c))) (lambda (z) (z z)))
 ;   ; ((lambda (x) ((lambda (x) (x (lambda (d) d))) x)) (lambda (z) (z z)))
-;   ; ((lambda (a b c d) (+ a b c d)) 100 200 300 400) 
-;   ((lambda (f) (f 100 200 300 400)) +) 
-;   ; (if (+ 1 2) #t #f)    
-;   ) 
-
+;   ; ((lambda (a b c d) (+ a b c d)) 100 200 300 400)
+;   ; ((lambda (f) (f 100 200 300 400)) +)
+;   ; (if (+ 1 2) #t #f)
+;   )
 
 ; (define (call y)
 ;   ((lambda (a b c d e x z t)

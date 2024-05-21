@@ -123,15 +123,12 @@
        (define xs+ (map rename xs))
        (define env+ (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
        (coverage `(let ,(map list xs+ (map (alpha-rename env) es)) ,((alpha-rename env+) e0)))]
+      
       [`(lambda (,xs ...) ,e0)
        (define xs+ (map rename xs))
        (define env+ (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
        (coverage `(lambda ,xs+ ,((alpha-rename env+) e0)))]
 
-      [`(lambda ,x ,e0)
-       (define x+ (rename x))
-       (define env+ (hash-set env x x+))
-       (coverage `(lambda ,x+ ,((alpha-rename env+) e0)))]
       [`(lambda ,x ,e0)
        (define x+ (rename x))
        (define env+ (hash-set env x x+))
@@ -150,7 +147,7 @@
       [`(call/cc ,e0) `(call/cc ,e0)]
 
       [`(apply ,e0 ,e1) (coverage `(apply ,((alpha-rename env) e0) ,((alpha-rename env) e1)))]
-      [(? symbol? x) (coverage (hash-ref env x))]
+      [(? symbol? x) (coverage (hash-ref env x (lambda () x)))]
       [`',dat (coverage `',dat)]
       [`(kont-app ,es ...) (coverage `(kont-app ,@(map (alpha-rename env) es)))]
       [`(,es ...) (coverage (map (alpha-rename env) es))]))
