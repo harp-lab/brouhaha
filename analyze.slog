@@ -260,11 +260,7 @@
  
  [(free y body)
   -->
-  (store (f-addr ctxtick y) {store (f-addr ctxlet y)})
-  ; (store-flow (f-addr ctxtick y) (f-addr ctxlam y))
-  ]]
-
-
+  (store (f-addr ctxtick y) {store (f-addr ctxlet y)})]]
 
 
 ;---------------------------------------------------------------------;
@@ -328,7 +324,6 @@
   -->
   (store addr (list-of-vals union-as))]
 
-
 (specialized-prim "null?")
   [(= e (apply (define-prim "null?" _) (fixedarg [a]) ctx kont _))
    (store a (list-of-vals as))
@@ -344,20 +339,19 @@
    (store (f-addr ctx e) (bool "f"))
    (ret (f-addr ctx e) kont)]
 
-
 (specialized-prim "car")
- [(= e (apply (define-prim "car" _) (fixedarg [a]) ctx kont _))
-  (store a (list-of-vals [_ ... ai _ ...]))
-  -->
-  (store (f-addr ctx e) ai)
-  (ret (f-addr ctx e) kont)]
+  [(= e (apply (define-prim "car" _) (fixedarg [a]) ctx kont _))
+   (store a (list-of-vals [_ ... ai _ ...]))
+   -->
+   (store (f-addr ctx e) ai)
+   (ret (f-addr ctx e) kont)]
 
 (specialized-prim "cdr")
- [(= e (apply (define-prim "cdr" _) (fixedarg [a]) ctx kont _))
-  (store a (list-of-vals as))
+  [(= e (apply (define-prim "cdr" _) (fixedarg [a]) ctx kont _))
+   (store a (list-of-vals as))
    -->
-  (store (f-addr ctx e) (list-of-vals as))
-  (ret (f-addr ctx e) kont)]
+   (store (f-addr ctx e) (list-of-vals as))
+   (ret (f-addr ctx e) kont)]
 
 (specialized-prim "list")
  [(= e (apply (define-prim "list" _) (fixedarg as) ctx kont _))
@@ -372,6 +366,8 @@
   (ret (f-addr ctx e) kont)]
 
 ;; ASK ABOUT DO-TICK FOR PRIMS
+;; >> We do not need DO-TICK for prims, because their body needs
+;; >> no evaluation, thus require no-context meaning no DO-TICK!
 
 
 ;FIXED ARG
@@ -381,11 +377,10 @@
  (= ctxtick {tick !(do-tick ctxcall call)})
  (do-fixed-prop-all ctxtick xs as)
  (eval eb ctxtick (k-addr eb))
+
  [(free y eb)
   -->
-  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
-  ;(store-flow (f-addr ctxtick y) (f-addr ctxlam y))
-  ]]
+  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})]]
 
 [(apply (clo (lambda (varparam x) eb) ctxlam) (fixedarg [as ...]) ctxcall kont call)
  --> 
@@ -393,11 +388,10 @@
  (= ctxtick {tick !(do-tick ctxcall call)})     
  (store (f-addr ctxtick x) (list-of-vals as))
  (eval eb ctxtick (k-addr eb))
+ 
  [(free y eb) 
   -->
-  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
-  ;(store-flow (f-addr ctxtick y) (f-addr ctxlam y))
-  ]]
+  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})]]
 
 ;VARIADIC ARG
 [(apply (clo (lambda (varparam x) eb) ctxlam) (vararg a) ctxcall kont call)
@@ -405,13 +399,11 @@
  (store (k-addr eb) kont)
  (= ctxtick {tick !(do-tick ctxcall call)})
  (store-flow a (f-addr ctxtick x))
- ;(store (f-addr ctxtick x) {store a})
  (eval eb ctxtick (k-addr eb))
+
  [(free y eb)
   -->
-  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
-  ;(store-flow (f-addr ctxtick y) (f-addr ctxlam y))
-  ]]
+  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})]]
 
 [(apply (clo (lambda (fixedparam [xs ...]) eb) ctxlam) (vararg a) ctxcall kont call)
  (store a (list-of-vals as))
@@ -420,13 +412,10 @@
  (= ctxtick {tick !(do-tick ctxcall call)})
  (do-var-prop-all ctxtick xs as)
  (eval eb ctxtick (k-addr eb))
+
  [(free y eb)
   -->
-  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})
-  ;(store-flow (f-addr ctxtick y) (f-addr ctxlam y))
-  ]]
-
-
+  (store (f-addr ctxtick y) {store (f-addr ctxlam y)})]]
 
 
 
@@ -437,9 +426,7 @@
 [(do-fixed-prop-all ctxtick [x x-rest ...] [a a-rest ...])
  -->
  (do-fixed-prop-all ctxtick x-rest a-rest)
- (store (f-addr ctxtick x) {store a})
- ;(store-flow a (f-addr ctxtick x))
- ]
+ (store (f-addr ctxtick x) {store a})]
 
 
 ;DO-VAR-PROP-ALL

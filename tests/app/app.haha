@@ -3,10 +3,11 @@
 
 
 (define (call y)
-  (let* ([id (lambda (x) x)]
-         [y (id #t)]
-         [z (id #f)])
-    (id 5))
+  (let ([rv (let* ([id (lambda (x) x)]
+                   [y (id #t)]
+                   [z (id #f)])
+              (id 5))])
+    rv)
 
   ; where, #t = (lambda (t) t), #f = (lambda (f) f) and 5 = (lambda (c) c) (edited)
 

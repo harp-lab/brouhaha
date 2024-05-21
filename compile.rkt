@@ -305,13 +305,13 @@
       [`(apply ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(apply . ,xs)))))]
       [`(,f ,es ...)
        ; inlinable or not
-       ;  (displayln `(,f ,@es))
-       ;  (displayln (callable-define-prim-with-slog? proc-name-shadowed? f (length es) ast-root))
+        ; (displayln `(,f ,@es))
+        ; (displayln (callable-define-prim-with-slog? proc-name-shadowed? f (length es) ast-root))
 
-       ;  (when (is-combinator? f es)
-       ;    (pretty-print (lambda-to-let `(,f ,@es))))
+        ; (when (is-combinator? f es)
+        ;   (pretty-print (lambda-to-let `(,f ,@es))))
 
-       ;  (displayln "--anf-----")
+        ; (displayln "--anf-----")
 
        (match-define `(,fnc ,is_define_prim ,is_callable ,arg_count)
          (callable-define-prim-with-slog? proc-name-shadowed? f (length es) ast-root))
