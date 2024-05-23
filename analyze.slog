@@ -129,11 +129,11 @@
  (eval body [] (halt))]
 
 (tick ?(do-tick [] call) [call])
-; (tick ?(do-tick [x] call) [call]) ;m = 1 uncomment this, comment out the lines below
-(tick ?(do-tick [x] call) [call x]) 
-; (tick ?(do-tick [x _] call) [call x]) ;m = 2, uncomment this, comment out the lines below
-(tick ?(do-tick [x y] call) [call x y])
-(tick ?(do-tick [x y _] call) [call x y]) ;m = 3, keeping latest 3-calls
+(tick ?(do-tick [x] call) [call]) ; for m = 1 uncomment this, comment out the lines below
+; (tick ?(do-tick [x] call) [call x]) 
+; ; (tick ?(do-tick [x _] call) [call x]) ; for m = 2, uncomment this, comment out the lines below
+; (tick ?(do-tick [x y] call) [call x y])
+; (tick ?(do-tick [x y _] call) [call x y]) ;for m = 3, keeping latest 3-calls
 
 
 ;----------------------------------------------------------------------;
@@ -345,7 +345,7 @@
   [(= e (apply (define-prim "car" _) (fixedarg [a]) ctx kont _))
    (store a (list-of-vals [_ ... ai _ ...]))
    -->
-   (store (f-addr ctx e) ai)
+   (store (f-addr ctx e) {store ai})
    (ret (f-addr ctx e) kont)]
 
 (specialized-prim "cdr")
