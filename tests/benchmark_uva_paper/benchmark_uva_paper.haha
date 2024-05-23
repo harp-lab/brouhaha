@@ -1,0 +1,10 @@
+(define (call n)
+  (let* ([y 2]
+         [f (lambda x y)]
+         [confounding (lambda x y)]
+         [g (lambda (h) (h))]
+         [callsG (lambda (b k) (if b (g k) 0))]
+         [bad (callsG #f confounding)])
+    (callsG #t f)))
+
+(define (brouhaha_main) (call 2))

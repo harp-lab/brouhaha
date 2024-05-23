@@ -2,20 +2,47 @@
 ;     ((lambda (x) (* x y)) 100 ))
 
 
-(define (call y)
+(define (call yy)
   (let ([rv (let* ([id (lambda (x) x)]
                    [y (id #t)]
                    [z (id #f)])
               (id 5))])
     rv)
 
+
+  ; ((lambda (rv) rv)
+  ;   ((lambda (id)
+  ;     ((lambda (y8778)
+  ;       ((lambda (z)
+  ;         (id (lambda (c) c)))
+  ;       (id (lambda (f) f))))
+  ;     (id (lambda (t) t))))
+  ;   (lambda (x) x)))
+
+  ; ((lambda (rv) rv)
+  ;  ((lambda (id)
+  ;     ((lambda (y)
+  ;        ((lambda (z)
+  ;           ((lambda (id_8785)
+  ;              (id id_8785)) 5))
+  ;         ((lambda (id_8784)
+  ;            (id id_8784)) #f)))
+  ;      ((lambda (id_8783)
+  ;         (id id_8783)) #t)))
+  ;   (lambda (x) x)))
+
+  ; (let* ([id (lambda (x) x)]
+  ;        [var1 (id 5)]
+  ;        [var2 var1])
+  ;   var2)
+
   ; where, #t = (lambda (t) t), #f = (lambda (f) f) and 5 = (lambda (c) c) (edited)
 
 
-  ;   ((lambda (id)
-  ;      ((lambda (y8778)
-  ;         ((lambda (z) (id (lambda (c) c)))
-  ;          (id (lambda (f) f)))) (id (lambda (t) t)))) (lambda (x) x))
+  ; ((lambda (id)
+  ;   ((lambda (y8778)
+  ;    ((lambda (z) (id (lambda (c) c)))
+  ;     (id (lambda (f) f)))) (id (lambda (t) t)))) (lambda (x) x))
   )
 
 

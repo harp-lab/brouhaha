@@ -116,8 +116,8 @@
 ; (define (foldl fun acc lst)
 ;   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
 
-; (define (foldr fun acc lst)
-;   (if (null? lst) acc (fun (car lst) (foldr fun acc (cdr lst)))))
+(define (foldr fun acc lst)
+  (if (null? lst) acc (fun (car lst) (foldr fun acc (cdr lst)))))
 
 ; (define (reverse-helper lst lst2)
 ;   (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
@@ -125,16 +125,16 @@
 ; (define (reverse lst)
 ;   (reverse-helper lst (list)))
 
-; (define (append1 lhs rhs)
-;   (if (null? lhs)
-;       rhs
-;       (cons (car lhs)
-;             (append1 (cdr lhs) rhs))))
+(define (append1 lhs rhs)
+  (if (null? lhs)
+      rhs
+      (cons (car lhs)
+            (append1 (cdr lhs) rhs))))
 
-; (define (append l1 l2 . lsts)
-;     (if (null? lsts)
-;         (append1 l1 l2)
-;         (foldr append1 (list) (append1 (list l1 l2) lsts))))
+(define (append l1 l2 . lsts)
+    (if (null? lsts)
+        (append1 l1 l2)
+        (foldr append1 (list) (append1 (list l1 l2) lsts))))
 
 ; (define (take-helper lst n lst2)
 ;   (if (= n 0)

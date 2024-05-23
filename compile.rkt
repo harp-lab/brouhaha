@@ -123,7 +123,7 @@
        (define xs+ (map rename xs))
        (define env+ (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
        (coverage `(let ,(map list xs+ (map (alpha-rename env) es)) ,((alpha-rename env+) e0)))]
-      
+
       [`(lambda (,xs ...) ,e0)
        (define xs+ (map rename xs))
        (define env+ (foldl (lambda (x x+ env) (hash-set env x x+)) env xs xs+))
@@ -147,7 +147,8 @@
       [`(call/cc ,e0) `(call/cc ,e0)]
 
       [`(apply ,e0 ,e1) (coverage `(apply ,((alpha-rename env) e0) ,((alpha-rename env) e1)))]
-      [(? symbol? x) (coverage (hash-ref env x (lambda () x)))]
+      ; [(? symbol? x) (coverage (hash-ref env x (lambda () x)))]
+      [(? symbol? x) (coverage (hash-ref env x))]
       [`',dat (coverage `',dat)]
       [`(kont-app ,es ...) (coverage `(kont-app ,@(map (alpha-rename env) es)))]
       [`(,es ...) (coverage (map (alpha-rename env) es))]))
@@ -304,23 +305,28 @@
 
       [`(apply ,es ...) (coverage (normalize-aes es (lambda (xs) (k `(apply . ,xs)))))]
       [`(,f ,es ...)
-       ; inlinable or not
-        ; (displayln `(,f ,@es))
-        ; (displayln (callable-define-prim-with-slog? proc-name-shadowed? f (length es) ast-root))
+       ;;;;inlinable or not
+       (cond
+         [slog-flag
+          ; (displayln `(,f ,@es))
+          ; (displayln (callable-define-prim-with-slog? proc-name-shadowed? f (length es) ast-root))
 
-        ; (when (is-combinator? f es)
-        ;   (pretty-print (lambda-to-let `(,f ,@es))))
+          ; (when (is-combinator? f es)
+          ;   (pretty-print (lambda-to-let `(,f ,@es))))
 
-        ; (displayln "--anf-----")
+          ; (displayln "--anf-----")
 
-       (match-define `(,fnc ,is_define_prim ,is_callable ,arg_count)
-         (callable-define-prim-with-slog? proc-name-shadowed? f (length es) ast-root))
+          (match-define `(,fnc ,is_define_prim ,is_callable ,arg_count)
+            (callable-define-prim-with-slog? proc-name-shadowed? f (length es) ast-root))
 
-       (if (and is_define_prim is_callable)
-           (normalize-aes `(,fnc ,@es) k)
-           (normalize-aes `(,f ,@es) k))
-
-       ; (normalize-aes `(,f ,@es) k)
+          (if (and is_define_prim is_callable)
+              (normalize-aes `(,fnc ,@es) k)
+              (normalize-aes `(,f ,@es) k))
+          ]
+         [else
+          ; we can perform optimization without slog as well
+          ; will try that later!
+          (normalize-aes `(,f ,@es) k)])
        ]
       ))
 
@@ -486,6 +492,7 @@
 
           [`(,fae ,args ...) `(,(T-ae fae) ,cae ,@(map T-ae args))]
           )))
+
   (define (cps-convert-def def)
     (match def
       [`(define (,fname ,params ...) ,body)
@@ -502,6 +509,7 @@
   (map cps-convert-def program))
 
 (define (T-bottom-up e [symbol-set (set)])
+  ; returns -> free variable set, an updated expression, procedure list
   (let loop ([e e])
     (match e
       ; [`(quote ,d) `(,(set) ,e ,(list))]
@@ -620,57 +628,13 @@
 
 
 
-(define our-call
-  `(
-    (define-prim + 1 2 3)
-    (define-prim - 1 2 3)
-    ; (define-prim > 1 2 3)
-    (define-prim < 1 2 3)
-
-    (define (list . x) x)
-
-    (define (do-minus n)
-      (if (< n 3.0)
-          n
-          10.0
-          )
-      )
-    (define (call n)
-      ; (+ (do-minus 2 1.0) (do-minus 2 2.0))
-      ;  (+ (do-minus (- 4.0 1.0)) (do-minus (- 2.0 1.0)))
-      ; (+ (do-minus 3.0) (do-minus 1.0))
-      ; (let loop ([i 10] [sum 11]) (+ i sum))
-      ; (call/cc
-      ;  (lambda (top)
-      ;    (let ((cc (call/cc (lambda (cc) (cc cc)))))
-      ;      (if (call/cc (lambda (k) (if (cc (lambda (x) (top #f))) (k #f) (k #f))))
-      ;          #t
-      ;          #t))))
-      ; (((call/cc (lambda (x) ((x x) x))) (lambda (y) y)) #t)
-      (or #f #f (or #f 5))
-      )
-
-    (define (brouhaha_main) (call 10.0))
-    ))
-
-
-; just for testing purpose--> all of them are working after removal of prov tag
-; (interp (desugar our-call))
-; (interp (alphatize (desugar our-call)))
-; (interp (add-tags (desugar our-call)))
-; (interp (anf-convert (desugar our-call)))
-; (interp-cps (cps-convert (anf-convert (alphatize (desugar our-call)))))
-; (interp-cps (alphatize (cps-convert (anf-convert (alphatize (desugar our-call))))))
-; (interp-closure (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
-
-; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (alphatize (desugar our-call)))))))
 
 (define prog
   '((define-prim + 1 2 3)
     (define-prim - 1 2 3)
-    ; (define-prim * 1 2 3)
+    (define-prim * 1 2 3)
     ; (define-prim / 1 2 3)
-    ; (define-prim = 1 2 3)
+    (define-prim = 1 2 3)
     ; (define-prim > 1 2 3)
     ; (define-prim < 1 2 3)
     ; (define-prim <= 1 2 3)
@@ -799,12 +763,7 @@
     ))
 ; (pretty-print (desugar prog))
 ; (pretty-print (alphatize (desugar prog)))
-; (pretty-print (cps-convert (optimize-prog prog))
-; (pretty-print (closure-convert (alphatize (cps-convert ( optimize-prog prog)))))
-; (pretty-print (closure-convert (alphatize (cps-convert prog))))
-
-
-; (pretty-print (cps-convert (optimize-prog (anf-convert (alphatize (desugar our-call))))))
-; (pretty-print (anf-convert prog))
-; (pretty-print (optimize-prog (anf-convert prog)))
+; (pretty-print (anf-convert (alphatize (desugar prog)) #f (list)))
+; (pretty-print (optimize-prog (anf-convert (alphatize (desugar prog)) #f (list)) #f (list)))
+; (pretty-print (cps-convert (optimize-prog (anf-convert (anf-convert (alphatize (desugar prog)) #f (list)) #f (list)) #f (list))))
 ; (pretty-print (closure-convert (alphatize (cps-convert (anf-convert (optimize-prog (alphatize (desugar prog)) #f (list)) #f (list))))))

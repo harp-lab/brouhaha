@@ -81,7 +81,7 @@
 ;APP
 [(free x ef)
  -->
-(free x ?(app ef eas))]
+ (free x ?(app ef eas))]
 
 (do-free-app ?(app ef eas) eas)
 
@@ -98,7 +98,7 @@
 
 [(do-free-let-rhs let [bind binds ...])
  -->
-(do-free-let-rhs let binds)]    
+ (do-free-let-rhs let binds)]
 
 [(do-free-let-rhs let [(binding lhs rhs) binds ...])
  (free x rhs)
@@ -108,7 +108,7 @@
 ;LET BINDINGS LEFT HAND SIDES
 [(free x body)
  -->
-(do-free-let-lhs ?(let binds body) binds x)]
+ (do-free-let-lhs ?(let binds body) binds x)]
 
 [(do-free-let-lhs let [(binding lhs rhs) binds ...] x)
  (=/= lhs x)
@@ -129,9 +129,11 @@
  (eval body [] (halt))]
 
 (tick ?(do-tick [] call) [call])
-(tick ?(do-tick [x] call) [call x])
+; (tick ?(do-tick [x] call) [call]) ;m = 1 uncomment this, comment out the lines below
+(tick ?(do-tick [x] call) [call x]) 
+; (tick ?(do-tick [x _] call) [call x]) ;m = 2, uncomment this, comment out the lines below
 (tick ?(do-tick [x y] call) [call x y])
-(tick ?(do-tick [x y _] call) [call x y])
+(tick ?(do-tick [x y _] call) [call x y]) ;m = 3, keeping latest 3-calls
 
 
 ;----------------------------------------------------------------------;
@@ -174,7 +176,7 @@
  -->
  (store (f-addr ctx e) (clo e ctx))
  (ret (f-addr ctx e) kont)]
-        
+
 ;APP AND APPLY
 [(eval call ctx kont)
  (= call (app ef [eas ...]))
@@ -232,17 +234,17 @@
 
 ;IF CASES
 [(ret ga (if-k tExp fExp ctx kont))
- (store ga (bool "t"))
- --> 
+ (store ga (bool-val "t"))
+ -->
  (eval tExp ctx kont)]
 
 [(ret ga (if-k tExp fExp ctx kont))
- (store ga (bool "f"))
- --> 
+ (store ga (bool-val "f"))
+ -->
  (eval fExp ctx kont)]
 
 [(ret (s-addr _) (if-k tExp fExp ctx kont))
- --> 
+ -->
  (eval tExp ctx kont)
  (eval fExp ctx kont)]
 
@@ -257,7 +259,7 @@
  (store (k-addr body) kont)
  (do-fixed-prop-all ctxtick xs [as ... a])
  (eval body ctxtick (k-addr body))
- 
+
  [(free y body)
   -->
   (store (f-addr ctxtick y) {store (f-addr ctxlet y)})]]
@@ -268,20 +270,20 @@
 ;---------------------------------------------------------------------;
 ;DEFINE --> CLOSURE
 [(apply (define fname params body) args ctx kont call)
- --> 
- (apply (clo (lambda params body) []) args ctx kont call)]  
+ -->
+ (apply (clo (lambda params body) []) args ctx kont call)]
 
 ;DEFINE-PRIM HANDLING (NOT SPECIALIZED)
 [(apply (define-prim fname _) _ _ kont _)
  (~ specialized-prim fname)
  -->
- (store (s-addr fname) (state fname))
+ (store (s-addr fname) (state-val fname))
  (ret (s-addr fname) kont)]
 
 ;  [(= e (apply (define-prim fname _) args _ kont _))
 ;  (~ specialized-prim fname)
 ;  -->
-;  (store (s-addr e) (state e))
+;  (store (s-addr e) (state-val e))
 ;  (ret (s-addr e) kont)]
 
 
@@ -329,14 +331,14 @@
    (store a (list-of-vals as))
    (= as [])
    -->
-   (store (f-addr ctx e) (bool "t"))
+   (store (f-addr ctx e) (bool-val "t"))
    (ret (f-addr ctx e) kont)]
 
   [(= e (apply (define-prim "null?" _) (fixedarg [a]) ctx kont _))
    (store a (list-of-vals [a0 as ...]))
    -->
-   (store (f-addr ctx e) (bool "t"))
-   (store (f-addr ctx e) (bool "f"))
+   (store (f-addr ctx e) (bool-val "t"))
+   (store (f-addr ctx e) (bool-val "f"))
    (ret (f-addr ctx e) kont)]
 
 (specialized-prim "car")
@@ -383,19 +385,19 @@
   (store (f-addr ctxtick y) {store (f-addr ctxlam y)})]]
 
 [(apply (clo (lambda (varparam x) eb) ctxlam) (fixedarg [as ...]) ctxcall kont call)
- --> 
+ -->
  (store (k-addr eb) kont)
- (= ctxtick {tick !(do-tick ctxcall call)})     
+ (= ctxtick {tick !(do-tick ctxcall call)})
  (store (f-addr ctxtick x) (list-of-vals as))
  (eval eb ctxtick (k-addr eb))
- 
- [(free y eb) 
+
+ [(free y eb)
   -->
   (store (f-addr ctxtick y) {store (f-addr ctxlam y)})]]
 
 ;VARIADIC ARG
 [(apply (clo (lambda (varparam x) eb) ctxlam) (vararg a) ctxcall kont call)
- --> 
+ -->
  (store (k-addr eb) kont)
  (= ctxtick {tick !(do-tick ctxcall call)})
  (store-flow a (f-addr ctxtick x))
@@ -483,15 +485,40 @@
 
 ;GENERATING CALL-SETS FOR FUNCTIONS
 [(= e (app ef [eas ...]))
-(apply vf _ _ _ e)
--->
-(fun-at-call e vf)]
+ (apply vf _ _ _ e)
+ -->
+ (fun-at-call e vf)]
 
 [(fun-at-call e vf)
-(count fun-at-call e _ cnt)
--->
-(fun-at-call-count e cnt)]
+ (count fun-at-call e _ cnt)
+ -->
+ (fun-at-call-count e cnt)]
 
 [(free var exp)
--->
-(freevars exp var)]
+ -->
+ (freevars exp var)]
+
+
+; [(store (f-addr ctx var) val)
+;  (count store (f-addr ctx var) _ cnt)
+;  -->
+;  (abstract-count (f-addr ctx var) cnt)
+;  (abstract-count2 (store (f-addr ctx var) val) cnt)]
+
+; [(= sto-fact (store (f-addr ctx var) val))
+;  -->
+;  (temp-abstract-count (f-addr ctx var) [1])]
+
+; [(= f (temp-abstract-count (f-addr ctx var) [abscnt]))
+;   (count store (f-addr ctx var) _ cnt)
+;   ; (= abscnt {range 0 2})
+;  -->
+;   (temp-abstract-count (f-addr ctx var) [abscnt cnt]) 
+;   ; [(=< cnt 2) --> (temp-abstract-count2 f [abscnt 2])]
+;   ; [(> cnt 2) --> (temp-abstract-count2 f [abscnt 200])]
+; ]
+
+; ; [(= max {maximum temp-abstract-count2 f})
+; ;   (>= max 2) 
+; ;   --> 
+; ;   (final-abstract-count (store (f-addr ctx var) val) [cnt 2])]
