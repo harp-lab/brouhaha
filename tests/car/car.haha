@@ -1,7 +1,12 @@
 (define (call)
     ; (car (list (list 1 2) 3 (list 4 5)))
 
+
+
     (cons (car (list 1 32)) (list)) 
+
+
+    ; (cons (car (list 1 32)) (list)) 
     ; (apply car (list (list 10 2)))
     )
 

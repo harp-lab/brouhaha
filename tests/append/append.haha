@@ -1,7 +1,18 @@
-(define (call)
-  (append (list 1 2) (list 3 4))
+(define (call lst)
+    ; (if (null? lst)
+    ;     1
+    ;     (list (call (cdr lst))))
+; 
+  (append1 (list 1 2) (list 3 4))
   ; (car (list 1 2))
+  ; (cons (car (list 1 32)) (list)) 
+
+  ; (if (null? lhs)
+  ;     rhs
+  ;     (cons (car lhs)
+  ;           (append1 (cdr lhs) rhs))) 
+
   )
 
-(define (brouhaha_main) 
-    (call))
+(define (brouhaha_main)
+  (call (list 1 2)))

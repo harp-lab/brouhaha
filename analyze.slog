@@ -140,30 +140,35 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EVAL CASES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
 ;BASE PRIMITIVE TYPES
-[(eval (symbol val) ctx kont)
+[(eval e ctx kont)
+ (= e (symbol val))
  -->
- (store (f-addr ctx (symbol val)) (symbol-val val))
- (ret (f-addr ctx (symbol val)) kont)]
+ (store (f-addr ctx e) (symbol-val val))
+ (ret (f-addr ctx e) kont)]
 
-[(eval (bool val) ctx kont)
+[(eval e ctx kont)
+ (= e (bool val))
  -->
- (store (f-addr ctx (bool val)) (bool-val val))
- (ret (f-addr ctx (bool val)) kont)]
+ (store (f-addr ctx e) (bool-val val))
+ (ret (f-addr ctx e) kont)]
 
-[(eval (int val) ctx kont)
+[(eval e ctx kont)
+ (= e (int val))
  -->
- (store (f-addr ctx (int val)) (int-val val))
- (ret (f-addr ctx (int val)) kont)]
+ (store (f-addr ctx e) (int-val val))
+ (ret (f-addr ctx e) kont)]
 
-[(eval (string val) ctx kont)
+[(eval e ctx kont)
+ (= e (string val))
  -->
- (store (f-addr ctx (string val)) (string-val val))
- (ret (f-addr ctx (string val)) kont)]
+ (store (f-addr ctx e) (string-val val))
+ (ret (f-addr ctx e) kont)]
 
-[(eval (state val) ctx kont)
+[(eval e ctx kont)
+ (= e (state val))
  -->
- (store (f-addr ctx (state val)) (state-val val))
- (ret (f-addr ctx (state val)) kont)]
+ (store (f-addr ctx e) (state-val val))
+ (ret (f-addr ctx e) kont)]
 
 ;FUNCTION AND VARIABLE REFERENCES
 [(eval (ref x) ctx kont)
@@ -292,22 +297,22 @@
   [(= e (apply (define-prim "cons" _) (fixedarg [a0 a1]) ctx kont _))
   (store a1 (list-of-vals as))
   -->
-  (store (f-addr ctx e) (list-of-vals [a0 as ...]))
-  (ret (f-addr ctx e) kont)]
+  (store (f-addr ctx "cons") (list-of-vals [a0 as ...]))
+  (ret (f-addr ctx "cons") kont)]
 
   [(= e (apply (define-prim "cons" _) (fixedarg [a0 a1]) ctx kont _))
   (store a1 val)
   (non-list-value val)
   -->
-  (store (f-addr ctx e) (list-of-vals [a0 a1]))
-  (ret (f-addr ctx e) kont)]
+  (store (f-addr ctx "cons") (list-of-vals [a0 a1]))
+  (ret (f-addr ctx "cons") kont)]
 
   ;VARIADIC
   [(= e (apply (define-prim "cons" _) (vararg a) ctx kont call))
   (store a (list-of-vals as))
   --> 
-  (do-store-addr-union (f-addr ctx e) as [])
-  (ret (f-addr ctx e) kont)]
+  (do-store-addr-union (f-addr ctx "cons") as [])
+  (ret (f-addr ctx "cons") kont)]
 
   ;When the next address points to a list-of-vals
   [(do-store-addr-union addr [a as ...] [union-as ...])
@@ -331,41 +336,41 @@
    (store a (list-of-vals as))
    (= as [])
    -->
-   (store (f-addr ctx e) (bool-val "t"))
-   (ret (f-addr ctx e) kont)]
+   (store (f-addr ctx "null?") (bool-val "t"))
+   (ret (f-addr ctx "null?") kont)]
 
   [(= e (apply (define-prim "null?" _) (fixedarg [a]) ctx kont _))
    (store a (list-of-vals [a0 as ...]))
    -->
-   (store (f-addr ctx e) (bool-val "t"))
-   (store (f-addr ctx e) (bool-val "f"))
-   (ret (f-addr ctx e) kont)]
+   (store (f-addr ctx "null?") (bool-val "t"))
+   (store (f-addr ctx "null?") (bool-val "f"))
+   (ret (f-addr ctx "null?") kont)]
 
 (specialized-prim "car")
   [(= e (apply (define-prim "car" _) (fixedarg [a]) ctx kont _))
    (store a (list-of-vals [_ ... ai _ ...]))
    -->
-   (store (f-addr ctx e) {store ai})
-   (ret (f-addr ctx e) kont)]
+   (store (f-addr ctx "car") {store ai})
+   (ret (f-addr ctx "car") kont)]
 
 (specialized-prim "cdr")
   [(= e (apply (define-prim "cdr" _) (fixedarg [a]) ctx kont _))
    (store a (list-of-vals as))
    -->
-   (store (f-addr ctx e) (list-of-vals as))
-   (ret (f-addr ctx e) kont)]
+   (store (f-addr ctx "cdr") (list-of-vals as))
+   (ret (f-addr ctx "cdr") kont)]
 
 (specialized-prim "list")
  [(= e (apply (define-prim "list" _) (fixedarg as) ctx kont _))
   -->
-  (store (f-addr ctx e) (list-of-vals as))
-  (ret (f-addr ctx e) kont)]
+  (store (f-addr ctx "list") (list-of-vals as))
+  (ret (f-addr ctx "list") kont)]
 
  [(= e (apply (define-prim "list" _) (vararg a) ctx kont _))
   (store a (list-of-vals as))
   -->
-  (store (f-addr ctx e) (list-of-vals as))
-  (ret (f-addr ctx e) kont)]
+  (store (f-addr ctx "list") (list-of-vals as))
+  (ret (f-addr ctx "list") kont)]
 
 ;; ASK ABOUT DO-TICK FOR PRIMS
 ;; >> We do not need DO-TICK for prims, because their body needs
