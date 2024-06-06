@@ -1,18 +1,43 @@
 (define (call lst)
-    ; (if (null? lst)
-    ;     1
-    ;     (list (call (cdr lst))))
-; 
-  (append1 (list 1 2) (list 3 4))
-  ; (car (list 1 2))
-  ; (cons (car (list 1 32)) (list)) 
+  (if (null? lst)
+      10000
+      ; (list 1 (list 4 (list 2))) ; doesn't terminate
+      ; (list 1 (list 4))
+      ; (list 1)
+      
 
-  ; (if (null? lhs)
-  ;     rhs
-  ;     (cons (car lhs)
-  ;           (append1 (cdr lhs) rhs))) 
+      ; (cdr lst)
+      ; (cons 1 (cons 2 3)) ; terminates
+      ;     ; (cons (car lst) (call (cdr lst))))
+      ;     (list (cdr lst) (call (car lst))))
+      ; (list 100 (call (cdr lst)))) ; terminates
+      ; (call (cdr lst))) ; terminates
+      (cons 100 (call (cdr lst)))) ; doesn't terminate
+  ; ; (cons 100 (cdr lst)))
 
+
+
+
+  ; (cons (cons 1 2) (cons 3 4)))
+
+  ; (list 1 (cons 100 (list 1 (list 2))))
+
+  ; (list (list (call (+ lst 1))))
+
+  ; (append (list 1 2) (list 3 4))
+  ; (append1 (list) (list 100))
   )
 
+
+
+; check  how cons terminate but list doesn't!
 (define (brouhaha_main)
-  (call (list 1 2)))
+  (call (list 30 5))
+
+  ; (call 10)
+  ; (car (list 1 2))
+
+  ; (cons (car (list 1 32)) (list 2 3))
+
+
+  )

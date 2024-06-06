@@ -1896,13 +1896,13 @@ if(is_true(apply_prim_null_u63_1(lsts)))
 void** clo9031 = alloc_kont(lam8845_spec, 1);
 
 //setting env list
-clo9031[1] = decode_clo_array[2];
+clo9031[1] = decode_clo_array[1];
 void* f_lam_8827 = encode_clo(clo9031);
 
 
 
 //clo-app
-append1_spec(append1, f_lam_8827, decode_clo_array[1], decode_clo_array[3]);
+append1_spec(append1, f_lam_8827, decode_clo_array[2], decode_clo_array[3]);
 }
 else
 {
@@ -1912,13 +1912,13 @@ void** clo9032 = alloc_kont(lam8847_spec, 2);
 
 //setting env list
 clo9032[1] = apply_prim_list_0();
-clo9032[2] = decode_clo_array[2];
+clo9032[2] = decode_clo_array[1];
 void* f_lam_8828 = encode_clo(clo9032);
 
 
 
 //clo-app
-append1_spec(append1, f_lam_8828, apply_prim_list_2(decode_clo_array[1], decode_clo_array[3]), lsts);
+append1_spec(append1, f_lam_8828, apply_prim_list_2(decode_clo_array[2], decode_clo_array[3]), lsts);
 }
 
 }
@@ -1937,13 +1937,13 @@ if(is_true(apply_prim_null_u63_1(lsts)))
 void** clo9033 = alloc_kont(lam8845_spec, 1);
 
 //setting env list
-clo9033[1] = decode_clo_array[2];
+clo9033[1] = decode_clo_array[1];
 void* f_lam_8827 = encode_clo(clo9033);
 
 
 
 //clo-app
-append1_spec(append1, f_lam_8827, decode_clo_array[1], decode_clo_array[3]);
+append1_spec(append1, f_lam_8827, decode_clo_array[2], decode_clo_array[3]);
 }
 else
 {
@@ -1953,13 +1953,13 @@ void** clo9034 = alloc_kont(lam8847_spec, 2);
 
 //setting env list
 clo9034[1] = apply_prim_list_0();
-clo9034[2] = decode_clo_array[2];
+clo9034[2] = decode_clo_array[1];
 void* f_lam_8828 = encode_clo(clo9034);
 
 
 
 //clo-app
-append1_spec(append1, f_lam_8828, apply_prim_list_2(decode_clo_array[1], decode_clo_array[3]), lsts);
+append1_spec(append1, f_lam_8828, apply_prim_list_2(decode_clo_array[2], decode_clo_array[3]), lsts);
 }
 
 }
@@ -1993,8 +1993,8 @@ vargs = prim_cons(arg_buffer[i], vargs);
 void** clo9035 = alloc_kont(lam8849_spec, 3);
 
 //setting env list
-clo9035[1] = apply_prim_car_1(apply_prim_cdr_1(vargs));
-clo9035[2] = apply_prim_car_1(vargs);
+clo9035[1] = apply_prim_car_1(vargs);
+clo9035[2] = apply_prim_car_1(apply_prim_cdr_1(vargs));
 clo9035[3] = apply_prim_car_1(apply_prim_cdr_1(apply_prim_cdr_1(vargs)));
 void* f_lam_8829 = encode_clo(clo9035);
 
@@ -2013,7 +2013,7 @@ void* const id_8802 = arg_buffer[2];
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8853);
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[3])[0])(decode_clo_array[3], apply_prim__u43_3(decode_clo_array[2], decode_clo_array[1], id_8802));
+reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[1])[0])(decode_clo_array[1], apply_prim__u43_3(decode_clo_array[3], decode_clo_array[2], id_8802));
 }
 
 inline void lam8852_spec(void* env8853, void* id_8802) // lam8852 
@@ -2022,7 +2022,7 @@ inline void lam8852_spec(void* env8853, void* id_8802) // lam8852
 void** decode_clo_array = nullptr;
 decode_clo_array = decode_clo(env8853);
 // kont-clo-app case
-reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[3])[0])(decode_clo_array[3], apply_prim__u43_3(decode_clo_array[2], decode_clo_array[1], id_8802));
+reinterpret_cast<void (*)(void*, void*)>(decode_clo(decode_clo_array[1])[0])(decode_clo_array[1], apply_prim__u43_3(decode_clo_array[3], decode_clo_array[2], id_8802));
 }
 
 inline void call_u45f_fptr() // call-f -> generic version 
@@ -2040,9 +2040,9 @@ void** decode_clo_array = nullptr;
 void** clo9036 = alloc_kont(lam8852_spec, 3);
 
 //setting env list
-clo9036[1] = apply_prim__u43_3(x, y, z);
-clo9036[2] = apply_prim__u43_2(int8862, x);
-clo9036[3] = kont8830;
+clo9036[1] = kont8830;
+clo9036[2] = apply_prim__u43_3(x, y, z);
+clo9036[3] = apply_prim__u43_2(int8862, x);
 void* f_lam_8831 = encode_clo(clo9036);
 
 
@@ -2068,9 +2068,9 @@ void** decode_clo_array = nullptr;
 void** clo9037 = alloc_kont(lam8852_spec, 3);
 
 //setting env list
-clo9037[1] = apply_prim__u43_3(x, y, z);
-clo9037[2] = apply_prim__u43_2(int8862, x);
-clo9037[3] = kont8830;
+clo9037[1] = kont8830;
+clo9037[2] = apply_prim__u43_3(x, y, z);
+clo9037[3] = apply_prim__u43_2(int8862, x);
 void* f_lam_8831 = encode_clo(clo9037);
 
 

@@ -1,0 +1,17 @@
+(define (mk i)
+  (let ([g (lambda (j) (+ j i))]
+        [f (lambda (h k) (h (* k i)))])
+    (list f g)))
+
+(define (brouhaha_main)
+  (let*   ([mk-result-1 (mk 1)]
+           [f1 (car mk-result-1)]
+           [g1 (car (cdr mk-result-1))]
+           [mk-result-2 (mk 2)]
+           [f2 (car mk-result-2)]
+           [g2 (car (cdr mk-result-2))]
+           [res (f1 g2 3)])
+
+    res)
+  )
+

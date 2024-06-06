@@ -3,11 +3,23 @@
 
 
 (define (call yy)
-  (let ([rv (let* ([id (lambda (x) x)]
-                   [y (id #t)]
-                   [z (id #f)])
-              (id 5))])
-    rv)
+  (let* ([id (lambda (x) x)]
+         [y (id #t)]
+         [z (id #f)])
+    (id 5))
+
+  ; (let ([rv (let* ([id (lambda (x) x)]
+  ;                  [y (id #t)]
+  ;                  [z (id #f)])
+  ;             (id 5))])
+  ;   rv)
+
+  ; (let [(f (lambda (x h)
+  ;            (if (= 0 x)
+  ;                (h)
+  ;                (lambda () x))))]
+  ;   (f 0 (f 3 #f)))
+    
 
 
   ; ((lambda (rv) rv)
@@ -19,17 +31,17 @@
   ;     (id (lambda (t) t))))
   ;   (lambda (x) x)))
 
-  ; ((lambda (rv) rv)
-  ;  ((lambda (id)
-  ;     ((lambda (y)
-  ;        ((lambda (z)
-  ;           ((lambda (id_8785)
-  ;              (id id_8785)) 5))
-  ;         ((lambda (id_8784)
-  ;            (id id_8784)) #f)))
-  ;      ((lambda (id_8783)
-  ;         (id id_8783)) #t)))
-  ;   (lambda (x) x)))
+  ;   ((lambda (rv) rv)
+  ;    ((lambda (id)
+  ;       ((lambda (y)
+  ;          ((lambda (z)
+  ;             ((lambda (id_8785)
+  ;                (id id_8785)) 5))
+  ;           ((lambda (id_8784)
+  ;              (id id_8784)) #f)))
+  ;        ((lambda (id_8783)
+  ;           (id id_8783)) #t)))
+  ;     (lambda (x) x)))
 
   ; (let* ([id (lambda (x) x)]
   ;        [var1 (id 5)]

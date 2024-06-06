@@ -69,6 +69,7 @@
       [`(let* ([,lhs ,rhs] ,e-pairs ...) ,ebody)
        (coverage (desugar-exp (coverage `(let ([,lhs ,rhs]) (let* ,e-pairs ,ebody)))))]
 
+      [`(lambda () ,body) `(lambda ,(gensym 'dum_lam) ,(desugar-exp body))]
       [`(lambda (,xs ...) ,body) (coverage `(lambda ,xs ,(desugar-exp body)))]
       [`(lambda ,(? symbol? x) ,body) (coverage `(lambda ,x ,(desugar-exp body)))]
       [`(lambda ,args ,body) (coverage (desugar-exp (coverage `(lambda vargs ,(unroll-args args body)))))]
@@ -756,8 +757,11 @@
     ;   (let ([f (lambda (x y . z) z)]) (f 1 2 3 4 5)))
 
     (define (call n)
-      (let ([x 1] [y 2] [z 3])
-        ((lambda (x1 y1 z1) (+ x1 y1 z)) 1 2 3)))
+      (let [(f (lambda (x h)
+                 (if (= 0 x)
+                     (h)
+                     (lambda () x))))]
+        (f 0 (f 3 #f))))
 
     (define (brouhaha_main) (call 2))
     ))

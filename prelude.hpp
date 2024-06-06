@@ -2027,6 +2027,10 @@ void *apply_prim__u42_2(void *arg1, void *arg2) // *
     return encode_mpz(result);
   } else {
     // will have to handle other mixed cases!
+
+    // PRINT(arg1_tag);
+    // PRINT(arg2_tag);
+
     assert_type(
         false,
         "Error in multiplication -> contact violation: The values in the "
