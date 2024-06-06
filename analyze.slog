@@ -176,10 +176,10 @@
 
 ;LAMBDA AND FUNC
 [(eval e ctx kont)
- (= e (lambda param body))
+ (= e (lambda _ _))
  -->
- (store (f-addr ctx param) (clo e ctx))
- (ret (f-addr ctx param) kont)]
+ (store (f-addr ctx "lambda") (clo e ctx))
+ (ret (f-addr ctx "lambda") kont)]
 
 ;APP AND APPLY
 [(eval call ctx kont)
