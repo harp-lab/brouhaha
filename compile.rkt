@@ -757,11 +757,10 @@
     ;   (let ([f (lambda (x y . z) z)]) (f 1 2 3 4 5)))
 
     (define (call n)
-      (let [(f (lambda (x h)
-                 (if (= 0 x)
-                     (h)
-                     (lambda () x))))]
-        (f 0 (f 3 #f))))
+      (let* ([id (lambda (x) x)]
+             [var1 (id 5)]
+             [var2 var1])
+        var2))
 
     (define (brouhaha_main) (call 2))
     ))

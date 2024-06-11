@@ -3,10 +3,19 @@
 
 
 (define (call yy)
+  ; (let* ([id (lambda (x) x)]
+  ;        [y (id #t)]
+  ;        [z (id #f)]
+  ;        [w (id #f)]
+  ;        )
+
+  ;   (id #t))
+
   (let* ([id (lambda (x) x)]
-         [y (id #t)]
-         [z (id #f)])
-    (id 5))
+             [var1 (id 5)]
+             [var2 var1])
+        var2)
+
 
   ; (let ([rv (let* ([id (lambda (x) x)]
   ;                  [y (id #t)]

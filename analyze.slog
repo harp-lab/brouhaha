@@ -35,11 +35,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;FREE VARIABLES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;----------------------------------------------------------------------;
 ;NON-LIST-VALUES
-(non-list-value ?(symbol _))
-(non-list-value ?(bool _))
-(non-list-value ?(int _))
-(non-list-value ?(string _))
-(non-list-value ?(state _))
+(non-list-value ?(symbol v) (symbol-val v))
+(non-list-value ?(bool v) (bool-val v))
+(non-list-value ?(int v) (int-val v))
+(non-list-value ?(string v) (string-val v))
+(non-list-value ?(state v) (state-val v))
 
 
 ; (non-list-value (or (addr _) (quote _) (string _) (bool _) (state _)))
@@ -129,7 +129,7 @@
 (tick ?(do-tick [] call) [call])
 (tick ?(do-tick [x] call) [call]) ; for m = 1 uncomment this, comment out the lines below
 ; (tick ?(do-tick [x] call) [call x]) 
-; (tick ?(do-tick [x _] call) [call x]) ; for m = 2, uncomment this, comment out the lines below
+; ; (tick ?(do-tick [x _] call) [call x]) ; for m = 2, uncomment this, comment out the lines below
 ; (tick ?(do-tick [x y] call) [call x y])
 ; (tick ?(do-tick [x y _] call) [call x y]) ;for m = 3, keeping latest 3-calls
 
@@ -178,8 +178,8 @@
 [(eval e ctx kont)
  (= e (lambda _ _))
  -->
- (store (f-addr ctx "lambda") (clo e ctx))
- (ret (f-addr ctx "lambda") kont)]
+ (store (f-addr ctx "addr-lam") (clo e ctx))
+ (ret (f-addr ctx "addr-lam") kont)]
 
 ;APP AND APPLY
 [(eval call ctx kont)
@@ -215,7 +215,6 @@
 
 [(ret a (appk call [af as ...] [] ctx kont))
  (store af vf)
- ;(= vf (define-prim param body))
  -->
  (apply vf (fixedarg [as ... a]) ctx kont call)]
 
@@ -251,7 +250,8 @@
 [(ret (s-addr _) (if-k tExp fExp ctx kont))
  -->
  (eval tExp ctx kont)
- (eval fExp ctx kont)]
+ (eval fExp ctx kont)
+ ]
 
 ;LET CASE
 [(ret a (letk call body [xs ...] [as ...] [(binding lhs rhs) bind-rest ...] ctx kont))
@@ -297,22 +297,22 @@
   [(= e (apply (define-prim "cons" _) (fixedarg [a0 a1]) ctx kont _))
   (store a1 (list-of-vals as))
   -->
-  (store (f-addr ctx "vcons") (list-of-vals [a0 as ...]))
-  (ret (f-addr ctx "vcons") kont)]
+  (store (f-addr ctx "addr-cons") (list-of-vals [a0 a1]))
+  (ret (f-addr ctx "addr-cons") kont)]
 
   [(= e (apply (define-prim "cons" _) (fixedarg [a0 a1]) ctx kont _))
   (store a1 val)
-  (non-list-value val)
+  (non-list-value _ val)
   -->
-  (store (f-addr ctx "vcons") (list-of-vals [a0 a1]))
-  (ret (f-addr ctx "vcons") kont)]
+  (store (f-addr ctx "addr-cons") (list-of-vals [a0 a1]))
+  (ret (f-addr ctx "addr-cons") kont)]
 
   ;VARIADIC
   [(= e (apply (define-prim "cons" _) (vararg a) ctx kont call))
   (store a (list-of-vals as))
   --> 
-  (do-store-addr-union (f-addr ctx "vcons") as [])
-  (ret (f-addr ctx "vcons") kont)]
+  (do-store-addr-union (f-addr ctx "addr-cons") as [])
+  (ret (f-addr ctx "addr-cons") kont)]
 
   ;When the next address points to a list-of-vals
   [(do-store-addr-union addr [a as ...] [union-as ...])
@@ -323,7 +323,7 @@
   ;When the next address points to a single addr
   [(do-store-addr-union addr [a as ...] [union-as ...])
   (store a val)
-  (non-list-value val)
+  (non-list-value _ val)
   -->
   (do-store-addr-union addr as [a union-as])]
  
@@ -336,55 +336,62 @@
    (store a (list-of-vals as))
    (= as [])
    -->
-   (store (f-addr ctx "vnull?") (bool-val "t"))
-   (ret (f-addr ctx "vnull?") kont)]
+   (store (f-addr ctx "addr-null?") (bool-val "t"))
+   (ret (f-addr ctx "addr-null?") kont)]
 
   [(= e (apply (define-prim "null?" _) (fixedarg [a]) ctx kont _))
    (store a (list-of-vals [a0 as ...]))
    -->
-   ;(store (f-addr ctx "vnull?") (bool-val "t"))
-   (store (f-addr ctx "vnull?") (bool-val "f"))
-   (ret (f-addr ctx "vnull?") kont)]
+   (store (f-addr ctx "addr-null?") (bool-val "t"))
+   (store (f-addr ctx "addr-null?") (bool-val "f"))
+   (ret (f-addr ctx "addr-null?") kont)]
 
   [(= e (apply (define-prim "null?" _) (fixedarg [a]) ctx kont _))
    (store a (state-val val))
    -->
-   (store (f-addr ctx "vnull?") (bool-val "t"))
-   (store (f-addr ctx "vnull?") (bool-val "f"))
-   (ret (f-addr ctx "vnull?") kont)]
+   (store (f-addr ctx "addr-null?") (bool-val "t"))
+   (store (f-addr ctx "addr-null?") (bool-val "f"))
+   (ret (f-addr ctx "addr-null?") kont)]
 
    [(= e (apply (define-prim "null?" _) (fixedarg [a]) ctx kont _))
    (store a (int-val val))
    -->
-   (store (f-addr ctx "vnull?") (bool-val "t"))
-   (store (f-addr ctx "vnull?") (bool-val "f"))
-   (ret (f-addr ctx "vnull?") kont)]
+   (store (f-addr ctx "addr-null?") (bool-val "t"))
+   (store (f-addr ctx "addr-null?") (bool-val "f"))
+   (ret (f-addr ctx "addr-null?") kont)]
 
 (specialized-prim "car")
   [(= e (apply (define-prim "car" _) (fixedarg [a]) ctx kont _))
    (store a (list-of-vals [_ ... ai _ ...]))
    -->
-   (store (f-addr ctx "vcar") (list-of-vals [ai]))
-   (ret (f-addr ctx "vcar") kont)]
+   (store (f-addr ctx "addr-car") {store ai}) 
+   (ret (f-addr ctx "addr-car") kont)]
 
 (specialized-prim "cdr")
   [(= e (apply (define-prim "cdr" _) (fixedarg [a]) ctx kont _))
    (store a (list-of-vals as))
    -->
-   (store (f-addr ctx "vcdr") (list-of-vals as))
-   (ret (f-addr ctx "vcdr") kont)]
+   (store (f-addr ctx "addr-cdr") (list-of-vals as))
+   (ret (f-addr ctx "addr-cdr") kont)]
 
 (specialized-prim "list")
  [(= e (apply (define-prim "list" _) (fixedarg as) ctx kont _))
+  (=/= as [])
   -->
-  (store (f-addr ctx "vlist") (list-of-vals as))
-  (ret (f-addr ctx "vlist") kont)]
+  (store (f-addr ctx "addr-list") (list-of-vals as))
+  (ret (f-addr ctx "addr-list") kont)]
+
+[(= e (apply (define-prim "list" _) (fixedarg as) ctx kont _))
+  (= as [])
+  -->
+  (store (f-addr ctx "addr-list-null") (list-of-vals as))
+  (ret (f-addr ctx "addr-list-null") kont)]
 
  [(= e (apply (define-prim "list" _) (vararg a) ctx kont _))
   (store a (list-of-vals as))
   -->
-  (store (f-addr ctx "vlist") (list-of-vals as))
-  (ret (f-addr ctx "vlist") kont)]
+  (store (f-addr ctx "addr-list") (list-of-vals as))
+  (ret (f-addr ctx "addr-list") kont)]
 
 ;; ASK ABOUT DO-TICK FOR PRIMS
 ;; >> We do not need DO-TICK for prims, because their body needs
