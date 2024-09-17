@@ -19,3 +19,7 @@ Sections authors based on Git Commit History
 * Related Work - Everyone
 * Conclusion - Everyone
 * References
+
+
+
+- Maybe something about Slog?, Sowmith, Michael & Rafi changed it to work for Brouhaha under the Slog Brouhaha branch. https://github.com/harp-lab/slog-lang1/tree/brouhaha
