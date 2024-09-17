@@ -12,6 +12,7 @@ Sections authors based on Git Commit History
 * Testing - Michael & Sowmith
     * The test program and why it works
     * Analysis and Benchmarks
+    * C++ Emmission?, was a really big part written by Sowmith
 * CFA - Akshar & Rafi
     * CFA intro 
     * Why it works
