@@ -455,7 +455,7 @@
 [(do-fixed-prop-all ctxtick [x x-rest ...] [a a-rest ...])
  -->
  (do-fixed-prop-all ctxtick x-rest a-rest)
-;  (store (f-addr ctxtick x) {store a})
+ (store (f-addr ctxtick x) {store a})
  (store-flow a (f-addr ctxtick x))]
 
 
