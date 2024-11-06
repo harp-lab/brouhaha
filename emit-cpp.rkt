@@ -375,7 +375,7 @@
              (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string func)))])])]
 
       [`(clo-app ,func ,args ...)
-       (displayln (~a "clo-app=func " func " args: " args))
+      ;  (displayln (~a "clo-app=func " func " args: " args))
        ; builtin-func will hold, either the called builtin define-prim
        ; or the aliased builtin define-prim by the "func" at the call-site
        ; is-define-prim, has bug now, slog-fact-layout changed, so update the code, nov5,24
@@ -426,12 +426,12 @@
           (set! is_define_prim #f)
           (set! is_callable #f)
           (set! arg_count 0)
-          (displayln func)
-          (displayln (- (length args) 1))
-          (displayln is_define_prim)
-          (displayln is_callable)
-          (displayln arg_count)
-          (displayln "---------")
+          ; (displayln func)
+          ; (displayln (- (length args) 1))
+          ; (displayln is_define_prim)
+          ; (displayln is_callable)
+          ; (displayln arg_count)
+          ; (displayln "---------")
 
           (cond
             ; this case won't be true anymore, since we are promoting
@@ -507,7 +507,7 @@
              (append-line filepath (format "\n~a_fptr();" (get-c-string func)))]
 
             [else
-             (displayln (~a "inside else"))
+            ;  (displayln (~a "inside else"))
              (append-line filepath "\n//clo-app")
 
              (if (hash-has-key? declare-top-level-funcs func)
@@ -552,7 +552,7 @@
                          (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-hash-val-unless-lam-prefix arg_hash func)))))))])])]
 
       [`(kont-clo-app ,func ,arg)
-       (displayln (~a "kont-clo-app=func " func " args: " arg))
+      ;  (displayln (~a "kont-clo-app=func " func " args: " arg))
        (append-line filepath "// kont-clo-app case")
 
        (if (hash-has-key? arg_hash func)
