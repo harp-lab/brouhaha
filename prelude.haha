@@ -11,7 +11,7 @@
 (define-prim <= 1 2 3)
 (define-prim >= 1 2 3)
 
-;;; prim-ops
+; ; ;;; prim-ops
 (define-prim modulo 2)
 (define-prim null? 1)
 (define-prim equal? 2)
@@ -19,111 +19,111 @@
 (define-prim cons 2)
 (define-prim car 1)
 (define-prim cdr 1)
-(define-prim float->int 1)
-(define-prim int->float 1)
+; (define-prim float->int 1)
+; (define-prim int->float 1)
 
-;;; hash prims
-(define-prim hash)
-(define-prim hash-ref 2)
-(define-prim hash-set 3)
-(define-prim hash-keys 1)
-(define-prim hash-has-key? 2)
-(define-prim hash-count 1)
+; ;;; hash prims
+; (define-prim hash)
+; (define-prim hash-ref 2)
+; (define-prim hash-set 3)
+; (define-prim hash-keys 1)
+; (define-prim hash-has-key? 2)
+; (define-prim hash-count 1)
 
-;;; set prims
-(define-prim set)
-(define-prim set->list 1)
-(define-prim list->set 1)
-(define-prim set-add 2)
-(define-prim set-member? 2)
-(define-prim set-remove 2)
-(define-prim set-count 1)
+; ;;; set prims
+; (define-prim set)
+; (define-prim set->list 1)
+; (define-prim list->set 1)
+; (define-prim set-add 2)
+; (define-prim set-member? 2)
+; (define-prim set-remove 2)
+; (define-prim set-count 1)
 
-;;; string prims
-(define-prim string? 1)
-(define-prim string-length 1)
-(define-prim string-ref 2)
-(define-prim substring 3)
-(define-prim string-append 2)
-(define-prim string->list 1)
+; ;;; string prims
+; (define-prim string? 1)
+; (define-prim string-length 1)
+; (define-prim string-ref 2)
+; (define-prim substring 3)
+; (define-prim string-append 2)
+; (define-prim string->list 1)
 
-;;; other new prims
-(define-prim exact-floor 1)
-(define-prim exact-ceiling 1)
-(define-prim exact-round 1)
-(define-prim abs 1)
-(define-prim max 1)
-(define-prim min 1)
-(define-prim expt 2)
-(define-prim sqrt 1)
+; ;;; other new prims
+; (define-prim exact-floor 1)
+; (define-prim exact-ceiling 1)
+; (define-prim exact-round 1)
+; (define-prim abs 1)
+; (define-prim max 1)
+; (define-prim min 1)
+; (define-prim expt 2)
+; (define-prim sqrt 1)
 (define-prim remainder 2)
-(define-prim quotient 2)
-(define-prim random 1 2)
-(define-prim symbol? 1)
+; (define-prim quotient 2)
+; (define-prim random 1 2)
+; (define-prim symbol? 1)
 (define-prim pair? 1)
-(define-prim positive? 1)
-(define-prim negative? 1)
+; (define-prim positive? 1)
+; (define-prim negative? 1)
 (define-prim list 1 2 3 4)
 
 
-;;; other predicates and HOFs
-;; (define (list . x) x)
+; ;;; other predicates and HOFs
+; ; (define (list . x) x)
 
-; (define (even? x)
-;   (equal? 0 (modulo x 2)))
+(define (even? x)
+  (equal? 0 (modulo x 2)))
 
 ; (define (boolean? x)
 ;   (if (or (eq? x '#t) (eq? x '#f)) #t #f))
 
 
-; (define (odd? x)
-;   (equal? 1 (modulo x 2)))
+(define (odd? x)
+  (equal? 1 (modulo x 2)))
 
-; (define (list-ref lst n)
-;   (if (= 0 n)
-;       (car lst)
-;       (list-ref (cdr lst) (- n 1))))
+(define (list-ref lst n)
+  (if (= 0 n)
+      (car lst)
+      (list-ref (cdr lst) (- n 1))))
 
-; (define (member item lst)
-;   (cond
-;     [(or (null? item) (null? lst)) #f]
-;     [(equal? item (car lst)) lst]
-;     [else (member item (cdr lst))]))
+(define (member item lst)
+  (cond
+    [(or (null? item) (null? lst)) #f]
+    [(equal? item (car lst)) lst]
+    [else (member item (cdr lst))]))
 
-; (define (member? x lst)
-;   (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
+(define (member? x lst)
+  (if (null? lst) #f (if (equal? (car lst) x) #t (member? x (cdr lst)))))
 
 (define (length lst)
   (if (null? lst)
       0
       (+ 1 (length (cdr lst)))))
 
-; (define (map proc lst)
-;   (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
+(define (map proc lst)
+  (if (null? lst) (list) (cons (proc (car lst)) (map proc (cdr lst)))))
 
-; (define (filter op lst)
-;   (if (null? lst)
-;       (list)
-;       (if (op (car lst))
-;           (cons (car lst) (filter op (cdr lst)))
-;           (filter op (cdr lst)))))
+(define (filter op lst)
+  (if (null? lst)
+      (list)
+      (if (op (car lst))
+          (cons (car lst) (filter op (cdr lst)))
+          (filter op (cdr lst)))))
 
 ; (define (drop lst n)
 ;   (if (= n 0)
 ;       lst
 ;       (drop (cdr lst) (- n 1))))
 
-; (define (foldl fun acc lst)
-;   (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
+(define (foldl fun acc lst)
+  (if (null? lst) acc (foldl fun (fun (car lst) acc) (cdr lst))))
 
 (define (foldr fun acc lst)
   (if (null? lst) acc (fun (car lst) (foldr fun acc (cdr lst)))))
 
-(define (reverse-helper lst lst2)
-  (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
+; (define (reverse-helper lst lst2)
+;   (if (null? lst) lst2 (reverse-helper (cdr lst) (cons (car lst) lst2))))
 
-(define (reverse lst)
-  (reverse-helper lst (list)))
+; (define (reverse lst)
+;   (reverse-helper lst (list)))
 
 (define (append1 lhs rhs)
   (if (null? lhs)
@@ -136,26 +136,26 @@
         (append1 l1 l2)
         (foldr append1 (list) (append1 (list l1 l2) lsts))))
 
-(define (take-helper lst n lst2)
-  (if (= n 0)
-      (reverse lst2)
-      (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
+; (define (take-helper lst n lst2)
+;   (if (= n 0)
+;       (reverse lst2)
+;       (take-helper (cdr lst) (- n 1) (cons (car lst) lst2))))
 
-(define (take lst n)
-  (take-helper lst n (list)))
+; (define (take lst n)
+;   (take-helper lst n (list)))
 
-; (define (list-set lst index value)
-;   (if (= index 0)
-;       (cons value (cdr lst))
-;       (cons (car lst)
-;             (list-set (cdr lst) (- index 1) value))))
+(define (list-set lst index value)
+  (if (= index 0)
+      (cons value (cdr lst))
+      (cons (car lst)
+            (list-set (cdr lst) (- index 1) value))))
 
-; (define (flatten lst)
-;   (cond [(null? lst) (list)]
-;         [(pair? lst)
-;          (append (flatten (car lst)) (flatten (cdr lst)))]
-;         [else (list lst)]))
+(define (flatten lst)
+  (cond [(null? lst) (list)]
+        [(pair? lst)
+         (append (flatten (car lst)) (flatten (cdr lst)))]
+        [else (list lst)]))
 
-; ;;; ormap, andmap, both requires length to work properly. once done will impelement them.
+; ; ;;; ormap, andmap, both requires length to work properly. once done will impelement them.
 
 

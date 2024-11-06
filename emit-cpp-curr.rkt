@@ -218,6 +218,40 @@
 
        (convert-proc-body proc_name proc_env proc_arg letbody)]
 
+      [`(let ([,lhs (make-kont ,ptr ,args ...)]) ,letbody)
+       (define arglength (length args))
+
+       (append-line filepath "\n//creating new make-kont instance")
+
+       (define cloName (gensym 'clo))
+
+       (append-line filepath (format "void** ~a = alloc_kont(~a_spec, ~a);" cloName ptr arglength))
+
+       (when (> (+ arglength 1) 1)
+         (append-line filepath "\n//setting env list"))
+
+       (for ([i (in-range 1 (+ arglength 1))] [item args])
+
+         ; we don't need this anymore, right?
+         ;  (when (eq? (get-c-string item) proc_name)
+         ;    (append-line
+         ;     filepath
+         ;     (if (hash-has-key? conflicting_c++_prims (get-c-string item))
+         ;         (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" (hash-ref conflicting_c++_prims (get-c-string item)) proc_name 0)
+         ;         (format "void* ~a = encode_clo(alloc_clo(~a_fptr, ~a));\n" proc_name proc_name 0))
+         ;     ))
+
+         (if (hash-has-key? conflicting_c++_prims (get-c-string item))
+             (append-line filepath (format "~a[~a] = ~a;" cloName i (hash-ref conflicting_c++_prims (get-c-string item))))
+             (append-line filepath (format "~a[~a] = ~a;" cloName i (get-c-string item)))))
+
+       (append-line filepath (format "void* ~a = encode_clo(~a);" (get-c-string lhs) cloName))
+
+       ;  (when (> (+ arglength 1) 1) (append-line filepath "\n"))
+       (append-line filepath "\n")
+
+       (convert-proc-body proc_name proc_env proc_arg letbody)]
+
       [`(let ([,lhs (prim ,op ,args ...)]) ,letbody)
        (define line
          (format "void* const ~a = apply_prim_~a_~a(~a);"

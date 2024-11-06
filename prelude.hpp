@@ -68,7 +68,7 @@ template <typename T> T print_val(T val) {
 
 template <typename T> bool isPositive(T number) { return number > 0; }
 
-#define PRINT(val) (std::cout << (val) << std::endl)
+#define PRINT(val) (std::cout << (val) << std::endl);
 
 #pragma region Types
 // region Encoding and Decoding and Tags
@@ -325,6 +325,7 @@ inline int length_counter(void *lst) {
   //   return 0;
 
   int tag = get_tag(lst);
+  PRINT("helloooo")
 
   if (tag == NULL_VALUE)
     return 0;
@@ -909,24 +910,22 @@ inline void *prim_modulo(void *first, void *second) {
 }
 
 inline void *apply_prim_modulo(void *lst) {
-  int len_cnt = length_counter(lst);
-  if (len_cnt < 2 || len_cnt > 2)
+  if (numArgs < 4 || numArgs > 4)
     assert_type(
         false,
         "Error in modulo -> arity mismatch: expected number of argument is 2!");
 
-  void **cons_lst = decode_cons(lst);
 
-  void *car = cons_lst[0];
-  void *cadr = prim_car(cons_lst[1]);
+  void * first = arg_buffer[3];
+  void * second = arg_buffer[4];
 
-  if (!is_integer_val(car) || !is_integer_val(cadr)) {
+  if (!is_integer_val(first) || !is_integer_val(second)) {
     assert_type(
         false,
         "Error in modulo: contract violation -> expected integer arguments!");
   }
 
-  return prim_modulo(car, cadr);
+  return prim_modulo(first, second);
 }
 
 inline void *apply_prim_modulo_2(void *a, void *b) {
@@ -948,17 +947,15 @@ inline void *apply_prim_equal_u63_2(void *x, void *y) {
 }
 
 inline void *apply_prim_equal_u63(void *lst) {
-  int len_cnt = length_counter(lst);
-  if (len_cnt < 2 || len_cnt > 2)
+  if (numArgs < 4 || numArgs > 4)
     assert_type(
         false,
         "Error in equal? -> arity mismatch: expected number of argument is 2.");
 
-  void **cons_lst = decode_cons(lst);
-  void *car = cons_lst[0];
-  void *cadr = prim_car(cons_lst[1]);
+  void * first = arg_buffer[3];
+  void * second = arg_buffer[4];
 
-  return prim_equal_u63(car, cadr);
+  return prim_equal_u63(first, second);
 }
 
 inline void *prim_eq_u63(void *arg1, void *arg2) {
@@ -1244,7 +1241,139 @@ inline void *add(void *arg1, void *arg2) {
   return 0;
 }
 
-inline void *apply_prim__u43(void *arg) //+
+inline void *apply_prim__u43(void *arg) {
+  s32 int_sum = 0;       // Static variable to retain int sum across calls
+  float float_sum = 0.0; // Static variable to retain float sum across calls
+
+  void *result = nullptr;
+  bool is_promoted_to_mpz = false;
+  bool is_promoted_to_mpf = false;
+
+  mpz_t *mpz_sum = nullptr;
+  mpf_t *mpf_sum = nullptr;
+
+  for (int i = 3; i <= numArgs; i++) {
+    int tag = get_tag(arg_buffer[i]);
+
+    if (tag == INT && !is_promoted_to_mpz && !is_promoted_to_mpf) {
+      // Handle INT + INT case with overflow check
+      s32 val = decode_int(arg_buffer[i]);
+      if (__builtin_add_overflow(int_sum, val, &int_sum)) {
+        // Promote to mpz if overflow occurs
+        is_promoted_to_mpz = true;
+        mpz_sum = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+        mpz_init_set_si(*mpz_sum, int_sum);
+        mpz_add_ui(*mpz_sum, *mpz_sum, val);
+      }
+    } else if (tag == FLOAT_VAL && !is_promoted_to_mpf) {
+      // Handle float addition with precision check
+      float val = decode_float(arg_buffer[i]);
+      float_sum += val;
+
+      if (!is_within_float_precision(float_sum)) {
+        // Promote to mpf if precision is exceeded
+        is_promoted_to_mpf = true;
+        mpf_sum = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+        mpf_init_set_d(*mpf_sum, float_sum);
+      }
+    } else {
+      // Promotion cases based on detected types
+      if (tag == INT) {
+        int val = decode_int(arg_buffer[i]);
+        if (is_promoted_to_mpz) {
+          mpz_add_ui(*mpz_sum, *mpz_sum, val);
+        } else if (is_promoted_to_mpf) {
+          mpf_t temp_mpf;
+          mpf_init_set_si(temp_mpf, val);
+          mpf_add(*mpf_sum, *mpf_sum, temp_mpf);
+          mpf_clear(temp_mpf);
+        } else {
+          // Adding an int to float_sum within float limits
+          float_sum += val;
+        }
+      } else if (tag == FLOAT_VAL) {
+        float val = decode_float(arg_buffer[i]);
+        if (is_promoted_to_mpf) {
+          mpf_t temp_mpf;
+          mpf_init_set_d(temp_mpf, val);
+          mpf_add(*mpf_sum, *mpf_sum, temp_mpf);
+          mpf_clear(temp_mpf);
+        } else if (is_promoted_to_mpz) {
+          // Convert mpz_sum to mpf and continue
+          mpf_sum = mpz_2_mpf(mpz_sum);
+          mpf_add_ui(*mpf_sum, *mpf_sum, val);
+          is_promoted_to_mpf = true;
+        } else {
+          // Continue adding to float_sum within float limits
+          float_sum += val;
+          if (!is_within_float_precision(float_sum)) {
+            // Promote to mpf if float precision is exceeded
+            is_promoted_to_mpf = true;
+            mpf_sum = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+            mpf_init_set_d(*mpf_sum, float_sum);
+          }
+        }
+      } else if (tag == MPZ) {
+        mpz_t *mpz_val = decode_mpz(arg_buffer[i]);
+        if (!is_promoted_to_mpf) {
+          if (!is_promoted_to_mpz) {
+            // Initial promotion to mpz
+            mpz_sum = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+            mpz_init_set_si(*mpz_sum, int_sum);
+            is_promoted_to_mpz = true;
+          }
+          mpz_add(*mpz_sum, *mpz_sum, *mpz_val);
+        } else {
+          // Convert mpz_val to mpf and add to mpf_sum
+          mpf_t *temp_mpf = mpz_2_mpf(mpz_val);
+          mpf_add(*mpf_sum, *mpf_sum, *temp_mpf);
+          mpf_clear(*temp_mpf);
+        }
+      } else if (tag == MPF) {
+        mpf_t *mpf_val = decode_mpf(arg_buffer[i]);
+        if (!is_promoted_to_mpf) {
+          // Initial promotion to mpf
+          mpf_sum = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+          mpf_init_set_d(*mpf_sum, float_sum);
+          is_promoted_to_mpf = true;
+        }
+        mpf_add(*mpf_sum, *mpf_sum, *mpf_val);
+      }
+    }
+  }
+
+  // Final result based on the type accumulated
+  if (!is_promoted_to_mpz && !is_promoted_to_mpf) {
+    // No promotion occurred, check if the final result should be int or float
+    if (float_sum != 0.0f || (float_sum == 0.0f && int_sum == 0)) {
+      // If float_sum was used or if all values were zero
+      return reinterpret_cast<void *>(encode_float(float_sum));
+    } else {
+      // Only int values were used
+      return reinterpret_cast<void *>(encode_int(int_sum));
+    }
+  } else if (is_promoted_to_mpz && !is_promoted_to_mpf) {
+    // Only integer overflow occurred, promoted to mpz
+    return encode_mpz(mpz_sum);
+  } else if (is_promoted_to_mpf) {
+    // Float precision was exceeded or both promotions occurred
+
+    if (is_promoted_to_mpz) {
+      // Both integer overflow and float precision issues occurred
+      // Convert mpz_sum to mpf and add to mpf_sum
+      mpf_t *temp_mpf = mpz_2_mpf(mpz_sum);
+      mpf_add(*mpf_sum, *mpf_sum, *temp_mpf);
+      mpf_clear(*temp_mpf);
+    }
+
+    return encode_mpf(mpf_sum);
+  }
+
+  return nullptr;
+}
+
+// commented on nov 6, 24
+inline void *apply_prim__u43_l(void *arg) //+
 {
   // will work only for ints
   void *result = nullptr;
@@ -1518,10 +1647,87 @@ void *sub_mpz_mpf(void *arg1, void *arg2) // return the mpf_t void*
   return encode_mpf(mpf_arg2);
 }
 
+// Convert int to mpf_t
+mpf_t *int_to_mpf(int val) {
+  mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+  mpf_init(*result);
+  mpf_set_si(*result, val);
+  return result;
+}
+
+// Convert int to mpz_t
+mpz_t *int_to_mpz(int val) {
+  mpz_t *result = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+  mpz_init_set_si(*result, val);
+  return result;
+}
+
+// Convert float to mpf_t
+mpf_t *float_to_mpf(float val) {
+  mpf_t *result = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+  mpf_init(*result);
+  mpf_set_d(*result, val);
+  return result;
+}
+
+
+inline void *sub(void *arg1, void *arg2) {
+  bool is_mpf = false;
+  int arg1_tag = get_tag(arg1);
+  int arg2_tag = get_tag(arg2);
+
+  mpf_t *arg1_mpf = nullptr;
+  mpf_t *arg2_mpf = nullptr;
+
+  if (arg1_tag == INT) {
+    int int_val = decode_int(arg1);
+    if (arg2_tag == MPZ || arg2_tag == MPF) {
+      arg1_mpf = int_to_mpf(int_val); // Promote int to mpf for precision
+      is_mpf = true;
+    }
+  } else if (arg1_tag == FLOAT_VAL) {
+    float float_val = decode_float(arg1);
+    if (arg2_tag == MPZ || arg2_tag == MPF) {
+      arg1_mpf = float_to_mpf(float_val); // Promote float to mpf
+      is_mpf = true;
+    }
+  } else if (arg1_tag == MPZ) {
+    arg1_mpf = mpz_2_mpf(decode_mpz(arg1));
+  } else if (arg1_tag == MPF) {
+    arg1_mpf = decode_mpf(arg1);
+    is_mpf = true;
+  }
+
+  if (arg2_tag == INT) {
+    int int_val = decode_int(arg2);
+    if (is_mpf) {
+      arg2_mpf = int_to_mpf(int_val);
+    }
+  } else if (arg2_tag == FLOAT_VAL) {
+    float float_val = decode_float(arg2);
+    if (is_mpf) {
+      arg2_mpf = float_to_mpf(float_val);
+    }
+  } else if (arg2_tag == MPZ) {
+    arg2_mpf = mpz_2_mpf(decode_mpz(arg2));
+  } else if (arg2_tag == MPF) {
+    arg2_mpf = decode_mpf(arg2);
+    is_mpf = true;
+  }
+
+  // Perform the subtraction
+  mpf_t *result_mpf = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+  mpf_init(*result_mpf);
+  mpf_sub(*result_mpf, *arg1_mpf, *arg2_mpf);
+
+  return is_mpf ? encode_mpf(result_mpf) : encode_mpz(mpf_2_mpz(result_mpf));
+}
+
 // takes in two number?, gets the tags,  does the castings as required and
 // adds them. the numbers could be mpz_t or mpf_t, if different, mpz_t gets
 // casted to mpf_t
-inline void *sub(void *arg1, void *arg2) {
+// commented on nov 6, 24
+inline void *sub_l(void *arg1, void *arg2) {
   bool is_mpf = false;
   int arg1_tag = get_tag(arg1);
   int arg2_tag = get_tag(arg2);
@@ -1828,10 +2034,79 @@ inline void *apply_prim__u45(void *arg) {
     return apply_prim__u45_1(arg_buffer[3]);
 
   void *result = nullptr;
+  bool promote_to_mpf = false; // Flag to check if promotion to mpf is needed
 
   for (int i = 3; i <= numArgs; i++) {
     int tag = get_tag(arg_buffer[i]);
-    bool type_check = (tag == MPZ) || (tag == MPF);
+    bool type_check =
+        (tag == INT) || (tag == FLOAT_VAL) || (tag == MPZ) || (tag == MPF);
+
+    if (!type_check)
+      assert_type(false,
+                  "Error in subtraction -> contact violation: The values in "
+                  "the list must be integers or floating-point numbers!");
+
+    if (!result) {
+      // Set initial value of result
+      result = arg_buffer[i];
+    } else {
+      int res_tag = get_tag(result);
+
+      if ((res_tag == INT && tag == INT) ||
+          (res_tag == FLOAT_VAL && tag == FLOAT_VAL)) {
+        // Subtract within int/float if possible
+        if (res_tag == INT) {
+          s64 temp_result =
+              static_cast<s64>(decode_int(result)) - decode_int(arg_buffer[i]);
+          // Check for int overflow
+          if (temp_result > std::numeric_limits<int>::max() ||
+              temp_result < std::numeric_limits<int>::min()) {
+            // Overflow detected, promote to mpz
+            mpz_t *mpz_result = int_to_mpz(decode_int(result));
+            mpz_sub_ui(*mpz_result, *mpz_result, decode_int(arg_buffer[i]));
+            result = encode_mpz(mpz_result);
+          } else {
+            // result = encode_int(static_cast<int>(temp_result));
+            result = reinterpret_cast<void *>(
+                encode_int(static_cast<int>(temp_result)));
+          }
+        } else {
+          // Float handling with no promotion needed
+          float temp_result =
+              decode_float(result) - decode_float(arg_buffer[i]);
+          if (is_within_float_precision(temp_result)) {
+            // result = encode_float(temp_result);
+            result = reinterpret_cast<void *>(encode_float(temp_result));
+
+          } else {
+            // Precision exceeded, promote to mpf
+            mpf_t *mpf_result = float_to_mpf(decode_float(result));
+            mpf_sub_ui(*mpf_result, *mpf_result, decode_float(arg_buffer[i]));
+            result = encode_mpf(mpf_result);
+          }
+        }
+      } else {
+        // One or both arguments are mpz/mpf or promotion is needed
+        result = sub(result,
+                     arg_buffer[i]); // Utilize the sub function for promotion
+      }
+    }
+  }
+
+  return result;
+}
+
+// ; updated on nov 6, 24
+inline void *apply_prim__u45_l(void *arg) {
+  if (numArgs == 3)
+    return apply_prim__u45_1(arg_buffer[3]);
+
+  void *result = nullptr;
+
+  for (int i = 3; i <= numArgs; i++) {
+    int tag = get_tag(arg_buffer[i]);
+    bool type_check =
+        (tag == INT) || (tag == FLOAT_VAL) || (tag == MPZ) || (tag == MPF);
 
     if (!type_check)
       assert_type(false,
@@ -2333,6 +2608,7 @@ void *apply_prim__u47_1(void *arg1) // / division
   return nullptr;
 }
 
+// commented on nov 6, 24
 void *apply_prim__u47(void *lst) // / division
 {
   int len_cnt = length_counter(lst);
@@ -2485,6 +2761,137 @@ inline bool equal_zero(long cmp) {
 }
 
 void *compare_lst(bool (*cmp_op)(long)) {
+  if (numArgs < 3) {
+    assert_type(
+        false,
+        "Error -> arity mismatch: number of arguments should be at least 1!");
+  }
+
+  bool iteration_one = true;
+  bool is_promoted = false; // Tracks if promotion to mpz/mpf has occurred
+  int cmp_res = 0;
+
+  // Variables to store the current comparison value
+  union {
+    int int_val;
+    float float_val;
+  } current_val;
+
+  mpz_t *mpz_val = nullptr;
+  mpf_t *mpf_val = nullptr;
+
+  for (int i = 3; i <= numArgs; i++) {
+    int car_tag = get_tag(arg_buffer[i]);
+    bool type_check = (car_tag == INT) || (car_tag == FLOAT_VAL) ||
+                      (car_tag == MPZ) || (car_tag == MPF);
+
+    if (!type_check) {
+      assert_type(false, "Error -> contact violation: argument type should be "
+                         "either integers or floating-point numbers!");
+      return encode_bool(false);
+    }
+
+    if (iteration_one) {
+      iteration_one = false;
+      switch (car_tag) {
+      case INT:
+        current_val.int_val = decode_int(arg_buffer[i]);
+        break;
+      case FLOAT_VAL:
+        current_val.float_val = decode_float(arg_buffer[i]);
+        break;
+      case MPZ:
+        mpz_val = decode_mpz(arg_buffer[i]);
+        is_promoted = true;
+        break;
+      case MPF:
+        mpf_val = decode_mpf(arg_buffer[i]);
+        is_promoted = true;
+        break;
+      }
+    } else {
+      bool equal = false;
+      switch (car_tag) {
+      case INT: {
+        int int_val = decode_int(arg_buffer[i]);
+        if (!is_promoted && current_val.int_val == int_val) {
+          equal = true;
+        } else if (is_promoted && mpz_val) {
+          // Promote int_val to mpz_t and compare
+          mpz_t temp_mpz;
+          mpz_init_set_si(temp_mpz, int_val);
+          equal = (mpz_cmp(*mpz_val, temp_mpz) == 0);
+          mpz_clear(temp_mpz);
+        } else if (int_val > std::numeric_limits<int>::max() ||
+                   int_val < std::numeric_limits<int>::min()) {
+          // Promote to mpz_t due to overflow risk
+          is_promoted = true;
+          mpz_val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+          mpz_init_set_si(*mpz_val, current_val.int_val);
+        }
+        break;
+      }
+      case FLOAT_VAL: {
+        float float_val = decode_float(arg_buffer[i]);
+        if (!is_promoted && current_val.float_val == float_val) {
+          equal = true;
+        } else if (is_promoted && mpf_val) {
+          // Compare float value with mpf_val after promotion
+          equal = (mpf_cmp_d(*mpf_val, float_val) == 0);
+        } else if (!is_within_float_precision(float_val)) {
+          // Promote to mpf_t due to precision limits
+          is_promoted = true;
+          mpf_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+          mpf_init(*mpf_val);
+          mpf_set_d(*mpf_val, current_val.float_val);
+        }
+        break;
+      }
+      case MPZ: {
+        mpz_t *mpz_comp = decode_mpz(arg_buffer[i]);
+        if (is_promoted && mpz_val) {
+          equal = mpz_cmp(*mpz_val, *mpz_comp) == 0;
+        } else {
+          is_promoted = true;
+          mpz_val = (mpz_t *)(GC_MALLOC(sizeof(mpz_t)));
+          mpz_init_set(*mpz_val, *mpz_comp);
+        }
+        break;
+      }
+      case MPF: {
+        mpf_t *mpf_comp = decode_mpf(arg_buffer[i]);
+        if (is_promoted && mpf_val) {
+          equal = mpf_cmp(*mpf_val, *mpf_comp) == 0;
+        } else {
+          is_promoted = true;
+          mpf_val = (mpf_t *)(GC_MALLOC(sizeof(mpf_t)));
+          mpf_init_set(*mpf_val, *mpf_comp);
+        }
+        break;
+      }
+      }
+
+      // If elements are not equal, clear and return false
+      if (!equal) {
+        if (mpz_val)
+          mpz_clear(*mpz_val);
+        if (mpf_val)
+          mpf_clear(*mpf_val);
+        return encode_bool(false);
+      }
+    }
+  }
+
+  // Cleanup and return true if all comparisons succeeded
+  if (mpz_val)
+    mpz_clear(*mpz_val);
+  if (mpf_val)
+    mpf_clear(*mpf_val);
+  return encode_bool(true);
+}
+
+// renmaed on nov 6, 24
+void *compare_lst2(bool (*cmp_op)(long)) {
   if (numArgs < 3)
     assert_type(
         false,
@@ -2500,7 +2907,8 @@ void *compare_lst(bool (*cmp_op)(long)) {
 
   for (int i = 3; i <= numArgs; i++) {
     int car_tag = get_tag(arg_buffer[i]);
-    bool type_check = (car_tag == MPZ) || (car_tag == MPF);
+    bool type_check = (car_tag == INT) || (car_tag == FLOAT_VAL) ||
+                      (car_tag == MPZ) || (car_tag == MPF);
 
     if (!type_check)
       assert_type(false, "Error -> contact violation: argument type should be "
@@ -2811,7 +3219,7 @@ inline void *apply_prim__u61_3(void *arg1, void *arg2, void *arg3) // =
 // Checks if the list is strictly decreasing
 void *apply_prim__u62(void *lst) // >
 {
-  return compare_lst(lst, *great_zero);
+  return compare_lst(*great_zero);
 }
 
 void *apply_prim__u62_1(void *arg1) // >
@@ -2882,7 +3290,7 @@ void *apply_prim__u62_3(void *arg1, void *arg2, void *arg3) // >
 // checks if a list is strictly increasing
 void *apply_prim__u60(void *lst) // <
 {
-  return compare_lst(lst, *less_zero);
+  return compare_lst(*less_zero);
 }
 
 void *apply_prim__u60_1(void *arg1) // <
@@ -2936,7 +3344,7 @@ void *apply_prim__u60_2(void *arg1, void *arg2) // <
     float a2_float = decode_float(arg2);
     mpf_t a2_mpf;
     mpf_init(a2_mpf);
-    mpf_set_d(a2_mpf, a2_float); 
+    mpf_set_d(a2_mpf, a2_float);
     int cmp_result = mpf_cmp(*a1_mpf, a2_mpf);
     mpf_clear(a2_mpf);
     return cmp_result < 0 ? encode_bool(true) : encode_bool(false);
@@ -3029,7 +3437,7 @@ void *apply_prim__u60_3(void *arg1, void *arg2, void *arg3) // <
 
 // checks if elements are decreasing >=
 void *apply_prim__u62_u61(void *lst) {
-  return compare_lst(lst, *great_equal_zero);
+  return compare_lst(*great_equal_zero);
 }
 
 void *apply_prim__u62_u61_1(void *arg1) // >=
@@ -3107,7 +3515,7 @@ void *apply_prim__u62_u61_3(void *arg1, void *arg2, void *arg3) // >=
 
 // checks if elements are increasing <=
 void *apply_prim__u60_u61(void *lst) {
-  return compare_lst(lst, *less_equal_zero);
+  return compare_lst(*less_equal_zero);
 }
 
 void *apply_prim__u60_u61_1(void *arg1) // <=
@@ -4795,16 +5203,14 @@ inline void *apply_prim_remainder_2_b4(void *first, void *second) {
 }
 
 inline void *apply_prim_remainder(void *lst) {
-  int len_cnt = length_counter(lst);
-  if (len_cnt < 2 || len_cnt > 2)
+  if (numArgs < 4 || numArgs > 4)
     assert_type(false, "Error in remaind -> arity mismatch: number of "
                        "arguments should be 2!");
 
-  void **cons_lst = decode_cons(lst);
-  void *car = cons_lst[0];
-  void *cadr = prim_car(cons_lst[1]);
+  void *first = arg_buffer[3];
+  void *second = arg_buffer[4];
 
-  return apply_prim_remainder_2(car, cadr);
+  return apply_prim_remainder_2(first, second);
 }
 
 inline void *apply_prim_quotient_2(void *first, void *second) {

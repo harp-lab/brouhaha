@@ -322,13 +322,11 @@
 
           (if (and is_define_prim is_callable)
               (normalize-aes `(,fnc ,@es) k)
-              (normalize-aes `(,f ,@es) k))
-          ]
+              (normalize-aes `(,f ,@es) k))]
          [else
           ; we can perform optimization without slog as well
           ; will try that later!
-          (normalize-aes `(,f ,@es) k)])
-       ]
+          (normalize-aes `(,f ,@es) k)])]
       ))
 
   (define (anf-convert-define def)
@@ -340,6 +338,7 @@
       [`(define-prim ,fname ,param-counts ...)
        (coverage `(define-prim ,fname ,@param-counts))]
       ))
+
   (map anf-convert-define program))
 
 
@@ -374,16 +373,23 @@
 
       [`(let ([,x ,(? symbol? rhs)]) ,e0) `(let ([,x ,rhs]) ,(tag-body e0))]
 
-      [`(let ([,x (list)]) ,e0) `(let ([,x (prim list)]) ,(tag-body e0))]
+      [`(let ([,x (list)]) ,e0)
+       (if slog-flag
+           `(let ([,x (prim list)]) ,(tag-body e0))
+           `(let ([,x (list)]) ,(tag-body e0)))]
 
       [`(let ([,x ,rhs]) ,e0)
        ;; inlinable or not
-       (match-define `(,fnc ,is_define_prim ,is_callable ,arg_count)
-         (callable-define-prim-with-slog? proc-name-shadowed? (car rhs) (length (cdr rhs)) ast-root))
+       (cond
+         [slog-flag
+          (match-define `(,fnc ,is_define_prim ,is_callable ,arg_count)
+            (callable-define-prim-with-slog? proc-name-shadowed? (car rhs) (length (cdr rhs)) ast-root))
 
-       (if (and is_define_prim is_callable)
-           `(let ([,x (prim ,@rhs)]) ,(tag-body e0))
-           `(let ([,x ,(tag-body rhs)]) ,(tag-body e0)))]
+          (if (and is_define_prim is_callable)
+              `(let ([,x (prim ,@rhs)]) ,(tag-body e0))
+              `(let ([,x ,(tag-body rhs)]) ,(tag-body e0)))]
+         [else
+          `(let ([,x ,(tag-body rhs)]) ,(tag-body e0))])]
 
       [`(if ,ae ,e0 ,e1)  `(if ,ae ,(tag-body e0) ,(tag-body e1))]
 
@@ -399,29 +405,31 @@
        ;;;   callable-define-prim?
        ;;;   (displayln slog-flag)
 
+       (cond
+         [slog-flag
+          (match-define `(,fnc ,is_define_prim ,is_callable ,arg_count)
+            (callable-define-prim-with-slog? proc-name-shadowed? fae (length args) ast-root))
 
-       (match-define `(,fnc ,is_define_prim ,is_callable ,arg_count)
-         (callable-define-prim-with-slog? proc-name-shadowed? fae (length args) ast-root))
+          ;  (match-define `(,is_define_prim ,is_callable ,arg_count)
+          ;    (callable-define-prim? proc-name-shadowed? fae (length args)))
 
-       ;  (match-define `(,is_define_prim ,is_callable ,arg_count)
-       ;    (callable-define-prim? proc-name-shadowed? fae (length args)))
+          ;  (set! is_define_prim #f)
+          ;  (set! is_callable #f)
+          ;  (set! arg_count 0)
+          ;  (displayln fae)
+          ;  (displayln (- (length args) 1))
+          ;  (displayln is_define_prim)
+          ;  (displayln is_callable)
+          ;  (displayln arg_count)
+          ;  (displayln "---------")
 
-       ;  (set! is_define_prim #f)
-       ;  (set! is_callable #f)
-       ;  (set! arg_count 0)
-       ;  (displayln fae)
-       ;  (displayln (- (length args) 1))
-       ;  (displayln is_define_prim)
-       ;  (displayln is_callable)
-       ;  (displayln arg_count)
-       ;  (displayln "---------")
+          (define x (gensym 'x))
 
-       (define x (gensym 'x))
-
-       (if (and is_define_prim is_callable)
-           `(let ([,x (prim ,fae ,@args)]) ,x)
-           `(,fae ,@(map tag-body args)))]))
-
+          (if (and is_define_prim is_callable)
+              `(let ([,x (prim ,fae ,@args)]) ,x)
+              `(,fae ,@(map tag-body args)))]
+         [else
+          `(,fae ,@(map tag-body args))])]))
 
   (define (init def)
     (match def

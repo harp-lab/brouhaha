@@ -215,8 +215,7 @@ void *fhalt()
 (define (is-define-prim ast-root func-name)
   ; (displayln (format "is-user-def-func-a-define-prim: ~a" func-name))
   (define check-store-for-func
-    (index-to-facts (search-facts ast-root `(store addr ,(symbol->string func-name))) ast-root)
-    )
+    (index-to-facts (search-facts ast-root `(store addr ,(symbol->string func-name))) ast-root))
   ; (pretty-print check-store-for-func)
 
   ; (let loop ([func-fact check-store-for-func])

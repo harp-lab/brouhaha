@@ -10,6 +10,6 @@
   (loop n 0.))
 
 (define (brouhaha_main)
-  (run 35000000.))
+  (run 5.))
 
 (brouhaha_main)

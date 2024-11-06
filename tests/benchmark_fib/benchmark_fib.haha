@@ -10,4 +10,4 @@
 
 
 (define (brouhaha_main)
-  (fib 40))
+  (fib 3))

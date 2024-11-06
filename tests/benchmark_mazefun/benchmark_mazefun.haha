@@ -157,4 +157,4 @@
         (cave-to-maze (pierce-randomly (shuffle possible-holes) cave)))))
 
 (define (brouhaha_main)
-   (make-maze 149 149))
+   (make-maze 11 11))

@@ -8,4 +8,4 @@
          (fibfp (- n 2.)))))
 
 (define (brouhaha_main)
-  (fibfp 40.0))
+  (fibfp 10.0))

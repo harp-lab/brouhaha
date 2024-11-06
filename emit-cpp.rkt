@@ -179,7 +179,11 @@
            (hash-ref arg_hash func)
            (get-c-string func))]
       [else
-       (get-c-string func)]))
+       ;  (get-c-string func)
+       (if (hash-has-key? conflicting_c++_prims (get-c-string func))
+           (hash-ref conflicting_c++_prims (get-c-string func))
+           (get-c-string func))
+       ]))
 
 
   (define (convert-proc-body proc_name proc_env proc_arg body [arg_hash (hash)])
@@ -371,14 +375,19 @@
              (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string func)))])])]
 
       [`(clo-app ,func ,args ...)
+       (displayln (~a "clo-app=func " func " args: " args))
        ; builtin-func will hold, either the called builtin define-prim
        ; or the aliased builtin define-prim by the "func" at the call-site
-       (match-define `(,builtin-func ,res1) (if slog-flag
-                                                (is-define-prim ast-root func)
-                                                `(,func #f)))
-       (match-define `(,_ ,res2) (if slog-flag
-                                     (check-define-prim-arg-count ast-root builtin-func (- (length args) 1))
-                                     `(,func #f)))
+       ; is-define-prim, has bug now, slog-fact-layout changed, so update the code, nov5,24
+       (match-define `(,builtin-func ,res1)
+         (if slog-flag
+             (is-define-prim ast-root func)
+             `(,func #f)))
+
+       (match-define `(,_ ,res2)
+         (if slog-flag
+             (check-define-prim-arg-count ast-root builtin-func (- (length args) 1))
+             `(,func #f)))
        ;  (pretty-print arg_hash)
        (cond
          ; builtin define-prim with a specific argument count
@@ -414,15 +423,15 @@
           (match-define `(,is_define_prim ,is_callable ,arg_count)
             (callable-define-prim? proc-name-shadowed? func (- (length args) 1)))
 
-          ; (set! is_define_prim #f)
-          ; (set! is_callable #f)
-          ; (set! arg_count 0)
-          ; (displayln func)
-          ; (displayln (- (length args) 1))
-          ; (displayln is_define_prim)
-          ; (displayln is_callable)
-          ; (displayln arg_count)
-          ; (displayln "---------")
+          (set! is_define_prim #f)
+          (set! is_callable #f)
+          (set! arg_count 0)
+          (displayln func)
+          (displayln (- (length args) 1))
+          (displayln is_define_prim)
+          (displayln is_callable)
+          (displayln arg_count)
+          (displayln "---------")
 
           (cond
             ; this case won't be true anymore, since we are promoting
@@ -483,8 +492,8 @@
                                         (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-c-string (car args))))))
                    ))]
 
-            ; not specific argument count, but still one of the builtin define-prim so calling that directly
-            ; instead of unpacking the closure
+            ; not specific argument count, but still one of the builtin define-prim
+            ; so calling that directly instead of unpacking the closure
             [is_define_prim
              (append-line filepath "\n//clo-app")
 
@@ -498,6 +507,7 @@
              (append-line filepath (format "\n~a_fptr();" (get-c-string func)))]
 
             [else
+             (displayln (~a "inside else"))
              (append-line filepath "\n//clo-app")
 
              (if (hash-has-key? declare-top-level-funcs func)
@@ -542,6 +552,7 @@
                          (append-line filepath (format "reinterpret_cast<void (*)()>((decode_clo(~a))[0])();" (get-hash-val-unless-lam-prefix arg_hash func)))))))])])]
 
       [`(kont-clo-app ,func ,arg)
+       (displayln (~a "kont-clo-app=func " func " args: " arg))
        (append-line filepath "// kont-clo-app case")
 
        (if (hash-has-key? arg_hash func)
@@ -578,8 +589,8 @@
       [`(proc (,ptr ,env ,args ...) ,body)
        (append-line filepath (format "inline void ~a_fptr() // ~a -> generic version ~a" (get-c-string ptr) ptr "\n{"))
 
-       ; uncomment the line below for debugging!
-       ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: generic version\"<<std::endl;" (get-c-string ptr)))
+       ;  uncomment the line below for debugging!
+      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: generic version\"<<std::endl;" (get-c-string ptr)))
 
        (when (not (string-prefix? (symbol->string env) "_"))
          (append-line filepath "//reading env")
@@ -607,7 +618,7 @@
        (append-line filepath (format "inline void ~a_spec(~a) // ~a ~a" (get-c-string ptr) args-str ptr "\n{"))
 
        ; uncomment the line below for debugging!
-       ; (append-line filepath (format "std::cout<<\"In ~a_fptr: spec\"<<std::endl;" (get-c-string ptr)))
+      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr: spec\"<<std::endl;" (get-c-string ptr)))
 
        (if (hash-has-key? declare-top-level-funcs ptr)
            (begin
@@ -642,7 +653,7 @@
        (append-line filepath func_name)
 
        ; uncomment the line below for debugging!
-       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
 
        (append-line filepath "//reading env")
        (append-line filepath (format "void* const ~a = arg_buffer[1];" (get-c-string env)))
@@ -682,8 +693,8 @@
        ; start of function definitions
        (append-line filepath func_name)
 
-       ; uncomment the line below for debugging!
-       ; (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
+       ;  uncomment the line below for debugging!
+      ;  (append-line filepath (format "std::cout<<\"In ~a_fptr\"<<std::endl;" (get-c-string ptr)))
 
        (append-line filepath "//decoding closure array")
        (append-line filepath (format "void** decode_clo_array = nullptr;"))
@@ -737,8 +748,10 @@
                  (append-line filepath (format "mpf_init_set_str(*~a, \"~a\", 10);" (cadr type) key))]
                 [(equal? (car type) 'int)
                  (append-line filepath (format "~a = reinterpret_cast<void *>(encode_int(~a));" (cadr type) key))]
+                ;  (append-line filepath (format "mpz_init_set_str(*~a, \"~a\", 10);" (cadr type) key))]
                 [(equal? (car type) 'float)
                  (append-line filepath (format "~a = reinterpret_cast<void *>(encode_float(~a));" (cadr type) key))]
+                ;  (append-line filepath (format "mpf_init_set_str(*~a, \"~a\", 10);" (cadr type) key))]
                 [(equal? (car type) 'bool-true)
                  (append-line filepath (format "~a = encode_bool(true);" (cadr type)))]
                 [(equal? (car type) 'bool-false)

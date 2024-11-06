@@ -9,4 +9,7 @@
            (tak (- z 1) x y))))
 
 (define (brouhaha_main)
-  (tak 40 20 11))
+  (tak 40 20 11)
+  ; (tak 32 16 8)
+  ; (tak 18 12 6)
+  )
